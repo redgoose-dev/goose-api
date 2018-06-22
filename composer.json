@@ -1,0 +1,15 @@
+{
+    "name": "redgoose/goose-api",
+    "authors": [
+        {
+            "name": "redgoose",
+            "email": "scripter@me.com"
+        }
+    ],
+    "require": {},
+	"autoload": {
+		"psr-4": {
+			"Core\\": "core/"
+		}
+	}
+}
