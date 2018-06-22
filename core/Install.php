@@ -21,12 +21,12 @@ class Install {
 		// TODO: check exist `data/upload/`
 		// TODO: check permission `data/`
 		// TODO: check permission `data/upload/`
-		return false;
+		return true;
 	}
 
 	public function form()
 	{
-		var_dump('view form');
+		echo "install form";
 	}
 
 }
