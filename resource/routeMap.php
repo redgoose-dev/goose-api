@@ -3,6 +3,12 @@ if (!defined('__GOOSE__')) exit();
 
 
 return [
-	[ 'GET', '/', 'intro', 'introPage' ],
-	[ 'GET', '/nests', 'nests' ],
+
+	// intro
+	[ 'GET', '/', 'intro', 'Intro' ],
+
+	// nests
+	[ 'GET', '/nests', 'nests', 'Nests' ],
+	[ 'GET', '/nests/[:id]', 'nests', 'Nest' ],
+
 ];

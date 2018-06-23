@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4355fbfb38684ca554095753362833a",
+    "content-hash": "d63a0a8af521385282aac67f2972b76a",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -60,6 +60,54 @@
                 "routing"
             ],
             "time": "2015-11-30T00:47:43+00:00"
+        },
+        {
+            "name": "eftec/bladeone",
+            "version": "2.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EFTEC/BladeOne.git",
+                "reference": "cd0f02b05eb976006bd71beed1ef7e7045743f6a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EFTEC/BladeOne/zipball/cd0f02b05eb976006bd71beed1ef7e7045743f6a",
+                "reference": "cd0f02b05eb976006bd71beed1ef7e7045743f6a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "eftec\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jorge Patricio Castro Castillo",
+                    "email": "jcastro@eftec.cl"
+                }
+            ],
+            "description": "The standalone version Blade Template Engine from Laravel in a single php file",
+            "homepage": "https://github.com/EFTEC/BladeOne",
+            "keywords": [
+                "blade",
+                "php",
+                "template",
+                "view"
+            ],
+            "time": "2018-06-18T00:49:03+00:00"
         }
     ],
     "packages-dev": [],

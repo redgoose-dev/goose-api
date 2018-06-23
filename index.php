@@ -12,11 +12,4 @@ define('__GOOSE__', true);
 
 
 // bootstrap
-$app = require 'bootstrap/app.php';
-
-
-// run application
-if ($app)
-{
-	$app->run(__DIR__);
-}
+require 'bootstrap/app.php';
