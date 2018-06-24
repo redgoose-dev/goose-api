@@ -13,8 +13,8 @@ $install = new \Core\Install();
 // set app
 if ($install->check())
 {
-	$goose = new \Core\Goose();
-	$goose->run(__DIR__.'/../');
+	$goose = new \Core\Goose(__PATH__);
+	$goose->run();
 }
 else
 {

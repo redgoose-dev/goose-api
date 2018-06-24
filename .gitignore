@@ -1,4 +1,5 @@
 .idea/
 vendor/
+data/
 
 .DS_Store

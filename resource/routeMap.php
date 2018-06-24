@@ -9,6 +9,6 @@ return [
 
 	// nests
 	[ 'GET', '/nests', 'nests', 'Nests' ],
-	[ 'GET', '/nests/[:id]', 'nests', 'Nest' ],
+	[ 'GET', '/nests/[:srl]', 'nest', 'Nest' ],
 
 ];

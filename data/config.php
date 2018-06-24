@@ -1,5 +1,4 @@
 <?php
-if (!defined('__GOOSE__')) exit();
 
 return (object)[
 	'path' => (object)[
@@ -9,7 +8,8 @@ return (object)[
 	'db' => (object)[
 		'dbname' => 'goose',
 		'name' => 'goose',
-		'host' => 'localhost',
+		'host' => '127.0.0.1',
+//		'host' => 'localhost',
 		'port' => 3306,
 		'password' => '1212',
 	],

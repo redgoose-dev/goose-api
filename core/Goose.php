@@ -11,7 +11,6 @@ use Exception;
  * - 라우터 초기화
  * - url 라우트에 의한 컨트롤러 실행
  *
- * @property string path
  * @property object config
  * @property Router router
  * @property string target
@@ -22,8 +21,7 @@ class Goose {
 
 	public function __construct()
 	{
-		$this->path = null;
-		$this->config = null;
+		$this->config = require __PATH__.'/data/config.php';
 		$this->router = new Router();
 		$this->target = null;
 		$this->params = null;
@@ -32,68 +30,47 @@ class Goose {
 	/**
 	 * routing to controller
 	 * 라우팅에 의한 해석된 값으로 컨트롤러로 넘겨주는 과정
-	 *
-	 * @throws \Exception
 	 */
 	private function turningPoint()
 	{
-		try
+		switch ($this->target)
 		{
-			// check $target
-			if (!$this->target) throw new Exception('Not found target', 404);
+			case 'intro':
+				require __PATH__.'/controller/intro.php';
+				break;
 
-			// search controller
-			if (file_exists($this->path.'/controller/'.$this->target.'.php'))
-			{
-				require $this->path.'/controller/'.$this->target.'.php';
-			}
-		}
-		catch(Exception $e)
-		{
-			$this->error($e->getMessage(), $e->getCode());
-		}
-	}
+			default:
+				try
+				{
+					// check $target
+					if (!$this->target) throw new Exception('Not found target', 404);
 
-	/**
-	 * error
-	 * 오류 컨트롤러 실행
-	 *
-	 * @param string $message
-	 * @param int $code
-	 */
-	private function error($message='Service error', $code=500)
-	{
-		// TODO: 오류 클래스로 바꿔볼까 고민됨. static으로 바로 실행할 수 있도록...
-		require $this->path.'/controller/error.php';
+					// search controller
+					if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
+					{
+						require __PATH__.'/controller/'.$this->target.'.php';
+					}
+				}
+				catch(Exception $e)
+				{
+					Error::data($e->getMessage(), $e->getCode());
+				}
+				break;
+		}
 	}
 
 	/**
 	 * Play app trigger
 	 *
-	 * @param string $path
 	 * @throws Exception
 	 */
-	public function run($path='')
+	public function run()
 	{
-		// check $path
-		if (!$path)
-		{
-			return $this->error('Not found $path', 500);
-		}
-
 		// check install
 		if (!file_exists(__DIR__.'/../data/config.php'))
 		{
-			return $this->error('Not found config', 500);
+			return Error::data('Not found config', 500);
 		}
-
-		// set path
-		$this->path = $path;
-
-		// set config
-		$this->config = require __DIR__.'/../data/config.php';
-
-		// TODO: checking token
 
 		// initialize routing
 		$this->router->init();
@@ -101,7 +78,7 @@ class Goose {
 		// check router match
 		if (!$this->router->match)
 		{
-			return $this->error('Not found match', 500);
+			return Error::data('Not found match', 500);
 		}
 
 		// set router values

@@ -1,58 +1,106 @@
 <?php
 namespace Core;
-use Exception;
+use PDO, Exception, PDOException;
 
 
 /**
  * Database model
  *
- * @property object core
+ * @property object db
+ * @property string prefix
  */
 
 class Model {
 
-	public function __construct($type='mysql')
+	public function __construct()
 	{
-		switch ($type)
-		{
-			case 'mysql':
-				$this->core = new Database\Mysql();
-				break;
-
-			default:
-				$this->core = null;
-				break;
-		}
+		$this->db = null;
+		$this->prefix = null;
 	}
 
-	private function check($options)
+	/**
+	 * convert json to object
+	 *
+	 * @param array $item
+	 * @param array $fields
+	 * @return object
+	 */
+	private static function convertJsonToObject($item, $fields)
 	{
-		if (!$this->core)
+		foreach ($fields as $k=>$v)
 		{
-			return 'Not found database';
+			if ($item[$v])
+			{
+				$item[$v] = json_decode(urldecode($item[$v]), false);
+			}
 		}
-
-		if (!$options)
-		{
-			return 'Not found options';
-		}
-
-		return null;
+		return $item;
 	}
 
-	private static function error($message='Unknown error')
+	/**
+	 * query maker
+	 *
+	 * @param object $options
+	 * @return string
+	 */
+	private function query($options=null)
 	{
-		return new Exception($message);
+		if (!($options->act && $options->table)) return null;
+
+		// filtering where
+		$options->where = ($options->where) ? preg_replace("/^and|and$/", "", $options->where) : '';
+
+		$str = $options->act;
+		$str .= ($options->field) ? ' '.$options->field : ' *';
+		$str .= ' from '.$this->getTableName($options->table);
+		$str .= ($options->where) ? ' where '.$options->where : '';
+		$str .= ($options->order) ? ' order by '.$options->order : '';
+		$str .= ($options->sort) ? ' ' . (($options->sort === 'asc') ? 'asc' : 'desc') : '';
+		if ($options->limit)
+		{
+			if (is_array($options->limit))
+			{
+				$options->limit[0] = ($options->limit[0]) ? $options->limit[0] : 0;
+				$options->limit[1] = ($options->limit[1]) ? $options->limit[1] : 0;
+				$str .= ' limit ' . implode(',', $options->limit);
+			}
+			else
+			{
+				$str .= ' limit ' . $options->limit;
+			}
+		}
+
+		return $str;
 	}
 
 	/**
 	 * connect database
 	 *
-	 * @return boolean
+	 * @param object $config
+	 * @param string $prefix
+	 * @return Exception
 	 */
-	public function connect()
+	public function connect($config=null, $prefix='goose_')
 	{
-		return true;
+		// set prefix
+		$this->prefix = $prefix;
+
+		try
+		{
+			$this->db = new PDO(
+				'mysql:dbname='.$config->dbname.';host='.$config->host.';port='.$config->port,
+				$config->name,
+				$config->password
+			);
+			$this->action('set names utf8');
+			return null;
+		}
+		catch(PDOException $e)
+		{
+			$message = (__DEBUG__) ? $e->getMessage() : 'Failed connect database';
+			$code = (__DEBUG__) ? $e->getCode() : 500;
+			return new Exception($message, $code);
+		}
 	}
 
 	/**
@@ -60,33 +108,96 @@ class Model {
 	 */
 	public function disconnect()
 	{
-		//
+		$this->db = null;
+	}
+
+	/**
+	 * get table name
+	 *
+	 * @param string $tableName
+	 * @return string
+	 */
+	public function getTableName($tableName=null)
+	{
+		return $this->prefix.$tableName;
+	}
+
+	/**
+	 * run query
+	 *
+	 * @param string $query
+	 */
+	public function action($query)
+	{
+		$this->db->query($query);
 	}
 
 	/**
 	 * get count
 	 *
 	 * @param object $options
-	 * @return int
+	 * @return string|int
 	 */
 	public function getCount($options=null)
 	{
-		if ($checkMessage = $this->check($options)) return self::error($checkMessage);
+		$options->act = 'select';
+		$options->field = 'count(*)';
 
-		return 0;
+		// make query
+		$query = $this->query($options);
+
+		// is debug
+		if ($options->debug === true)
+		{
+			return $query;
+		}
+
+		// result
+		$result = $this->db->prepare($query);
+		$result->execute();
+		return (int)$result->fetchColumn();
 	}
 
 	/**
 	 * get items
 	 *
 	 * @param object $options
-	 * @return array
+	 * @return string|array
 	 */
 	public function getItems($options=null)
 	{
-		if ($checkMessage = $this->check($options)) return self::error($checkMessage);
+		$options->act = 'select';
+		$options->field = ($options->field) ? $options->field : '*';
 
-		return [];
+		// make query
+		$query = $this->query($options);
+
+		// is debug
+		if ($options->debug === true)
+		{
+			return $query;
+		}
+
+		$qry = $this->db->query($query);
+		if ($qry)
+		{
+			$result = $qry->fetchAll(PDO::FETCH_ASSOC);
+			if ($result && $options->json_field && count($options->json_field))
+			{
+				foreach ($result as $k=>$v)
+				{
+					if ($json = self::convertJsonToObject($v, $options->json_field))
+					{
+						$result[$k] = $json;
+					}
+				}
+			}
+			return $result ? $result : [];
+		}
+		else
+		{
+			return [];
+		}
 	}
 
 	/**
@@ -97,9 +208,41 @@ class Model {
 	 */
 	public function getItem($options=null)
 	{
-		if ($checkMessage = $this->check($options)) return self::error($checkMessage);
+		$options->act = 'select';
+		$options->field = ($options->field) ? $options->field : '*';
 
-		return (object)[];
+		// make query
+		$query = $this->query($options);
+
+		// is debug
+		if ($options->debug === true)
+		{
+			return $query;
+		}
+
+		$qry = $this->db->query($query);
+		if ($qry)
+		{
+			$result = $qry->fetch(PDO::FETCH_ASSOC);
+			if ($result && $options->json_field && count($options->json_field))
+			{
+				$result = self::convertJsonToObject($result, $options->json_field);
+			}
+			return $result ? $result : null;
+		}
+
+		return null;
+	}
+
+	/**
+	 * get query command
+	 *
+	 * @param object $options
+	 * @return string
+	 */
+	public function getQuery($options=null)
+	{
+		return $this->query($options);
 	}
 
 }
