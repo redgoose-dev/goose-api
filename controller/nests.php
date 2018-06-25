@@ -11,9 +11,9 @@ if (!defined('__GOOSE__')) exit();
  */
 
 // check token
-if (getallheaders()['token'] !== $this->config->token)
+if ($this->checkToken())
 {
-	return Error::data('Token error', 403);
+	Error::data('Token error', 403);
 }
 
 try
@@ -30,17 +30,17 @@ try
 
 	// get datas
 	$count = $model->getCount((object)[
-		table => 'nest',
-		debug => false
+		'table' => 'nest',
+		'debug' => false
 	]);
 
 	// get datas
 	$items = $model->getItems((object)[
-		table => 'nest',
-		field => $_GET['field'],
-		json_field => ['json'],
-		where => 'srl=1',
-		debug => false,
+		'table' => 'nest',
+		'field' => $_GET['field'],
+		'json_field' => ['json'],
+		'where' => 'srl=1',
+		'debug' => false,
 	]);
 
 	// disconnect db
@@ -48,15 +48,15 @@ try
 
 	// output data
 	Output::json((object)[
-		code => 200,
-		count => $count,
-		items => $items,
+		'code' => 200,
+		'count' => $count,
+		'items' => $items,
 	], $_GET['min']);
 }
 catch (Exception $e)
 {
 	Output::json((object)[
-		code => $e->getCode(),
-		message => $e->getMessage()
+		'code' => $e->getCode(),
+		'message' => $e->getMessage()
 	]);
 }

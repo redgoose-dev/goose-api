@@ -60,6 +60,24 @@ class Goose {
 	}
 
 	/**
+	 * check token
+	 *
+	 * @return boolean
+	 */
+	public function checkToken()
+	{
+		if (getallheaders()['token'] !== $this->config->token)
+		{
+			return false;
+		}
+		if ($_GET['token'] !== $this->config->token)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Play app trigger
 	 *
 	 * @throws Exception

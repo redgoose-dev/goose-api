@@ -8,9 +8,6 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-
-// TODO: 블레이드 템플릿으로 페이지 출력
-
-
+// TODO: 페이지 작업 필요함
 
 Output::page('intro');

@@ -8,6 +8,7 @@ class Error {
 	{
 		// TODO
 		Output::page();
+		exit;
 	}
 
 	/**
