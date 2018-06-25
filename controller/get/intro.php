@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+
 if (!defined('__GOOSE__')) exit();
 
 /**

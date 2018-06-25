@@ -4,13 +4,6 @@ namespace Core;
 
 class Error {
 
-	public static function page()
-	{
-		// TODO
-		Output::page();
-		exit;
-	}
-
 	/**
 	 * data type error
 	 *
@@ -23,7 +16,6 @@ class Error {
 			'message' => $message,
 			'code' => $code,
 		], false);
-		exit;
 	}
 
 }

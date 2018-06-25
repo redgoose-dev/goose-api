@@ -53,7 +53,7 @@ class Goose {
 	 *
 	 * @return boolean
 	 */
-	public function checkToken()
+	static public function checkToken()
 	{
 		if (getallheaders()['token'] !== getenv('API_TOKEN'))
 		{

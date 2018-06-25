@@ -10,12 +10,6 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-// check token
-if ($this->checkToken())
-{
-	Error::data('Token error', 403);
-}
-
 try
 {
 	// get instance

@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Dotenv\Dotenv, Exception;
+
 if (!defined('__GOOSE__')) exit();
 
 
@@ -19,22 +20,29 @@ catch(Exception $e)
 		'message' => 'ENV ERROR',
 		'code' => 500
 	]);
+	return;
 }
 
 // set development
 define('__DEBUG__', getenv('APP_DEBUG') === 'true');
 
-// set install
-$install = new Install();
-
 // set app
-if ($install->check())
+if (Install::check())
 {
-	$goose = new Goose(__PATH__);
+	// check token
+	if (Goose::checkToken())
+	{
+		Error::data('Token error', 403);
+		return;
+	}
+
+	$goose = new Goose();
 	$goose->run();
 }
 else
 {
-	$install->form();
-	return null;
+	Output::json((object)[
+		'message' => 'Installation is required.',
+		'code' => 500
+	]);
 }
