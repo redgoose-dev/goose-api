@@ -18,7 +18,7 @@ class Router {
 
 	private function map()
 	{
-		return require __DIR__.'/../resource/routeMap.php';
+		return require __DIR__.'/../resource/route.php';
 	}
 
 	/**

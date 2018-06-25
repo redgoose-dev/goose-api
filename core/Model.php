@@ -15,7 +15,7 @@ class Model {
 	public function __construct()
 	{
 		$this->db = null;
-		$this->prefix = null;
+		$this->prefix = getenv('TABLE_PREFIX');
 	}
 
 	/**
@@ -76,21 +76,16 @@ class Model {
 	/**
 	 * connect database
 	 *
-	 * @param object $config
-	 * @param string $prefix
 	 * @return Exception
 	 */
-	public function connect($config=null, $prefix='goose_')
+	public function connect()
 	{
-		// set prefix
-		$this->prefix = $prefix;
-
 		try
 		{
 			$this->db = new PDO(
-				'mysql:dbname='.$config->dbname.';host='.$config->host.';port='.$config->port,
-				$config->name,
-				$config->password
+				'mysql:dbname='.getenv('DB_DATABASE').';host='.getenv('DB_HOST').';port='.getenv('DB_PORT'),
+				getenv('DB_USERNAME'),
+				getenv('DB_PASSWORD')
 			);
 			$this->action('set names utf8');
 			return null;

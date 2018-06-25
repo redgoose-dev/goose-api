@@ -22,7 +22,7 @@ try
 	$model = new Model();
 
 	// connect db
-	$tmp = $model->connect($this->config->db, $this->config->table_prefix);
+	$tmp = $model->connect();
 	if ($tmp)
 	{
 		throw new Exception($tmp->getMessage(), $tmp->getCode());

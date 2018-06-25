@@ -8,6 +8,7 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-// TODO: 페이지 작업 필요함
-
-Output::page('intro');
+Output::json((object)[
+	'message' => 'Welcome to goose api',
+	'code' => 200,
+]);

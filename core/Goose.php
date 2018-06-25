@@ -11,7 +11,6 @@ use Exception;
  * - 라우터 초기화
  * - url 라우트에 의한 컨트롤러 실행
  *
- * @property object config
  * @property Router router
  * @property string target
  * @property array params
@@ -21,7 +20,6 @@ class Goose {
 
 	public function __construct()
 	{
-		$this->config = require __PATH__.'/data/config.php';
 		$this->router = new Router();
 		$this->target = null;
 		$this->params = null;
@@ -33,29 +31,20 @@ class Goose {
 	 */
 	private function turningPoint()
 	{
-		switch ($this->target)
+		try
 		{
-			case 'intro':
-				require __PATH__.'/controller/intro.php';
-				break;
+			// check $target
+			if (!$this->target) throw new Exception('Not found target', 404);
 
-			default:
-				try
-				{
-					// check $target
-					if (!$this->target) throw new Exception('Not found target', 404);
-
-					// search controller
-					if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
-					{
-						require __PATH__.'/controller/'.$this->target.'.php';
-					}
-				}
-				catch(Exception $e)
-				{
-					Error::data($e->getMessage(), $e->getCode());
-				}
-				break;
+			// search controller
+			if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
+			{
+				require __PATH__.'/controller/'.$this->target.'.php';
+			}
+		}
+		catch(Exception $e)
+		{
+			Error::data($e->getMessage(), $e->getCode());
 		}
 	}
 
@@ -66,11 +55,11 @@ class Goose {
 	 */
 	public function checkToken()
 	{
-		if (getallheaders()['token'] !== $this->config->token)
+		if (getallheaders()['token'] !== getenv('API_TOKEN'))
 		{
 			return false;
 		}
-		if ($_GET['token'] !== $this->config->token)
+		if ($_GET['token'] !== getenv('API_TOKEN'))
 		{
 			return false;
 		}
@@ -84,12 +73,6 @@ class Goose {
 	 */
 	public function run()
 	{
-		// check install
-		if (!file_exists(__DIR__.'/../data/config.php'))
-		{
-			return Error::data('Not found config', 500);
-		}
-
 		// initialize routing
 		$this->router->init();
 

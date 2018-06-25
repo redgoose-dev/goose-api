@@ -17,7 +17,6 @@ class Install {
 	public function check()
 	{
 		// TODO: check exist `data/`
-		// TODO: check exist `data/config.php`
 		// TODO: check exist `data/upload/`
 		// TODO: check permission `data/`
 		// TODO: check permission `data/upload/`

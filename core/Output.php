@@ -32,6 +32,8 @@ class Output {
 				!$minify ? JSON_PRETTY_PRINT : null
 			);
 		}
+
+		exit;
 	}
 
 	/**
@@ -46,6 +48,8 @@ class Output {
 		define("BLADEONE_MODE", 0); // (optional) 1=forced (test),2=run fast (production), 0=automatic, default value.
 		$blade = new bladeone\BladeOne(__PATH__.'/view', __PATH__.'/data/cache');
 		echo $blade->run($name, $props);
+
+		exit;
 	}
 
 }
