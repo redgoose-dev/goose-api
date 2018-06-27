@@ -41,6 +41,13 @@ class Model {
 	 * query maker
 	 *
 	 * @param object $options
+	 * @param string $options->act
+	 * @param string $options->where
+	 * @param string $options->field
+	 * @param string $options->table
+	 * @param string $options->order
+	 * @param string $options->sort
+	 * @param array $options->limit
 	 * @return string
 	 */
 	private function query($options=null)
@@ -48,21 +55,27 @@ class Model {
 		if (!($options->act && $options->table)) return null;
 
 		// filtering where
-		$options->where = ($options->where) ? preg_replace("/^and|and$/", "", $options->where) : '';
+		if ($options->where)
+		{
+			$options->where = preg_replace("/^ and/", "", $options->where);
+			$options->where = trim($options->where);
+		}
 
 		$str = $options->act;
 		$str .= ($options->field) ? ' '.$options->field : ' *';
 		$str .= ' from '.$this->getTableName($options->table);
 		$str .= ($options->where) ? ' where '.$options->where : '';
 		$str .= ($options->order) ? ' order by '.$options->order : '';
-		$str .= ($options->sort) ? ' ' . (($options->sort === 'asc') ? 'asc' : 'desc') : '';
+		$str .= ($options->order && $options->sort) ? ' ' . (($options->sort === 'asc') ? 'asc' : 'desc') : '';
+
 		if ($options->limit)
 		{
 			if (is_array($options->limit))
 			{
-				$options->limit[0] = ($options->limit[0]) ? $options->limit[0] : 0;
-				$options->limit[1] = ($options->limit[1]) ? $options->limit[1] : 0;
-				$str .= ' limit ' . implode(',', $options->limit);
+				if (count($options->limit) > 0)
+				{
+					$str .= ' limit ' . implode(',', $options->limit);
+				}
 			}
 			else
 			{
@@ -131,48 +144,47 @@ class Model {
 	 * get count
 	 *
 	 * @param object $options
-	 * @return string|int
+	 * @return object
 	 */
 	public function getCount($options=null)
 	{
+		$output = (object)[];
+
 		$options->act = 'select';
 		$options->field = 'count(*)';
 
 		// make query
 		$query = $this->query($options);
 
-		// is debug
-		if ($options->debug === true)
-		{
-			return $query;
-		}
-
 		// result
 		$result = $this->db->prepare($query);
 		$result->execute();
-		return (int)$result->fetchColumn();
+		$result = (int)$result->fetchColumn();
+
+		// set output
+		$output->data = $result ? $result : 0;
+		if ($options->debug === true) $output->query = $query;
+
+		return $output;
 	}
 
 	/**
 	 * get items
 	 *
 	 * @param object $options
-	 * @return string|array
+	 * @return object
 	 */
 	public function getItems($options=null)
 	{
+		$output = (object)[];
+
 		$options->act = 'select';
 		$options->field = ($options->field) ? $options->field : '*';
 
 		// make query
 		$query = $this->query($options);
 
-		// is debug
-		if ($options->debug === true)
-		{
-			return $query;
-		}
-
+		// get data
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
@@ -187,12 +199,13 @@ class Model {
 					}
 				}
 			}
-			return $result ? $result : [];
 		}
-		else
-		{
-			return [];
-		}
+
+		// set output
+		$output->data = $result ? $result : [];
+		if ($options->debug === true) $output->query = $query;
+
+		return $output;
 	}
 
 	/**
@@ -203,18 +216,15 @@ class Model {
 	 */
 	public function getItem($options=null)
 	{
+		$output = (object)[];
+
 		$options->act = 'select';
 		$options->field = ($options->field) ? $options->field : '*';
 
 		// make query
 		$query = $this->query($options);
 
-		// is debug
-		if ($options->debug === true)
-		{
-			return $query;
-		}
-
+		// get data
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
@@ -223,10 +233,13 @@ class Model {
 			{
 				$result = self::convertJsonToObject($result, $options->json_field);
 			}
-			return $result ? $result : null;
 		}
 
-		return null;
+		// set output
+		$output->data = $result ? $result : null;
+		if ($options->debug === true) $output->query = $query;
+
+		return $output;
 	}
 
 	/**

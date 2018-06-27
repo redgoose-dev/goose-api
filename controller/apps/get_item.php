@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * Nest
+ * get app
  *
  * @var Goose $this
  */
@@ -29,9 +29,8 @@ try
 
 	// get data
 	$item = $model->getItem((object)[
-		'table' => 'nest',
+		'table' => 'app',
 		'field' => $_GET['field'],
-		'json_field' => ['json'],
 		'where' => 'srl='.(int)$this->params['srl'],
 		'debug' => false,
 	]);

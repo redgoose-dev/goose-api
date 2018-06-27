@@ -14,6 +14,7 @@ use Exception;
  * @property Router router
  * @property string target
  * @property array params
+ * @property object defaults
  */
 
 class Goose {
@@ -23,6 +24,7 @@ class Goose {
 		$this->router = new Router();
 		$this->target = null;
 		$this->params = null;
+		$this->defaults = (object)[];
 	}
 
 	/**
@@ -57,11 +59,10 @@ class Goose {
 	{
 		if (getallheaders()['token'] !== getenv('API_TOKEN'))
 		{
-			return false;
-		}
-		if ($_GET['token'] !== getenv('API_TOKEN'))
-		{
-			return false;
+			if ($_GET['token'] !== getenv('API_TOKEN'))
+			{
+				return false;
+			}
 		}
 		return true;
 	}
@@ -79,12 +80,16 @@ class Goose {
 		// check router match
 		if (!$this->router->match)
 		{
-			return Error::data('Not found match', 500);
+			return Error::data('Not found match', 404);
 		}
 
 		// set router values
 		$this->target = $this->router->match['target'];
 		$this->params = $this->router->match['params'];
+
+		// set defaults
+		$this->defaults->page = getenv('DEFAULT_PAGE');
+		$this->defaults->size = getenv('DEFAULT_SIZE');
 
 		// run turning point
 		$this->turningPoint();

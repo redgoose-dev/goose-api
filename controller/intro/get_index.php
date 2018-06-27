@@ -4,7 +4,7 @@ namespace Core;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * Intro
+ * get intro
  *
  * @var Goose $this
  */

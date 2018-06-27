@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * Nests
+ * get nest
  *
  * @var Goose $this
  */
@@ -22,30 +22,32 @@ try
 		throw new Exception($tmp->getMessage(), $tmp->getCode());
 	}
 
-	// get datas
-	$count = $model->getCount((object)[
-		'table' => 'nest',
-		'debug' => false
-	]);
+	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	{
+		throw new Exception('Not found srl', 404);
+	}
 
-	// get datas
-	$items = $model->getItems((object)[
+	// get data
+	$item = $model->getItem((object)[
 		'table' => 'nest',
 		'field' => $_GET['field'],
 		'json_field' => ['json'],
-		'where' => 'srl=1',
-		'debug' => false,
+		'where' => 'srl='.(int)$this->params['srl'],
+		'debug' => __DEBUG__
 	]);
 
 	// disconnect db
 	$model->disconnect();
 
-	// output data
-	Output::json((object)[
+	// set output
+	$output = (object)[
 		'code' => 200,
-		'count' => $count,
-		'items' => $items,
-	], $_GET['min']);
+		'data' => $item->data,
+	];
+	if ($item->query) $output->query = $item->query;
+
+	// output data
+	Output::json($output, $_GET['min']);
 }
 catch (Exception $e)
 {

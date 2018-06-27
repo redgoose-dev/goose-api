@@ -24,13 +24,13 @@ catch(Exception $e)
 }
 
 // set development
-define('__DEBUG__', getenv('APP_DEBUG') === 'true');
+define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
 // set app
 if (Install::check())
 {
 	// check token
-	if (Goose::checkToken())
+	if (!Goose::checkToken())
 	{
 		Error::data('Token error', 403);
 		return;
