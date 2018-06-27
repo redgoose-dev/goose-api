@@ -10,6 +10,7 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
+// TODO: 다시 소스 정리하기
 try
 {
 	// get values

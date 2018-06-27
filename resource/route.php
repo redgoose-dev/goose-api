@@ -10,6 +10,9 @@ return [
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],
 
+	// articles
+	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
+
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],
 
