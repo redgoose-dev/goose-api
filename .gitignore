@@ -3,4 +3,4 @@ vendor/
 data/
 
 .DS_Store
-#.env # developing
+.env
