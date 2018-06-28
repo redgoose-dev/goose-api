@@ -16,8 +16,17 @@ return [
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],
 
+	// files
+	[ 'GET', '/files', 'files/get_index', 'getFiles' ],
+
+	// json
+	[ 'GET', '/json', 'json/get_index', 'getJson' ],
+
 	// nests
 	[ 'GET', '/nests', 'nests/get_index', 'getNests' ],
 	[ 'GET', '/nests/[:srl]', 'nests/get_item', 'getNest' ],
+
+	// users
+	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
 
 ];

@@ -11,8 +11,9 @@ class Controller {
 	 * @param Goose $goose
 	 * @param string $table
 	 * @param string $where
+	 * @param array $jsonField
 	 */
-	public static function index($goose, $table=null, $where=null)
+	public static function index($goose, $table=null, $where=null, $jsonField=['json'])
 	{
 		/**
 		 * url params guide
@@ -63,6 +64,7 @@ class Controller {
 			$items = $model->getItems((object)[
 				'table' => $table,
 				'field' => $_GET['field'],
+				'json_field' => $jsonField,
 				'order' => $_GET['order'],
 				'sort' => $_GET['sort'],
 				'limit' => $limit,

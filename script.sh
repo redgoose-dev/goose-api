@@ -2,7 +2,7 @@
 
 
 # set port
-[[ -z "$2" ]] && port=3000 || port=$2
+[[ -z "$2" ]] && port=8000 || port=$2
 
 
 # func / start server
@@ -12,7 +12,7 @@ start() {
 
 # func / install
 install() {
-	php install.php
+	php resource/install.php
 }
 
 
