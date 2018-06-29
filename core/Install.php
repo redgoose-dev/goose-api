@@ -24,23 +24,24 @@ class Install {
 		if (!is_writable(__PATH__.'/data/settings')) return false;
 
 		// check env
-		$env_values = [
-			'PATH_URL',
-			'PATH_ROOT',
-			'DB_HOST',
-			'DB_PORT',
-			'DB_DATABASE',
-			'DB_USERNAME',
-			'DB_PASSWORD',
-			'TABLE_PREFIX',
-			'API_DEBUG',
-			'API_TOKEN',
-			'TIMEZONE',
-		];
-		foreach ($env_values as $o)
-		{
-			if (!getenv($o)) return false;
-		}
+		// TODO: .env 스펙이 확정되면 검사하기
+//		$env_values = [
+//			'SERVICE_NAME',
+//			'PATH_URL',
+//			'PATH_ROOT',
+//			'DB_HOST',
+//			'DB_PORT',
+//			'DB_DATABASE',
+//			'DB_USERNAME',
+//			'DB_PASSWORD',
+//			'TABLE_PREFIX',
+//			'API_DEBUG',
+//			'TIMEZONE',
+//		];
+//		foreach ($env_values as $o)
+//		{
+//			if (!getenv($o)) return false;
+//		}
 
 		return true;
 	}

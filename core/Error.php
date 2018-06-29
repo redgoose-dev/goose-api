@@ -9,6 +9,7 @@ class Error {
 	 *
 	 * @param string $message
 	 * @param int $code
+	 * @return null
 	 */
 	public static function data($message='Unknown error', $code=500)
 	{
@@ -16,6 +17,7 @@ class Error {
 			'message' => $message,
 			'code' => $code,
 		]);
+		return null;
 	}
 
 }
