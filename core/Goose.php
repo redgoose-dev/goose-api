@@ -66,20 +66,31 @@ class Goose {
 	}
 
 	/**
-	 * check token
-	 *
-	 * @return boolean
+	 * make token
 	 */
-	private function checkToken()
+	public function makeToken()
 	{
-		if (getallheaders()['token'] !== getenv('API_TOKEN'))
-		{
-			if ($_GET['token'] !== getenv('API_TOKEN'))
-			{
-				return false;
-			}
-		}
-		return true;
+		$offset = 10;
+		$key = getenv('APP_KEY');
+		$now = time();
+		$expire = $now + $offset;
+
+		$token = [
+			'iss' => getenv('PATH_URL'),
+			'iat' => $now,
+			'exp' => $expire,
+			'data' => [
+				'user_srl' => 1,
+			]
+		];
+	}
+
+	/**
+	 * refresh token
+	 */
+	private function getToken()
+	{
+		//
 	}
 
 	/**

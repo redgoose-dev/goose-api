@@ -15,8 +15,6 @@ class Output {
 	{
 		header('Content-Type: application/json');
 
-		$output = (object)[];
-
 		if ($result)
 		{
 			// filtering query
