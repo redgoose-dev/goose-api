@@ -1,16 +1,17 @@
 <?php
 namespace Core;
+use Exception;
 
 
 class Output {
 
 	/**
-	 * print json
+	 * print data
 	 *
 	 * @param object|array obj
 	 * @param string $format
 	 */
-	public static function json($result=null, $format='json')
+	public static function data($result=null, $format='json')
 	{
 		header('Content-Type: application/json');
 
@@ -62,6 +63,14 @@ class Output {
 		}
 
 		exit;
+	}
+
+	/**
+	 * print page
+	 */
+	public static function page()
+	{
+		echo 'print page';
 	}
 
 }

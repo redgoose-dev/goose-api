@@ -16,7 +16,7 @@ try
 }
 catch(Exception $e)
 {
-	Output::json((object)[
+	Output::data((object)[
 		'message' => 'ENV ERROR',
 		'code' => 500
 	]);
@@ -29,19 +29,12 @@ define('__DEBUG__', getenv('API_DEBUG') === 'true');
 // set app
 if (Install::check())
 {
-	// check token
-	if (!Goose::checkToken())
-	{
-		Error::data('Token error', 403);
-		return;
-	}
-
 	$goose = new Goose();
 	$goose->run();
 }
 else
 {
-	Output::json((object)[
+	Output::data((object)[
 		'message' => 'Installation is required.',
 		'code' => 500
 	]);

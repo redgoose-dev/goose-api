@@ -8,12 +8,14 @@ class Controller {
 	/**
 	 * result index
 	 *
-	 * @param Goose $goose
-	 * @param string $table
-	 * @param string $where
-	 * @param array $jsonField
+	 * @param object $op
+	 * @param Goose $op->goose
+	 * @param string $op->table
+	 * @param string $op->where
+	 * @param array $op->jsonField
+	 * @param function $callback
 	 */
-	public static function index($goose, $table=null, $where=null, $jsonField=['json'])
+	public static function index($op=null, callable $callback=null)
 	{
 		/**
 		 * url params guide
@@ -27,13 +29,13 @@ class Controller {
 		 */
 		try
 		{
-			if (!$goose || !$table) throw new Exception('', 500);
+			if (!$op->goose || !$op->table) throw new Exception('', 500);
 
 			// get values
 			$output = (object)[];
 			$model = new Model();
-			$page = (($_GET['page']) ? (int)$_GET['page'] : $goose->defaults->page) - 1;
-			$size = ($_GET['size']) ? (int)$_GET['size'] : $goose->defaults->size;
+			$page = ($_GET['page']) ? (int)$_GET['page'] : $op->page;
+			$size = ($_GET['size']) ? (int)$_GET['size'] : $op->size;
 
 			// connect db
 			$tmp = $model->connect();
@@ -44,8 +46,8 @@ class Controller {
 
 			// get total
 			$total = $model->getCount((object)[
-				'table' => $table,
-				'where' => $where,
+				'table' => $op->table,
+				'where' => $op->where,
 				'debug' => __DEBUG__
 			]);
 
@@ -57,20 +59,25 @@ class Controller {
 			}
 			else if (isset($_GET['page']) || isset($_GET['size']))
 			{
-				$limit = [ $page * $size, $size ];
+				$limit = [ ($page - 1) * $size, $size ];
 			}
 
 			// get datas
 			$items = $model->getItems((object)[
-				'table' => $table,
+				'table' => $op->table,
 				'field' => $_GET['field'],
-				'json_field' => $jsonField,
+				'json_field' => $op->jsonField,
 				'order' => $_GET['order'],
 				'sort' => $_GET['sort'],
 				'limit' => $limit,
-				'where' => $where,
+				'where' => $op->where,
 				'debug' => __DEBUG__
 			]);
+			// 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
+			if (is_callable($callback))
+			{
+				$items = $callback($items);
+			}
 
 			// disconnect db
 			$model->disconnect();
@@ -83,12 +90,12 @@ class Controller {
 			$output->data = $items->data;
 
 			// output data
-			Output::json($output);
+			Output::data($output);
 		}
 		catch (Exception $e)
 		{
-			Output::json((object)[
-				'message' => $e->getMessage(),
+			Output::data((object)[
+				'message' => ($e->getMessage()) ? $e->getMessage() : 'Unknown error',
 				'code' => $e->getCode(),
 			]);
 		}
@@ -97,11 +104,9 @@ class Controller {
 	/**
 	 * result item
 	 *
-	 * @param Goose $goose
-	 * @param string $table
-	 * @param int $srl
+	 * @param object $op
 	 */
-	public static function item($goose, $table=null, $srl=null)
+	public static function item($op=null)
 	{
 
 	}

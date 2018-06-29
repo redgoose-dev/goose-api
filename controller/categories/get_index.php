@@ -25,4 +25,8 @@ if ($name = Util::getParameter('name'))
 }
 
 // output
-Controller::index($this, 'category', $where);
+Controller::index((object)[
+	'goose' => $this,
+	'table' => 'category',
+	'where' => $where
+]);

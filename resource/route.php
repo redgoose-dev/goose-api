@@ -7,6 +7,11 @@ return [
 	// intro
 	[ 'GET', '/', 'intro/get_index', 'getIntro' ],
 
+	// manager
+	[ 'GET', '/manager', 'manager/get_page' ],
+	[ 'GET', '/manager/', 'manager/get_page' ],
+	[ 'GET', '/manager/[*]', 'manager/get_page' ],
+
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],
 
@@ -28,5 +33,8 @@ return [
 
 	// users
 	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
+
+
+	[ 'GET', '/token', 'token', 'testToken' ],
 
 ];

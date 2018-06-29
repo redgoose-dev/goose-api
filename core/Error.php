@@ -12,10 +12,10 @@ class Error {
 	 */
 	public static function data($message='Unknown error', $code=500)
 	{
-		Output::json((object)[
+		Output::data((object)[
 			'message' => $message,
 			'code' => $code,
-		], false);
+		]);
 	}
 
 }

@@ -39,14 +39,14 @@ try
 	$model->disconnect();
 
 	// output data
-	Output::json((object)[
+	Output::data((object)[
 		'code' => 200,
 		'data' => $item,
-	], $_GET['min']);
+	]);
 }
 catch (Exception $e)
 {
-	Output::json((object)[
+	Output::data((object)[
 		'code' => $e->getCode(),
 		'message' => $e->getMessage()
 	]);

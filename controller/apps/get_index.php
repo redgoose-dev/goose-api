@@ -25,4 +25,11 @@ if ($name = Util::getParameter('name'))
 }
 
 // output
-Controller::index($this, 'app', $where);
+Controller::index((object)[
+	'goose' => $this,
+	'table' => 'app',
+	'where' => $where,
+	'page' => 1,
+	'size' => 20,
+	'field' => $_GET['field'],
+]);

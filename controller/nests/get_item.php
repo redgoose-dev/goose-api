@@ -47,11 +47,11 @@ try
 	if ($item->query) $output->query = $item->query;
 
 	// output data
-	Output::json($output, $_GET['min']);
+	Output::data($output);
 }
 catch (Exception $e)
 {
-	Output::json((object)[
+	Output::data((object)[
 		'code' => $e->getCode(),
 		'message' => $e->getMessage()
 	]);

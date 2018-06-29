@@ -38,6 +38,21 @@ class Goose {
 			// check $target
 			if (!$this->target) throw new Exception('Not found target', 404);
 
+			// 주소에 따라 행동 구분
+//			switch ($this->target)
+//			{
+//				case 'manager/get_page':
+//					break;
+//				default:
+//					// check token
+//					if (!$this->checkToken())
+//					{
+//						throw new Exception('Token error', 401);
+//						return;
+//					}
+//					break;
+//			}
+
 			// search controller
 			if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
 			{
@@ -55,7 +70,7 @@ class Goose {
 	 *
 	 * @return boolean
 	 */
-	static public function checkToken()
+	private function checkToken()
 	{
 		if (getallheaders()['token'] !== getenv('API_TOKEN'))
 		{
@@ -86,10 +101,6 @@ class Goose {
 		// set router values
 		$this->target = $this->router->match['target'];
 		$this->params = $this->router->match['params'];
-
-		// set defaults
-		$this->defaults->page = getenv('DEFAULT_PAGE');
-		$this->defaults->size = getenv('DEFAULT_SIZE');
 
 		// run turning point
 		$this->turningPoint();

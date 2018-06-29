@@ -43,4 +43,8 @@ if ($ready = Util::getParameter('ready'))
 }
 
 // output
-Controller::index($this, 'file', $where);
+Controller::index((object)[
+	'goose' => $this,
+	'table' => 'file',
+	'where' => $where
+]);

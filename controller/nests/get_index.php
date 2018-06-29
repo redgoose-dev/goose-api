@@ -29,4 +29,9 @@ if ($name = Util::getParameter('name'))
 }
 
 // output
-Controller::index($this, 'nest', $where, ['json']);
+Controller::index((object)[
+	'goose' => $this,
+	'table' => 'nest',
+	'where' => $where,
+	'jsonField' => ['json']
+]);

@@ -9,7 +9,7 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-Output::json((object)[
+Output::data((object)[
 	'message' => 'Welcome to goose api',
 	'code' => 200,
 ]);

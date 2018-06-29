@@ -28,7 +28,21 @@ if ($level = Util::getParameter('level'))
 {
 	$where .= ' and level='.$level;
 }
-// TODO: 레벨에서 더 높거나 낮은수치가 필요할지도 모르겠음..
 
 // output
-Controller::index($this, 'user', $where);
+Controller::index((object)[
+	'goose' => $this,
+	'table' => 'user',
+	'where' => $where,
+], function($result=null) {
+	if (!isset($result->data)) return $result;
+	foreach ($result->data as $k=>$o)
+	{
+		// pw 항목 삭제
+		if (isset($result->data[$k]['pw']))
+		{
+			unset($result->data[$k]['pw']);
+		}
+	}
+	return $result;
+});
