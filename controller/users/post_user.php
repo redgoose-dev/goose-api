@@ -34,10 +34,7 @@ try
 	}
 
 	// connect db
-	if ($tmp = $model->connect())
-	{
-		throw new Exception($tmp->getMessage(), $tmp->getCode());
-	}
+	$model->connect();
 
 	// check email address
 	$cnt = $model->getCount((object)[

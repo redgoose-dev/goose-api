@@ -6,30 +6,32 @@ if (!defined('__GOOSE__')) exit();
 
 
 // load autoload
-$autoload = require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-// set dotenv
 try
 {
-	$dotenv = new Dotenv(__PATH__);
-	$dotenv->load();
-}
-catch(Exception $e)
-{
-	Error::data('ENV ERROR');
-	return;
-}
+	// set dotenv
+	try
+	{
+		$dotenv = new Dotenv(__PATH__);
+		$dotenv->load();
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('.env error');
+	}
 
-// set development
-define('__DEBUG__', getenv('API_DEBUG') === 'true');
+	// set development
+	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
-// set app
-if (Install::check())
-{
+	// check install
+	Install::check();
+
+	// set app
 	$goose = new Goose();
 	$goose->run();
 }
-else
+catch(Exception $e)
 {
-	Error::data('Installation is required.');
+	Error::data($e->getMessage());
 }

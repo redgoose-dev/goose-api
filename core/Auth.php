@@ -5,14 +5,24 @@ use Exception;
 
 class Auth {
 
+	/**
+	 * get model
+	 *
+	 * @return Model
+	 * @throws Exception
+	 */
 	private static function getModel()
 	{
-		$model = new Model();
-		if ($tmp = $model->connect())
+		try
 		{
-			throw new Exception($tmp->getMessage(), $tmp->getCode());
+			$model = new Model();
+			$model->connect();
+			return $model;
 		}
-		return $model;
+		catch(Exception $e)
+		{
+			throw new Exception($e->getMessage());
+		}
 	}
 
 	/**
@@ -51,7 +61,7 @@ class Auth {
 	/**
 	 * check authorization
 	 *
-	 * @param number $level
+	 * @param int $level
 	 * @param boolean $backdoor
 	 * @return string 토큰을 재발급 받는다면 리턴으로 나온 토큰주소
 	 * @throws Exception

@@ -50,13 +50,10 @@ try
 		]);
 	}
 
-	// get token
+	// make new public token
 	$newToken = Token::make((object)[
 		'time' => true,
 		'exp' => false,
-		'data' => (object)[
-			'type' => 'anonymous',
-		],
 	]);
 
 	// set output

@@ -21,7 +21,7 @@ try
 	$data = (object)[];
 
 	// check authorization
-	Auth::checkAuthorization(100);
+	Auth::checkAuthorization($this->level->admin);
 
 	// is user
 	if ($_POST['email'] && $_POST['password'])
@@ -42,8 +42,8 @@ try
 
 	// make token
 	$jwt = Token::make((object)[
-		'exp' => ($data->type === 'user'),
 		'time' => true,
+		'exp' => ($data->type === 'user'),
 		'data' => $data,
 	]);
 

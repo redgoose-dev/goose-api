@@ -17,7 +17,7 @@ class Token {
 	/**
 	 * make token
 	 *
-	 * @param object $op
+	 * @param object $op (time,exp,data)
 	 * @return object
 	 */
 	public static function make($op=null)
@@ -32,7 +32,7 @@ class Token {
 		$token->jti = getenv('TOKEN_ID');
 		if ($op->time) $token->iat = $now;
 		if ($op->time && $op->exp) $token->exp = $now + self::offset_access;
-		if ($op->data) $token->data = $op->data;
+		$token->data = ($op->data) ? $op->data : (object)[ 'type' => 'anonymous' ];
 
 		// make encode
 		$jwt = JWT::encode($token, getenv('APP_KEY'));
@@ -47,6 +47,8 @@ class Token {
 	 * get token
 	 *
 	 * @param string $token
+	 * @return object
+	 * @throws Exception
 	 */
 	public static function get($token)
 	{

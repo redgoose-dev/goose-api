@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # set port
 [[ -z "$2" ]] && port=8000 || port=$2
 
@@ -12,7 +11,13 @@ start() {
 
 # func / install
 install() {
-	php resource/install.php
+	php resource/tools.php install
+}
+
+# func / make token
+make-token()
+{
+	php resource/tools.php make-token
 }
 
 
@@ -23,6 +28,10 @@ case "$1" in
 
 	install)
 		install
+		;;
+
+	make-token)
+		make-token
 		;;
 
 	*)
