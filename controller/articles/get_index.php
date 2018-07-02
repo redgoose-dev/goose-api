@@ -58,6 +58,8 @@ try
 		'where' => $where,
 		'jsonField' => ['json']
 	]);
+
+	// set token
 	if ($token) $output->_token = $token;
 
 	// output

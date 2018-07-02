@@ -40,6 +40,8 @@ try
 		'size' => 20,
 		'field' => $_GET['field'],
 	]);
+
+	// set token
 	if ($token) $output->_token = $token;
 
 	// output

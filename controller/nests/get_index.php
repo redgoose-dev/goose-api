@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Exception;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -14,24 +15,40 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-$where = '';
-if ($app = Util::getParameter('app'))
+try
 {
-	$where .= ' and app_srl='.$app;
-}
-if ($id = Util::getParameter('id'))
-{
-	$where .= ' and id LIKE \''.$id.'\'';
-}
-if ($name = Util::getParameter('name'))
-{
-	$where .= ' and name LIKE \'%'.$name.'%\'';
-}
+	// check authorization
+	$token = Auth::checkAuthorization();
 
-// output
-Controller::index((object)[
-	'goose' => $this,
-	'table' => 'nest',
-	'where' => $where,
-	'jsonField' => ['json']
-]);
+	$where = '';
+	if ($app = Util::getParameter('app'))
+	{
+		$where .= ' and app_srl='.$app;
+	}
+	if ($id = Util::getParameter('id'))
+	{
+		$where .= ' and id LIKE \''.$id.'\'';
+	}
+	if ($name = Util::getParameter('name'))
+	{
+		$where .= ' and name LIKE \'%'.$name.'%\'';
+	}
+
+	// output
+	$output = Controller::index((object)[
+		'goose' => $this,
+		'table' => 'nest',
+		'where' => $where,
+		'jsonField' => ['json']
+	]);
+
+	// set token
+	if ($token) $output->_token = $token;
+
+	// output
+	Output::data($output);
+}
+catch (Exception $e)
+{
+	Error::data($e->getMessage(), $e->getCode());
+}

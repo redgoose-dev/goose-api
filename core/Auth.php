@@ -61,37 +61,60 @@ class Auth {
 	/**
 	 * check authorization
 	 *
-	 * @param int $level
+	 * @param int|array $level
+	 * @param Model $model
 	 * @param boolean $backdoor
 	 * @return string 토큰을 재발급 받는다면 리턴으로 나온 토큰주소
 	 * @throws Exception
 	 */
-	public static function checkAuthorization($level=0, $backdoor=false)
+	public static function checkAuthorization($level=0, $model=null, $backdoor=false)
 	{
 		try
 		{
 			$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);
-			$jwt_level = $jwt->data->level ? $jwt->data->level : 0;
+			$jwt_level = (int)($jwt->data->level ? $jwt->data->level : 0);
 			if (!$backdoor)
 			{
+				// check url
 				if (getenv('PATH_URL') !== $jwt->url)
 				{
 					throw new Exception('error');
 				}
-				if (getenv('TOKEN_ID') !== $jwt->jti)
+				// check token id
+				if (getenv('TOKEN_ID') !== $jwt->token_id)
 				{
 					throw new Exception('error');
 				}
-				if ($level > $jwt_level)
+				// check level
+				if (is_array($level))
+				{
+					if (!in_array($jwt_level, $level))
+					{
+						throw new Exception('error');
+					}
+				}
+				else if ($level !== $jwt_level)
 				{
 					throw new Exception('error');
+				}
+				// check blacklist
+				$model = ($model) ? $model : self::getModel();
+				// check blacklist token
+				$sign = explode('.', $_SERVER['HTTP_AUTHORIZATION'])[2];
+				$blacklistToken = $model->getCount((object)[
+					'table' => 'token',
+					'where' => 'token LIKE \''.$sign.'\''
+				]);
+				if ($blacklistToken->data)
+				{
+					throw new Exception('Blacklisted token');
 				}
 			}
 			return $jwt->token;
 		}
 		catch(Exception $e)
 		{
-			throw new Exception('Authorization error', 401);
+			throw new Exception($e->getMessage(), 401);
 		}
 	}
 

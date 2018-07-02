@@ -24,6 +24,12 @@ try
 	// set development
 	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
+	// set start time
+	if (__DEBUG__)
+	{
+		define('__START_TIME__', microtime(true));
+	}
+
 	// check install
 	Install::check();
 

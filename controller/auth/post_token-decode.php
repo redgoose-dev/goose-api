@@ -16,7 +16,10 @@ try
 	$output = (object)[];
 
 	// check authorization
-	$token = Auth::checkAuthorization();
+	$token = Auth::checkAuthorization([
+		$this->level->public,
+		$this->level->admin
+	]);
 
 	// get decode token
 	$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);

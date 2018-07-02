@@ -48,6 +48,14 @@ class Output {
 			];
 		}
 
+		// set processing time
+		if (__DEBUG__ && __START_TIME__)
+		{
+			$endTime = microtime(true);
+			$time = $endTime - __START_TIME__;
+			$result->time = number_format($time,6) * 1000 . 'ms';
+		}
+
 		// print output
 		switch ($format)
 		{

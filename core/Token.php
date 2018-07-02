@@ -62,6 +62,7 @@ class Token {
 			$output->url = $decoded->iss;
 			if ($decoded->iat) $output->time = $decoded->iat;
 			if ($decoded->exp) $output->exp = $decoded->exp;
+			if ($decoded->jti) $output->token_id = $decoded->jti;
 			$output->data = $decoded->data;
 			return $output;
 		}
@@ -78,6 +79,7 @@ class Token {
 			$output->url = $decoded->iss;
 			if ($decoded->iat) $output->time = $decoded->iat;
 			if ($decoded->exp) $output->exp = $decoded->exp;
+			if ($decoded->jti) $output->token_id = $decoded->jti;
 			$output->data = $decoded->data;
 			$output->token = JWT::encode($decoded, $key);
 			return $output;

@@ -17,7 +17,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check authorization
-	Auth::checkAuthorization();
+	$token = Auth::checkAuthorization();
 
 	// set where
 	$where = '';
@@ -30,12 +30,18 @@ try
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
 
-	// output
-	Controller::index((object)[
+	// set output
+	$output = Controller::index((object)[
 		'goose' => $this,
 		'table' => 'category',
 		'where' => $where
 	]);
+
+	// set token
+	if ($token) $output->_token = $token;
+
+	// output
+	Output::data($output);
 }
 catch (Exception $e)
 {
