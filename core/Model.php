@@ -89,7 +89,7 @@ class Model {
 	/**
 	 * connect database
 	 *
-	 * @return Exception
+	 * @throws Exception
 	 */
 	public function connect()
 	{
@@ -101,13 +101,12 @@ class Model {
 				getenv('DB_PASSWORD')
 			);
 			$this->action('set names utf8');
-			return null;
 		}
 		catch(PDOException $e)
 		{
 			$message = (__DEBUG__) ? $e->getMessage() : 'Failed connect database';
 			$code = (__DEBUG__) ? $e->getCode() : 500;
-			return new Exception($message, $code);
+			throw new Exception($message, $code);
 		}
 	}
 
@@ -137,7 +136,11 @@ class Model {
 	 */
 	public function action($query)
 	{
-		$this->db->query($query);
+		$result = $this->db->query($query);
+		if (!$result)
+		{
+			throw new Exception('Failed db action `'.$query.'`', 500);
+		}
 	}
 
 	/**
@@ -236,7 +239,7 @@ class Model {
 		}
 
 		// set output
-		$output->data = $result ? $result : null;
+		$output->data = $result ? (object)$result : null;
 		if ($options->debug === true) $output->query = $query;
 
 		return $output;
@@ -251,6 +254,54 @@ class Model {
 	public function getQuery($options=null)
 	{
 		return $this->query($options);
+	}
+
+	/**
+	 * add item
+	 *
+	 * @param object $options
+	 * @return object
+	 */
+	public function addItem($options=null)
+	{
+		$query = '';
+		$result = null;
+		$output = (object)[];
+
+		if ($options->table && $options->data)
+		{
+			$query = 'insert into '.$this->getTableName($options->table).' ';
+
+			// set keys
+			$str = '';
+			foreach ($options->data as $k=>$v)
+			{
+				$str .= ','.$k;
+			}
+			$str = preg_replace("/^,/", "", $str);
+			$query .= '('.$str.')';
+
+			$query .= ' values ';
+
+			// set values
+			$str = '';
+			foreach ($options->data as $k=>$v)
+			{
+				//$str .= ','.$k;
+				$v = (!is_null($v)) ? '\''.$v.'\'' : 'null';
+				$str .= ','.$v;
+			}
+			$str = preg_replace("/^,/", "", $str);
+			$query .= '('.$str.')';
+
+			// action
+			$this->action($query);
+		}
+
+		if ($options->debug === true) $output->query = $query;
+		$output->success = true;
+
+		return $output;
 	}
 
 }

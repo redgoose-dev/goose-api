@@ -33,8 +33,13 @@ return [
 
 	// users
 	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
+	[ 'POST', '/users', 'users/post_user', 'postUser' ],
 
-
-	[ 'GET', '/token', 'token', 'testToken' ],
+	// auth
+	[ 'POST', '/auth/login', 'auth/post_login', 'postLogin' ],
+	[ 'POST', '/auth/logout', 'auth/post_logout', 'postLogout' ],
+	[ 'POST', '/auth/token-make', 'auth/post_token-make', 'postTokenMake' ],
+	[ 'POST', '/auth/token-decode', 'auth/post_token-decode', 'postTokenDecode' ],
+	[ 'POST', '/auth/token-revoke', 'auth/post_token-revoke', 'postTokenRevoke' ],
 
 ];

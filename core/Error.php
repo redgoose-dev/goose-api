@@ -14,8 +14,8 @@ class Error {
 	public static function data($message='Unknown error', $code=500)
 	{
 		Output::data((object)[
-			'message' => $message,
 			'code' => $code,
+			'message' => $message,
 		]);
 		return null;
 	}

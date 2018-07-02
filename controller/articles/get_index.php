@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Exception;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -18,38 +19,51 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-// set where
-$where = '';
-if ($app = Util::getParameter('app'))
+try
 {
-	$where .= ' and app_srl='.$app;
-}
-if ($nest = Util::getParameter('nest'))
-{
-	$where .= ' and nest_srl='.$nest;
-}
-if ($category = Util::getParameter('category'))
-{
-	$where .= ' and category_srl='.$category;
-}
-if ($user = Util::getParameter('user'))
-{
-	$where .= ' and user_srl='.$user;
-}
-if ($title = Util::getParameter('title'))
-{
-	$where .= ' and title LIKE \'%'.$title.'%\'';
-}
-if ($content = Util::getParameter('content'))
-{
-	$where .= ' and content LIKE \'%'.$content.'%\'';
-}
+	// check authorization
+	$token = Auth::checkAuthorization();
 
+	// set where
+	$where = '';
+	if ($app = Util::getParameter('app'))
+	{
+		$where .= ' and app_srl='.$app;
+	}
+	if ($nest = Util::getParameter('nest'))
+	{
+		$where .= ' and nest_srl='.$nest;
+	}
+	if ($category = Util::getParameter('category'))
+	{
+		$where .= ' and category_srl='.$category;
+	}
+	if ($user = Util::getParameter('user'))
+	{
+		$where .= ' and user_srl='.$user;
+	}
+	if ($title = Util::getParameter('title'))
+	{
+		$where .= ' and title LIKE \'%'.$title.'%\'';
+	}
+	if ($content = Util::getParameter('content'))
+	{
+		$where .= ' and content LIKE \'%'.$content.'%\'';
+	}
 
-// output
-Controller::index((object)[
-	'goose' => $this,
-	'table' => 'article',
-	'where' => $where,
-	'jsonField' => ['json']
-]);
+	// set output
+	$output = Controller::index((object)[
+		'goose' => $this,
+		'table' => 'article',
+		'where' => $where,
+		'jsonField' => ['json']
+	]);
+	if ($token) $output->_token = $token;
+
+	// output
+	Output::data($output);
+}
+catch (Exception $e)
+{
+	Error::data($e->getMessage(), $e->getCode());
+}

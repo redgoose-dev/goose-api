@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Exception;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -13,20 +14,30 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-// set where
-$where = '';
-if ($nest = Util::getParameter('nest'))
+try
 {
-	$where .= ' and nest_srl='.$nest;
-}
-if ($name = Util::getParameter('name'))
-{
-	$where .= ' and name LIKE \'%'.$name.'%\'';
-}
+	// check authorization
+	Auth::checkAuthorization();
 
-// output
-Controller::index((object)[
-	'goose' => $this,
-	'table' => 'category',
-	'where' => $where
-]);
+	// set where
+	$where = '';
+	if ($nest = Util::getParameter('nest'))
+	{
+		$where .= ' and nest_srl='.$nest;
+	}
+	if ($name = Util::getParameter('name'))
+	{
+		$where .= ' and name LIKE \'%'.$name.'%\'';
+	}
+
+	// output
+	Controller::index((object)[
+		'goose' => $this,
+		'table' => 'category',
+		'where' => $where
+	]);
+}
+catch (Exception $e)
+{
+	Error::data($e->getMessage(), $e->getCode());
+}

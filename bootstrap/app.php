@@ -16,10 +16,7 @@ try
 }
 catch(Exception $e)
 {
-	Output::data((object)[
-		'message' => 'ENV ERROR',
-		'code' => 500
-	]);
+	Error::data('ENV ERROR');
 	return;
 }
 
@@ -34,8 +31,5 @@ if (Install::check())
 }
 else
 {
-	Output::data((object)[
-		'message' => 'Installation is required.',
-		'code' => 500
-	]);
+	Error::data('Installation is required.');
 }

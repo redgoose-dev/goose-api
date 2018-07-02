@@ -32,6 +32,7 @@ if ($level = Util::getParameter('level'))
 // output
 Controller::index((object)[
 	'goose' => $this,
+	'auth' => true,
 	'table' => 'user',
 	'where' => $where,
 ], function($result=null) {

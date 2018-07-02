@@ -5,22 +5,25 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * get intro
+ * decode token
  *
  * @var Goose $this
  */
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set values
 	$output = (object)[];
 
+	// check authorization
+	$token = Auth::checkAuthorization();
+
+	// get decode token
+	$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);
+
 	// set output
 	$output->code = 200;
-	$output->message = 'Welcome to goose api';
+	$output->data = $jwt;
 	if ($token) $output->_token = $token;
 
 	// output

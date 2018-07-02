@@ -46,8 +46,5 @@ try
 }
 catch (Exception $e)
 {
-	Output::data((object)[
-		'code' => $e->getCode(),
-		'message' => $e->getMessage()
-	]);
+	Error::data($e->getMessage(), $e->getCode());
 }

@@ -14,7 +14,6 @@ use Exception;
  * @property Router router
  * @property string target
  * @property array params
- * @property object defaults
  */
 
 class Goose {
@@ -24,7 +23,6 @@ class Goose {
 		$this->router = new Router();
 		$this->target = null;
 		$this->params = null;
-		$this->defaults = (object)[];
 	}
 
 	/**
@@ -38,59 +36,20 @@ class Goose {
 			// check $target
 			if (!$this->target) throw new Exception('Not found target', 404);
 
-			// 주소에 따라 행동 구분
-//			switch ($this->target)
-//			{
-//				case 'manager/get_page':
-//					break;
-//				default:
-//					// check token
-//					if (!$this->checkToken())
-//					{
-//						throw new Exception('Token error', 401);
-//						return;
-//					}
-//					break;
-//			}
-
 			// search controller
 			if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
 			{
 				require __PATH__.'/controller/'.$this->target.'.php';
+			}
+			else
+			{
+				throw new Exception('Not found controller', 404);
 			}
 		}
 		catch(Exception $e)
 		{
 			Error::data($e->getMessage(), $e->getCode());
 		}
-	}
-
-	/**
-	 * make token
-	 */
-	public function makeToken()
-	{
-		$offset = 10;
-		$key = getenv('APP_KEY');
-		$now = time();
-		$expire = $now + $offset;
-
-		$token = [
-			'iss' => getenv('PATH_URL'),
-			'iat' => $now,
-			'exp' => $expire,
-			'data' => [
-				'user_srl' => 1,
-			]
-		];
-	}
-
-	/**
-	 * refresh token
-	 */
-	private function getToken()
-	{
-		//
 	}
 
 	/**

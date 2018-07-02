@@ -26,19 +26,25 @@ class Output {
 				case 500:
 					$result->message = (__DEBUG__) ? $result->message : 'Service error';
 					break;
+				case 401:
+					$result->message = (__DEBUG__) ? $result->message : 'Authorization error';
+					break;
 				case 403:
 					$result->message = (__DEBUG__) ? $result->message : 'Permission denied';
 					break;
 				case 404:
 					$result->message = (__DEBUG__) ? $result->message : 'Not found data';
 					break;
+				case 0:
+					$result->code = 500;
+					break;
 			}
 		}
 		else
 		{
 			$result = (object)[
-				'message' => 'Service error',
-				'code' => 500
+				'code' => 500,
+				'message' => 'Service error'
 			];
 		}
 

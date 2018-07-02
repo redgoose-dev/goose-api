@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 28, 2018 at 05:02 PM
+-- Generation Time: Jul 01, 2018 at 05:09 PM
 -- Server version: 5.6.38
--- PHP Version: 7.1.12
+-- PHP Version: 7.2.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -110,6 +110,18 @@ CREATE TABLE `goose_nest` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `goose_token`
+--
+
+CREATE TABLE `goose_token` (
+  `srl` int(11) NOT NULL,
+  `token` varchar(100) DEFAULT NULL,
+  `expired` varchar(15) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `goose_user`
 --
 
@@ -165,6 +177,13 @@ ALTER TABLE `goose_nest`
   ADD UNIQUE KEY `id` (`id`);
 
 --
+-- Indexes for table `goose_token`
+--
+ALTER TABLE `goose_token`
+  ADD PRIMARY KEY (`srl`),
+  ADD UNIQUE KEY `token` (`token`);
+
+--
 -- Indexes for table `goose_user`
 --
 ALTER TABLE `goose_user`
@@ -179,40 +198,46 @@ ALTER TABLE `goose_user`
 -- AUTO_INCREMENT for table `goose_app`
 --
 ALTER TABLE `goose_app`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_article`
 --
 ALTER TABLE `goose_article`
-  MODIFY `srl` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `srl` bigint(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_category`
 --
 ALTER TABLE `goose_category`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_file`
 --
 ALTER TABLE `goose_file`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_json`
 --
 ALTER TABLE `goose_json`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_nest`
 --
 ALTER TABLE `goose_nest`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `goose_token`
+--
+ALTER TABLE `goose_token`
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goose_user`
 --
 ALTER TABLE `goose_user`
-  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
