@@ -43,11 +43,7 @@ class Controller {
 		if (!$op->model)
 		{
 			$op->model = new Model();
-			// connect db
-			if ($tmp = $op->model->connect())
-			{
-				throw new Exception($tmp->getMessage(), $tmp->getCode());
-			}
+			$op->model->connect();
 		}
 
 		// get total

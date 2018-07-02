@@ -55,7 +55,7 @@ class Auth {
 
 	public static function logout()
 	{
-
+		//
 	}
 
 	/**
@@ -71,6 +71,10 @@ class Auth {
 	{
 		try
 		{
+			if (!$_SERVER['HTTP_AUTHORIZATION'])
+			{
+				throw new Exception('Not found `Authorization` in header');
+			}
 			$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);
 			$jwt_level = (int)($jwt->data->level ? $jwt->data->level : 0);
 			if (!$backdoor)
@@ -78,24 +82,24 @@ class Auth {
 				// check url
 				if (getenv('PATH_URL') !== $jwt->url)
 				{
-					throw new Exception('error');
+					throw new Exception('Not found `PATH_URL`');
 				}
 				// check token id
 				if (getenv('TOKEN_ID') !== $jwt->token_id)
 				{
-					throw new Exception('error');
+					throw new Exception('Not found `TOKEN_ID`');
 				}
 				// check level
 				if (is_array($level))
 				{
 					if (!in_array($jwt_level, $level))
 					{
-						throw new Exception('error');
+						throw new Exception('Error user level');
 					}
 				}
 				else if ($level !== $jwt_level)
 				{
-					throw new Exception('error');
+					throw new Exception('Error user level');
 				}
 				// check blacklist
 				$model = ($model) ? $model : self::getModel();
@@ -114,7 +118,7 @@ class Auth {
 		}
 		catch(Exception $e)
 		{
-			throw new Exception($e->getMessage(), 401);
+			throw new Exception('Authorization error : '.$e->getMessage(), 401);
 		}
 	}
 

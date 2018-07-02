@@ -13,7 +13,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check authorization
-	$token = Auth::checkAuthorization(100);
+	$token = Auth::checkAuthorization();
 
 	// set values
 	$output = (object)[];

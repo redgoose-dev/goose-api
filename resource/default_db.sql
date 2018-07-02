@@ -1,24 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 4.7.7
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Jul 01, 2018 at 05:09 PM
--- Server version: 5.6.38
--- PHP Version: 7.2.1
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
---
--- Database: `goose`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_app`
---
 
 CREATE TABLE `goose_app` (
   `srl` int(11) NOT NULL,
@@ -26,12 +7,6 @@ CREATE TABLE `goose_app` (
   `name` varchar(50) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_article`
---
 
 CREATE TABLE `goose_article` (
   `srl` bigint(11) NOT NULL,
@@ -48,12 +23,6 @@ CREATE TABLE `goose_article` (
   `modate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_category`
---
-
 CREATE TABLE `goose_category` (
   `srl` int(11) NOT NULL,
   `nest_srl` int(11) DEFAULT NULL,
@@ -61,12 +30,6 @@ CREATE TABLE `goose_category` (
   `name` varchar(42) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_file`
---
 
 CREATE TABLE `goose_file` (
   `srl` int(11) NOT NULL,
@@ -79,24 +42,12 @@ CREATE TABLE `goose_file` (
   `ready` int(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_json`
---
-
 CREATE TABLE `goose_json` (
   `srl` int(11) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
   `json` mediumtext,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_nest`
---
 
 CREATE TABLE `goose_nest` (
   `srl` int(11) NOT NULL,
@@ -107,23 +58,11 @@ CREATE TABLE `goose_nest` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_token`
---
-
 CREATE TABLE `goose_token` (
   `srl` int(11) NOT NULL,
-  `token` varchar(100) DEFAULT NULL,
-  `expired` varchar(15) DEFAULT NULL
+  `token` varchar(80) DEFAULT NULL,
+  `expired` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `goose_user`
---
 
 CREATE TABLE `goose_user` (
   `srl` int(11) NOT NULL,
@@ -134,110 +73,56 @@ CREATE TABLE `goose_user` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Indexes for dumped tables
---
 
---
--- Indexes for table `goose_app`
---
 ALTER TABLE `goose_app`
   ADD PRIMARY KEY (`srl`),
   ADD UNIQUE KEY `id` (`id`);
 
---
--- Indexes for table `goose_article`
---
 ALTER TABLE `goose_article`
   ADD PRIMARY KEY (`srl`);
 
---
--- Indexes for table `goose_category`
---
 ALTER TABLE `goose_category`
   ADD PRIMARY KEY (`srl`);
 
---
--- Indexes for table `goose_file`
---
 ALTER TABLE `goose_file`
   ADD PRIMARY KEY (`srl`);
 
---
--- Indexes for table `goose_json`
---
 ALTER TABLE `goose_json`
   ADD PRIMARY KEY (`srl`);
 
---
--- Indexes for table `goose_nest`
---
 ALTER TABLE `goose_nest`
   ADD PRIMARY KEY (`srl`),
   ADD UNIQUE KEY `id` (`id`);
 
---
--- Indexes for table `goose_token`
---
 ALTER TABLE `goose_token`
   ADD PRIMARY KEY (`srl`),
   ADD UNIQUE KEY `token` (`token`);
 
---
--- Indexes for table `goose_user`
---
 ALTER TABLE `goose_user`
   ADD PRIMARY KEY (`srl`),
   ADD UNIQUE KEY `email` (`email`);
 
---
--- AUTO_INCREMENT for dumped tables
---
 
---
--- AUTO_INCREMENT for table `goose_app`
---
 ALTER TABLE `goose_app`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_article`
---
 ALTER TABLE `goose_article`
   MODIFY `srl` bigint(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_category`
---
 ALTER TABLE `goose_category`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_file`
---
 ALTER TABLE `goose_file`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_json`
---
 ALTER TABLE `goose_json`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_nest`
---
 ALTER TABLE `goose_nest`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_token`
---
 ALTER TABLE `goose_token`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `goose_user`
---
 ALTER TABLE `goose_user`
   MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;

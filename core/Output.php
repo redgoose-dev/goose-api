@@ -13,7 +13,7 @@ class Output {
 	 */
 	public static function data($result=null, $format='json')
 	{
-		header('Content-Type: application/json');
+		if ($_GET['format']) $format = $_GET['format'];
 
 		if ($result)
 		{
@@ -42,11 +42,14 @@ class Output {
 		}
 		else
 		{
-			$result = (object)[
-				'code' => 500,
-				'message' => 'Service error'
-			];
+			$result->code = 500;
+			$result = (object)[ 'message' => 'Service error' ];
 		}
+
+		// set success
+		$result->success = $result->code === 200;
+		$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
+		if (!__DEBUG__) unset($result->code);
 
 		// set processing time
 		if (__DEBUG__ && __START_TIME__)
@@ -67,6 +70,8 @@ class Output {
 
 			case 'json':
 			default:
+				http_response_code($code);
+				header('Content-Type: application/json');
 				echo json_encode(
 					$result,
 					!$_GET['min'] ? JSON_PRETTY_PRINT : null

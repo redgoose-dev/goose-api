@@ -139,7 +139,7 @@ class Model {
 		$result = $this->db->query($query);
 		if (!$result)
 		{
-			throw new Exception('Failed db action `'.$query.'`', 500);
+			throw new Exception('Failed db action `'.$query.'`');
 		}
 	}
 
@@ -304,4 +304,31 @@ class Model {
 		return $output;
 	}
 
+	/**
+	 * delete data
+	 *
+	 * @param object $op
+	 * @return object
+	 */
+	public function delete($op)
+	{
+		if (!$op->table) throw new Exception('no value `table`');
+		if (!$op->where) throw new Exception('no value `where`');
+
+		// set value
+		$output = (object)[];
+
+		// set query
+		$query = "delete from ".$this->getTableName($op->table)." where $op->where";
+
+		// action
+		$this->action($query);
+
+		// set output
+		if ($op->debug === true) $output->query = $query;
+		$output->success = true;
+
+		// set output
+		return $output;
+	}
 }

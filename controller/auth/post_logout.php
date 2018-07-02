@@ -25,7 +25,11 @@ try
 	// if user token
 	if ($jwt->data->type !== 'user')
 	{
-		throw new Exception('Can not logout');
+		throw new Exception('This is not a user token.');
+	}
+	if (!$jwt->exp)
+	{
+		throw new Exception('Token without expiration time.');
 	}
 
 	// make model and connect db
@@ -37,18 +41,20 @@ try
 		'table' => 'token',
 		'where' => 'token LIKE \''.$sign.'\''
 	]);
-	if (!$blacklistToken->data && $jwt->exp)
+	if ($blacklistToken->data)
 	{
-		// add token to blacklist
-		$model->addItem((object)[
-			'table' => 'token',
-			'data' => (object)[
-				'srl' => null,
-				'token' => $sign,
-				'expired' => $jwt->exp,
-			],
-		]);
+		throw new Exception('Blacklist has token.');
 	}
+
+	// add token to blacklist
+	$model->addItem((object)[
+		'table' => 'token',
+		'data' => (object)[
+			'srl' => null,
+			'token' => $sign,
+			'expired' => $jwt->exp,
+		],
+	]);
 
 	// make new public token
 	$newToken = Token::make((object)[
@@ -58,9 +64,7 @@ try
 
 	// set output
 	$output->code = 200;
-	$output->data = (object)[
-		'token' => $newToken->token
-	];
+	$output->token = $newToken->token;
 
 	// output
 	Output::data($output);
