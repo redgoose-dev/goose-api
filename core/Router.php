@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use AltoRouter;
+use AltoRouter, Exception;
 
 
 /**
@@ -22,7 +22,7 @@ class Router {
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function init()
 	{

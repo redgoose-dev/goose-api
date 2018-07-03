@@ -159,7 +159,48 @@ class Controller {
 	}
 
 	/**
-	 * item
+	 * add
+	 *
+	 * @param object $op
+	 * @return object
+	 * @throws Exception
+	 */
+	public static function add($op=null)
+	{
+		if (!$op->goose || !$op->table || !$op->data)
+		{
+			throw new Exception('no object in Controller::item()', 500);
+		}
+
+		// get values
+		$output = (object)[];
+
+		// set model
+		if (!$op->model)
+		{
+			$op->model = new Model();
+			$op->model->connect();
+		}
+
+		// add data
+		$result = $op->model->add((object)[
+			'table' => $op->table,
+			'data' => $op->data,
+			'debug' => __DEBUG__
+		]);
+
+		// disconnect db
+		$op->model->disconnect();
+
+		// set output
+		$output->code = 200;
+		$output->query = $result->query;
+
+		return $output;
+	}
+
+	/**
+	 * edit
 	 *
 	 * @param object $op
 	 * @return object

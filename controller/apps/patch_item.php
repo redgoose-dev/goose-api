@@ -21,25 +21,10 @@ try
 		throw new Exception('Not found srl', 404);
 	}
 
-	// set values
-	// TODO: 여기서부터..
+	// get values
 	$_PATCH = Util::getFormData();
-	var_dump($_PATCH);
-	exit;
 
-	// set model and connect db
-	$model = new Model();
-	$model->connect();
-
-	// check id
-	$cnt = $model->getCount((object)[
-		'table' => 'app',
-		'where' => 'id="'.$_PATCH['id'].'"',
-	]);
-	if (isset($cnt->data) && $cnt->data > 0)
-	{
-		throw new Exception('`id` is already exist.', 500);
-	}
+	// id check
 	if ($_PATCH['id'] && !Util::allowString($_PATCH['id']))
 	{
 		throw new Exception('`id` can be used only in numbers and English.');
@@ -48,7 +33,6 @@ try
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
-		'model' => $model,
 		'table' => 'app',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
