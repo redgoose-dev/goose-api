@@ -14,10 +14,10 @@ return [
 
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],
-	[ 'GET', '/apps/[:srl]', 'apps/get_item', 'getApp' ],
+	[ 'GET', '/apps/[i:srl]', 'apps/get_item', 'getApp' ],
 	[ 'POST', '/apps', 'apps/post_item', 'postApp' ],
-	[ 'PATCH', '/apps/[:srl]', 'apps/patch_item', 'patchApp' ],
-	[ 'DELETE', '/apps/[:srl]', 'apps/delete_item', 'deleteApp' ],
+	[ 'PATCH', '/apps/[i:srl]', 'apps/patch_item', 'patchApp' ],
+	[ 'DELETE', '/apps/[i:srl]', 'apps/delete_item', 'deleteApp' ],
 
 	// articles
 	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
@@ -33,7 +33,7 @@ return [
 
 	// nests
 	[ 'GET', '/nests', 'nests/get_index', 'getNests' ],
-	[ 'GET', '/nests/[:srl]', 'nests/get_item', 'getNest' ],
+	[ 'GET', '/nests/[i:srl]', 'nests/get_item', 'getNest' ],
 
 	// users
 	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
