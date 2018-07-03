@@ -35,7 +35,7 @@ case "$1" in
 		;;
 
 	*)
-		echo "Usage: ./dev-server.sh {start}" >&2
+		echo "Usage: ./dev-server.sh {start|install|make-token}" >&2
 		exit 3
 		;;
 esac

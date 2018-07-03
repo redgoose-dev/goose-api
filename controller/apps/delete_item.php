@@ -5,30 +5,30 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * get app
+ * delete app
  *
  * @var Goose $this
  */
 
 try
 {
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin);
+
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
 		throw new Exception('Not found srl', 404);
 	}
 
-	// check authorization
-	$token = Auth::checkAuthorization();
-
-	// set output
-	$output = Controller::item((object)[
+	// remove item
+	$output = Controller::delete((object)[
 		'goose' => $this,
 		'table' => 'app',
 		'srl' => (int)$this->params['srl'],
 	]);
 
-	// set token
+	// set output
 	if ($token) $output->_token = $token;
 
 	// output data

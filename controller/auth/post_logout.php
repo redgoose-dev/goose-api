@@ -16,11 +16,10 @@ try
 {
 	// set values
 	$output = (object)[];
-	$token = $_SERVER['HTTP_AUTHORIZATION'];
-	$sign = explode('.', $token)[2];
+	$sign = explode('.', __TOKEN__)[2];
 
 	// get decode token
-	$jwt = Token::get($token);
+	$jwt = Token::get(__TOKEN__);
 
 	// if user token
 	if ($jwt->data->type !== 'user')
@@ -47,7 +46,7 @@ try
 	}
 
 	// add token to blacklist
-	$model->addItem((object)[
+	$model->add((object)[
 		'table' => 'token',
 		'data' => (object)[
 			'srl' => null,

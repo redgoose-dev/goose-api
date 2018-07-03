@@ -65,4 +65,39 @@ class util {
 		}
 	}
 
+	/**
+	 * allow string
+	 *
+	 * @param string $value
+	 * @param string $type
+	 * @return boolean
+	 */
+	public static function allowString($value, $type='string_number')
+	{
+		switch ($type)
+		{
+			case 'string':
+				return !!preg_match("/^[a-zA-Z]+$/", $value);
+
+			case 'number':
+				return !!preg_match("/^[0-9]+$/", $value);
+
+			case 'string_number':
+				return !!preg_match("/^[a-zA-Z0-9_-]+$/", $value);
+
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * get form data
+	 *
+	 * @return array
+	 */
+	public static function getFormData()
+	{
+		parse_str(file_get_contents('php://input'), $value);
+		return $value;
+	}
 }

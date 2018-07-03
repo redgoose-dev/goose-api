@@ -58,6 +58,7 @@ class Token {
 
 		try
 		{
+			if (!$token) throw new Exception('No token');
 			$decoded = JWT::decode($token, $key, ['HS256']);
 			$output->url = $decoded->iss;
 			if ($decoded->iat) $output->time = $decoded->iat;

@@ -6,6 +6,7 @@ if (!defined('__GOOSE__')) exit();
 
 /**
  * decode token
+ * TODO: 이건 좀 위험해 보이니 삭제예정
  *
  * @var Goose $this
  */
@@ -16,13 +17,10 @@ try
 	$output = (object)[];
 
 	// check authorization
-	$token = Auth::checkAuthorization([
-		$this->level->public,
-		$this->level->admin
-	]);
+	$token = Auth::checkAuthorization();
 
 	// get decode token
-	$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);
+	$jwt = Token::get(__TOKEN__);
 
 	// set output
 	$output->code = 200;

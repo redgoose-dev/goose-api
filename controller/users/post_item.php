@@ -17,11 +17,12 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
-// TODO: 레벨에 의한 토큰검사, 관리자 수준의 권한이 이상이 되면 사용자 추가 가능
-
 try
 {
-	$model = new Model();
+	// check authorization
+	Auth::checkAuthorization($this->level->admin);
+
+	// set values
 	$output = (object)[];
 
 	// check post values
@@ -33,7 +34,8 @@ try
 		throw new Exception('Passwords must match', 500);
 	}
 
-	// connect db
+	// set model and connect db
+	$model = new Model();
 	$model->connect();
 
 	// check email address
@@ -48,7 +50,7 @@ try
 	}
 
 	// add data
-	$result = $model->addItem((object)[
+	$result = $model->add((object)[
 		'table' => 'user',
 		'data' => (object)[
 			'srl' => null,
@@ -63,9 +65,7 @@ try
 
 	// set output
 	$output->code = 200;
-	$output->url = $_SERVER['PATH_URL'].$_SERVER['REQUEST_URI'];
 	$output->query = $result->query;
-	$output->success = $result->success;
 
 	// output data
 	Output::data($output);

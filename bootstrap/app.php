@@ -24,11 +24,17 @@ try
 	// set development
 	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
+	// set default timezone
+	date_default_timezone_set(getenv('TIMEZONE') ? getenv('TIMEZONE') : 'UTC');
+
 	// set start time
 	if (__DEBUG__)
 	{
 		define('__START_TIME__', microtime(true));
 	}
+
+	// set token
+	define('__TOKEN__', $_SERVER['HTTP_AUTHORIZATION']);
 
 	// check install
 	Install::check();

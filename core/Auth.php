@@ -71,11 +71,11 @@ class Auth {
 	{
 		try
 		{
-			if (!$_SERVER['HTTP_AUTHORIZATION'])
+			if (!__TOKEN__)
 			{
 				throw new Exception('Not found `Authorization` in header');
 			}
-			$jwt = Token::get($_SERVER['HTTP_AUTHORIZATION']);
+			$jwt = Token::get(__TOKEN__);
 			$jwt_level = (int)($jwt->data->level ? $jwt->data->level : 0);
 			if (!$backdoor)
 			{
@@ -90,21 +90,14 @@ class Auth {
 					throw new Exception('Not found `TOKEN_ID`');
 				}
 				// check level
-				if (is_array($level))
-				{
-					if (!in_array($jwt_level, $level))
-					{
-						throw new Exception('Error user level');
-					}
-				}
-				else if ($level !== $jwt_level)
+				if ($level > $jwt_level)
 				{
 					throw new Exception('Error user level');
 				}
 				// check blacklist
 				$model = ($model) ? $model : self::getModel();
 				// check blacklist token
-				$sign = explode('.', $_SERVER['HTTP_AUTHORIZATION'])[2];
+				$sign = explode('.', __TOKEN__)[2];
 				$blacklistToken = $model->getCount((object)[
 					'table' => 'token',
 					'where' => 'token LIKE \''.$sign.'\''

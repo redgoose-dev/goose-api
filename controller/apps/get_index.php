@@ -33,7 +33,6 @@ try
 	// set output
 	$output = Controller::index((object)[
 		'goose' => $this,
-		'auth' => false,
 		'table' => 'app',
 		'where' => $where,
 		'page' => 1,

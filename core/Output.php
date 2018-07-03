@@ -1,7 +1,5 @@
 <?php
 namespace Core;
-use Exception;
-
 
 class Output {
 
@@ -46,10 +44,10 @@ class Output {
 			$result = (object)[ 'message' => 'Service error' ];
 		}
 
-		// set success
-		$result->success = $result->code === 200;
+		$result->success = $result->code === 200; // set success
 		$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
 		if (!__DEBUG__) unset($result->code);
+		$result->url = $_SERVER['PATH_URL'].$_SERVER['REQUEST_URI']; // set url
 
 		// set processing time
 		if (__DEBUG__ && __START_TIME__)
@@ -78,16 +76,7 @@ class Output {
 				);
 				break;
 		}
-
 		exit;
-	}
-
-	/**
-	 * print page
-	 */
-	public static function page()
-	{
-		echo 'print page';
 	}
 
 }

@@ -21,6 +21,7 @@ try
 	// set output
 	$output->code = 200;
 	$output->message = 'Welcome to goose api';
+	$output->token_decorded = Token::get(__TOKEN__);
 	if ($token) $output->_token = $token;
 
 	// output

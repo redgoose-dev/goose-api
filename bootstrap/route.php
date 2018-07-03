@@ -14,6 +14,10 @@ return [
 
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],
+	[ 'GET', '/apps/[:srl]', 'apps/get_item', 'getApp' ],
+	[ 'POST', '/apps', 'apps/post_item', 'postApp' ],
+	[ 'PATCH', '/apps/[:srl]', 'apps/patch_item', 'patchApp' ],
+	[ 'DELETE', '/apps/[:srl]', 'apps/delete_item', 'deleteApp' ],
 
 	// articles
 	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
@@ -33,13 +37,13 @@ return [
 
 	// users
 	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
-	[ 'POST', '/users', 'users/post_user', 'postUser' ],
+	[ 'POST', '/users', 'users/post_item', 'postUser' ],
 
 	// auth
 	[ 'POST', '/auth/login', 'auth/post_login', 'postLogin' ],
 	[ 'POST', '/auth/logout', 'auth/post_logout', 'postLogout' ],
-	[ 'POST', '/auth/token-make', 'auth/post_token-make', 'postTokenMake' ],
-	[ 'POST', '/auth/token-decode', 'auth/post_token-decode', 'postTokenDecode' ],
+	[ 'POST', '/auth/token-make', 'auth/post_token-make', 'postTokenMake' ], // TODO: 삭제예정
+	[ 'POST', '/auth/token-decode', 'auth/post_token-decode', 'postTokenDecode' ], // TODO: 삭제예정
 	[ 'POST', '/auth/token-revoke', 'auth/post_token-revoke', 'postTokenRevoke' ],
 
 ];

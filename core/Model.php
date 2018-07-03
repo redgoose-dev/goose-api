@@ -40,46 +40,46 @@ class Model {
 	/**
 	 * query maker
 	 *
-	 * @param object $options
-	 * @param string $options->act
-	 * @param string $options->where
-	 * @param string $options->field
-	 * @param string $options->table
-	 * @param string $options->order
-	 * @param string $options->sort
-	 * @param array $options->limit
+	 * @param object $op
+	 * @param string $op->act
+	 * @param string $op->where
+	 * @param string $op->field
+	 * @param string $op->table
+	 * @param string $op->order
+	 * @param string $op->sort
+	 * @param array $op->limit
 	 * @return string
 	 */
-	private function query($options=null)
+	private function query($op=null)
 	{
-		if (!($options->act && $options->table)) return null;
+		if (!($op->act && $op->table)) return null;
 
 		// filtering where
-		if ($options->where)
+		if ($op->where)
 		{
-			$options->where = preg_replace("/^ and/", "", $options->where);
-			$options->where = trim($options->where);
+			$op->where = preg_replace("/^ and/", "", $op->where);
+			$op->where = trim($op->where);
 		}
 
-		$str = $options->act;
-		$str .= ($options->field) ? ' '.$options->field : ' *';
-		$str .= ' from '.$this->getTableName($options->table);
-		$str .= ($options->where) ? ' where '.$options->where : '';
-		$str .= ($options->order) ? ' order by '.$options->order : '';
-		$str .= ($options->order && $options->sort) ? ' ' . (($options->sort === 'asc') ? 'asc' : 'desc') : '';
+		$str = $op->act;
+		$str .= ($op->field) ? ' '.$op->field : ' *';
+		$str .= ' from '.$this->getTableName($op->table);
+		$str .= ($op->where) ? ' where '.$op->where : '';
+		$str .= ($op->order) ? ' order by '.$op->order : '';
+		$str .= ($op->order && $op->sort) ? ' ' . (($op->sort === 'asc') ? 'asc' : 'desc') : '';
 
-		if ($options->limit)
+		if ($op->limit)
 		{
-			if (is_array($options->limit))
+			if (is_array($op->limit))
 			{
-				if (count($options->limit) > 0)
+				if (count($op->limit) > 0)
 				{
-					$str .= ' limit ' . implode(',', $options->limit);
+					$str .= ' limit ' . implode(',', $op->limit);
 				}
 			}
 			else
 			{
-				$str .= ' limit ' . $options->limit;
+				$str .= ' limit ' . $op->limit;
 			}
 		}
 
@@ -133,31 +133,42 @@ class Model {
 	 * run query
 	 *
 	 * @param string $query
+	 * @throws Exception
 	 */
 	public function action($query)
 	{
-		$result = $this->db->query($query);
-		if (!$result)
+		if (!$this->db->query($query))
 		{
 			throw new Exception('Failed db action `'.$query.'`');
 		}
 	}
 
 	/**
+	 * get query command
+	 *
+	 * @param object $op
+	 * @return string
+	 */
+	public function getQuery($op=null)
+	{
+		return $this->query($op);
+	}
+
+	/**
 	 * get count
 	 *
-	 * @param object $options
+	 * @param object $op
 	 * @return object
 	 */
-	public function getCount($options=null)
+	public function getCount($op=null)
 	{
 		$output = (object)[];
 
-		$options->act = 'select';
-		$options->field = 'count(*)';
+		$op->act = 'select';
+		$op->field = 'count(*)';
 
 		// make query
-		$query = $this->query($options);
+		$query = $this->query($op);
 
 		// result
 		$result = $this->db->prepare($query);
@@ -166,7 +177,7 @@ class Model {
 
 		// set output
 		$output->data = $result ? $result : 0;
-		if ($options->debug === true) $output->query = $query;
+		if ($op->debug === true) $output->query = $query;
 
 		return $output;
 	}
@@ -174,29 +185,29 @@ class Model {
 	/**
 	 * get items
 	 *
-	 * @param object $options
+	 * @param object $op
 	 * @return object
 	 */
-	public function getItems($options=null)
+	public function getItems($op=null)
 	{
 		$output = (object)[];
 
-		$options->act = 'select';
-		$options->field = ($options->field) ? $options->field : '*';
+		$op->act = 'select';
+		$op->field = ($op->field) ? $op->field : '*';
 
 		// make query
-		$query = $this->query($options);
+		$query = $this->query($op);
 
 		// get data
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
 			$result = $qry->fetchAll(PDO::FETCH_ASSOC);
-			if ($result && $options->json_field && count($options->json_field))
+			if ($result && $op->json_field && count($op->json_field))
 			{
 				foreach ($result as $k=>$v)
 				{
-					if ($json = self::convertJsonToObject($v, $options->json_field))
+					if ($json = self::convertJsonToObject($v, $op->json_field))
 					{
 						$result[$k] = $json;
 					}
@@ -206,7 +217,7 @@ class Model {
 
 		// set output
 		$output->data = $result ? $result : [];
-		if ($options->debug === true) $output->query = $query;
+		if ($op->debug === true) $output->query = $query;
 
 		return $output;
 	}
@@ -214,67 +225,55 @@ class Model {
 	/**
 	 * get item
 	 *
-	 * @param object $options
+	 * @param object $op
 	 * @return object
 	 */
-	public function getItem($options=null)
+	public function getItem($op=null)
 	{
 		$output = (object)[];
 
-		$options->act = 'select';
-		$options->field = ($options->field) ? $options->field : '*';
+		$op->act = 'select';
+		$op->field = ($op->field) ? $op->field : '*';
 
 		// make query
-		$query = $this->query($options);
+		$query = $this->query($op);
 
 		// get data
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
 			$result = $qry->fetch(PDO::FETCH_ASSOC);
-			if ($result && $options->json_field && count($options->json_field))
+			if ($result && $op->json_field && count($op->json_field))
 			{
-				$result = self::convertJsonToObject($result, $options->json_field);
+				$result = self::convertJsonToObject($result, $op->json_field);
 			}
 		}
 
 		// set output
 		$output->data = $result ? (object)$result : null;
-		if ($options->debug === true) $output->query = $query;
+		if ($op->debug === true) $output->query = $query;
 
 		return $output;
 	}
 
 	/**
-	 * get query command
-	 *
-	 * @param object $options
-	 * @return string
-	 */
-	public function getQuery($options=null)
-	{
-		return $this->query($options);
-	}
-
-	/**
 	 * add item
 	 *
-	 * @param object $options
+	 * @param object $op
 	 * @return object
 	 */
-	public function addItem($options=null)
+	public function add($op=null)
 	{
 		$query = '';
-		$result = null;
 		$output = (object)[];
 
-		if ($options->table && $options->data)
+		if ($op->table && $op->data)
 		{
-			$query = 'insert into '.$this->getTableName($options->table).' ';
+			$query = 'insert into '.$this->getTableName($op->table).' ';
 
 			// set keys
 			$str = '';
-			foreach ($options->data as $k=>$v)
+			foreach ($op->data as $k=>$v)
 			{
 				$str .= ','.$k;
 			}
@@ -285,7 +284,7 @@ class Model {
 
 			// set values
 			$str = '';
-			foreach ($options->data as $k=>$v)
+			foreach ($op->data as $k=>$v)
 			{
 				//$str .= ','.$k;
 				$v = (!is_null($v)) ? '\''.$v.'\'' : 'null';
@@ -298,7 +297,47 @@ class Model {
 			$this->action($query);
 		}
 
-		if ($options->debug === true) $output->query = $query;
+		// set output
+		if ($op->debug === true) $output->query = $query;
+		$output->success = true;
+
+		return $output;
+	}
+
+	/**
+	 * edit item
+	 *
+	 * @param object $op
+	 * @return object
+	 */
+	public function edit($op=null)
+	{
+		$query = '';
+		$output = (object)[];
+
+		// check exist data
+		$cnt = $this->getCount((object)[
+			'table' => $op->table,
+			'where' => $op->where
+		]);
+		if (!$cnt->data) throw new Exception('Not found data');
+
+		// make query
+		$query = 'update '.$this->getTableName($op->table).' set ';
+		$query_data = '';
+		foreach ($op->data as $k=>$v)
+		{
+			$query_data .= ($v) ? ','.$v : '';
+		}
+		$query_data = preg_replace("/^,/", "", $query_data);
+		$query .= $query_data;
+		$query .= ' where ' . $op->where;
+
+		// action
+		$this->action($query);
+
+		// set output
+		if ($op->debug === true) $output->query = $query;
 		$output->success = true;
 
 		return $output;
@@ -318,6 +357,13 @@ class Model {
 		// set value
 		$output = (object)[];
 
+		// check exist data
+		$cnt = $this->getCount((object)[
+			'table' => $op->table,
+			'where' => $op->where
+		]);
+		if (!$cnt->data) throw new Exception('Not found data');
+
 		// set query
 		$query = "delete from ".$this->getTableName($op->table)." where $op->where";
 
@@ -328,7 +374,6 @@ class Model {
 		if ($op->debug === true) $output->query = $query;
 		$output->success = true;
 
-		// set output
 		return $output;
 	}
 }
