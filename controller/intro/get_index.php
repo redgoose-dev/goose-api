@@ -7,6 +7,8 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get intro
  *
+ * TODO: 작업이 마무리 되면 어떻게 활용할 수 있을지 고민해봐야함..
+ *
  * @var Goose $this
  */
 
