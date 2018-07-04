@@ -43,6 +43,9 @@ try
 	// set output
 	$output->code = 200;
 
+	// disconnect db
+	$model->disconnect();
+
 	// output data
 	Output::data($output);
 }

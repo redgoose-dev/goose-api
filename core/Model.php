@@ -274,40 +274,41 @@ class Model {
 	 */
 	public function add($op=null)
 	{
+		// check $op
+		if (!isset($op->table)) throw new Exception('Not found $op->table');
+		if (!isset($op->data)) throw new Exception('Not found $op->data');
+
+		// set query
 		$query = '';
-		$output = (object)[];
+		$query = 'insert into '.$this->getTableName($op->table).' ';
 
-		if ($op->table && $op->data)
+		// set keys
+		$str = '';
+		foreach ($op->data as $k=>$v)
 		{
-			$query = 'insert into '.$this->getTableName($op->table).' ';
-
-			// set keys
-			$str = '';
-			foreach ($op->data as $k=>$v)
-			{
-				$str .= ','.$k;
-			}
-			$str = preg_replace("/^,/", "", $str);
-			$query .= '('.$str.')';
-
-			$query .= ' values ';
-
-			// set values
-			$str = '';
-			foreach ($op->data as $k=>$v)
-			{
-				//$str .= ','.$k;
-				$v = (!is_null($v)) ? '\''.$v.'\'' : 'null';
-				$str .= ','.$v;
-			}
-			$str = preg_replace("/^,/", "", $str);
-			$query .= '('.$str.')';
-
-			// action
-			$this->action($query);
+			$str .= ','.$k;
 		}
+		$str = preg_replace("/^,/", "", $str);
+		$query .= '('.$str.')';
+
+		$query .= ' values ';
+
+		// set values
+		$str = '';
+		foreach ($op->data as $k=>$v)
+		{
+			//$str .= ','.$k;
+			$v = (!is_null($v)) ? '\''.$v.'\'' : 'null';
+			$str .= ','.$v;
+		}
+		$str = preg_replace("/^,/", "", $str);
+		$query .= '('.$str.')';
+
+		// action
+		$this->action($query);
 
 		// set output
+		$output = (object)[];
 		if ($op->debug === true) $output->query = $query;
 		$output->success = true;
 
@@ -319,11 +320,12 @@ class Model {
 	 *
 	 * @param object $op
 	 * @return object
+	 * @throws Exception
 	 */
 	public function edit($op=null)
 	{
-		$query = '';
-		$output = (object)[];
+		// check $op
+		if (!isset($op->data)) throw new Exception('Not found $op->data');
 
 		// check exist data
 		$cnt = $this->getCount((object)[
@@ -334,6 +336,7 @@ class Model {
 		if (!$cnt->data) throw new Exception('Not found data');
 
 		// make query
+		$query = '';
 		$query = 'update '.$this->getTableName($op->table).' set ';
 		$query_data = '';
 		foreach ($op->data as $k=>$v)
@@ -348,6 +351,7 @@ class Model {
 		$this->action($query);
 
 		// set output
+		$output = (object)[];
 		if ($op->debug === true) $output->query = $query;
 		$output->success = true;
 
@@ -362,8 +366,8 @@ class Model {
 	 */
 	public function delete($op)
 	{
-		if (!$op->table) throw new Exception('no value `table`');
-		if (!$op->where) throw new Exception('no value `where`');
+		if (!isset($op->table)) throw new Exception('no value `table`');
+		if (!isset($op->where)) throw new Exception('no value `where`');
 
 		// set value
 		$output = (object)[];

@@ -3,7 +3,7 @@ namespace Core;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();
-
+// TODO: 다시 정리하기
 /**
  * get nest
  *
@@ -14,13 +14,7 @@ try
 {
 	// get instance
 	$model = new Model();
-
-	// connect db
-	$tmp = $model->connect();
-	if ($tmp)
-	{
-		throw new Exception($tmp->getMessage(), $tmp->getCode());
-	}
+	$model->connect();
 
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{

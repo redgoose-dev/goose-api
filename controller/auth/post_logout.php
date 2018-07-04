@@ -65,6 +65,9 @@ try
 	$output->code = 200;
 	$output->token = $newToken->token;
 
+	// disconnect db
+	$model->disconnect();
+
 	// output
 	Output::data($output);
 }

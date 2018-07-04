@@ -67,6 +67,9 @@ try
 	$output->code = 200;
 	$output->query = $result->query;
 
+	// disconnect db
+	$model->disconnect();
+
 	// output data
 	Output::data($output);
 }

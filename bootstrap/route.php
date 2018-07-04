@@ -28,6 +28,11 @@ return [
 
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],
+	[ 'GET', '/categories/[i:srl]', 'categories/get_item', 'getCategory' ],
+	[ 'POST', '/categories', 'categories/post_item', 'postCategory' ],
+	[ 'PATCH', '/categories/[i:srl]', 'categories/patch_item', 'patchCategory' ],
+	[ 'PATCH', '/categories/sort', 'categories/patch_sort', 'patchCategorySort' ],
+	[ 'DELETE', '/categories/[i:srl]', 'categories/delete_item', 'deleteCategory' ],
 
 	// files
 	[ 'GET', '/files', 'files/get_index', 'getFiles' ],

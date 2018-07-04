@@ -52,7 +52,7 @@ class util {
 	 */
 	public static function checkExistValue($target=null, $required=null)
 	{
-		if (!$target) throw new Exception('No value `$target`');
+		if (!isset($target)) throw new Exception('No value `$target`');
 		if ($required)
 		{
 			foreach ($required as $k=>$v)
