@@ -15,7 +15,7 @@ try
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 404);
+		throw new Exception('Not found srl', 500);
 	}
 
 	// check authorization

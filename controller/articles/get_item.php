@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * edit app
+ * get article
  *
  * @var Goose $this
  */
@@ -18,27 +18,15 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
-	// get values
-	$_PATCH = Util::getFormData();
-
-	// id check
-	if ($_PATCH['id'] && !Util::allowString($_PATCH['id']))
-	{
-		throw new Exception('`id` can be used only in numbers and English.');
-	}
-
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
+	$token = Auth::checkAuthorization();
 
 	// set output
-	$output = Controller::edit((object)[
+	$output = Controller::item((object)[
 		'goose' => $this,
-		'table' => 'app',
+		'table' => 'article',
+		'jsonField' => ['json'],
 		'srl' => (int)$this->params['srl'],
-		'data' => [
-			$_PATCH['id'] ? "id='$_PATCH[id]'" : '',
-			$_PATCH['name'] ? "name='$_PATCH[name]'" : '',
-		],
 	]);
 
 	// set token

@@ -40,8 +40,10 @@ class Output {
 		}
 		else
 		{
-			$result->code = 500;
-			$result = (object)[ 'message' => 'Service error' ];
+			$result = (object)[
+				'code' => 500,
+				'message' => 'Service error'
+			];
 		}
 
 		$result->success = $result->code === 200; // set success

@@ -21,6 +21,10 @@ return [
 
 	// articles
 	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
+	[ 'GET', '/articles/[i:srl]', 'articles/get_item', 'getArticle' ],
+	[ 'POST', '/articles', 'articles/post_item', 'postArticle' ],
+	[ 'PATCH', '/articles/[i:srl]', 'articles/patch_item', 'patchArticle' ],
+	[ 'DELETE', '/articles/[i:srl]', 'articles/delete_item', 'deleteArticle' ],
 
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],

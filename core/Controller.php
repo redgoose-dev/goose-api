@@ -6,6 +6,38 @@ use Exception;
 class Controller {
 
 	/**
+	 * connect db
+	 *
+	 * @param Model $model
+	 * @return Model
+	 * @throws Exception
+	 */
+	public static function connect($model)
+	{
+		if ($model)
+		{
+			return $model;
+		}
+		else
+		{
+			$model = new Model();
+			$model->connect();
+			return $model;
+		}
+	}
+
+	/**
+	 * disconnect db
+	 *
+	 * @param Model $model
+	 * @param boolean $sw
+	 */
+	public static function disconnect($model, $sw=true)
+	{
+		if (!$sw) $model->disconnect();
+	}
+
+	/**
 	 * index
 	 *
 	 * @param object $op
@@ -43,14 +75,10 @@ class Controller {
 		$size = ($_GET['size']) ? (int)$_GET['size'] : $op->size;
 
 		// set model
-		if (!$op->model)
-		{
-			$op->model = new Model();
-			$op->model->connect();
-		}
+		$model = self::connect($op->model);
 
 		// get total
-		$total = $op->model->getCount((object)[
+		$total = $model->getCount((object)[
 			'table' => $op->table,
 			'where' => $op->where,
 			'debug' => __DEBUG__
@@ -68,7 +96,7 @@ class Controller {
 		}
 
 		// get datas
-		$items = $op->model->getItems((object)[
+		$items = $model->getItems((object)[
 			'table' => $op->table,
 			'field' => $_GET['field'],
 			'json_field' => $op->jsonField,
@@ -85,7 +113,7 @@ class Controller {
 		}
 
 		// disconnect db
-		$op->model->disconnect();
+		self::disconnect($model, !$op->model);
 
 		// set output
 		$output->code = 200;
@@ -127,14 +155,10 @@ class Controller {
 		$output = (object)[];
 
 		// set model
-		if (!$op->model)
-		{
-			$op->model = new Model();
-			$op->model->connect();
-		}
+		$model = self::connect($op->model);
 
 		// get data
-		$item = $op->model->getItem((object)[
+		$item = $model->getItem((object)[
 			'table' => $op->table,
 			'field' => $_GET['field'],
 			'json_field' => $op->jsonField,
@@ -148,7 +172,7 @@ class Controller {
 		}
 
 		// disconnect db
-		$op->model->disconnect();
+		self::disconnect($model, !$op->model);
 
 		// set output
 		$output->code = 200;
@@ -176,25 +200,22 @@ class Controller {
 		$output = (object)[];
 
 		// set model
-		if (!$op->model)
-		{
-			$op->model = new Model();
-			$op->model->connect();
-		}
+		$model = self::connect($op->model);
 
 		// add data
-		$result = $op->model->add((object)[
+		$result = $model->add((object)[
 			'table' => $op->table,
 			'data' => $op->data,
 			'debug' => __DEBUG__
 		]);
 
-		// disconnect db
-		$op->model->disconnect();
-
 		// set output
 		$output->code = 200;
 		$output->query = $result->query;
+		$output->srl = $model->getLastIndex();
+
+		// disconnect db
+		self::disconnect($model, !$op->model);
 
 		return $output;
 	}
@@ -226,22 +247,18 @@ class Controller {
 		$output = (object)[];
 
 		// set model
-		if (!$op->model)
-		{
-			$op->model = new Model();
-			$op->model->connect();
-		}
+		$model = self::connect($op->model);
 
 		// update data
-		$result = $op->model->edit((object)[
-			'table' => 'app',
+		$result = $model->edit((object)[
+			'table' => $op->table,
 			'where' => 'srl='.(int)$op->srl,
 			'data' => $op->data,
 			'debug' => __DEBUG__
 		]);
 
 		// disconnect db
-		$op->model->disconnect();
+		self::disconnect($model, !$op->model);
 
 		// set output
 		$output->code = 200;
@@ -276,27 +293,58 @@ class Controller {
 		$output = (object)[];
 
 		// set model
-		if (!$op->model)
-		{
-			$op->model = new Model();
-			$op->model->connect();
-		}
+		$model = self::connect($op->model);
 
 		// delete data
-		$result = $op->model->delete((object)[
+		$result = $model->delete((object)[
 			'table' => $op->table,
 			'where' => 'srl='.(int)$op->srl,
 			'debug' => __DEBUG__,
 		]);
 
 		// disconnect db
-		$op->model->disconnect();
+		self::disconnect($model, !$op->model);
 
 		// set output
 		$output->code = 200;
 		$output->query = $result->query;
 
 		return $output;
+	}
+
+	/**
+	 * upload file
+	 *
+	 * @param object $op
+	 * @return object
+	 * @throws Exception
+	 */
+	public static function uploadFile($op=null)
+	{
+		if (!$op->goose || !$op->file)
+		{
+			throw new Exception('no object in Controller::uploadFile()', 500);
+		}
+
+		// TODO: $op->article_srl 값이 없으면 ready=1
+		// TODO: 파일 업로드
+		// TODO: db 업데이트
+
+		// TODO: 리턴은 업로드된 파일경로
+
+		return null;
+	}
+
+	/**
+	 * remove file
+	 *
+	 * @param object $op
+	 * @return object
+	 * @throws Exception
+	 */
+	public static function removeFile($op=null)
+	{
+		return null;
 	}
 
 }

@@ -144,6 +144,16 @@ class Model {
 	}
 
 	/**
+	 * get last index
+	 *
+	 * @return int
+	 */
+	public function getLastIndex()
+	{
+		return (int)$this->db->lastInsertId();
+	}
+
+	/**
 	 * get query command
 	 *
 	 * @param object $op
@@ -318,7 +328,8 @@ class Model {
 		// check exist data
 		$cnt = $this->getCount((object)[
 			'table' => $op->table,
-			'where' => $op->where
+			'where' => $op->where,
+			'debug' => true,
 		]);
 		if (!$cnt->data) throw new Exception('Not found data');
 

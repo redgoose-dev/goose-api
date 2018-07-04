@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * edit app
+ * edit article
  *
  * @var Goose $this
  */
@@ -21,23 +21,24 @@ try
 	// get values
 	$_PATCH = Util::getFormData();
 
-	// id check
-	if ($_PATCH['id'] && !Util::allowString($_PATCH['id']))
-	{
-		throw new Exception('`id` can be used only in numbers and English.');
-	}
-
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin);
 
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
-		'table' => 'app',
+		'table' => 'article',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
-			$_PATCH['id'] ? "id='$_PATCH[id]'" : '',
-			$_PATCH['name'] ? "name='$_PATCH[name]'" : '',
+			$_PATCH['app_srl'] ? "app_srl='$_PATCH[app_srl]'" : '',
+			$_PATCH['nest_srl'] ? "nest_srl='$_PATCH[nest_srl]'" : '',
+			$_PATCH['category_srl'] ? "category_srl='$_PATCH[category_srl]'" : '',
+			$_PATCH['user_srl'] ? "user_srl='$_PATCH[user_srl]'" : '',
+			$_PATCH['title'] ? "title='$_PATCH[title]'" : '',
+			$_PATCH['content'] ? "content='$_PATCH[content]'" : '',
+			$_PATCH['hit'] ? "hit='$_PATCH[hit]'" : '',
+			$_PATCH['json'] ? "json='$_PATCH[json]'" : '',
+			"modate='".date("YmdHis")."'"
 		],
 	]);
 

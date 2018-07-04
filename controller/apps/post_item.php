@@ -12,9 +12,6 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
-
 	// check post values
 	Util::checkExistValue($_POST, [ 'id', 'name' ]);
 
@@ -23,6 +20,9 @@ try
 	{
 		throw new Exception('`id` can be used only in numbers and English.');
 	}
+
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin);
 
 	// set output
 	$output = Controller::add((object)[

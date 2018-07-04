@@ -12,14 +12,14 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
-
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 404);
+		throw new Exception('Not found srl', 500);
 	}
+
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin);
 
 	// remove item
 	$output = Controller::delete((object)[
