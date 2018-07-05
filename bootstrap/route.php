@@ -37,7 +37,8 @@ return [
 	// files
 	[ 'GET', '/files', 'files/get_index', 'getFiles' ],
 	[ 'GET', '/files/[i:srl]', 'files/get_item', 'getFile' ],
-	[ 'POST', '/files', 'files/post_item', 'postFile' ],
+	[ 'POST', '/files', 'files/add_item', 'addFile' ],
+	[ 'POST', '/files/[i:srl]/edit', 'files/edit_item', 'editFile' ],
 
 	// json
 	[ 'GET', '/json', 'json/get_index', 'getJson' ],

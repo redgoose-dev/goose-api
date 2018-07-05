@@ -16,7 +16,7 @@ try
 	Util::checkExistValue($_POST, [ 'id', 'name' ]);
 
 	// id check
-	if (!Util::allowString($_POST['id']))
+	if (!String::allowString($_POST['id']))
 	{
 		throw new Exception('`id` can be used only in numbers and English.');
 	}

@@ -6,7 +6,7 @@ use Exception;
  * Util
  */
 
-class util {
+class Util {
 
 	/**
 	 * get url parameter
@@ -31,18 +31,6 @@ class util {
 	}
 
 	/**
-	 * filtering where string
-	 *
-	 * @param string $str
-	 * @return string
-	 */
-	public static function filteringWhere($str='')
-	{
-		$str = preg_replace("/^ and/", "", $str);
-		return trim($str);
-	}
-
-	/**
 	 * check exist value
 	 * 배열속에 필수값이 들어있는지 확인
 	 *
@@ -62,31 +50,6 @@ class util {
 					throw new Exception('Can not find `'.$v.'`.');
 				}
 			}
-		}
-	}
-
-	/**
-	 * allow string
-	 *
-	 * @param string $value
-	 * @param string $type
-	 * @return boolean
-	 */
-	public static function allowString($value, $type='string_number')
-	{
-		switch ($type)
-		{
-			case 'string':
-				return !!preg_match("/^[a-zA-Z]+$/", $value);
-
-			case 'number':
-				return !!preg_match("/^[0-9]+$/", $value);
-
-			case 'string_number':
-				return !!preg_match("/^[a-zA-Z0-9_-]+$/", $value);
-
-			default:
-				return false;
 		}
 	}
 

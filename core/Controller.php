@@ -94,6 +94,10 @@ class Controller {
 		{
 			$limit = [ ($page - 1) * $size, $size ];
 		}
+		else
+		{
+			$limit = (int)getenv('DEFAULT_INDEX_SIZE');
+		}
 
 		// get datas
 		$items = $model->getItems((object)[

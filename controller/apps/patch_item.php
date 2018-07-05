@@ -22,7 +22,7 @@ try
 	$_PATCH = Util::getFormData();
 
 	// id check
-	if ($_PATCH['id'] && !Util::allowString($_PATCH['id']))
+	if ($_PATCH['id'] && !String::allowString($_PATCH['id']))
 	{
 		throw new Exception('`id` can be used only in numbers and English.');
 	}

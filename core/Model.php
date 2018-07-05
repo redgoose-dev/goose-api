@@ -15,7 +15,7 @@ class Model {
 	public function __construct()
 	{
 		$this->db = null;
-		$this->prefix = getenv('TABLE_PREFIX');
+		$this->prefix = getenv('DEFAULT_TABLE_PREFIX');
 	}
 
 	/**
@@ -297,7 +297,6 @@ class Model {
 		$str = '';
 		foreach ($op->data as $k=>$v)
 		{
-			//$str .= ','.$k;
 			$v = (!is_null($v)) ? '\''.$v.'\'' : 'null';
 			$str .= ','.$v;
 		}
