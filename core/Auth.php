@@ -62,12 +62,12 @@ class Auth {
 	 * check authorization
 	 *
 	 * @param int|array $level
-	 * @param Model $model
+	 * @param Model $getModel
 	 * @param boolean $backdoor
 	 * @return string 토큰을 재발급 받는다면 리턴으로 나온 토큰주소
 	 * @throws Exception
 	 */
-	public static function checkAuthorization($level=0, $model=null, $backdoor=false)
+	public static function checkAuthorization($level=0, $getModel=null, $backdoor=false)
 	{
 		try
 		{
@@ -95,13 +95,14 @@ class Auth {
 					throw new Exception('Error user level');
 				}
 				// check blacklist
-				$model = ($model) ? $model : self::getModel();
+				$model = ($getModel) ? $getModel : self::getModel();
 				// check blacklist token
 				$sign = explode('.', __TOKEN__)[2];
 				$blacklistToken = $model->getCount((object)[
 					'table' => 'token',
 					'where' => 'token LIKE \''.$sign.'\''
 				]);
+				if (!$getModel) $model->disconnect();
 				if ($blacklistToken->data)
 				{
 					throw new Exception('Blacklisted token');

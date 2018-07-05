@@ -36,6 +36,8 @@ return [
 
 	// files
 	[ 'GET', '/files', 'files/get_index', 'getFiles' ],
+	[ 'GET', '/files/[i:srl]', 'files/get_item', 'getFile' ],
+	[ 'POST', '/files', 'files/post_item', 'postFile' ],
 
 	// json
 	[ 'GET', '/json', 'json/get_index', 'getJson' ],

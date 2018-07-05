@@ -15,12 +15,12 @@ try
 	// check post values
 	Util::checkExistValue($_POST, [ 'nest_srl', 'name' ]);
 
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
-
 	// set model and connect db
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// check exist nest
 	$nestCount = $model->getCount((object)[
