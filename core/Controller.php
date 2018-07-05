@@ -316,39 +316,4 @@ class Controller {
 		return $output;
 	}
 
-	/**
-	 * upload file
-	 *
-	 * @param object $op
-	 * @return object
-	 * @throws Exception
-	 */
-	public static function uploadFile($op=null)
-	{
-		if (!$op->goose || !$op->file)
-		{
-			throw new Exception('no object in Controller::uploadFile()', 500);
-		}
-
-		// TODO: $op->article_srl 값이 없으면 ready=1
-		// TODO: 파일 업로드
-		// TODO: db 업데이트
-
-		// TODO: 리턴은 업로드된 파일경로
-
-		return null;
-	}
-
-	/**
-	 * remove file
-	 *
-	 * @param object $op
-	 * @return object
-	 * @throws Exception
-	 */
-	public static function removeFile($op=null)
-	{
-		return null;
-	}
-
 }
