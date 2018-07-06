@@ -102,15 +102,20 @@ try
 		// copy file to target
 		move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
 
-		// set loc
-		$loc = $path.'/'.$month.'/'.$file['name'];
+		// set new file
+		$newFile = (object)[
+			'name' => $file['name'],
+			'loc' => $path.'/'.$month.'/'.$file['name'],
+			'type' => $file['type'],
+			'size' => $file['size'],
+		];
 	}
 	else
 	{
-		$loc = null;
+		$newFile = null;
 	}
 
-	// check article_srl
+	// check article data
 	if ($_POST['article_srl'])
 	{
 		$cnt = $model->getCount((object)[
@@ -123,9 +128,35 @@ try
 		}
 	}
 
-	// TODO: 여기서부터 db 업데이트부터 시작...
+	// update data
+	$data = [];
+	if ($_POST['article_srl']) $data[] = "article_srl='$_POST[article_srl]'";
+	if (isset($_POST['ready'])) $data[] = "ready='$_POST[ready]'";
+	if ($newFile)
+	{
+		$data[] = "name='$newFile->name'";
+		$data[] = "loc='$newFile->loc'";
+		$data[] = "type='$newFile->type'";
+		$data[] = "size='$newFile->size'";
+	}
 
+	// set output
+	$output = Controller::edit((object)[
+		'goose' => $this,
+		'model' => $model,
+		'table' => 'file',
+		'srl' => (int)$this->params['srl'],
+		'data' => $data,
+	]);
 
+	// set token
+	if ($token) $output->_token = $token;
+
+	// disconnect db
+	$model->disconnect();
+
+	// output data
+	Output::data($output);
 }
 catch (Exception $e)
 {

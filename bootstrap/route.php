@@ -42,7 +42,11 @@ return [
 	[ 'POST', '/files/[i:srl]/delete', 'files/delete_item', 'deleteFile' ],
 
 	// json
-	[ 'GET', '/json', 'json/get_index', 'getJson' ],
+	[ 'GET', '/json', 'json/get_index', 'getJsonIndex' ],
+	[ 'GET', '/json/[i:srl]', 'json/get_item', 'getJson' ],
+	[ 'POST', '/json', 'json/add_item', 'addJson' ],
+	[ 'POST', '/json/[i:srl]/edit', 'json/edit_item', 'editJson' ],
+	[ 'POST', '/json/[i:srl]/delete', 'json/delete_item', 'deleteJson' ],
 
 	// nests
 	[ 'GET', '/nests', 'nests/get_index', 'getNests' ],

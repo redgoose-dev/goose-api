@@ -120,10 +120,10 @@ class Controller {
 		self::disconnect($model, !$op->model);
 
 		// set output
-		$output->code = 200;
+		$output->code = $total->data ? 200 : 404;
 		$output->query = $items->query;
 		if (isset($total->data)) $output->total = $total->data;
-		$output->data = $items->data;
+		if ($total->data) $output->data = $items->data;
 
 		return $output;
 	}
@@ -179,9 +179,9 @@ class Controller {
 		self::disconnect($model, !$op->model);
 
 		// set output
-		$output->code = 200;
+		$output->code = $item->data ? 200 : 404;
 		$output->query = $item->query;
-		$output->data = $item->data;
+		if ($item->data) $output->data = $item->data;
 
 		return $output;
 	}

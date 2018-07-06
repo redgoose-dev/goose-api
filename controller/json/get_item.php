@@ -5,38 +5,34 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * get json
- *
- * url params
- * - @param string name
+ * get json item
  *
  * @var Goose $this
  */
 
 try
 {
+	// check srl
+	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	{
+		throw new Exception('Not found srl', 500);
+	}
+
 	// check authorization
 	$token = Auth::checkAuthorization();
 
-	// set where
-	$where = '';
-	if ($name = Util::getParameter('name'))
-	{
-		$where .= ' and name LIKE \'%'.$name.'%\'';
-	}
-
-	// output
-	$output = Controller::index((object)[
+	// set output
+	$output = Controller::item((object)[
 		'goose' => $this,
 		'table' => 'json',
-		'where' => $where,
+		'srl' => (int)$this->params['srl'],
 		'jsonField' => ['json'],
 	]);
 
 	// set token
 	if ($token) $output->_token = $token;
 
-	// output
+	// output data
 	Output::data($output);
 }
 catch(Exception $e)
