@@ -1,12 +1,11 @@
 <?php
 namespace Core;
-use Exception;
 
 /**
- * String
+ * Text
  */
 
-class String {
+class Text {
 
 	/**
 	 * remove special characters
@@ -30,7 +29,7 @@ class String {
 	 * @param string $type
 	 * @return boolean
 	 */
-	public static function allowString($value, $type='string_number')
+	public static function allowString($value, $type=null)
 	{
 		switch ($type)
 		{
@@ -40,11 +39,8 @@ class String {
 			case 'number':
 				return !!preg_match("/^[0-9]+$/", $value);
 
-			case 'string_number':
-				return !!preg_match("/^[a-zA-Z0-9_-]+$/", $value);
-
 			default:
-				return false;
+				return !!preg_match("/^[a-zA-Z0-9_-]+$/", $value);
 		}
 	}
 

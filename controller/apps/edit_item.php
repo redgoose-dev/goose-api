@@ -18,31 +18,36 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
-	// get values
-	$_PATCH = Util::getFormData();
-
 	// id check
-	if ($_PATCH['id'] && !String::allowString($_PATCH['id']))
+	if ($_POST['id'] && !Text::allowString($_POST['id']))
 	{
 		throw new Exception('`id` can be used only in numbers and English.');
 	}
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
+	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
+		'model' => $model,
 		'table' => 'app',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
-			$_PATCH['id'] ? "id='$_PATCH[id]'" : '',
-			$_PATCH['name'] ? "name='$_PATCH[name]'" : '',
+			$_POST['id'] ? "id='$_POST[id]'" : '',
+			$_POST['name'] ? "name='$_POST[name]'" : '',
 		],
 	]);
 
 	// set token
 	if ($token) $output->_token = $token;
+
+	// disconnect db
+	$model->disconnect();
 
 	// output data
 	Output::data($output);

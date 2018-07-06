@@ -18,24 +18,44 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
-	// get values
-	$_PATCH = Util::getFormData();
+	// set model
+	$model = new Model();
+	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
+	$token = Auth::checkAuthorization($this->level->admin, $model);
+
+	// check exist nest
+	if ($_POST['nest_srl'])
+	{
+		$nestCount = $model->getCount((object)[
+			'table' => 'nest',
+			'where' => 'srl='.(int)$_POST['nest_srl'],
+			'debug' => __DEBUG__,
+		]);
+		if (!$nestCount->data)
+		{
+			throw new Exception('There is no `nest` data.', 500);
+		}
+	}
 
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
+		'model' => $model,
 		'table' => 'category',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
-			$_PATCH['name'] ? "name='$_PATCH[name]'" : '',
+			$_POST['nest_srl'] ? "nest_srl='$_POST[nest_srl]'" : '',
+			$_POST['name'] ? "name='$_POST[name]'" : '',
 		],
 	]);
 
 	// set token
 	if ($token) $output->_token = $token;
+
+	// disconnect db
+	$model->disconnect();
 
 	// output data
 	Output::data($output);

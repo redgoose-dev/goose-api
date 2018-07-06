@@ -15,8 +15,12 @@ try
 	// check post values
 	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'category_srl', 'user_srl', 'title', 'content' ]);
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
+	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// filtering text
 	$_POST['title'] = htmlspecialchars(addslashes($_POST['title']));
@@ -25,6 +29,7 @@ try
 	// set output
 	$output = Controller::add((object)[
 		'goose' => $this,
+		'model' => $model,
 		'table' => 'article',
 		'data' => (object)[
 			'srl' => null,
@@ -44,6 +49,9 @@ try
 
 	// set token
 	if ($token) $output->_token = $token;
+
+	// disconnect db
+	$model->disconnect();
 
 	// output data
 	Output::data($output);

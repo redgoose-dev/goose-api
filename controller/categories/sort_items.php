@@ -14,22 +14,18 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// get values
-	$_PATCH = Util::getFormData();
-	//var_dump($_PATCH);
-
 	// check post values
-	Util::checkExistValue($_PATCH, [ 'srls' ]);
-
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
-
-	// set srls
-	$srls = explode(',', $_PATCH['srls']);
+	Util::checkExistValue($_POST, [ 'srls' ]);
 
 	// set model and connect db
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin, $model);
+
+	// set srls
+	$srls = explode(',', $_POST['srls']);
 
 	// update db
 	foreach ($srls as $k=>$v)
@@ -42,13 +38,13 @@ try
 		]);
 	}
 
-	// disconnect db
-	$model->disconnect();
-
 	// set output
 	$output = (object)[];
 	$output->code = 200;
 	if ($token) $output->_token = $token;
+
+	// disconnect db
+	$model->disconnect();
 
 	// output data
 	Output::data($output);

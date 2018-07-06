@@ -48,7 +48,7 @@ class File {
 		if (!in_array($src[1], $allowFileType)) return null;
 
 		// remove special characters
-		$src[0] = String::removeSpecialChar($src[0]);
+		$src[0] = Text::removeSpecialChar($src[0]);
 
 		// make random name
 		if (!$src[0] || $useRandomText)

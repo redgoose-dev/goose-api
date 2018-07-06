@@ -39,6 +39,7 @@ try
 	// string to array files
 	if (!is_array($_FILES['files']['name']))
 	{
+		$file = [];
 		$file['name'] = [ $_FILES['files']['name'] ];
 		$file['type'] = [ $_FILES['files']['type'] ];
 		$file['tmp_name'] = [ $_FILES['files']['tmp_name'] ];
@@ -85,7 +86,7 @@ try
 		}
 
 		// check file size
-		if ($file['size'][$k] > getenv('FILE_LIMIT_SIZE'))
+		if ((int)$file['size'][$k] > (int)getenv('FILE_LIMIT_SIZE'))
 		{
 			$result[] = (object)[
 				'status' => 'error',

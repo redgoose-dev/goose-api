@@ -53,14 +53,4 @@ class Util {
 		}
 	}
 
-	/**
-	 * get form data
-	 *
-	 * @return array
-	 */
-	public static function getFormData()
-	{
-		parse_str(file_get_contents('php://input'), $value);
-		return $value;
-	}
 }

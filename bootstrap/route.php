@@ -15,30 +15,31 @@ return [
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],
 	[ 'GET', '/apps/[i:srl]', 'apps/get_item', 'getApp' ],
-	[ 'POST', '/apps', 'apps/post_item', 'postApp' ],
-	[ 'PATCH', '/apps/[i:srl]', 'apps/patch_item', 'patchApp' ],
-	[ 'DELETE', '/apps/[i:srl]', 'apps/delete_item', 'deleteApp' ],
+	[ 'POST', '/apps', 'apps/add_item', 'addApp' ],
+	[ 'POST', '/apps/[i:srl]/edit', 'apps/edit_item', 'editApp' ],
+	[ 'POST', '/apps/[i:srl]/delete', 'apps/delete_item', 'deleteApp' ],
 
 	// articles
 	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
 	[ 'GET', '/articles/[i:srl]', 'articles/get_item', 'getArticle' ],
-	[ 'POST', '/articles', 'articles/post_item', 'postArticle' ],
-	[ 'PATCH', '/articles/[i:srl]', 'articles/patch_item', 'patchArticle' ],
-	[ 'DELETE', '/articles/[i:srl]', 'articles/delete_item', 'deleteArticle' ],
+	[ 'POST', '/articles', 'articles/add_item', 'addArticle' ],
+	[ 'POST', '/articles/[i:srl]/edit', 'articles/edit_item', 'editArticle' ],
+	[ 'POST', '/articles/[i:srl]/delete', 'articles/delete_item', 'deleteArticle' ],
 
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],
 	[ 'GET', '/categories/[i:srl]', 'categories/get_item', 'getCategory' ],
-	[ 'POST', '/categories', 'categories/post_item', 'postCategory' ],
-	[ 'PATCH', '/categories/[i:srl]', 'categories/patch_item', 'patchCategory' ],
-	[ 'PATCH', '/categories/sort', 'categories/patch_sort', 'patchCategorySort' ],
-	[ 'DELETE', '/categories/[i:srl]', 'categories/delete_item', 'deleteCategory' ],
+	[ 'POST', '/categories', 'categories/add_item', 'addCategory' ],
+	[ 'POST', '/categories/[i:srl]/edit', 'categories/edit_item', 'editCategory' ],
+	[ 'POST', '/categories/[i:srl]/delete', 'categories/delete_item', 'deleteCategory' ],
+	[ 'POST', '/categories/sort', 'categories/sort_items', 'sortCategories' ],
 
 	// files
 	[ 'GET', '/files', 'files/get_index', 'getFiles' ],
 	[ 'GET', '/files/[i:srl]', 'files/get_item', 'getFile' ],
 	[ 'POST', '/files', 'files/add_item', 'addFile' ],
 	[ 'POST', '/files/[i:srl]/edit', 'files/edit_item', 'editFile' ],
+	[ 'POST', '/files/[i:srl]/delete', 'files/delete_item', 'deleteFile' ],
 
 	// json
 	[ 'GET', '/json', 'json/get_index', 'getJson' ],
