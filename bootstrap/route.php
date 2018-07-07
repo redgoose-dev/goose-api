@@ -51,16 +51,21 @@ return [
 	// nests
 	[ 'GET', '/nests', 'nests/get_index', 'getNests' ],
 	[ 'GET', '/nests/[i:srl]', 'nests/get_item', 'getNest' ],
+	[ 'POST', '/nests', 'nests/add_item', 'addNest' ],
+	[ 'POST', '/nests/[i:srl]/edit', 'nests/edit_item', 'editNest' ],
+	[ 'POST', '/nests/[i:srl]/delete', 'nests/delete_item', 'deleteNest' ],
 
 	// users
 	[ 'GET', '/users', 'users/get_index', 'getUsers' ],
-	[ 'POST', '/users', 'users/post_item', 'postUser' ],
+	[ 'GET', '/users/[i:srl]', 'users/get_item', 'getUser' ],
+	[ 'POST', '/users', 'users/add_item', 'addUser' ],
+	[ 'POST', '/users/[i:srl]/edit', 'users/edit_item', 'editUser' ],
+	[ 'POST', '/users/[i:srl]/delete', 'users/delete_item', 'deleteUser' ],
+	[ 'POST', '/users/[i:srl]/change-password', 'users/change_password', 'changePasswordUser' ],
 
 	// auth
 	[ 'POST', '/auth/login', 'auth/post_login', 'postLogin' ],
 	[ 'POST', '/auth/logout', 'auth/post_logout', 'postLogout' ],
-	[ 'POST', '/auth/token-make', 'auth/post_token-make', 'postTokenMake' ], // TODO: 삭제예정
-	[ 'POST', '/auth/token-decode', 'auth/post_token-decode', 'postTokenDecode' ], // TODO: 삭제예정
-	[ 'POST', '/auth/token-revoke', 'auth/post_token-revoke', 'postTokenRevoke' ],
+	[ 'POST', '/auth/token-clear', 'auth/post_token-clear', 'postTokenClear' ],
 
 ];

@@ -11,8 +11,26 @@ use Firebase\JWT\ExpiredException;
 
 class Token {
 
-	const offset_access = 60 * 60 * 25 * 1; // access token 연장시간 (s * m * h * d)
-	const offset_refresh = 60 * 60 * 24 * 15; // refresh token 연장시간 (s * m * h * d)
+	const base_time = 60 * 60 * 24; // (s * m * h)
+
+	/**
+	 * get time
+	 *
+	 * @param string
+	 * @return int
+	 */
+	private static function getTime($type='access')
+	{
+		switch ($type)
+		{
+			case 'access':
+				return self::base_time * (int)getenv('TOKEN_ACCESS_DAY');
+
+			case 'refresh':
+				return self::base_time * (int)getenv('TOKEN_REFRESH_DAY');
+		}
+		return 0;
+	}
 
 	/**
 	 * make token
@@ -31,11 +49,11 @@ class Token {
 		$token->iss = getenv('PATH_URL');
 		$token->jti = getenv('TOKEN_ID');
 		if ($op->time) $token->iat = $now;
-		if ($op->time && $op->exp) $token->exp = $now + self::offset_access;
+		if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');
 		$token->data = ($op->data) ? $op->data : (object)[ 'type' => 'anonymous' ];
 
 		// make encode
-		$jwt = JWT::encode($token, getenv('APP_KEY'));
+		$jwt = JWT::encode($token, getenv('TOKEN_KEY'));
 
 		return (object)[
 			'token' => $jwt,
@@ -54,7 +72,7 @@ class Token {
 	{
 		$output = (object)[];
 		$decoded = null;
-		$key = getenv('APP_KEY');
+		$key = getenv('TOKEN_KEY');
 
 		try
 		{
@@ -69,11 +87,11 @@ class Token {
 		}
 		catch (ExpiredException $e)
 		{
-			JWT::$leeway = self::offset_refresh;
+			JWT::$leeway = self::getTime('refresh');
 			$decoded = JWT::decode($token, $key, ['HS256']);
 
 			$now = time();
-			$expire = $now + self::offset_access;
+			$expire = $now + self::getTime('access');
 			$decoded->iat = $now;
 			$decoded->exp = $expire;
 

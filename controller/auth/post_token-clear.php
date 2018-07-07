@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * revoke token
+ * clear tokens
  * 블랙리스트에 등록된 토큰들중에 만료된것만 찾아서 삭제한다.
  *
  * @var Goose $this

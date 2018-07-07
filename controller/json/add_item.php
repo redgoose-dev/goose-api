@@ -15,10 +15,8 @@ try
 	// check post values
 	Util::checkExistValue($_POST, [ 'name', 'json' ]);
 
-	// set value
+	// set json
 	$json = null;
-
-	// check json
 	if (isset($_POST['json']))
 	{
 		$json = json_decode(urldecode($_POST['json']), false);

@@ -20,8 +20,6 @@ try
 
 	// set value
 	$json = null;
-
-	// check json
 	if (isset($_POST['json']))
 	{
 		$json = json_decode(urldecode($_POST['json']), false);

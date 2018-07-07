@@ -5,7 +5,7 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * edit nest
+ * change password
  *
  * @var Goose $this
  */
@@ -18,16 +18,13 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
-	// set value
-	$json = null;
-	if (isset($_POST['json']))
+	// check post values
+	Util::checkExistValue($_POST, [ 'pw', 'new_pw', 'confirm_pw' ]);
+
+	// check new_pw and confirm_pw
+	if ($_POST['new_pw'] !== $_POST['confirm_pw'])
 	{
-		$json = json_decode(urldecode($_POST['json']), false);
-		if (!$json)
-		{
-			throw new Exception('The json syntax is incorrect.', 500);
-		}
-		$json = urlencode(json_encode($json, false));
+		throw new Exception('`new_pw` and `confirm_pw` are different.');
 	}
 
 	// set model
@@ -37,18 +34,19 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin, $model);
 
+	// check password
+	Auth::login((object)[
+		'user_srl' => (int)$this->params['srl'],
+		'password' => $_POST['pw']
+	]);
+
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'nest',
+		'table' => 'user',
 		'srl' => (int)$this->params['srl'],
-		'data' => [
-			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
-			$_POST['id'] ? "id='$_POST[id]'" : '',
-			$_POST['name'] ? "name='$_POST[name]'" : '',
-			$_POST['json'] ? "json='$json'" : '',
-		],
+		'data' => [ "pw='".password_hash($_POST['new_pw'], PASSWORD_DEFAULT)."'" ],
 	]);
 
 	// set token

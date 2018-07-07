@@ -60,8 +60,6 @@ class Controller {
 		 * @param string order
 		 * @param string sort
 		 * @param string limit
-		 * @param int page
-		 * @param int size
 		 */
 
 		if (!$op->goose || !$op->table)
@@ -71,8 +69,8 @@ class Controller {
 
 		// get values
 		$output = (object)[];
-		$page = ($_GET['page']) ? (int)$_GET['page'] : $op->page;
-		$size = ($_GET['size']) ? (int)$_GET['size'] : $op->size;
+		$page = ($_GET['page']) ? (int)$_GET['page'] : 1;
+		$size = ($_GET['size']) ? (int)$_GET['size'] : getenv('DEFAULT_INDEX_SIZE');
 
 		// set model
 		$model = self::connect($op->model);

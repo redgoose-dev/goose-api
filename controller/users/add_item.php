@@ -19,12 +19,6 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	Auth::checkAuthorization($this->level->admin);
-
-	// set values
-	$output = (object)[];
-
 	// check post values
 	Util::checkExistValue($_POST, [ 'name', 'email', 'pw', 'level' ]);
 
@@ -34,9 +28,12 @@ try
 		throw new Exception('Passwords must match', 500);
 	}
 
-	// set model and connect db
+	// set model
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// check email address
 	$cnt = $model->getCount((object)[
@@ -49,8 +46,10 @@ try
 		throw new Exception('The email address already exists.', 500);
 	}
 
-	// add data
-	$result = $model->add((object)[
+	// set output
+	$output = Controller::add((object)[
+		'goose' => $this,
+		'model' => $model,
 		'table' => 'user',
 		'data' => (object)[
 			'srl' => null,
@@ -59,13 +58,11 @@ try
 			'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
 			'level' => $_POST['level'] ? $_POST['level'] : 0,
 			'regdate' => date('YmdHis')
-		],
-		'debug' => __DEBUG__
+		]
 	]);
 
-	// set output
-	$output->code = 200;
-	$output->query = $result->query;
+	// set token
+	if ($token) $output->_token = $token;
 
 	// disconnect db
 	$model->disconnect();

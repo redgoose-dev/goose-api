@@ -35,27 +35,32 @@ class Auth {
 	public static function login($op=null)
 	{
 		if (!$op) throw new Exception('There is no option.');
-		if (!$op->email) throw new Exception('No email');
-		if (!$op->password) throw new Exception('No password');
+		if (!$op->email && !$op->user_srl) throw new Exception('no user_srl or email');
+		if (!$op->password) throw new Exception('no password');
 		if (!$op->model) $op->model = self::getModel();
+
+		// set where
+		if ($op->user_srl)
+		{
+			$where = 'srl="'.$op->user_srl.'"';
+		}
+		else if ($op->email)
+		{
+			$where = 'email="'.$op->email.'"';
+		}
 
 		// get user data
 		$user = $op->model->getItem((object)[
 			'table' => 'user',
-			'where' => 'email="'.$op->email.'"',
+			'where' => $where,
 			'debug' => __DEBUG__,
 		]);
 		if (!$user->data) throw new Exception('no user');
 
 		// check password
-		if (!password_verify($op->password, $user->data->pw)) throw new Exception('Error password');
+		if (!password_verify($op->password, $user->data->pw)) throw new Exception('error password');
 
 		return $user->data;
-	}
-
-	public static function logout()
-	{
-		//
 	}
 
 	/**

@@ -3,7 +3,7 @@ namespace Core;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();
-// TODO: 다시 정리하기
+
 /**
  * get nest
  *
@@ -12,33 +12,25 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// get instance
-	$model = new Model();
-	$model->connect();
-
+	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
 		throw new Exception('Not found srl', 500);
 	}
 
-	// get data
-	$item = $model->getItem((object)[
-		'table' => 'nest',
-		'field' => $_GET['field'],
-		'json_field' => ['json'],
-		'where' => 'srl='.(int)$this->params['srl'],
-		'debug' => __DEBUG__
-	]);
-
-	// disconnect db
-	$model->disconnect();
+	// check authorization
+	$token = Auth::checkAuthorization();
 
 	// set output
-	$output = (object)[
-		'code' => 200,
-		'data' => $item->data,
-	];
-	if ($item->query) $output->query = $item->query;
+	$output = Controller::item((object)[
+		'goose' => $this,
+		'table' => 'nest',
+		'srl' => (int)$this->params['srl'],
+		'jsonField' => ['json'],
+	]);
+
+	// set token
+	if ($token) $output->_token = $token;
 
 	// output data
 	Output::data($output);

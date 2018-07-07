@@ -17,8 +17,12 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin);
+	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// set where
 	$where = '';
@@ -38,6 +42,7 @@ try
 	// output
 	$output = Controller::index((object)[
 		'goose' => $this,
+		'model' => $model,
 		'auth' => true,
 		'table' => 'user',
 		'where' => $where,
@@ -45,7 +50,7 @@ try
 		if (!isset($result->data)) return $result;
 		foreach ($result->data as $k=>$o)
 		{
-			// pw 항목 삭제
+			// remove pw field
 			if (isset($result->data[$k]['pw']))
 			{
 				unset($result->data[$k]['pw']);

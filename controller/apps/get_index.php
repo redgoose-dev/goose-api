@@ -35,9 +35,6 @@ try
 		'goose' => $this,
 		'table' => 'app',
 		'where' => $where,
-		'page' => 1,
-		'size' => 20,
-		'field' => $_GET['field'],
 	]);
 
 	// set token
