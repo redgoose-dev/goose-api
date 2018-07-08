@@ -6,6 +6,46 @@ use Exception;
 class Install {
 
 	/**
+	 * error
+	 *
+	 * @param string $message
+	 */
+	static private function error($message)
+	{
+		echo "ERROR: $message\n";
+		exit;
+	}
+
+	/**
+	 * output
+	 *
+	 * @param string
+	 */
+	static private function output($str)
+	{
+		$out = "=====================================================\n";
+		$out .= "$str\n";
+		$out .= "=====================================================\n";
+		echo $out;
+		exit;
+	}
+
+	/**
+	 * check writabled path
+	 *
+	 * @param string $dir
+	 */
+	static private function checkWritabledPath($dir=null)
+	{
+		$dir = $dir ? $dir : __PATH__;
+		// check main dir
+		if (!is_writable($dir))
+		{
+			self::error("Please check your permissions. path: `$dir`");
+		}
+	}
+
+	/**
 	 * Check installed
 	 *
 	 * @throws Exception
@@ -65,11 +105,37 @@ class Install {
 	}
 
 	/**
-	 * basic
+	 * basic install
 	 */
 	static public function basic()
 	{
-		echo "install basic";
+		// check main dir
+		self::checkWritabledPath();
+
+		// check exist `.env`
+		if (file_exists(__PATH__.'/.env'))
+		{
+			echo "The `.env` file exists. Do you want to proceed? (y/N) ";
+			$ask = fgets(STDIN);
+			if (trim(strtolower($ask)) !== 'y')
+			{
+				echo "Canceled install\n";
+				exit;
+			}
+		}
+
+		// copy .env file
+		if (!copy(__PATH__.'/resource/.env.example', __PATH__.'/.env'))
+		{
+			self::error('Can not copy the `.env` file.');
+		}
+
+		// output
+		$output = "Success!\n";
+		$output .= "Please proceed to the next step.\n";
+		$output .= "1) Please edit the `.env` file in a text editor.\n";
+		$output .= "2) Run `script.sh install-db` in the command.";
+		self::output($output);
 	}
 
 	/**
@@ -77,7 +143,7 @@ class Install {
 	 */
 	static public function db()
 	{
+		// TODO: 작업예정
 		echo "install database";
 	}
-
 }

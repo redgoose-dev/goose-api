@@ -8,7 +8,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 // set static values
 define('__DEBUG__', true);
-define('__PATH__', __DIR__.'/../');
+define('__PATH__', realpath(__DIR__.'/../'));
 
 /**
  * make token
@@ -55,8 +55,6 @@ function makeToken()
  */
 function install()
 {
-	// TODO: 작업예정
-	echo "action install\n";
 	Install::basic();
 }
 
@@ -66,8 +64,6 @@ function install()
  */
 function install_db()
 {
-	// TODO: 작업예정
-	echo "action install-db\n";
 	Install::db();
 }
 
@@ -77,12 +73,10 @@ switch ($argv[1])
 {
 	case 'install':
 		install();
-		echo "\n";
 		break;
 
 	case 'install-db':
 		install_db();
-		echo "\n";
 		break;
 
 	case 'make-token':
