@@ -14,7 +14,7 @@ class Controller {
 	 */
 	public static function connect($model)
 	{
-		if ($model)
+		if (!!$model)
 		{
 			return $model;
 		}
@@ -30,10 +30,11 @@ class Controller {
 	 * disconnect db
 	 *
 	 * @param Model $model
-	 * @param boolean $sw
+	 * @param boolean $sw make user model
 	 */
-	public static function disconnect($model, $sw=true)
+	public static function disconnect($model, $sw=false)
 	{
+		// 컨트롤러 클래스에서 만든 모델이라면 disconnect() 실행
 		if (!$sw) $model->disconnect();
 	}
 
@@ -115,7 +116,7 @@ class Controller {
 		}
 
 		// disconnect db
-		self::disconnect($model, !$op->model);
+		self::disconnect($model, $op->model);
 
 		// set output
 		$output->code = $total->data ? 200 : 404;
@@ -174,7 +175,7 @@ class Controller {
 		}
 
 		// disconnect db
-		self::disconnect($model, !$op->model);
+		self::disconnect($model, $op->model);
 
 		// set output
 		$output->code = $item->data ? 200 : 404;
@@ -217,7 +218,7 @@ class Controller {
 		$output->srl = $model->getLastIndex();
 
 		// disconnect db
-		self::disconnect($model, !$op->model);
+		self::disconnect($model, $op->model);
 
 		return $output;
 	}
@@ -260,7 +261,7 @@ class Controller {
 		]);
 
 		// disconnect db
-		self::disconnect($model, !$op->model);
+		self::disconnect($model, $op->model);
 
 		// set output
 		$output->code = 200;
@@ -305,7 +306,7 @@ class Controller {
 		]);
 
 		// disconnect db
-		self::disconnect($model, !$op->model);
+		self::disconnect($model, $op->model);
 
 		// set output
 		$output->code = 200;
