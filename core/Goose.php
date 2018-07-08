@@ -15,6 +15,7 @@ use Exception;
  * @property string target
  * @property array params
  * @property object level
+ * @property array modules
  */
 
 class Goose {
@@ -25,6 +26,7 @@ class Goose {
 		$this->target = null;
 		$this->params = null;
 		$this->level = (object)[];
+		$this->modules = ['apps', 'articles', 'categories', 'files', 'json', 'nests', 'users'];
 	}
 
 	/**
