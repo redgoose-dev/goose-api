@@ -54,7 +54,10 @@ try
 		// set values
 		$file = $_FILES['files'];
 		$month = date('Ym');
-		$path = 'data/upload/'.(($_POST['sub_dir']) ? $_POST['sub_dir'] : 'original');
+		$subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : getenv('DEFAULT_UPLOAD_DIR_NAME');
+
+		// set path
+		$path = 'data/upload/'.$subDir;
 		$path_absolute = __PATH__.'/'.$path;
 		$path_absolute_dest = $path_absolute.'/'.$month;
 
