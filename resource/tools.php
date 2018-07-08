@@ -49,13 +49,26 @@ function makeToken()
 
 /**
  * install
+ * 기초작업을 위한 인스톨
  *
  * @return string
  */
 function install()
 {
-	// TODO: 준비작업이 끝나면 작업예정
-	echo "action install";
+	// TODO: 작업예정
+	echo "action install\n";
+	Install::basic();
+}
+
+/**
+ * install db
+ * 데이터베이스 설치를 위한 인스톨
+ */
+function install_db()
+{
+	// TODO: 작업예정
+	echo "action install-db\n";
+	Install::db();
 }
 
 
@@ -64,6 +77,11 @@ switch ($argv[1])
 {
 	case 'install':
 		install();
+		echo "\n";
+		break;
+
+	case 'install-db':
+		install_db();
 		echo "\n";
 		break;
 

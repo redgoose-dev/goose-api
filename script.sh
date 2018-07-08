@@ -13,6 +13,9 @@ start() {
 install() {
 	php resource/tools.php install
 }
+install-db() {
+	php resource/tools.php install-db
+}
 
 # func / make token
 make-token()
@@ -30,12 +33,16 @@ case "$1" in
 		install
 		;;
 
+	install-db)
+		install-db
+		;;
+
 	make-token)
 		make-token
 		;;
 
 	*)
-		echo "Usage: ./dev-server.sh {start|install|make-token}" >&2
+		echo "Usage: ./dev-server.sh {start|install|install-db|make-token}" >&2
 		exit 3
 		;;
 esac

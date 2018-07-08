@@ -64,9 +64,20 @@ class Install {
 //		}
 	}
 
-	public function run()
+	/**
+	 * basic
+	 */
+	static public function basic()
 	{
-		echo "install form";
+		echo "install basic";
+	}
+
+	/**
+	 * database
+	 */
+	static public function db()
+	{
+		echo "install database";
 	}
 
 }
