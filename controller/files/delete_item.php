@@ -42,7 +42,7 @@ try
 		file_exists(__PATH__.'/'.$file->data->loc)
 	)
 	{
-		@unlink(__PATH__.'/'.$file->data->loc);
+		unlink(__PATH__.'/'.$file->data->loc);
 	}
 
 	// remove item

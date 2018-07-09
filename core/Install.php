@@ -255,4 +255,5 @@ class Install {
 			self::error($e->getMessage());
 		}
 	}
+
 }

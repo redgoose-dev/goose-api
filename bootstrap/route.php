@@ -40,6 +40,8 @@ return [
 	[ 'POST', '/files', 'files/add_item', 'addFile' ],
 	[ 'POST', '/files/[i:srl]/edit', 'files/edit_item', 'editFile' ],
 	[ 'POST', '/files/[i:srl]/delete', 'files/delete_item', 'deleteFile' ],
+	[ 'POST', '/files/upload-file', 'files/upload_file', 'uploadFile' ],
+	[ 'POST', '/files/remove-file', 'files/remove_file', 'removeFile' ],
 
 	// json
 	[ 'GET', '/json', 'json/get_index', 'getJsonIndex' ],

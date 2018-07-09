@@ -61,18 +61,11 @@ try
 	$path_absolute = __PATH__.'/'.$path;
 	$path_absolute_dest = $path_absolute.'/'.$month;
 
-	// check path
-	if (!is_dir($path_absolute))
-	{
-		throw new Exception("The directory `/$path/$month` does not exist.");
-	}
-	if (!is_writable($path_absolute))
-	{
-		throw new Exception("The `/$path` directory permission is invalid.");
-	}
+	// make sub directory
+	File::makeDirectory($path_absolute, 0755);
 
 	// make month directory
-	File::makeDirectory($path_absolute_dest, 0777);
+	File::makeDirectory($path_absolute_dest, 0755);
 
 	// play upload
 	foreach ($file['name'] as $k=>$v)
