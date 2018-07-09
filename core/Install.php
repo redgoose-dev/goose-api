@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Dotenv\Dotenv, Exception;
 
 
 class Install {
@@ -35,14 +35,32 @@ class Install {
 	 *
 	 * @param string $dir
 	 */
-	static private function checkWritabledPath($dir=null)
+	static private function checkDirectoryPath($dir=null)
 	{
 		$dir = $dir ? $dir : __PATH__;
-		// check main dir
+		if (!is_dir($dir))
+		{
+			self::error("Directory does not exist. path: `$dir`");
+		}
+		// check writable path
 		if (!is_writable($dir))
 		{
 			self::error("Please check your permissions. path: `$dir`");
 		}
+	}
+
+	/**
+	 * check env values
+	 * `.env`속의 값들중에 필수요소값들을 겁사
+	 *
+	 * @throws Exception
+	 */
+	static private function checkEnvValues()
+	{
+		if (!getenv('SERVICE_NAME')) throw new Exception('The value `SERVICE_NAME` does not exist.');
+		if (!getenv('TOKEN_KEY')) throw new Exception('The value `TOKEN_KEY` does not exist.');
+		if (!getenv('TOKEN_ID')) throw new Exception('The value `TOKEN_ID` does not exist.');
+		if (!getenv('PATH_URL')) throw new Exception('The value `PATH_URL` does not exist.');
 	}
 
 	/**
@@ -81,36 +99,15 @@ class Install {
 		{
 			throw new Exception('The `/data/settings` directory permission is invalid.');
 		}
-
-		// check env
-//		TODO: .env 스펙이 확정되면 검사하기
-//		TODO: .env.example 파일을 .env로 복제하기. 아니면 인스톨에서 모든것을 물어보는 cli 만들어야함.
-//		$env_values = [
-//			'SERVICE_NAME',
-//			'PATH_URL',
-//			'PATH_ROOT',
-//			'DB_HOST',
-//			'DB_PORT',
-//			'DB_DATABASE',
-//			'DB_USERNAME',
-//			'DB_PASSWORD',
-//			'TABLE_PREFIX',
-//			'API_DEBUG',
-//			'TIMEZONE',
-//		];
-//		foreach ($env_values as $o)
-//		{
-//			if (!getenv($o)) return false;
-//		}
 	}
 
 	/**
-	 * basic install
+	 * ready for install
 	 */
-	static public function basic()
+	static public function ready()
 	{
 		// check main dir
-		self::checkWritabledPath();
+		self::checkDirectoryPath();
 
 		// check exist `.env`
 		if (file_exists(__PATH__.'/.env'))
@@ -139,11 +136,114 @@ class Install {
 	}
 
 	/**
-	 * database
+	 * install
 	 */
-	static public function db()
+	static public function install()
 	{
-		// TODO: 작업예정
-		echo "install database";
+		$defaultEmail = 'root@goose';
+		$defaultName = 'root';
+		$defaultPassword = '1234';
+		try
+		{
+			$out = '';
+
+			// check main dir
+			self::checkDirectoryPath();
+
+			// set dotenv
+			try
+			{
+				$dotenv = new Dotenv(__PATH__);
+				$dotenv->load();
+			}
+			catch(Exception $e)
+			{
+				throw new Exception('.env error');
+			}
+
+			// check env values
+			self::checkEnvValues();
+
+			// check connect db
+			$model = new Model();
+			$model->connect();
+			if (!$model->db) throw new Exception('Not found db object');
+
+			// make directories
+			try
+			{
+				Util::createDirectory(__PATH__.'/data', 0755);
+				Util::createDirectory(__PATH__.'/data/upload', 0755);
+				Util::createDirectory(__PATH__.'/data/settings', 0755);
+
+				// copy and change permission setting files
+				$openSettingsDir = opendir(__PATH__.'/resource/settings.default');
+				while (false !== ($file = readdir($openSettingsDir))) {
+					if ($file != "." && $file != "..") {
+						copy(__PATH__.'/resource/settings.default/'.$file, __PATH__.'/data/settings/'.$file);
+						chmod(__PATH__.'/data/settings/'.$file, 0755);
+					}
+				}
+			}
+			catch(Exception $e)
+			{
+				$out .= "ERROR: ".$e->getMessage()."\n";
+			}
+
+			// set default timezone
+			date_default_timezone_set(getenv('TIMEZONE') ? getenv('TIMEZONE') : 'UTC');
+
+			// make tables
+			try
+			{
+				$sql = file_get_contents(__PATH__.'/resource/db.default.sql');
+				$qr = $model->db->exec($sql);
+				if ($qr) throw new Exception('error');
+			}
+			catch(Exception $e)
+			{
+				$out .= "ERROR: Failed create table\n";
+			}
+
+			// add admin user
+			try
+			{
+				$model->add((object)[
+					'table' => 'user',
+					'data' => (object)[
+						'srl' => null,
+						'email' => $defaultEmail,
+						'name' => $defaultName,
+						'pw' => password_hash($defaultPassword, PASSWORD_DEFAULT),
+						'level' => getenv('LEVEL_ADMIN'),
+						'regdate' => date('YmdHis')
+					],
+					'debug' => true
+				]);
+			}
+			catch (Exception $e)
+			{
+				$out .= "ERROR: Failed add root user\n";
+			}
+
+			// destination
+			if ($out) $out .= "\n";
+			$out .= "Success install!\n";
+			$out .= "\n";
+			$out .= "* Manager url\n";
+			$out .= getenv('PATH_URL')."/manager\n";
+			$out .= "\n";
+			$out .= "* The root account\n";
+			$out .= "- e-mail : $defaultEmail\n";
+			$out .= "- name : $defaultName\n";
+			$out .= "- password : $defaultPassword\n";
+			$out .= "\n";
+			$out .= "Please correct your root account email and password.";
+			self::output($out);
+		}
+		catch(Exception $e)
+		{
+			self::error($e->getMessage());
+		}
 	}
 }

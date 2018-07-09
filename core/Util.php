@@ -53,4 +53,26 @@ class Util {
 		}
 	}
 
+	/**
+	 * create directory
+	 *
+	 * @param string $path
+	 * @param int $permission
+	 * @throws Exception
+	 */
+	public static function createDirectory($path=null, $permission=0755)
+	{
+		if (is_dir($path))
+		{
+			throw new Exception('Directory already exists.');
+		}
+		else
+		{
+			$umask = umask();
+			umask(000);
+			mkdir($path, $permission);
+			umask($umask);
+		}
+	}
+
 }

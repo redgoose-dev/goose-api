@@ -9,40 +9,26 @@ start() {
 	php -S localhost:$port -t ./
 }
 
-# func / install
-install() {
-	php resource/tools.php install
-}
-install-db() {
-	php resource/tools.php install-db
-}
-
-# func / make token
-make-token()
-{
-	php resource/tools.php make-token
-}
-
 
 case "$1" in
 	start)
 		start
 		;;
 
-	install)
-		install
+	ready)
+		php resource/tools.php ready
 		;;
 
-	install-db)
-		install-db
+	install)
+		php resource/tools.php install
 		;;
 
 	make-token)
-		make-token
+		php resource/tools.php make-token
 		;;
 
 	*)
-		echo "Usage: ./dev-server.sh {start|install|install-db|make-token}" >&2
+		echo "Usage: ./dev-server.sh {start|ready|install|make-token}" >&2
 		exit 3
 		;;
 esac

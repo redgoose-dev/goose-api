@@ -47,36 +47,15 @@ function makeToken()
 	}
 }
 
-/**
- * install
- * 기초작업을 위한 인스톨
- *
- * @return string
- */
-function install()
-{
-	Install::basic();
-}
-
-/**
- * install db
- * 데이터베이스 설치를 위한 인스톨
- */
-function install_db()
-{
-	Install::db();
-}
-
-
 // switching action
 switch ($argv[1])
 {
-	case 'install':
-		install();
+	case 'ready':
+		Install::ready();
 		break;
 
-	case 'install-db':
-		install_db();
+	case 'install':
+		Install::install();
 		break;
 
 	case 'make-token':
