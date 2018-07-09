@@ -226,6 +226,12 @@ class Install {
 				$out .= "ERROR: Failed add root user\n";
 			}
 
+			// make public token
+			$jwt = Token::make((object)[
+				'time' => true,
+				'exp' => false,
+			]);
+
 			// destination
 			if ($out) $out .= "\n";
 			$out .= "Success install!\n";
@@ -238,7 +244,10 @@ class Install {
 			$out .= "- name : $defaultName\n";
 			$out .= "- password : $defaultPassword\n";
 			$out .= "\n";
-			$out .= "Please correct your root account email and password.";
+			$out .= "* Public token\n";
+			$out .= "$jwt->token\n";
+			$out .= "\n";
+			$out .= "Please change your root account email and password.";
 			self::output($out);
 		}
 		catch(Exception $e)
