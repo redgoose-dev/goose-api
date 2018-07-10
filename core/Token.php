@@ -50,7 +50,7 @@ class Token {
 		$token->jti = getenv('TOKEN_ID');
 		if ($op->time) $token->iat = $now;
 		if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');
-		$token->data = ($op->data) ? $op->data : (object)[ 'type' => 'anonymous' ];
+		$token->data = (isset($op->data)) ? $op->data : (object)[ 'type' => 'anonymous' ];
 
 		// make encode
 		$jwt = JWT::encode($token, getenv('TOKEN_KEY'));
