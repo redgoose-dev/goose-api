@@ -172,16 +172,16 @@ class Install {
 			// make directories
 			try
 			{
-				Util::createDirectory(__PATH__.'/data', 0755);
-				Util::createDirectory(__PATH__.'/data/upload', 0755);
-				Util::createDirectory(__PATH__.'/data/settings', 0755);
+				Util::createDirectory(__PATH__.'/data', 0707);
+				Util::createDirectory(__PATH__.'/data/upload', 0707);
+				Util::createDirectory(__PATH__.'/data/settings', 0707);
 
 				// copy and change permission setting files
 				$openSettingsDir = opendir(__PATH__.'/resource/settings.default');
 				while (false !== ($file = readdir($openSettingsDir))) {
 					if ($file != "." && $file != "..") {
 						copy(__PATH__.'/resource/settings.default/'.$file, __PATH__.'/data/settings/'.$file);
-						chmod(__PATH__.'/data/settings/'.$file, 0755);
+						chmod(__PATH__.'/data/settings/'.$file, 0707);
 					}
 				}
 			}

@@ -60,7 +60,7 @@ class Util {
 	 * @param int $permission
 	 * @throws Exception
 	 */
-	public static function createDirectory($path=null, $permission=0755)
+	public static function createDirectory($path=null, $permission=0707)
 	{
 		if (is_dir($path))
 		{

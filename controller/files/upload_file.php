@@ -50,10 +50,10 @@ try
 		$file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
 
 		// make month directory
-		File::makeDirectory($path_absolute, 0755);
+		File::makeDirectory($path_absolute, 0707);
 
 		// make month directory
-		File::makeDirectory($path_absolute_dest, 0755);
+		File::makeDirectory($path_absolute_dest, 0707);
 
 		if (!($file['tmp_name'] && is_dir($path_absolute_dest)))
 		{
@@ -112,10 +112,10 @@ try
 		$filename = File::checkExistFile($path_absolute_dest.'/', $filename, null);
 
 		// make month directory
-		File::makeDirectory($path_absolute, 0755);
+		File::makeDirectory($path_absolute, 0707);
 
 		// make month directory
-		File::makeDirectory($path_absolute_dest, 0755);
+		File::makeDirectory($path_absolute_dest, 0707);
 
 		// check dest dir
 		if (!is_dir($path_absolute_dest))

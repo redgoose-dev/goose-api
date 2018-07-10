@@ -62,10 +62,10 @@ try
 	$path_absolute_dest = $path_absolute.'/'.$month;
 
 	// make sub directory
-	File::makeDirectory($path_absolute, 0755);
+	File::makeDirectory($path_absolute, 0707);
 
 	// make month directory
-	File::makeDirectory($path_absolute_dest, 0755);
+	File::makeDirectory($path_absolute_dest, 0707);
 
 	// play upload
 	foreach ($file['name'] as $k=>$v)

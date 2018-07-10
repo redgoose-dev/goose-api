@@ -14,7 +14,7 @@ class File {
 	 * @param string $path
 	 * @param int $permission
 	 */
-	public static function makeDirectory($path, $permission=0755)
+	public static function makeDirectory($path, $permission=0707)
 	{
 		if (is_dir($path)) return;
 		$umask = umask();
