@@ -131,7 +131,7 @@ class Install {
 		$output = "Success!\n";
 		$output .= "Please proceed to the next step.\n";
 		$output .= "1) Please edit the `.env` file in a text editor.\n";
-		$output .= "2) Run `script.sh install-db` in the command.";
+		$output .= "2) Run `script.sh install` in the command.";
 		self::output($output);
 	}
 
