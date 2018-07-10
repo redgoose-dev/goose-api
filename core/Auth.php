@@ -87,7 +87,7 @@ class Auth {
 				// check url
 				if (getenv('PATH_URL') !== $jwt->url)
 				{
-					throw new Exception('Not found `PATH_URL`');
+					throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
 				}
 				// check token id
 				if (getenv('TOKEN_ID') !== $jwt->token_id)
