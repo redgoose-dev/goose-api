@@ -5,6 +5,7 @@ if (!defined('__GOOSE__')) exit();
 return [
 
 	// intro
+	[ 'GET', '', 'intro' ],
 	[ 'GET', '/', 'intro' ],
 
 	// manager
