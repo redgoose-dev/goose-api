@@ -16,19 +16,6 @@ goose manager 에서 컨텐츠를 제작하고 api를 활용하여 다른 플랫
 
 ## Documentation
 
-goose-api 설치에 관란 자세한 내용은 다음 링크를 참고해주세요.
+goose-api 설치에 관란 자세한 내용은 wiki에서 확인할 수 있습니다.
 
-#### Install guide
-본 프로젝트를 설치에 대한 가이드
-
-https://github.com/RedgooseDev/goose-api/wiki/Install-guide
-
-#### URL Guide
-API 요청 url 주소에 대한 가이드
-
-https://github.com/RedgooseDev/goose-api/wiki/URL-guide
-
-#### dotEnv Guide
-`.env`파일의 설정에 대한 가이드
-
-https://github.com/RedgooseDev/goose-api/wiki/dotEnv-guide
+https://github.com/RedgooseDev/goose-api/wiki
