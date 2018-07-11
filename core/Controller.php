@@ -121,8 +121,13 @@ class Controller {
 		// set output
 		$output->code = $total->data ? 200 : 404;
 		$output->query = $items->query;
-		if (isset($total->data)) $output->total = $total->data;
-		if ($total->data) $output->data = $items->data;
+		if ($total->data)
+		{
+			$output->data = (object)[
+				'total' => $total->data,
+				'index' => $items->data,
+			];
+		}
 
 		return $output;
 	}
