@@ -4,4 +4,4 @@ data/
 
 .DS_Store
 .env
-children/
+apps/
