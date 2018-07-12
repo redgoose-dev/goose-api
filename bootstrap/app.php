@@ -25,7 +25,10 @@ try
 	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
 	// set default timezone
-	date_default_timezone_set(getenv('TIMEZONE') ? getenv('TIMEZONE') : 'UTC');
+	if (getenv('TIMEZONE'))
+	{
+		date_default_timezone_set(getenv('TIMEZONE'));
+	}
 
 	// set start time
 	if (__DEBUG__)

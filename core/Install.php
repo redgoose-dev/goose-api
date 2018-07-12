@@ -191,7 +191,10 @@ class Install {
 			}
 
 			// set default timezone
-			date_default_timezone_set(getenv('TIMEZONE') ? getenv('TIMEZONE') : 'UTC');
+			if (getenv('TIMEZONE'))
+			{
+				date_default_timezone_set(getenv('TIMEZONE'));
+			}
 
 			// make tables
 			try
