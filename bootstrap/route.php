@@ -1,19 +1,12 @@
 <?php
 if (!defined('__GOOSE__')) exit();
 
-
 return [
 
 	// intro
 	[ 'GET', '', 'intro' ],
 	[ 'GET', '/', 'intro' ],
-
 	[ 'GET', '/hello', 'hello' ],
-
-	// manager
-	[ 'GET', '/manager', 'manager' ],
-	[ 'GET', '/manager/', 'manager' ],
-	[ 'GET', '/manager/[*]', 'manager' ],
 
 	// apps
 	[ 'GET', '/apps', 'apps/get_index', 'getApps' ],

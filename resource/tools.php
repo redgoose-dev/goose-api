@@ -7,6 +7,7 @@ use Dotenv\Dotenv;
 require __DIR__.'/../vendor/autoload.php';
 
 // set static values
+define('__GOOSE__', true);
 define('__DEBUG__', true);
 define('__PATH__', realpath(__DIR__.'/../'));
 

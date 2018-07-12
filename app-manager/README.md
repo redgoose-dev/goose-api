@@ -1,3 +1,0 @@
-# Goose API Manager
-
-...
