@@ -24,6 +24,16 @@ try
 	// set development
 	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
+	// set error report
+	if (__DEBUG__)
+	{
+		error_reporting(E_ALL & ~E_NOTICE);
+	}
+	else
+	{
+		error_reporting(0);
+	}
+
 	// set default timezone
 	if (getenv('TIMEZONE'))
 	{
