@@ -4,6 +4,7 @@ use Dotenv\Dotenv, Exception;
 
 if (!defined('__GOOSE__')) exit();
 
+// set header
 // check OPTIONS method
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	if (
@@ -19,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	}
 	exit;
 }
+header('Content-Type: application/json');
 
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
@@ -66,6 +68,12 @@ try
 
 	// check install
 	Install::check();
+
+	// get form data for json
+	if (!$_POST && $formData = file_get_contents('php://input'))
+	{
+		$_POST = (array)json_decode($formData);
+	}
 
 	// set app
 	$goose = new Goose();

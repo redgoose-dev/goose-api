@@ -18,6 +18,9 @@ class Output {
 			// filtering query
 			if (!__DEBUG__) unset($result->query);
 
+			// set success
+			$result->success = false;
+
 			// filtering code
 			switch ($result->code)
 			{
@@ -33,9 +36,12 @@ class Output {
 				case 404:
 					$result->message = ($result->message && __DEBUG__) ? $result->message : 'Not found data';
 					break;
-				case 0:
+				case 200:
+					$result->success = true;
+					break;
+				default:
 					$result->code = 500;
-					$result->message = 'Service error';
+					$result->message = ($result->message && __DEBUG__) ? $result->message : 'Service error';
 					break;
 			}
 		}
@@ -47,10 +53,10 @@ class Output {
 			];
 		}
 
-		$result->success = $result->code === 200; // set success
-		//$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
-		//if (!__DEBUG__) unset($result->code);
-		$result->url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		if (__DEBUG__)
+		{
+			$result->url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		}
 
 		// set processing time
 		if (__DEBUG__ && __START_TIME__)
@@ -61,24 +67,10 @@ class Output {
 		}
 
 		// print output
-		switch ($format)
-		{
-			case 'text':
-				break;
-
-			case 'rss':
-				break;
-
-			case 'json':
-			default:
-				http_response_code(200);
-				header('Content-Type: application/json');
-				echo json_encode(
-					$result,
-					!isset($_GET['min']) ? JSON_PRETTY_PRINT : null
-				);
-				break;
-		}
+		echo json_encode(
+			$result,
+			!isset($_GET['min']) ? JSON_PRETTY_PRINT : null
+		);
 		exit;
 	}
 
