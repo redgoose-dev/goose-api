@@ -35,6 +35,7 @@ class Output {
 					break;
 				case 0:
 					$result->code = 500;
+					$result->message = 'Service error';
 					break;
 			}
 		}
@@ -47,8 +48,8 @@ class Output {
 		}
 
 		$result->success = $result->code === 200; // set success
-		$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
-		if (!__DEBUG__) unset($result->code);
+		//$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
+		//if (!__DEBUG__) unset($result->code);
 		//$result->url = $_SERVER['PATH_URL']; // set url TODO: 나중에 수정예정
 
 		// set processing time
@@ -70,7 +71,7 @@ class Output {
 
 			case 'json':
 			default:
-				http_response_code($code);
+				http_response_code(200);
 				header('Content-Type: application/json');
 				echo json_encode(
 					$result,
