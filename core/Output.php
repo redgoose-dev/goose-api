@@ -11,7 +11,7 @@ class Output {
 	 */
 	public static function data($result=null, $format='json')
 	{
-		if ($_GET['format']) $format = $_GET['format'];
+		if (isset($_GET['format'])) $format = $_GET['format'];
 
 		if ($result)
 		{
@@ -50,7 +50,7 @@ class Output {
 		$result->success = $result->code === 200; // set success
 		//$code = $result->code; // code 값을 삭제할 수 있으므로 다른 변수로 저장해둔다.
 		//if (!__DEBUG__) unset($result->code);
-		//$result->url = $_SERVER['PATH_URL']; // set url TODO: 나중에 수정예정
+		$result->url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 		// set processing time
 		if (__DEBUG__ && __START_TIME__)
@@ -75,7 +75,7 @@ class Output {
 				header('Content-Type: application/json');
 				echo json_encode(
 					$result,
-					!$_GET['min'] ? JSON_PRETTY_PRINT : null
+					!isset($_GET['min']) ? JSON_PRETTY_PRINT : null
 				);
 				break;
 		}
