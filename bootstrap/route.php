@@ -64,6 +64,9 @@ return [
 	// auth
 	[ 'POST', '/auth/login', 'auth/post_login', 'postLogin' ],
 	[ 'POST', '/auth/logout', 'auth/post_logout', 'postLogout' ],
-	[ 'POST', '/auth/token-clear', 'auth/post_token-clear', 'postTokenClear' ],
+
+	// token
+	[ 'GET', '/token/decode', 'token/get_decode', 'postTokenDecode' ],
+	[ 'POST', '/token/clear', 'token/post_clear', 'postTokenClear' ],
 
 ];

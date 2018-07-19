@@ -5,20 +5,26 @@ use Exception;
 if (!defined('__GOOSE__')) exit();
 
 /**
- * hello word
+ * decode token
+ *
  *
  * @var Goose $this
  */
 
 try
 {
+	// set values
+	$output = (object)[];
+
 	// check authorization
 	$token = Auth::checkAuthorization();
 
+	// get decode token
+	$jwt = Token::get(__TOKEN__);
+
 	// set output
-	$output = (object)[];
 	$output->code = 200;
-	$output->message = 'hello world';
+	$output->data = $jwt->data;
 	if ($token) $output->_token = $token;
 
 	// output
