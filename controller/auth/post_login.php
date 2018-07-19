@@ -42,7 +42,7 @@ try
 	]);
 
 	// set data
-	$data->user_srl = (int)$user->srl;
+	$data->srl = (int)$user->srl;
 	$data->email = $user->email;
 	$data->name = $user->name;
 	$data->level = (int)$user->level;
