@@ -21,7 +21,7 @@ try
 	$data = (object)[];
 
 	// check post values
-	Util::checkExistValue($_POST, [ 'email', 'pw' ]);
+	Util::checkExistValue($_POST, [ 'email', 'pw', 'host' ]);
 
 	// get user data
 	$user = Auth::login((object)[
@@ -38,6 +38,7 @@ try
 			'user_srl' => $user->srl,
 			'email' => $user->email,
 			'level' => $user->level,
+			'host' => $_POST['host'],
 		],
 	]);
 
@@ -47,6 +48,7 @@ try
 	$data->name = $user->name;
 	$data->level = (int)$user->level;
 	$data->token = $jwt->token;
+	$data->host = $_POST['host'];
 
 	// set output
 	$output->code = 200;

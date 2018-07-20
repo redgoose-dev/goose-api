@@ -9,7 +9,11 @@ if (!defined('__GOOSE__')) exit();
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	if (
 		isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
-		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST')
+		(
+			$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST' ||
+			$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET'
+		)
+	)
 	{
 		header('Access-Control-Allow-Origin: *');
 		header("Access-Control-Allow-Credentials: true");
