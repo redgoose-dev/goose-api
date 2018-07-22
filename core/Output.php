@@ -24,8 +24,8 @@ class Output {
 			// filtering code
 			switch ($result->code)
 			{
-				case 500:
-					$result->message = ($result->message && __DEBUG__) ? $result->message : 'Service error';
+				case 204:
+					$result->message = $result->message ? $result->message : 'custom message';
 					break;
 				case 401:
 					$result->message = ($result->message && __DEBUG__) ? $result->message : 'Authorization error';

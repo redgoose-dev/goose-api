@@ -18,28 +18,45 @@ try
 	// id check
 	if (!Text::allowString($_POST['id']))
 	{
-		throw new Exception('`id` can be used only in numbers and English.');
+		throw new Exception('`id` can be used only in numbers and English.', 204);
 	}
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
+	// check id
+	$check_id = $model->getCount((object)[
+		'table' => 'app',
+		'where' => "id LIKE '$_POST[id]'",
+	]);
+	if (!!$check_id->data)
+	{
+		throw new Exception('The same name `id` is registered.', 204);
+	}
+
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// set output
-	$output = Controller::add((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'app',
-		'data' => (object)[
-			'srl' => null,
-			'id' => $_POST['id'],
-			'name' => $_POST['name'],
-			'regdate' => date('YmdHis'),
-		]
-	]);
+	try
+	{
+		$output = Controller::add((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'app',
+			'data' => (object)[
+				'srl' => null,
+				'id' => $_POST['id'],
+				'name' => $_POST['name'],
+				'regdate' => date('YmdHis'),
+			]
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed create app', 204);
+	}
 
 	// set token
 	if ($token) $output->_token = $token;

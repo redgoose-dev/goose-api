@@ -47,7 +47,7 @@ class Util {
 			{
 				if (!array_key_exists($v, $target) || !$target[$v])
 				{
-					throw new Exception('Can not find `'.$v.'`.');
+					throw new Exception('Can not find `'.$v.'`.', 204);
 				}
 			}
 		}
