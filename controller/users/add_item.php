@@ -25,7 +25,7 @@ try
 	// confirm match password
 	if ($_POST['pw'] !== $_POST['pw2'])
 	{
-		throw new Exception('Passwords must match', 500);
+		throw new Exception('Passwords must match.', 500);
 	}
 
 	// set model
