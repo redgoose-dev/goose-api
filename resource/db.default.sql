@@ -5,8 +5,8 @@ SET time_zone = "+00:00";
 -- table `app`
 CREATE TABLE `goose_app` (
   `srl` int(11) NOT NULL,
-  `id` varchar(30) DEFAULT NULL,
-  `name` varchar(50) DEFAULT NULL,
+  `id` varchar(20) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -79,8 +79,8 @@ ALTER TABLE `goose_json` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 CREATE TABLE `goose_nest` (
   `srl` int(11) NOT NULL,
   `app_srl` int(11) DEFAULT NULL,
-  `id` varchar(30) DEFAULT NULL,
-  `name` varchar(150) DEFAULT NULL,
+  `id` varchar(20) DEFAULT NULL,
+  `name` varchar(40) DEFAULT NULL,
   `json` text,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -106,7 +106,7 @@ ALTER TABLE `goose_user` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 -- table `token`
 CREATE TABLE `goose_token` (
   `srl` int(11) NOT NULL,
-  `token` varchar(80) DEFAULT NULL,
+  `token` varchar(100) DEFAULT NULL,
   `expired` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

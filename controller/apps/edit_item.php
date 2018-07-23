@@ -31,7 +31,8 @@ try
 	// check id
 	$check_id = $model->getCount((object)[
 		'table' => 'app',
-		'where' => "id LIKE '$_POST[id]'",
+		'where' => "id LIKE '$_POST[id]' and srl!=".(int)$this->params['srl'],
+		'debug' => true
 	]);
 	if (!!$check_id->data)
 	{
