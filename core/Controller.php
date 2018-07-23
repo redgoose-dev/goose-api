@@ -85,7 +85,11 @@ class Controller {
 
 		// set limit
 		$limit = null;
-		if (isset($_GET['limit']))
+		if (isset($_GET['unlimit']))
+		{
+			$limit = '';
+		}
+		else if (isset($_GET['limit']))
 		{
 			$limit = explode(',', $_GET['limit']);
 		}
