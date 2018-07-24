@@ -58,7 +58,7 @@ class Auth {
 		if (!$user->data) throw new Exception('No user in database');
 
 		// check password
-		if (!password_verify($op->password, $user->data->pw)) throw new Exception('error password');
+		if (!password_verify($op->password, $user->data->pw)) throw new Exception('Error verify password');
 
 		return $user->data;
 	}

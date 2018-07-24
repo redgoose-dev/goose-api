@@ -23,7 +23,18 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = null;
+	$jwt = Token::get(__TOKEN__);
+	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
+	{
+		// 사용자 레벨 검사
+		$token = Auth::checkAuthorization((int)$jwt->data->level, $model);
+	}
+	else
+	{
+		// 관리자 레벨 검사
+		$token = Auth::checkAuthorization($this->level->admin, $model);
+	}
 
 	// set output
 	$output = Controller::item((object)[

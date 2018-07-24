@@ -3,6 +3,12 @@ namespace Core;
 use Exception;
 use Dotenv\Dotenv;
 
+if (php_sapi_name() !== 'cli')
+{
+	echo 'Can not run in browser.';
+	exit;
+}
+
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
 
@@ -65,6 +71,6 @@ switch ($argv[1])
 		break;
 
 	default:
-		echo "ERROR : no argv\n";
+		echo "ERROR: no argv. `php tools.php {ready,install,make-token}`\n";
 		break;
 }

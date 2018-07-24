@@ -24,7 +24,7 @@ try
 	// check new_pw and confirm_pw
 	if ($_POST['new_pw'] !== $_POST['confirm_pw'])
 	{
-		throw new Exception('`new_pw` and `confirm_pw` are different.');
+		throw new Exception('`new_pw` and `confirm_pw` are different.', 204);
 	}
 
 	// set model
@@ -32,22 +32,29 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization(0, $model);
 
-	// check password
-	Auth::login((object)[
-		'user_srl' => (int)$this->params['srl'],
-		'password' => $_POST['pw']
-	]);
+	try
+	{
+		// check password
+		Auth::login((object)[
+			'user_srl' => (int)$this->params['srl'],
+			'password' => $_POST['pw']
+		]);
 
-	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'user',
-		'srl' => (int)$this->params['srl'],
-		'data' => [ "pw='".password_hash($_POST['new_pw'], PASSWORD_DEFAULT)."'" ],
-	]);
+		// set output
+		$output = Controller::edit((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'user',
+			'srl' => (int)$this->params['srl'],
+			'data' => [ "pw='".password_hash($_POST['new_pw'], PASSWORD_DEFAULT)."'" ],
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed change password.', 204);
+	}
 
 	// set token
 	if ($token) $output->_token = $token;
