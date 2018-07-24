@@ -34,7 +34,7 @@ try
 	])->data;
 
 	// not admin
-	if ($this->level->admin > (int)$user_db->level)
+	if ($this->level->admin > (int)$user_token->level)
 	{
 		// if not self
 		if ((int)$user_token->user_srl !== (int)$user_db->srl)
