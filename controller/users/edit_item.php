@@ -15,7 +15,7 @@ try
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// check authorization
@@ -39,7 +39,7 @@ try
 		// if not self
 		if ((int)$user_token->user_srl !== (int)$user_db->srl)
 		{
-			throw new Exception('Error user level');
+			throw new Exception('Error user level', 204);
 		}
 		// blank level
 		$_POST['level'] = null;
@@ -50,27 +50,34 @@ try
 	{
 		$cnt = $model->getCount((object)[
 			'table' => 'user',
-			'where' => 'email="'.$_POST['email'].'"',
+			'where' => 'email="'.$_POST['email'].'" and srl!='.(int)$this->params['srl'],
 			'debug' => __DEBUG__
 		]);
 		if (isset($cnt->data) && $cnt->data > 0)
 		{
-			throw new Exception('The email address already exists.', 500);
+			throw new Exception('The email address already exists.', 204);
 		}
 	}
 
-	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'user',
-		'srl' => (int)$this->params['srl'],
-		'data' => [
-			$_POST['email'] ? "email='$_POST[email]'" : '',
-			$_POST['name'] ? "name='$_POST[name]'" : '',
-			$_POST['level'] ? "level='$_POST[level]'" : '',
-		],
-	]);
+	try
+	{
+		// set output
+		$output = Controller::edit((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'user',
+			'srl' => (int)$this->params['srl'],
+			'data' => [
+				$_POST['email'] ? "email='$_POST[email]'" : '',
+				$_POST['name'] ? "name='$_POST[name]'" : '',
+				$_POST['level'] ? "level='$_POST[level]'" : '',
+			],
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed edit user', 204);
+	}
 
 	// set token
 	if ($token) $output->_token = $token;

@@ -55,7 +55,7 @@ try
 	}
 	catch(Exception $e)
 	{
-		throw new Exception('Failed create app', 204);
+		throw new Exception('Failed add app', 204);
 	}
 
 	// set token

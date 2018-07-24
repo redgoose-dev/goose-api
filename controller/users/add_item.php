@@ -25,7 +25,7 @@ try
 	// confirm match password
 	if ($_POST['pw'] !== $_POST['pw2'])
 	{
-		throw new Exception('Passwords must match.', 500);
+		throw new Exception('Passwords must match.', 204);
 	}
 
 	// set model
@@ -43,23 +43,30 @@ try
 	]);
 	if (isset($cnt->data) && $cnt->data > 0)
 	{
-		throw new Exception('The email address already exists.', 500);
+		throw new Exception('The email address already exists.', 204);
 	}
 
-	// set output
-	$output = Controller::add((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'user',
-		'data' => (object)[
-			'srl' => null,
-			'email' => $_POST['email'],
-			'name' => $_POST['name'],
-			'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
-			'level' => $_POST['level'] ? $_POST['level'] : 0,
-			'regdate' => date('YmdHis')
-		]
-	]);
+	try
+	{
+		// set output
+		$output = Controller::add((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'user',
+			'data' => (object)[
+				'srl' => null,
+				'email' => $_POST['email'],
+				'name' => $_POST['name'],
+				'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
+				'level' => $_POST['level'] ? $_POST['level'] : 0,
+				'regdate' => date('YmdHis')
+			]
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed add user', 204);
+	}
 
 	// set token
 	if ($token) $output->_token = $token;

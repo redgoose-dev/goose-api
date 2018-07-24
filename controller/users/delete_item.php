@@ -25,6 +25,18 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin, $model);
 
+	// check user count
+	// 관리자 사용자가 하나도 없으면 안되기 때문에 검사하기
+	$cnt = $model->getCount((object)[
+		'table' => 'user',
+		'where' => '`level`>='.$this->level->admin,
+		'debug' => true,
+	]);
+	if ($cnt->data < 2)
+	{
+		throw new Exception('You can not delete the administrator user because it is gone.', 204);
+	}
+
 	// remove item
 	$output = Controller::delete((object)[
 		'goose' => $this,
