@@ -69,6 +69,6 @@ return [
 	[ 'GET', '/token/decode', 'token/get_decode', 'postTokenDecode' ],
 	[ 'POST', '/token/clear', 'token/post_clear', 'postTokenClear' ],
 
-	// custom
-	[ 'GET', '/custom/[aa:name]', 'custom/index', 'getCustom' ],
+	// maganer
+	[ 'GET', '/manager/[aa:name]', 'manager/index', 'manager' ],
 ];

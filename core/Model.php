@@ -29,9 +29,9 @@ class Model {
 	{
 		foreach ($fields as $k=>$v)
 		{
-			if ($item[$v])
+			if ($item->{$v})
 			{
-				$item[$v] = json_decode(urldecode($item[$v]), false);
+				$item->{$v} = json_decode(urldecode($item->{$v}), false);
 			}
 		}
 		return $item;
@@ -212,7 +212,7 @@ class Model {
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
-			$result = $qry->fetchAll(PDO::FETCH_ASSOC);
+			$result = $qry->fetchAll(PDO::FETCH_CLASS);
 			if ($result && $op->json_field && count($op->json_field))
 			{
 				foreach ($result as $k=>$v)
