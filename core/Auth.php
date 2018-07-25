@@ -34,12 +34,13 @@ class Auth {
 	 */
 	public static function login($op=null)
 	{
-		if (!$op) throw new Exception('There is no option.');
-		if (!$op->email && !$op->user_srl) throw new Exception('No user_srl or email');
-		if (!$op->password) throw new Exception('no password');
+		if (!$op) throw new Exception('There is no option.', 401);
+		if (!$op->email && !$op->user_srl) throw new Exception('No user_srl or email', 401);
+		if (!$op->password) throw new Exception('no password', 401);
 		if (!$op->model) $op->model = self::getModel();
 
 		// set where
+		$where= null;
 		if ($op->user_srl)
 		{
 			$where = 'srl="'.$op->user_srl.'"';
@@ -55,10 +56,10 @@ class Auth {
 			'where' => $where,
 			'debug' => __DEBUG__,
 		]);
-		if (!$user->data) throw new Exception('No user in database');
+		if (!$user->data) throw new Exception('No user in database', 401);
 
 		// check password
-		if (!password_verify($op->password, $user->data->pw)) throw new Exception('Error verify password');
+		if (!password_verify($op->password, $user->data->pw)) throw new Exception('Error verify password', 401);
 
 		return $user->data;
 	}
