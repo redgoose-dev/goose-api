@@ -23,7 +23,7 @@ try
 	$where = '';
 	if ($app = Util::getParameter('app'))
 	{
-		$where .= ' and app_srl='.$app;
+		$where .= ($app === 'NULL') ? ' and app_srl IS NULL' : ' and app_srl='.$app;
 	}
 	if ($id = Util::getParameter('id'))
 	{

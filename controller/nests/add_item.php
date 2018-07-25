@@ -13,7 +13,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'app_srl', 'id', 'name' ]);
+	Util::checkExistValue($_POST, [ 'id', 'name' ]);
 
 	// id check
 	if (!Text::allowString($_POST['id']))
