@@ -19,7 +19,6 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// make tree
 	// get apps
 	$apps = $model->getItems((object)[ 'table' => 'app' ]);
 	if (!isset($apps->data))

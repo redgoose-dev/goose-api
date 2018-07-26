@@ -71,8 +71,11 @@ return [
 
 	// maganer
 	[ 'GET', '/manager/[aa:name]', 'manager/index', 'manager' ],
+	[ 'GET', '/manager/[aa:name]/[aa:srl]', 'manager/index', 'managerParam' ],
 
 	// external (user controller)
 	[ 'GET', '/external/[aa:name]', 'external/index', 'getExternal' ],
+	[ 'GET', '/external/[aa:name]/[aa:srl]', 'external/index', 'getExternalParam' ],
 	[ 'POST', '/external/[aa:name]', 'external/index', 'postExternal' ],
+	[ 'POST', '/external/[aa:name]/[aa:srl]', 'external/index', 'postExternalParam' ],
 ];
