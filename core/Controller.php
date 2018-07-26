@@ -54,7 +54,7 @@ class Controller {
 		 * @param Model $op->model
 		 * @param string $op->table
 		 * @param string $op->where
-		 * @param array $op->jsonField
+		 * @param array $op->json_field
 		 *
 		 * # url params guide
 		 * @param string field
@@ -106,7 +106,7 @@ class Controller {
 		$items = $model->getItems((object)[
 			'table' => $op->table,
 			'field' => $_GET['field'],
-			'json_field' => $op->jsonField,
+			'json_field' => $op->json_field,
 			'order' => $_GET['order'],
 			'sort' => $_GET['sort'],
 			'limit' => $limit,
@@ -152,7 +152,7 @@ class Controller {
 		 * @param Model $op->model
 		 * @param string $op->table
 		 * @param int $op->srl
-		 * @param array $op->jsonField
+		 * @param array $op->json_field
 		 *
 		 * # url params guide
 		 * @param string field
@@ -173,7 +173,7 @@ class Controller {
 		$item = $model->getItem((object)[
 			'table' => $op->table,
 			'field' => $_GET['field'],
-			'json_field' => $op->jsonField,
+			'json_field' => $op->json_field,
 			'where' => 'srl='.(int)$op->srl,
 			'debug' => __DEBUG__,
 		]);

@@ -56,7 +56,7 @@ try
 		'goose' => $this,
 		'table' => 'article',
 		'where' => $where,
-		'jsonField' => ['json']
+		'json_field' => ['json']
 	]);
 
 	// set token

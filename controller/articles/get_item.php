@@ -33,7 +33,7 @@ try
 		'goose' => $this,
 		'model' => $model,
 		'table' => 'article',
-		'jsonField' => ['json'],
+		'json_field' => ['json'],
 		'srl' => (int)$this->params['srl'],
 	]);
 

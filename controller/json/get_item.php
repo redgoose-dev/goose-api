@@ -26,7 +26,7 @@ try
 		'goose' => $this,
 		'table' => 'json',
 		'srl' => (int)$this->params['srl'],
-		'jsonField' => ['json'],
+		'json_field' => ['json'],
 	]);
 
 	// set token

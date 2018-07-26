@@ -51,9 +51,9 @@ try
 		foreach ($result->data as $k=>$o)
 		{
 			// remove pw field
-			if (isset($result->data[$k]['pw']))
+			if (isset($result->data[$k]->pw))
 			{
-				unset($result->data[$k]['pw']);
+				unset($result->data[$k]->pw);
 			}
 		}
 		return $result;

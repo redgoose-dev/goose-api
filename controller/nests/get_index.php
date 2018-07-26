@@ -39,7 +39,7 @@ try
 		'goose' => $this,
 		'table' => 'nest',
 		'where' => $where,
-		'jsonField' => ['json']
+		'json_field' => ['json']
 	]);
 
 	// set token

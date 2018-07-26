@@ -32,53 +32,46 @@ try
 	$tree = [];
 	foreach ($apps->data as $k=>$v)
 	{
-		$nest = $model->getItems((object)[
+		$nests = $model->getItems((object)[
 			'table' => 'nest',
-			'field' => 'srl,app_srl',
 			'where' => 'app_srl='.(int)$v->srl,
-			'json_field' => ['json']
+			'json_field' => ['json'],
 		]);
 		$tree[] = (object)[
 			'name' => $v->name,
-			'children' => $nest->data
+			'count' => count($nests->data),
+			'children' => $nests->data,
 		];
 	}
-	// TODO: 마지막은 app_srl이 없는 nest를 찾아 붙이기
-	print_r($tree);
 
-//	// make tree
-//	// get nests
-//	$nests = $model->getItems((object)[
-//		'table' => 'nest',
-//		'json_field' => ['json']
-//	]);
-//	$tree = [];
-//	foreach ($nests->data as $k=>$v)
-//	{
-//		$app_srl = $v['app_srl'] ? $v['app_srl'] : 'NULL';
-//		if (!isset($tree[$app_srl]))
-//		{
-//			$tree[$app_srl] = (object)[ 'children' => [] ];
-//		}
-//		$tree[$app_srl]->children[] = $v;
-//
-//		// get app
-//		if ($app_srl === 'NULL')
-//		{
-//			$tree[$app_srl]->name = '';
-//		}
-//		else
-//		{
-//			$app = $model->getItem((object)[
-//				'table' => 'app',
-//				'field' => 'name',
-//				'where' => 'srl='.(int)$app_srl
-//			]);
-//			$tree[$app_srl]->name = $app->data->name;
-//		}
-//	}
-//	ksort($tree);
+	// add no app
+	$nests = $model->getItems((object)[
+		'table' => 'nest',
+		'where' => 'app_srl IS NULL',
+		'json_field' => ['json'],
+	]);
+	if (isset($nests->data) && $nests->data)
+	{
+		$tree[] = (object)[
+			'name' => 'Not an app',
+			'count' => count($nests->data),
+			'children' => $nests->data,
+		];
+	}
 
+	// set output
+	$output = (object)[];
+	$output->code = count($tree) ? 200 : 404;
+	if (count($tree))
+	{
+		$output->data = $tree;
+	}
+
+	// set token
+	if ($token) $output->_token = $token;
+
+	// output
+	Output::data($output);
 }
 catch(Exception $e)
 {
