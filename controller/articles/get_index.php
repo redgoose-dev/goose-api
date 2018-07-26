@@ -24,6 +24,10 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization();
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// set where
 	$where = '';
 	if ($app = Util::getParameter('app'))
@@ -53,11 +57,30 @@ try
 
 	// set output
 	$output = Controller::index((object)[
+		'model' => $model,
 		'goose' => $this,
 		'table' => 'article',
 		'where' => $where,
 		'json_field' => ['json']
 	]);
+
+	// get category name
+	if ($output->data)
+	{
+		foreach ($output->data->index as $k=>$v)
+		{
+			if (!$v->category_srl) continue;
+			$category = $model->getItem((object)[
+				'table' => 'category',
+				'field' => 'name',
+				'where' => 'srl='.(int)$v->category_srl,
+			]);
+			if ($category->data && $category->data->name)
+			{
+				$output->data->index[$k]->category_name = $category->data->name;
+			}
+		}
+	}
 
 	// set token
 	if ($token) $output->_token = $token;

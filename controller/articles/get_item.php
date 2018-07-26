@@ -37,6 +37,20 @@ try
 		'srl' => (int)$this->params['srl'],
 	]);
 
+	// get category name
+	if ($output->data)
+	{
+		$category = $model->getItem((object)[
+			'table' => 'category',
+			'field' => 'name',
+			'where' => 'srl='.(int)$output->data->category_srl,
+		]);
+		if ($category->data && $category->data->name)
+		{
+			$output->data->category_name = $category->data->name;
+		}
+	}
+
 	// update hit
 	if ($_GET['hit'] && isset($output->data->hit))
 	{

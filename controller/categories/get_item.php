@@ -21,12 +21,27 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization();
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// set output
 	$output = Controller::item((object)[
+		'model' => $model,
 		'goose' => $this,
 		'table' => 'category',
 		'srl' => (int)$this->params['srl'],
 	]);
+
+	// get article count
+	if ($output->data && Util::getParameter('count_article'))
+	{
+		$cnt = $model->getCount((object)[
+			'table' => 'article',
+			'where' => 'category_srl='.(int)$output->data->srl,
+		]);
+		$output->data->count_article = $cnt->data;
+	}
 
 	// set token
 	if ($token) $output->_token = $token;
