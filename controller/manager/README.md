@@ -1,0 +1,3 @@
+# `goose-manager` controller
+
+...

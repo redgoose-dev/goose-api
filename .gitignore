@@ -1,6 +1,18 @@
+# DIRECTORY
+
 .idea/
 vendor/
 data/
 
+
+# FILES
+
 .DS_Store
 .env
+
+
+# ETC
+
+## custom controller
+controller/external/*
+!controller/external/index.php
