@@ -47,6 +47,7 @@ try
 			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
 			$_POST['id'] ? "id='$_POST[id]'" : '',
 			$_POST['name'] ? "name='$_POST[name]'" : '',
+			$_POST['description'] ? "description='$_POST[description]'" : '',
 			$_POST['json'] ? "json='$json'" : '',
 		],
 	]);

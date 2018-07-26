@@ -38,6 +38,7 @@ try
 			'json_field' => ['json'],
 		]);
 		$tree[] = (object)[
+			'srl' => (int)$v->srl,
 			'name' => $v->name,
 			'count' => count($nests->data),
 			'children' => $nests->data,
@@ -53,7 +54,8 @@ try
 	if (isset($nests->data) && $nests->data)
 	{
 		$tree[] = (object)[
-			'name' => 'Not an app',
+			'srl' => null,
+			'name' => null,
 			'count' => count($nests->data),
 			'children' => $nests->data,
 		];

@@ -50,6 +50,7 @@ try
 			'app_srl' => $_POST['app_srl'],
 			'id' => $_POST['id'],
 			'name' => $_POST['name'],
+			'description' => $_POST['description'],
 			'json' => $json,
 			'regdate' => date('YmdHis'),
 		]

@@ -20,8 +20,9 @@
 
 | name | type | example | description |
 |:---:|:---:|---|---|
-| id | string | `goose_app` | app id |
-| name | string | `Goose` | app name |
+| id | string | `goose_app` | id |
+| name | string | `Goose` | name |
+| description | string | `app description` | description |
 
 ### get app
 - url: `/apps/[n]` (n:srl)
@@ -39,6 +40,7 @@
 |:---:|:---:|---|---|
 | id | string | `goose_app` | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
 | name | string | `Goose's app` | app 이름 |
+| description | string | `app description` | app description |
 
 ### edit app
 - url: `/apps/[n]/edit` (n:srl)
@@ -51,6 +53,7 @@
 |:---:|:---:|---|---|
 | id | string | `goose_app` | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
 | name | string | `Goose's app` | app 이름 |
+| description | string | `app description` | app description |
 
 ### delete app
 - url: `/apps/[n]/delete` (n:srl)
@@ -347,7 +350,7 @@ article 들을 그루핑하는 역할을 합니다. category도 같은 기능을
 
 | name | type | example | description |
 |:---:|:---:|---|---|
-| app | number | `1` | app srl 번호 |
+| app | number | `1` | app srl |
 | id | string | `hello` | 고유 id값 |
 | name | string | `Hello nest` | filename |
 
@@ -365,10 +368,11 @@ article 들을 그루핑하는 역할을 합니다. category도 같은 기능을
 
 | key | type | example | description |
 |:---:|:---:|---|---|
-| app_srl | number | `1` | app 이름 |
+| app_srl | number | `1` | app srl |
 | id | string | `hello` | nest id |
-| name | string | `hello app` | nest 이름 |
-| json | string | `{"foo": "bar"}` | json 데이터 |
+| name | string | `hello app` | name |
+| description | string | `memo` | description |
+| json | string | `{"foo": "bar"}` | json data |
 
 ### edit nest
 - url: `/nests/[n]/edit` (n:srl)
@@ -379,10 +383,11 @@ article 들을 그루핑하는 역할을 합니다. category도 같은 기능을
 
 | key | type | example | description |
 |:---:|:---:|---|---|
-| app_srl | number | `1` | app 이름 |
+| app_srl | number | `1` | app srl |
 | id | string | `hello` | nest id |
-| name | string | `hello app` | nest 이름 |
-| json | string | `{"foo": "bar"}` | json 데이터 |
+| name | string | `hello app` | name |
+| description | string | `memo` | description |
+| json | string | `{"foo": "bar"}` | json data |
 
 ### delete nest
 - url: `/nests/[n]/delete` (n:srl)

@@ -7,6 +7,7 @@ CREATE TABLE `goose_app` (
   `srl` int(11) NOT NULL,
   `id` varchar(20) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -81,6 +82,7 @@ CREATE TABLE `goose_nest` (
   `app_srl` int(11) DEFAULT NULL,
   `id` varchar(20) DEFAULT NULL,
   `name` varchar(40) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
   `json` text,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
