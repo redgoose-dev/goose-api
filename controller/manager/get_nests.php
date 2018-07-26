@@ -21,10 +21,7 @@ try
 
 	// make tree
 	// get apps
-	$apps = $model->getItems((object)[
-		'table' => 'app',
-		'field' => 'srl,name'
-	]);
+	$apps = $model->getItems((object)[ 'table' => 'app' ]);
 	if (!isset($apps->data))
 	{
 		throw new Exception('Not found apps.', 404);
@@ -40,6 +37,7 @@ try
 		$tree[] = (object)[
 			'srl' => (int)$v->srl,
 			'name' => $v->name,
+			'description' => $v->description,
 			'count' => count($nests->data),
 			'children' => $nests->data,
 		];
@@ -56,6 +54,7 @@ try
 		$tree[] = (object)[
 			'srl' => null,
 			'name' => null,
+			'description' => null,
 			'count' => count($nests->data),
 			'children' => $nests->data,
 		];
