@@ -65,7 +65,7 @@ try
 	]);
 
 	// get category name
-	if ($output->data)
+	if ($output->data && Util::checkKeyInExtField('category_name'))
 	{
 		foreach ($output->data->index as $k=>$v)
 		{

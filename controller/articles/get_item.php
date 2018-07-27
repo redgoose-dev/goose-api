@@ -38,7 +38,7 @@ try
 	]);
 
 	// get category name
-	if ($output->data)
+	if ($output->data && Util::checkKeyInExtField('category_name'))
 	{
 		$category = $model->getItem((object)[
 			'table' => 'category',

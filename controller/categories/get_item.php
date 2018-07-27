@@ -34,7 +34,7 @@ try
 	]);
 
 	// get article count
-	if ($output->data && Util::getParameter('count_article'))
+	if ($output->data && Util::checkKeyInExtField('count_article'))
 	{
 		$cnt = $model->getCount((object)[
 			'table' => 'article',

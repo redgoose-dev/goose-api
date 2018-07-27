@@ -75,4 +75,18 @@ class Util {
 		}
 	}
 
+	/**
+	 * check key in the extra field
+	 *
+	 * @param string $keyword
+	 * @param string $field
+	 * @return boolean
+	 */
+	public static function checkKeyInExtField($keyword=null, $field=null)
+	{
+		if (!($field = $field ? $field : $_GET['ext_field']) || !$keyword) return false;
+		$arr = explode(',', $field);
+		return (array_search($keyword, $arr) === false) ? false : true;
+	}
+
 }
