@@ -25,7 +25,7 @@ try
 
 	// set where
 	$where = '';
-	if ($nest = Util::getParameter('nest'))
+	if ($nest = (int)Util::getParameter('nest'))
 	{
 		$where .= ' and nest_srl='.$nest;
 	}
@@ -42,16 +42,43 @@ try
 		'where' => $where
 	]);
 
-	// get article count
-	if ($output->data && Util::checkKeyInExtField('count_article'))
+	if ($output->data)
 	{
-		foreach ($output->data->index as $k=>$v)
+		// get article count
+		if (Util::checkKeyInExtField('count_article'))
 		{
-			$cnt = $model->getCount((object)[
-				'table' => 'article',
-				'where' => 'category_srl='.(int)$v->srl,
-			]);
-			$output->data->index[$k]->count_article = $cnt->data;
+			foreach ($output->data->index as $k=>$v)
+			{
+				$cnt = $model->getCount((object)[
+					'table' => 'article',
+					'where' => 'category_srl='.(int)$v->srl,
+				]);
+				$output->data->index[$k]->count_article = $cnt->data;
+			}
+		}
+
+		// get all item
+		if (Util::checkKeyInExtField('item_all'))
+		{
+			// set item
+			$item = (object)[
+				'srl' => 0,
+				'nest_srl' => $nest,
+				'name' => 'All',
+			];
+			// get article count
+			if (Util::checkKeyInExtField('count_article'))
+			{
+				$cnt = $model->getCount((object)[
+					'table' => 'article',
+					'where' => $nest ? 'nest_srl='.$nest : null,
+					'debug' => true
+				]);
+				$item->count_article = $cnt->data;
+			}
+
+			// add item
+			array_unshift($output->data->index, $item);
 		}
 	}
 
