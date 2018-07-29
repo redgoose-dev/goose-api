@@ -43,6 +43,7 @@ try
 			'srl' => null,
 			'name' => $_POST['name'],
 			'json' => $json,
+			'description' => $_POST['description'],
 			'regdate' => date('YmdHis'),
 		]
 	]);

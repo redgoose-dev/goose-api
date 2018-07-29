@@ -31,6 +31,7 @@
 |:---:|:---:|---|---|
 | name | string | `name` | json의 이름 |
 | json | string | `{"foo": "bar"}` | json 데이터 |
+| description | string | `message` | comment |
 
 ## edit json
 - url: `/json/[n]/edit` (n:srl)
@@ -43,6 +44,7 @@
 |:---:|:---:|---|---|
 | name | string | `name` | json의 이름 |
 | json | string | `{"foo": "bar"}` | json 데이터 |
+| description | string | `message` | comment |
 
 ## delete json
 - url: `/json/[n]/delete` (n:srl)

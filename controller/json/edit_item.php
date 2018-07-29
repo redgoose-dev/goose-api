@@ -18,6 +18,9 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
+	// check post values
+	Util::checkExistValue($_POST, [ 'name', 'json' ]);
+
 	// set value
 	$json = null;
 	if (isset($_POST['json']))
@@ -46,6 +49,7 @@ try
 		'data' => [
 			$_POST['name'] ? "name='$_POST[name]'" : '',
 			$_POST['json'] ? "json='$json'" : '',
+			$_POST['description'] ? "description='$_POST[description]'" : '',
 		],
 	]);
 
