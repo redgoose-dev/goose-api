@@ -252,7 +252,7 @@ class Model {
 		$qry = $this->db->query($query);
 		if ($qry)
 		{
-			$result = $qry->fetch(PDO::FETCH_ASSOC);
+			$result = (object)$qry->fetch(PDO::FETCH_ASSOC);
 			if ($result && $op->json_field && count($op->json_field))
 			{
 				$result = self::convertJsonToObject($result, $op->json_field);
