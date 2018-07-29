@@ -48,8 +48,8 @@ try
 		'srl' => (int)$this->params['srl'],
 		'data' => [
 			$_POST['name'] ? "name='$_POST[name]'" : '',
-			$_POST['json'] ? "json='$json'" : '',
 			$_POST['description'] ? "description='$_POST[description]'" : '',
+			$_POST['json'] ? "json='$json'" : '',
 		],
 	]);
 

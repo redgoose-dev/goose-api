@@ -68,8 +68,8 @@ ALTER TABLE `goose_file` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 CREATE TABLE `goose_json` (
   `srl` int(11) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
-  `json` mediumtext,
   `description` varchar(100) DEFAULT NULL,
+  `json` mediumtext,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

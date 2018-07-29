@@ -42,8 +42,8 @@ try
 		'data' => (object)[
 			'srl' => null,
 			'name' => $_POST['name'],
-			'json' => $json,
 			'description' => $_POST['description'],
+			'json' => $json,
 			'regdate' => date('YmdHis'),
 		]
 	]);

@@ -30,8 +30,8 @@
 | key | type | example | description |
 |:---:|:---:|---|---|
 | name | string | `name` | json의 이름 |
-| json | string | `{"foo": "bar"}` | json 데이터 |
 | description | string | `message` | comment |
+| json | string | `{"foo": "bar"}` | json 데이터 |
 
 ## edit json
 - url: `/json/[n]/edit` (n:srl)
@@ -43,8 +43,8 @@
 | key | type | example | description |
 |:---:|:---:|---|---|
 | name | string | `name` | json의 이름 |
-| json | string | `{"foo": "bar"}` | json 데이터 |
 | description | string | `message` | comment |
+| json | string | `{"foo": "bar"}` | json 데이터 |
 
 ## delete json
 - url: `/json/[n]/delete` (n:srl)
