@@ -37,7 +37,7 @@ try
 			'type' => 'user',
 			'user_srl' => $user->srl,
 			'email' => $user->email,
-			'level' => $user->level,
+			'admin' => !!$user->admin,
 			'host' => $_POST['host'],
 		],
 	]);
@@ -46,7 +46,7 @@ try
 	$data->srl = (int)$user->srl;
 	$data->email = $user->email;
 	$data->name = $user->name;
-	$data->level = (int)$user->level;
+	$data->admin = !!$user->admin;
 	$data->token = $jwt->token;
 	$data->host = $_POST['host'];
 

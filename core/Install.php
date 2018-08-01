@@ -198,7 +198,7 @@ class Install {
 						'email' => $defaultEmail,
 						'name' => $defaultName,
 						'pw' => password_hash($defaultPassword, PASSWORD_DEFAULT),
-						'level' => getenv('LEVEL_ADMIN'),
+						'admin' => 1,
 						'regdate' => date('YmdHis')
 					],
 					'debug' => true

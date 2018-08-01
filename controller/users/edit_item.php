@@ -12,6 +12,7 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	// TODO: 이 페이지부터 작업하기..
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{

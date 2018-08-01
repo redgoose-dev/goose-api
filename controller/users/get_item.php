@@ -25,16 +25,19 @@ try
 	// check authorization
 	$token = null;
 	$jwt = Token::get(__TOKEN__);
-	$level = $jwt->data->level ? (int)$jwt->data->level : 0;
+	if ($jwt->data->type !== 'user')
+	{
+		throw new Exception('You are not a logged in user.',401);
+	}
 	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
 	{
-		// (본인) 레벨검사이지만 거의패스
-		$token = Auth::checkAuthorization(0, $model);
+		// 본인일때..
+		$token = Auth::checkAuthorization($model);
 	}
 	else
 	{
-		// (관리자) 레벨검사
-		$token = Auth::checkAuthorization(1, $model);
+		// 자신의 데이터가 아닐때 관리자 검사를 한다.
+		$token = Auth::checkAuthorization($model, 'admin');
 	}
 
 	// set output
@@ -43,7 +46,6 @@ try
 		'model' => $model,
 		'table' => 'user',
 		'srl' => (int)$this->params['srl'],
-		'where' => ' and level<='.$level,
 	], function($result=null) {
 		if (!isset($result->data)) return $result;
 		if (isset($result->data->pw))

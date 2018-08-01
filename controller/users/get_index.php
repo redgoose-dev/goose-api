@@ -22,7 +22,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization(1, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// set where
 	$where = '';
@@ -38,7 +38,10 @@ try
 	{
 		$where .= ' and level='.$level;
 	}
-	$where .= ' and level<='.(int)$token->data->level;
+	if (!$token->data->admin && $token->data->type === 'user')
+	{
+		$where .= ' and srl='.$token->data->user_srl;
+	}
 
 	// output
 	$output = Controller::index((object)[

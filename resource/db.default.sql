@@ -5,6 +5,7 @@ SET time_zone = "+00:00";
 -- table `app`
 CREATE TABLE `goose_app` (
   `srl` tinyint(11) NOT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
   `id` varchar(20) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
@@ -21,13 +22,11 @@ CREATE TABLE `goose_article` (
   `app_srl` tinyint(11) DEFAULT NULL,
   `nest_srl` smallint(11) DEFAULT NULL,
   `category_srl` int(11) DEFAULT NULL,
-  `user_srl` int(11) DEFAULT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `content` longtext,
-  `hit` int(11) DEFAULT NULL,
+  `hit` int(11) DEFAULT 0,
   `json` text,
-  `level_read` tinyint(1) DEFAULT 0 NOT NULL,
-  `level_write` tinyint(1) DEFAULT 1 NOT NULL,
   `ip` varchar(15) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL,
   `modate` varchar(14) DEFAULT NULL
@@ -41,7 +40,8 @@ ALTER TABLE `goose_article` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 CREATE TABLE `goose_category` (
   `srl` int(11) NOT NULL,
   `nest_srl` smallint(11) DEFAULT NULL,
-  `turn` int(11) DEFAULT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
+  `turn` int(11) DEFAULT 0,
   `name` varchar(42) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -53,15 +53,14 @@ ALTER TABLE `goose_category` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 -- table `file`
 CREATE TABLE `goose_file` (
   `srl` int(11) NOT NULL,
-  `article_srl` bigint(11) DEFAULT NULL,
+  `article_srl` int(11) DEFAULT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(120) DEFAULT NULL,
   `loc` varchar(255) DEFAULT NULL,
   `type` varchar(40) DEFAULT NULL,
-  `size` bigint(11) DEFAULT '0',
-  `level_read` tinyint(1) DEFAULT 0 NOT NULL,
-  `level_write` tinyint(1) DEFAULT 1 NOT NULL,
+  `size` bigint(11) DEFAULT 0,
   `regdate` varchar(14) DEFAULT NULL,
-  `ready` int(1) DEFAULT '0',
+  `ready` int(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `goose_file` ADD PRIMARY KEY (`srl`);
@@ -71,6 +70,7 @@ ALTER TABLE `goose_file` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 -- table `json`
 CREATE TABLE `goose_json` (
   `srl` smallint(11) NOT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
   `json` mediumtext,
@@ -84,13 +84,12 @@ ALTER TABLE `goose_json` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
 -- table `nest`
 CREATE TABLE `goose_nest` (
   `srl` smallint(11) NOT NULL,
-  `app_srl` int(11) DEFAULT NULL,
+  `app_srl` tinyint(11) DEFAULT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
   `id` varchar(20) DEFAULT NULL,
   `name` varchar(40) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
   `json` text,
-  `level_read` tinyint(1) DEFAULT 0 NOT NULL,
-  `level_write` tinyint(1) DEFAULT 1 NOT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -104,7 +103,7 @@ CREATE TABLE `goose_user` (
   `email` varchar(60) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
   `pw` varchar(100) DEFAULT NULL,
-  `level` tinyint(1) DEFAULT 0 NOT NULL,
+  `admin` tinyint(1) DEFAULT 0 NOT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

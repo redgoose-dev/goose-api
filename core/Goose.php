@@ -77,6 +77,7 @@ class Goose {
 		$this->params = $this->router->match['params'];
 
 		// set level
+		// TODO: 삭제예정
 		$this->level->public = (int)getenv('LEVEL_PUBLIC');
 		$this->level->admin = (int)getenv('LEVEL_ADMIN');
 

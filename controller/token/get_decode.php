@@ -25,7 +25,7 @@ try
 	// set output
 	$output->code = 200;
 	$output->data = $jwt->data;
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

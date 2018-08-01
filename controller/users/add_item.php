@@ -12,7 +12,7 @@ if (!defined('__GOOSE__')) exit();
  * - @param string name
  * - @param string pw
  * - @param string pw2
- * - @param int level
+ * - @param int admin
  *
  * @var Goose $this
  */
@@ -20,7 +20,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'name', 'email', 'pw', 'level' ]);
+	Util::checkExistValue($_POST, [ 'name', 'email', 'pw' ]);
 
 	// confirm match password
 	if ($_POST['pw'] !== $_POST['pw2'])
@@ -33,7 +33,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'admin');
 
 	// check email address
 	$cnt = $model->getCount((object)[
@@ -58,7 +58,7 @@ try
 				'email' => $_POST['email'],
 				'name' => $_POST['name'],
 				'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
-				'level' => (int)$_POST['level'],
+				'admin' => !!$_POST['admin'] ? 1 : 0,
 				'regdate' => date('YmdHis')
 			]
 		]);
@@ -69,7 +69,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

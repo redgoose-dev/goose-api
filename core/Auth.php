@@ -67,13 +67,12 @@ class Auth {
 	/**
 	 * check authorization
 	 *
-	 * @param int|array $level
 	 * @param Model $getModel
-	 * @param boolean $backdoor
+	 * @param String $checkUserType `null|user|admin`
 	 * @return object 토큰을 재발급 받는다면 리턴으로 나온 토큰주소와 토큰 데이터
 	 * @throws Exception
 	 */
-	public static function checkAuthorization($level=0, $getModel=null, $backdoor=false)
+	public static function checkAuthorization($getModel=null, $checkUserType=null)
 	{
 		try
 		{
@@ -82,38 +81,53 @@ class Auth {
 				throw new Exception('Not found `Authorization` in header');
 			}
 			$jwt = Token::get(__TOKEN__);
-			$jwt_level = (int)($jwt->data->level ? $jwt->data->level : 0);
-			if (!$backdoor)
+
+			// check url
+			if (getenv('PATH_URL') !== $jwt->url)
 			{
-				// check url
-				if (getenv('PATH_URL') !== $jwt->url)
-				{
-					throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
-				}
-				// check token id
-				if (getenv('TOKEN_ID') !== $jwt->token_id)
-				{
-					throw new Exception('Not found `TOKEN_ID`');
-				}
-				// check level
-				if ($level > $jwt_level)
-				{
-					throw new Exception('Error user level');
-				}
-				// check blacklist
-				$model = ($getModel) ? $getModel : self::getModel();
-				// check blacklist token
-				$sign = explode('.', __TOKEN__)[2];
-				$blacklistToken = $model->getCount((object)[
-					'table' => 'token',
-					'where' => 'token LIKE \''.$sign.'\''
-				]);
-				if (!$getModel) $model->disconnect();
-				if ($blacklistToken->data)
-				{
-					throw new Exception('Blacklisted token');
-				}
+				throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
 			}
+
+			// check token id
+			if (getenv('TOKEN_ID') !== $jwt->token_id)
+			{
+				throw new Exception('Not found `TOKEN_ID`');
+			}
+
+			// check user type
+			// 검사할 항목인데 `user`로 설정할때 로그인 토큰이 아니라면 오류를 내보낸다.
+			// `null`이라면 제한없다.
+			switch($checkUserType)
+			{
+				case 'user':
+					if ($jwt->data->type !== 'user')
+					{
+						throw new Exception('You are not a logged in user.');
+					}
+					break;
+				case 'admin':
+					if (!$jwt->data->admin)
+					{
+						throw new Exception('You are not an administrator.');
+					}
+					break;
+			}
+
+			// set model
+			$model = ($getModel) ? $getModel : self::getModel();
+
+			// check blacklist token
+			$sign = explode('.', __TOKEN__)[2];
+			$blacklistToken = $model->getCount((object)[
+				'table' => 'token',
+				'where' => 'token LIKE \''.$sign.'\''
+			]);
+			if (!$getModel) $model->disconnect();
+			if ($blacklistToken->data)
+			{
+				throw new Exception('Blacklisted token');
+			}
+
 			return (object)[
 				'jwt' => $jwt->token,
 				'data' => $jwt->data
