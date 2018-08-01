@@ -52,6 +52,8 @@ try
 			'name' => $_POST['name'],
 			'description' => $_POST['description'],
 			'json' => $json,
+			'level_read' => (int)$_POST['level_read'],
+			'level_write' => (int)$_POST['level_write'],
 			'regdate' => date('YmdHis'),
 		]
 	]);

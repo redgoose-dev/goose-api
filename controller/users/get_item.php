@@ -25,15 +25,16 @@ try
 	// check authorization
 	$token = null;
 	$jwt = Token::get(__TOKEN__);
+	$level = $jwt->data->level ? (int)$jwt->data->level : 0;
 	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
 	{
-		// 사용자 레벨 검사
-		$token = Auth::checkAuthorization((int)$jwt->data->level, $model);
+		// (본인) 레벨검사이지만 거의패스
+		$token = Auth::checkAuthorization(0, $model);
 	}
 	else
 	{
-		// 관리자 레벨 검사
-		$token = Auth::checkAuthorization($this->level->admin, $model);
+		// (관리자) 레벨검사
+		$token = Auth::checkAuthorization(1, $model);
 	}
 
 	// set output
@@ -42,6 +43,7 @@ try
 		'model' => $model,
 		'table' => 'user',
 		'srl' => (int)$this->params['srl'],
+		'where' => ' and level<='.$level,
 	], function($result=null) {
 		if (!isset($result->data)) return $result;
 		if (isset($result->data->pw))
@@ -52,7 +54,7 @@ try
 	});
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token->jwt) $output->_token = $token->jwt;
 
 	// output data
 	Output::data($output);

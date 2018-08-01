@@ -153,6 +153,7 @@ class Controller {
 		 * @param string $op->table
 		 * @param int $op->srl
 		 * @param array $op->json_field
+		 * @param string $op->where
 		 *
 		 * # url params guide
 		 * @param string field
@@ -174,7 +175,7 @@ class Controller {
 			'table' => $op->table,
 			'field' => $_GET['field'],
 			'json_field' => $op->json_field,
-			'where' => 'srl='.(int)$op->srl,
+			'where' => 'srl='.(int)$op->srl.$op->where,
 			'debug' => __DEBUG__,
 		]);
 		// 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.

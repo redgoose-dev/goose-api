@@ -70,7 +70,7 @@ class Auth {
 	 * @param int|array $level
 	 * @param Model $getModel
 	 * @param boolean $backdoor
-	 * @return string 토큰을 재발급 받는다면 리턴으로 나온 토큰주소
+	 * @return object 토큰을 재발급 받는다면 리턴으로 나온 토큰주소와 토큰 데이터
 	 * @throws Exception
 	 */
 	public static function checkAuthorization($level=0, $getModel=null, $backdoor=false)
@@ -114,7 +114,10 @@ class Auth {
 					throw new Exception('Blacklisted token');
 				}
 			}
-			return $jwt->token;
+			return (object)[
+				'jwt' => $jwt->token,
+				'data' => $jwt->data
+			];
 		}
 		catch(Exception $e)
 		{

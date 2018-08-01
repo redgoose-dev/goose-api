@@ -25,6 +25,8 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin, $model);
 
+	// TODO: articles, categories 데이터 삭제
+
 	// remove item
 	$output = Controller::delete((object)[
 		'goose' => $this,

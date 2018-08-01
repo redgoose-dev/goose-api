@@ -55,6 +55,9 @@ try
 		$where .= ' and content LIKE \'%'.$content.'%\'';
 	}
 
+	// TODO: 조회할때 nest 에서 레벨검사 필요함
+	// TODO: 사용자 토큰이 있으면 거기에 맞는 레벨값을 사용하고 없으면 0으로 레벨검사 해야함.
+
 	// set output
 	$output = Controller::index((object)[
 		'model' => $model,

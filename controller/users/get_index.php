@@ -22,7 +22,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization(1, $model);
 
 	// set where
 	$where = '';
@@ -38,6 +38,7 @@ try
 	{
 		$where .= ' and level='.$level;
 	}
+	$where .= ' and level<='.(int)$token->data->level;
 
 	// output
 	$output = Controller::index((object)[
@@ -60,7 +61,7 @@ try
 	});
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token->jwt) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

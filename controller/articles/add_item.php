@@ -13,7 +13,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'category_srl', 'user_srl', 'title', 'content' ]);
+	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'user_srl', 'title', 'content' ]);
 
 	// set model
 	$model = new Model();
@@ -25,6 +25,8 @@ try
 	// filtering text
 	$_POST['title'] = htmlspecialchars(addslashes($_POST['title']));
 	$_POST['content'] = addslashes($_POST['content']);
+
+	// TODO: nest가 존재하는지 검사해야함.
 
 	// set output
 	$output = Controller::add((object)[

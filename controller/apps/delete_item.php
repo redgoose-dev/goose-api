@@ -25,6 +25,10 @@ try
 	// check authorization
 	$token = Auth::checkAuthorization($this->level->admin, $model);
 
+	// TODO: 파라메터를 하나 더 만들어서 데이터 삭제할지 선택권 만들어야함.
+	// TODO: 하위 데이터를 삭제한다면 nests, categories, articles 삭제하기
+	// TODO: 하위 데이터를 삭제안한다면 nests, articles 에 있는 app_srl 값 삭제하기
+
 	// remove item
 	$output = Controller::delete((object)[
 		'goose' => $this,

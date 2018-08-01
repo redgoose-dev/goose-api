@@ -89,16 +89,6 @@ class Install {
 		{
 			throw new Exception('The `/data/upload` directory permission is invalid.');
 		}
-
-		// check `/data/settings`
-		if (!is_dir(__PATH__.'/data/settings'))
-		{
-			throw new Exception('The directory `/data/settings` does not exist.');
-		}
-		if (!is_writable(__PATH__.'/data/settings'))
-		{
-			throw new Exception('The `/data/settings` directory permission is invalid.');
-		}
 	}
 
 	/**
@@ -174,16 +164,6 @@ class Install {
 			{
 				Util::createDirectory(__PATH__.'/data', 0707);
 				Util::createDirectory(__PATH__.'/data/upload', 0707);
-				Util::createDirectory(__PATH__.'/data/settings', 0707);
-
-				// copy and change permission setting files
-				$openSettingsDir = opendir(__PATH__.'/resource/settings.default');
-				while (false !== ($file = readdir($openSettingsDir))) {
-					if ($file != "." && $file != "..") {
-						copy(__PATH__.'/resource/settings.default/'.$file, __PATH__.'/data/settings/'.$file);
-						chmod(__PATH__.'/data/settings/'.$file, 0707);
-					}
-				}
 			}
 			catch(Exception $e)
 			{

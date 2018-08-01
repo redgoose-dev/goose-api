@@ -28,6 +28,8 @@ try
 	$model = new Model();
 	$model->connect();
 
+	// TODO: 조회할때 nest 에서 레벨검사 필요함
+
 	// set output
 	$output = Controller::item((object)[
 		'goose' => $this,

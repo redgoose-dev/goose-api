@@ -15,7 +15,7 @@
 |:---:|:---:|---|---|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `foo` | 이름 |
-| level | number | `100` | 유저 레벨 |
+| level | number | `1` | 유저 레벨 |
 
 ## get user
 - url: `/users/[n]` (n:srl)
