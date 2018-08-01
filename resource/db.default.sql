@@ -103,7 +103,7 @@ CREATE TABLE `goose_user` (
   `email` varchar(60) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
   `pw` varchar(100) DEFAULT NULL,
-  `admin` tinyint(1) DEFAULT 0 NOT NULL,
+  `admin` tinyint(1) DEFAULT 1 NOT NULL,
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

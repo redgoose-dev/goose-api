@@ -16,11 +16,11 @@ class Util {
 	 */
 	public static function getParameter($str='')
 	{
-		if ($_POST[$str])
+		if (isset($_POST[$str]))
 		{
 			return $_POST[$str];
 		}
-		else if ($_GET[$str])
+		else if (isset($_GET[$str]))
 		{
 			return $_GET[$str];
 		}

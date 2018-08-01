@@ -38,17 +38,18 @@ class Goose {
 		try
 		{
 			// check $target
-			if (!$this->target) throw new Exception('Not found target', 404);
+			if (!$this->target)
+			{
+				throw new Exception('Not found target', 404);
+			}
 
 			// search controller
-			if (file_exists(__PATH__.'/controller/'.$this->target.'.php'))
-			{
-				require __PATH__.'/controller/'.$this->target.'.php';
-			}
-			else
+			if (!file_exists(__PATH__.'/controller/'.$this->target.'.php'))
 			{
 				throw new Exception('Not found controller', 404);
 			}
+
+			require __PATH__.'/controller/'.$this->target.'.php';
 		}
 		catch(Exception $e)
 		{

@@ -15,26 +15,36 @@ try
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
-
-	// check user count
-	// 관리자 사용자가 하나도 없으면 안되기 때문에 검사하기
+	// check data
 	$cnt = $model->getCount((object)[
 		'table' => 'user',
-		'where' => '`level`>='.$this->level->admin,
-		'debug' => true,
-	]);
-	if ($cnt->data < 2)
+		'where' => 'srl='.(int)$this->params['srl'],
+	])->data;
+	if (!$cnt) throw new Exception('No user data.', 204);
+
+	// check authorization
+	$token = null;
+	$jwt = Token::get(__TOKEN__);
+	if ($jwt->data->type !== 'user')
 	{
-		throw new Exception('You can not delete the administrator user because it is gone.', 204);
+		throw new Exception('You are not a logged in user.',204);
+	}
+	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
+	{
+		// 본인일때..
+		$token = Auth::checkAuthorization($model);
+	}
+	else
+	{
+		// 자신의 데이터가 아닐때 관리자 검사를 한다.
+		$token = Auth::checkAuthorization($model, 'admin');
 	}
 
 	// remove item
@@ -46,7 +56,7 @@ try
 	]);
 
 	// set output
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

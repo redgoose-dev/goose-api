@@ -8,27 +8,31 @@
 ## get apps list
 - url: `/apps`
 - method: GET
-- token level: public
 
-다음은 `apps`에서 사용하는 파라메터 목록입니다.
+사용하는 파라메터 목록
 
 | name | type | example | description |
 |:---:|:---:|---|---|
 | id | string | `goose_app` | id |
 | name | string | `Goose` | name |
 | description | string | `app description` | description |
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져온다. |
 
 ## get app
 - url: `/apps/[n]` (n:srl)
 - method: GET
-- token level: public
+
+사용하는 파라메터 목록
+
+| name | type | example | description |
+|:---:|:---:|---|---|
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져온다. |
 
 ## add app
 - url: `/apps`
 - method: POST
-- token level: admin
 
-데이터를 추가할때 사용하는 body 항목입니다.
+데이터를 추가할때 사용하는 body 항목
 
 | key | type | example | description |
 |:---:|:---:|---|---|
@@ -39,9 +43,8 @@
 ## edit app
 - url: `/apps/[n]/edit` (n:srl)
 - method: POST
-- token level: admin
 
-데이터를 수정할때 사용하는 body 항목입니다.
+데이터를 수정할때 사용하는 body 항목
 
 | key | type | example | description |
 |:---:|:---:|---|---|
@@ -52,4 +55,9 @@
 ## delete app
 - url: `/apps/[n]/delete` (n:srl)
 - method: POST
-- token level: admin
+
+데이터를 수정할때 사용하는 body 항목
+
+| key | type | example | description |
+|:---:|:---:|---|---|
+| remove_children | number | `0,1` | 하위 데이터들(nests,articles,categories,files)을 삭제할지에 대한 여부 |

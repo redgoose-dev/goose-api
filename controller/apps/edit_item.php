@@ -28,19 +28,28 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// check id
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+
+	// if not admin
+	if (!$token->data->admin)
+	{
+		// check self data
+		if ((int)$token->data->user_srl !== (int)$this->params['srl'])
+		{
+			throw new Exception('It is not your data.', 401);
+		}
+	}
+
+	// check app id
 	$check_id = $model->getCount((object)[
 		'table' => 'app',
 		'where' => "id LIKE '$_POST[id]' and srl!=".(int)$this->params['srl'],
-		'debug' => true
 	]);
 	if (!!$check_id->data)
 	{
 		throw new Exception('The same name `id` is registered.', 204);
 	}
-
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// set output
 	try
@@ -63,7 +72,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

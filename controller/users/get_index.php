@@ -34,9 +34,9 @@ try
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
-	if ($level = Util::getParameter('level'))
+	if ($admin = Util::getParameter('admin'))
 	{
-		$where .= ' and level='.$level;
+		$where .= ' and admin='.(int)$admin;
 	}
 	if (!$token->data->admin && $token->data->type === 'user')
 	{

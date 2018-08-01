@@ -58,7 +58,7 @@ try
 				'email' => $_POST['email'],
 				'name' => $_POST['name'],
 				'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
-				'admin' => !!$_POST['admin'] ? 1 : 0,
+				'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
 				'regdate' => date('YmdHis')
 			]
 		]);

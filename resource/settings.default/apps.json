@@ -1,7 +1,0 @@
-{
-	"name": "apps",
-	"title": "App",
-	"description": "둥지를 그룹화시켜 관리하는 모듈입니다. 프로젝트 그룹으로 사용하는것을 권장합니다.",
-	"skin": "default",
-	"listStyle": "card"
-}

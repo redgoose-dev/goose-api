@@ -23,11 +23,23 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
-	// TODO: 파라메터를 하나 더 만들어서 데이터 삭제할지 선택권 만들어야함.
+	// if not admin
+	if (!$token->data->admin)
+	{
+		// check self data
+		if ((int)$token->data->user_srl !== (int)$this->params['srl'])
+		{
+			throw new Exception('It is not your data.', 401);
+		}
+	}
+
+	// TODO: 현재는 app만 삭제하도록 되어있음
+	// TODO: 파라메터를 하나 더 만들어서 데이터 삭제할지 선택권 만들어야함. (remove_children)
 	// TODO: 하위 데이터를 삭제한다면 nests, categories, articles 삭제하기
 	// TODO: 하위 데이터를 삭제안한다면 nests, articles 에 있는 app_srl 값 삭제하기
+	// TODO: 만약 하위 데이터를 삭제안한다면 어떻게 할지도 생각해야함. (app_srl을 null로 변경한다던지, 옵션을 빼고 몽땅 삭제한다던지 결정 필요함.)
 
 	// remove item
 	$output = Controller::delete((object)[
@@ -38,7 +50,7 @@ try
 	]);
 
 	// set output
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

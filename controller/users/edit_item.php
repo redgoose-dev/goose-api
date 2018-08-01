@@ -12,42 +12,43 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// TODO: 이 페이지부터 작업하기..
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
 
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set model
 	$model = new Model();
 	$model->connect();
 
-	// set user value
-	$user_token = Token::get(__TOKEN__)->data;
-	$user_db = $model->getItem((object)[
+	// check data
+	$cnt = $model->getCount((object)[
 		'table' => 'user',
-		'field' => 'srl,level',
 		'where' => 'srl='.(int)$this->params['srl'],
 	])->data;
+	if (!$cnt) throw new Exception('No user data.', 204);
 
-	// not admin
-	if ($this->level->admin > (int)$user_token->level)
+	// check authorization
+	$token = null;
+	$jwt = Token::get(__TOKEN__);
+	if ($jwt->data->type !== 'user')
 	{
-		// if not self
-		if ((int)$user_token->user_srl !== (int)$user_db->srl)
-		{
-			throw new Exception('Error user level', 204);
-		}
-		// blank level
-		$_POST['level'] = null;
+		throw new Exception('You are not a logged in user.',204);
+	}
+	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
+	{
+		// 본인일때..
+		$token = Auth::checkAuthorization($model);
+	}
+	else
+	{
+		// 자신의 데이터가 아닐때 관리자 검사를 한다.
+		$token = Auth::checkAuthorization($model, 'admin');
 	}
 
 	// check email address
-	if ($_POST['email'])
+	if (!!$_POST['email'])
 	{
 		$cnt = $model->getCount((object)[
 			'table' => 'user',
@@ -71,7 +72,7 @@ try
 			'data' => [
 				$_POST['email'] ? "email='$_POST[email]'" : '',
 				$_POST['name'] ? "name='$_POST[name]'" : '',
-				$_POST['level'] ? "level='$_POST[level]'" : '',
+				($_POST['admin'] && $jwt->data->admin) ? "admin=".(int)$_POST['admin'] : '',
 			],
 		]);
 	}
@@ -81,7 +82,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

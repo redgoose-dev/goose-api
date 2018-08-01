@@ -25,18 +25,18 @@ try
 	$model = new Model();
 	$model->connect();
 
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+
 	// check id
-	$check_id = $model->getCount((object)[
+	$cnt = $model->getCount((object)[
 		'table' => 'app',
 		'where' => "id LIKE '$_POST[id]'",
 	]);
-	if (!!$check_id->data)
+	if (!!$cnt->data)
 	{
 		throw new Exception('The same name `id` is registered.', 204);
 	}
-
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
 
 	// set output
 	try
@@ -47,6 +47,7 @@ try
 			'table' => 'app',
 			'data' => (object)[
 				'srl' => null,
+				'user_srl' => (int)$token->data->user_srl,
 				'id' => $_POST['id'],
 				'name' => $_POST['name'],
 				'description' => $_POST['description'],
@@ -60,7 +61,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

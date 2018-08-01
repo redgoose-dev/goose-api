@@ -15,7 +15,7 @@ try
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// check post values
@@ -32,7 +32,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization(0, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	try
 	{
@@ -57,7 +57,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

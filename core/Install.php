@@ -198,7 +198,7 @@ class Install {
 						'email' => $defaultEmail,
 						'name' => $defaultName,
 						'pw' => password_hash($defaultPassword, PASSWORD_DEFAULT),
-						'admin' => 1,
+						'admin' => 2,
 						'regdate' => date('YmdHis')
 					],
 					'debug' => true

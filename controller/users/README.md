@@ -7,7 +7,6 @@
 ## get users list
 - url: `/users`
 - method: GET
-- token level: public
 
 다음은 이 요청에서 사용하는 파라메터 목록
 
@@ -15,12 +14,11 @@
 |:---:|:---:|---|---|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `foo` | 이름 |
-| level | number | `1` | 유저 레벨 |
+| admin | number | `0,1` | 관리자 유무 |
 
 ## get user
 - url: `/users/[n]` (n:srl)
 - method: GET
-- token level: public
 
 ## add user
 - url: `/users`
@@ -35,7 +33,7 @@
 | name | string | `name` | name |
 | pw | string | `1234` | 비밀번호 |
 | pw2 | string | `1234` | 비밀번호 확인 |
-| level | number | `{"foo": "bar"}` | 유저 레벨. 설정된 관리자 레벨보다 낮으면 일부 기능을 사용할 수 없습니다. |
+| admin | number | `0,1` | 관리자 사용유무 |
 
 ## edit user
 - url: `/nests/[n]/edit` (n:srl)
@@ -48,7 +46,7 @@
 |:---:|:---:|---|---|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `name` | name |
-| level | number | `{"foo": "bar"}` | 유저 레벨. 설정된 관리자 레벨보다 낮으면 일부 기능을 사용할 수 없습니다. |
+| admin | number | `0,1` | 관리자 사용유무 |
 
 ## delete user
 - url: `/users/[n]/delete` (n:srl)
@@ -60,7 +58,8 @@
 - method: POST
 - token level: admin
 
-비밀번호를 변경합니다. 거기에 필요한 body 항목입니다.
+비밀번호를 변경합니다. 다음은 필요한 body 항목입니다.  
+기존 패스워드를 맞춰야지 변경할 수 있음을 주의해주세요. (관리자라도 기존 패스워드를 모르면 변경할 수 없습니다.)
 
 | key | type | example | description |
 |:---:|:---:|---|---|
