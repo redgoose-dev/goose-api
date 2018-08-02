@@ -24,7 +24,7 @@ try
 
 	// check exist nest
 	$nestCount = $model->getCount((object)[
-		'table' => 'nest',
+		'table' => 'nests',
 		'where' => 'srl='.(int)$_POST['nest_srl'],
 		'debug' => __DEBUG__,
 	]);
@@ -34,7 +34,7 @@ try
 	}
 
 	// get max turn
-	$max = 'select max(turn) as maximum from '.$model->getTableName('category').' where nest_srl='.(int)$_POST['nest_srl'];
+	$max = 'select max(turn) as maximum from '.$model->getTableName('categories').' where nest_srl='.(int)$_POST['nest_srl'];
 	$max = $model->db->prepare($max);
 	$max->execute();
 	$max = (int)$max->fetchColumn();
@@ -44,7 +44,7 @@ try
 	$output = Controller::add((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'category',
+		'table' => 'categories',
 		'data' => (object)[
 			'srl' => null,
 			'nest_srl' => $_POST['nest_srl'],

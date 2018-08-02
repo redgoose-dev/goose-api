@@ -31,7 +31,7 @@ try
 	foreach ($srls as $k=>$v)
 	{
 		$model->edit((object)[
-			'table' => 'category',
+			'table' => 'categories',
 			'where' => 'srl='.$v,
 			'data' => [ 'turn='.$k ],
 			'debug' => true

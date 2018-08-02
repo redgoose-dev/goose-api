@@ -25,7 +25,7 @@ try
 
 	// get datas
 	$get_tokens = $model->getItems((object)[
-		'table' => 'token',
+		'table' => 'tokens',
 		'field' => 'srl',
 		'where' => 'expired < '.time()
 	]);
@@ -34,7 +34,7 @@ try
 	{
 		$v = (object)$v;
 		$model->delete((object)[
-			'table' => 'token',
+			'table' => 'tokens',
 			'where' => 'srl='.(int)$v->srl,
 			'debug' => __DEBUG__,
 		]);

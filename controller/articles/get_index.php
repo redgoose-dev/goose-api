@@ -21,12 +21,12 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set model
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($model);
 
 	// set where
 	$where = '';
@@ -55,14 +55,22 @@ try
 		$where .= ' and content LIKE \'%'.$content.'%\'';
 	}
 
-	// TODO: 조회할때 nest 에서 레벨검사 필요함
-	// TODO: 사용자 토큰이 있으면 거기에 맞는 레벨값을 사용하고 없으면 0으로 레벨검사 해야함.
+	// check access
+	if ($_GET['strict'])
+	{
+		$token = Auth::checkAuthorization($model, 'user');
+		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
+	}
+	else
+	{
+		$token = Auth::checkAuthorization($model);
+	}
 
 	// set output
 	$output = Controller::index((object)[
-		'model' => $model,
 		'goose' => $this,
-		'table' => 'article',
+		'model' => $model,
+		'table' => 'articles',
 		'where' => $where,
 		'json_field' => ['json']
 	]);
@@ -74,7 +82,7 @@ try
 		{
 			if (!$v->category_srl) continue;
 			$category = $model->getItem((object)[
-				'table' => 'category',
+				'table' => 'categories',
 				'field' => 'name',
 				'where' => 'srl='.(int)$v->category_srl,
 			]);
@@ -86,7 +94,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

@@ -15,7 +15,7 @@ class Model {
 	public function __construct()
 	{
 		$this->db = null;
-		$this->prefix = getenv('DEFAULT_TABLE_PREFIX');
+		$this->prefix = 'goose_';
 	}
 
 	/**

@@ -48,7 +48,7 @@ try
 		'goose' => $this,
 		'model' => $model,
 		'auth' => true,
-		'table' => 'user',
+		'table' => 'users',
 		'where' => $where,
 	], function($result=null) {
 		if (!isset($result->data)) return $result;

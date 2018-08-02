@@ -16,7 +16,7 @@
 | id | string | `goose_app` | id |
 | name | string | `Goose` | name |
 | description | string | `app description` | description |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져온다. |
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 ## get app
 - url: `/apps/[n]` (n:srl)
@@ -26,7 +26,7 @@
 
 | name | type | example | description |
 |:---:|:---:|---|---|
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져온다. |
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 ## add app
 - url: `/apps`

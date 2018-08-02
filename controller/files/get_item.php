@@ -24,7 +24,7 @@ try
 	// set output
 	$output = Controller::item((object)[
 		'goose' => $this,
-		'table' => 'file',
+		'table' => 'files',
 		'srl' => (int)$this->params['srl'],
 	]);
 

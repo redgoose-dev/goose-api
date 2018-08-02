@@ -29,7 +29,7 @@ try
 	$output = Controller::edit((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'article',
+		'table' => 'articles',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
 			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',

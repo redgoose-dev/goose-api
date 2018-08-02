@@ -29,10 +29,18 @@ try
 
 		if (!$token->data->admin)
 		{
+			// get user_srl
+			$app = $model->getItem((object)[
+				'table' => 'apps',
+				'field' => 'user_srl',
+				'where' => 'srl='.(int)$this->params['srl'],
+			]);
+			$user_srl = $app->data ? $app->data->user_srl : null;
+
 			// check user srl
-			if ((int)$token->data->user_srl !== (int)$this->params['srl'])
+			if ((int)$token->data->user_srl !== (int)$user_srl)
 			{
-				throw new Exception('It is not your data.', 401);
+				throw new Exception('You can not access data.', 401);
 			}
 		}
 	}
@@ -45,7 +53,7 @@ try
 	$output = Controller::item((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'app',
+		'table' => 'apps',
 		'srl' => (int)$this->params['srl'],
 	]);
 

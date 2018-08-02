@@ -29,7 +29,7 @@ try
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'article',
+		'table' => 'articles',
 		'srl' => (int)$this->params['srl'],
 	]);
 

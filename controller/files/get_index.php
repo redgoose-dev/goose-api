@@ -51,7 +51,7 @@ try
 	// set output
 	$output = Controller::index((object)[
 		'goose' => $this,
-		'table' => 'file',
+		'table' => 'files',
 		'where' => $where
 	]);
 

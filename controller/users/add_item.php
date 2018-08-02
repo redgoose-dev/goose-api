@@ -37,9 +37,8 @@ try
 
 	// check email address
 	$cnt = $model->getCount((object)[
-		'table' => 'user',
-		'where' => 'email="'.$_POST['email'].'"',
-		'debug' => __DEBUG__
+		'table' => 'users',
+		'where' => 'email="'.$_POST['email'].'"'
 	]);
 	if (isset($cnt->data) && $cnt->data > 0)
 	{
@@ -52,7 +51,7 @@ try
 		$output = Controller::add((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'user',
+			'table' => 'users',
 			'data' => (object)[
 				'srl' => null,
 				'email' => $_POST['email'],

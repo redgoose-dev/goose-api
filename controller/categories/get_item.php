@@ -29,7 +29,7 @@ try
 	$output = Controller::item((object)[
 		'model' => $model,
 		'goose' => $this,
-		'table' => 'category',
+		'table' => 'categories',
 		'srl' => (int)$this->params['srl'],
 	]);
 
@@ -37,7 +37,7 @@ try
 	if ($output->data && Util::checkKeyInExtField('count_article'))
 	{
 		$cnt = $model->getCount((object)[
-			'table' => 'article',
+			'table' => 'articles',
 			'where' => 'category_srl='.(int)$output->data->srl,
 		]);
 		$output->data->count_article = $cnt->data;

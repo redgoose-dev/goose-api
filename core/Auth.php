@@ -52,7 +52,7 @@ class Auth {
 
 		// get user data
 		$user = $op->model->getItem((object)[
-			'table' => 'user',
+			'table' => 'users',
 			'where' => $where,
 			'debug' => __DEBUG__,
 		]);
@@ -108,7 +108,7 @@ class Auth {
 				case 'admin':
 					if (!$jwt->data->admin)
 					{
-						throw new Exception('You are not an administrator.');
+						throw new Exception('You can not access.');
 					}
 					break;
 			}
@@ -119,7 +119,7 @@ class Auth {
 			// check blacklist token
 			$sign = explode('.', __TOKEN__)[2];
 			$blacklistToken = $model->getCount((object)[
-				'table' => 'token',
+				'table' => 'tokens',
 				'where' => 'token LIKE \''.$sign.'\''
 			]);
 			if (!$getModel) $model->disconnect();

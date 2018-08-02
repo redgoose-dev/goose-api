@@ -35,12 +35,7 @@ try
 	if ($_GET['strict'])
 	{
 		$token = Auth::checkAuthorization($model, 'user');
-
-		if (!$token->data->admin)
-		{
-			// 엄격한 모드와 관리자가 아닌 상태라면 자신의 데이터만 가져온다.
-			$where .= ' and user_srl='.(int)$token->data->user_srl;
-		}
+		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
 	}
 	else
 	{
@@ -51,7 +46,7 @@ try
 	$output = Controller::index((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'app',
+		'table' => 'apps',
 		'where' => $where,
 	]);
 

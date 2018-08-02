@@ -192,7 +192,7 @@ class Install {
 			try
 			{
 				$model->add((object)[
-					'table' => 'user',
+					'table' => 'users',
 					'data' => (object)[
 						'srl' => null,
 						'email' => $defaultEmail,

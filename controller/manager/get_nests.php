@@ -20,7 +20,7 @@ try
 	$model->connect();
 
 	// get apps
-	$apps = $model->getItems((object)[ 'table' => 'app' ]);
+	$apps = $model->getItems((object)[ 'table' => 'apps' ]);
 	if (!isset($apps->data))
 	{
 		throw new Exception('Not found apps.', 404);
@@ -29,7 +29,7 @@ try
 	foreach ($apps->data as $k=>$v)
 	{
 		$nests = $model->getItems((object)[
-			'table' => 'nest',
+			'table' => 'nests',
 			'where' => 'app_srl='.(int)$v->srl,
 			'json_field' => ['json'],
 		]);
@@ -44,7 +44,7 @@ try
 
 	// add no app
 	$nests = $model->getItems((object)[
-		'table' => 'nest',
+		'table' => 'nests',
 		'where' => 'app_srl IS NULL',
 		'json_field' => ['json'],
 	]);

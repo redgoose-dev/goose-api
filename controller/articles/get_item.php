@@ -34,7 +34,7 @@ try
 	$output = Controller::item((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'article',
+		'table' => 'articles',
 		'json_field' => ['json'],
 		'srl' => (int)$this->params['srl'],
 	]);
@@ -43,7 +43,7 @@ try
 	if ($output->data && Util::checkKeyInExtField('category_name'))
 	{
 		$category = $model->getItem((object)[
-			'table' => 'category',
+			'table' => 'categories',
 			'field' => 'name',
 			'where' => 'srl='.(int)$output->data->category_srl,
 		]);
@@ -58,7 +58,7 @@ try
 	{
 		$hit = (int)$output->data->hit + 1;
 		$model->edit((object)[
-			'table' => 'article',
+			'table' => 'articles',
 			'where' => 'srl='.(int)$this->params['srl'],
 			'data' => [ "hit='$hit'" ]
 		]);

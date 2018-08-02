@@ -157,7 +157,7 @@ function resetPassword()
 
 		// search user
 		$user = $model->getCount((object)[
-			'table' => 'user',
+			'table' => 'users',
 			'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
 			'debug' => true
 		]);
@@ -174,7 +174,7 @@ function resetPassword()
 
 		// update password
 		$update = $model->edit((object)[
-			'table' => 'user',
+			'table' => 'users',
 			'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
 			'data' => [ "pw='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
 			'debug' => true,

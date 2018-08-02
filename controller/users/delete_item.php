@@ -24,7 +24,7 @@ try
 
 	// check data
 	$cnt = $model->getCount((object)[
-		'table' => 'user',
+		'table' => 'users',
 		'where' => 'srl='.(int)$this->params['srl'],
 	])->data;
 	if (!$cnt) throw new Exception('No user data.', 204);
@@ -51,7 +51,7 @@ try
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'user',
+		'table' => 'users',
 		'srl' => (int)$this->params['srl'],
 	]);
 

@@ -30,7 +30,7 @@ try
 	 */
 	// get item
 	$file = $model->getItem((object)[
-		'table' => 'file',
+		'table' => 'files',
 		'field' => 'loc',
 		'where' => 'srl='.(int)$this->params['srl'],
 		'debug' => __DEBUG__,
@@ -49,7 +49,7 @@ try
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'file',
+		'table' => 'files',
 		'srl' => (int)$this->params['srl'],
 	]);
 

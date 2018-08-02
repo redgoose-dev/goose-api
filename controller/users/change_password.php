@@ -46,7 +46,7 @@ try
 		$output = Controller::edit((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'user',
+			'table' => 'users',
 			'srl' => (int)$this->params['srl'],
 			'data' => [ "pw='".password_hash($_POST['new_pw'], PASSWORD_DEFAULT)."'" ],
 		]);

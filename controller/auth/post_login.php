@@ -13,18 +13,23 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	// check post values
+	Util::checkExistValue($_POST, [ 'email', 'pw', 'host' ]);
+
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check authorization
-	Auth::checkAuthorization();
+	Auth::checkAuthorization($model);
 
 	// set values
 	$output = (object)[];
 	$data = (object)[];
 
-	// check post values
-	Util::checkExistValue($_POST, [ 'email', 'pw', 'host' ]);
-
 	// get user data
 	$user = Auth::login((object)[
+		'model' => $model,
 		'email' => $_POST['email'],
 		'password' => $_POST['pw']
 	]);

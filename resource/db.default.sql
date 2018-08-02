@@ -2,8 +2,8 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
--- table `app`
-CREATE TABLE `goose_app` (
+-- table `apps`
+CREATE TABLE `goose_apps` (
   `srl` tinyint(11) NOT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
   `id` varchar(20) DEFAULT NULL,
@@ -12,12 +12,12 @@ CREATE TABLE `goose_app` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_app` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
-ALTER TABLE `goose_app` MODIFY `srl` tinyint(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_apps` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
+ALTER TABLE `goose_apps` MODIFY `srl` tinyint(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `article`
-CREATE TABLE `goose_article` (
+-- table `articles`
+CREATE TABLE `goose_articles` (
   `srl` int(11) NOT NULL,
   `app_srl` tinyint(11) DEFAULT NULL,
   `nest_srl` smallint(11) DEFAULT NULL,
@@ -32,12 +32,12 @@ CREATE TABLE `goose_article` (
   `modate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_article` ADD PRIMARY KEY (`srl`);
-ALTER TABLE `goose_article` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_articles` ADD PRIMARY KEY (`srl`);
+ALTER TABLE `goose_articles` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `category`
-CREATE TABLE `goose_category` (
+-- table `categories`
+CREATE TABLE `goose_categories` (
   `srl` int(11) NOT NULL,
   `nest_srl` smallint(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
@@ -46,12 +46,12 @@ CREATE TABLE `goose_category` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_category` ADD PRIMARY KEY (`srl`);
-ALTER TABLE `goose_category` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_categories` ADD PRIMARY KEY (`srl`);
+ALTER TABLE `goose_categories` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `file`
-CREATE TABLE `goose_file` (
+-- table `files`
+CREATE TABLE `goose_files` (
   `srl` int(11) NOT NULL,
   `article_srl` int(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
@@ -63,8 +63,8 @@ CREATE TABLE `goose_file` (
   `ready` int(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_file` ADD PRIMARY KEY (`srl`);
-ALTER TABLE `goose_file` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_files` ADD PRIMARY KEY (`srl`);
+ALTER TABLE `goose_files` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 
 -- table `json`
@@ -81,8 +81,8 @@ ALTER TABLE `goose_json` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_json` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `nest`
-CREATE TABLE `goose_nest` (
+-- table `nests`
+CREATE TABLE `goose_nests` (
   `srl` smallint(11) NOT NULL,
   `app_srl` tinyint(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
@@ -93,12 +93,12 @@ CREATE TABLE `goose_nest` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_nest` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
-ALTER TABLE `goose_nest` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_nests` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
+ALTER TABLE `goose_nests` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `user`
-CREATE TABLE `goose_user` (
+-- table `users`
+CREATE TABLE `goose_users` (
   `srl` smallint(11) NOT NULL,
   `email` varchar(60) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
@@ -107,16 +107,16 @@ CREATE TABLE `goose_user` (
   `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_user` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `email` (`email`);
-ALTER TABLE `goose_user` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_users` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `email` (`email`);
+ALTER TABLE `goose_users` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
 
 
--- table `token`
-CREATE TABLE `goose_token` (
+-- table `tokens`
+CREATE TABLE `goose_tokens` (
   `srl` smallint(11) NOT NULL,
   `token` varchar(100) DEFAULT NULL,
   `expired` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `goose_token` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `token` (`token`);
-ALTER TABLE `goose_token` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `goose_tokens` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `token` (`token`);
+ALTER TABLE `goose_tokens` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;

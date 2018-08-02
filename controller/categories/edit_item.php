@@ -29,7 +29,7 @@ try
 	if ($_POST['nest_srl'])
 	{
 		$nestCount = $model->getCount((object)[
-			'table' => 'nest',
+			'table' => 'nests',
 			'where' => 'srl='.(int)$_POST['nest_srl'],
 			'debug' => __DEBUG__,
 		]);
@@ -43,7 +43,7 @@ try
 	$output = Controller::edit((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'category',
+		'table' => 'categories',
 		'srl' => (int)$this->params['srl'],
 		'data' => [
 			$_POST['nest_srl'] ? "nest_srl='$_POST[nest_srl]'" : '',

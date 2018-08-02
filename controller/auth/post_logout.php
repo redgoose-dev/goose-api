@@ -37,17 +37,17 @@ try
 
 	// check blacklist token
 	$blacklistToken = $model->getCount((object)[
-		'table' => 'token',
+		'table' => 'tokens',
 		'where' => 'token LIKE \''.$sign.'\''
 	]);
 	if ($blacklistToken->data)
 	{
-		throw new Exception('Blacklist has token.');
+		throw new Exception('Blacklist has tokens.');
 	}
 
 	// add token to blacklist
 	$model->add((object)[
-		'table' => 'token',
+		'table' => 'tokens',
 		'data' => (object)[
 			'srl' => null,
 			'token' => $sign,

@@ -38,7 +38,7 @@ try
 	$output = Controller::index((object)[
 		'model' => $model,
 		'goose' => $this,
-		'table' => 'category',
+		'table' => 'categories',
 		'where' => $where
 	]);
 
@@ -50,7 +50,7 @@ try
 			foreach ($output->data->index as $k=>$v)
 			{
 				$cnt = $model->getCount((object)[
-					'table' => 'article',
+					'table' => 'articles',
 					'where' => 'category_srl='.(int)$v->srl,
 				]);
 				$output->data->index[$k]->count_article = $cnt->data;
@@ -70,9 +70,8 @@ try
 			if (Util::checkKeyInExtField('count_article'))
 			{
 				$cnt = $model->getCount((object)[
-					'table' => 'article',
+					'table' => 'articles',
 					'where' => $nest ? 'nest_srl='.$nest : null,
-					'debug' => true
 				]);
 				$item->count_article = $cnt->data;
 			}

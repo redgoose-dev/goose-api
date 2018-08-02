@@ -44,7 +44,7 @@ try
 	$output = Controller::item((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'user',
+		'table' => 'users',
 		'srl' => (int)$this->params['srl'],
 	], function($result=null) {
 		if (!isset($result->data)) return $result;

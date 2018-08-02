@@ -122,7 +122,7 @@ try
 		{
 			$model->add((object)[
 				'goose' => $this,
-				'table' => 'file',
+				'table' => 'files',
 				'data' => (object)[
 					'srl' => null,
 					'article_srl' => isset($article_srls) ? (int)$article_srls[$k] : null,

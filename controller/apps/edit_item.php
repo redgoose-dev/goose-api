@@ -37,13 +37,13 @@ try
 		// check self data
 		if ((int)$token->data->user_srl !== (int)$this->params['srl'])
 		{
-			throw new Exception('It is not your data.', 401);
+			throw new Exception('You can not access data.', 401);
 		}
 	}
 
 	// check app id
 	$check_id = $model->getCount((object)[
-		'table' => 'app',
+		'table' => 'apps',
 		'where' => "id LIKE '$_POST[id]' and srl!=".(int)$this->params['srl'],
 	]);
 	if (!!$check_id->data)
@@ -57,7 +57,7 @@ try
 		$output = Controller::edit((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'app',
+			'table' => 'apps',
 			'srl' => (int)$this->params['srl'],
 			'data' => [
 				$_POST['id'] ? "id='$_POST[id]'" : '',

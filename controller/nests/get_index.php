@@ -17,33 +17,46 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
+	// set model
+	$model = new Model();
+	$model->connect();
 
+	// set where
 	$where = '';
-	if ($app = Util::getParameter('app'))
+	if ($app = $_GET['app'])
 	{
-		$where .= ($app === 'NULL') ? ' and app_srl IS NULL' : ' and app_srl='.$app;
+		$where .= ($app === 'null' || $app === 'NULL') ? ' and app_srl IS NULL' : ' and app_srl='.$app;
 	}
-	if ($id = Util::getParameter('id'))
+	if ($id = $_GET['id'])
 	{
 		$where .= ' and id LIKE \''.$id.'\'';
 	}
-	if ($name = Util::getParameter('name'))
+	if ($name = $_GET['name'])
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
+	}
+
+	// check access
+	if ($_GET['strict'])
+	{
+		$token = Auth::checkAuthorization($model, 'user');
+		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
+	}
+	else
+	{
+		$token = Auth::checkAuthorization($model);
 	}
 
 	// output
 	$output = Controller::index((object)[
 		'goose' => $this,
-		'table' => 'nest',
+		'table' => 'nests',
 		'where' => $where,
 		'json_field' => ['json']
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

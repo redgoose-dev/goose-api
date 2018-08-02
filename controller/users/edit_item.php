@@ -24,7 +24,7 @@ try
 
 	// check data
 	$cnt = $model->getCount((object)[
-		'table' => 'user',
+		'table' => 'users',
 		'where' => 'srl='.(int)$this->params['srl'],
 	])->data;
 	if (!$cnt) throw new Exception('No user data.', 204);
@@ -32,26 +32,20 @@ try
 	// check authorization
 	$token = null;
 	$jwt = Token::get(__TOKEN__);
-	if ($jwt->data->type !== 'user')
-	{
-		throw new Exception('You are not a logged in user.',204);
-	}
 	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
 	{
-		// 본인일때..
-		$token = Auth::checkAuthorization($model);
+		$token = Auth::checkAuthorization($model, 'user'); // self
 	}
 	else
 	{
-		// 자신의 데이터가 아닐때 관리자 검사를 한다.
-		$token = Auth::checkAuthorization($model, 'admin');
+		$token = Auth::checkAuthorization($model, 'admin'); // admin
 	}
 
 	// check email address
 	if (!!$_POST['email'])
 	{
 		$cnt = $model->getCount((object)[
-			'table' => 'user',
+			'table' => 'users',
 			'where' => 'email="'.$_POST['email'].'" and srl!='.(int)$this->params['srl'],
 			'debug' => __DEBUG__
 		]);
@@ -67,7 +61,7 @@ try
 		$output = Controller::edit((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'user',
+			'table' => 'users',
 			'srl' => (int)$this->params['srl'],
 			'data' => [
 				$_POST['email'] ? "email='$_POST[email]'" : '',

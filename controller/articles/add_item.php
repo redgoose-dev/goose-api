@@ -13,26 +13,38 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'user_srl', 'title', 'content' ]);
+	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'title', 'content' ]);
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// filtering text
 	$_POST['title'] = htmlspecialchars(addslashes($_POST['title']));
+	// TODO: `content`에서 `json`으로 들어오는 경우에 문제가 일어날 수 있기 때문에 사용에 옵션을 둬야할 수 있음.
 	$_POST['content'] = addslashes($_POST['content']);
 
-	// TODO: nest가 존재하는지 검사해야함.
+	// check nest
+	$cnt = $model->getCount((object)[
+		'table' => 'nests',
+		'where' => 'srl='.(int)$_POST['nest_srl'],
+		'debug' => true
+	]);
+	if (!$cnt->data)
+	{
+		throw new Exception('There is no `nest` data.', 204);
+	}
+
+	// TODO: check app
 
 	// set output
 	$output = Controller::add((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'article',
+		'table' => 'articles',
 		'data' => (object)[
 			'srl' => null,
 			'app_srl' => $_POST['app_srl'],
@@ -46,11 +58,11 @@ try
 			'ip' => ($_SERVER['REMOTE_ADDR'] !== '::1') ? $_SERVER['REMOTE_ADDR'] : 'localhost',
 			'regdate' => date('YmdHis'),
 			'modate' => date('YmdHis'),
-		],
+		]
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

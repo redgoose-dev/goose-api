@@ -30,7 +30,7 @@ try
 
 	// check id
 	$cnt = $model->getCount((object)[
-		'table' => 'app',
+		'table' => 'apps',
 		'where' => "id LIKE '$_POST[id]'",
 	]);
 	if (!!$cnt->data)
@@ -44,7 +44,7 @@ try
 		$output = Controller::add((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'app',
+			'table' => 'apps',
 			'data' => (object)[
 				'srl' => null,
 				'user_srl' => (int)$token->data->user_srl,

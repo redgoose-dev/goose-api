@@ -15,24 +15,34 @@ try
 	// check srl
 	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
-
-	// if not admin
-	if (!$token->data->admin)
+	// get app data
+	$app = $model->getItem((object)[
+		'table' => 'apps',
+		'field' => 'user_srl',
+		'where' => 'srl='.(int)$this->params['srl'],
+	]);
+	if (!$app = $app->data)
 	{
-		// check self data
-		if ((int)$token->data->user_srl !== (int)$this->params['srl'])
-		{
-			throw new Exception('It is not your data.', 401);
-		}
+		throw new Exception('There is no `apps` data.', 204);
+	}
+
+	// check authorization
+	$token = null;
+	$jwt = Token::get(__TOKEN__);
+	if ((int)$jwt->data->user_srl === (int)$app->user_srl)
+	{
+		$token = Auth::checkAuthorization($model, 'user'); // self
+	}
+	else
+	{
+		$token = Auth::checkAuthorization($model, 'admin'); // admin
 	}
 
 	// TODO: 현재는 app만 삭제하도록 되어있음
@@ -45,7 +55,7 @@ try
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'app',
+		'table' => 'apps',
 		'srl' => (int)$this->params['srl'],
 	]);
 

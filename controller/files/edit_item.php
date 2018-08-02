@@ -33,7 +33,7 @@ try
 		 */
 		// get item
 		$file = $model->getItem((object)[
-			'table' => 'file',
+			'table' => 'files',
 			'field' => 'loc',
 			'where' => 'srl='.(int)$this->params['srl'],
 			'debug' => __DEBUG__,
@@ -115,7 +115,7 @@ try
 	if ($_POST['article_srl'])
 	{
 		$cnt = $model->getCount((object)[
-			'table' => 'article',
+			'table' => 'articles',
 			'where' => 'srl='.(int)$_POST['article_srl'],
 		]);
 		if (!$cnt->data)
@@ -140,7 +140,7 @@ try
 	$output = Controller::edit((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'file',
+		'table' => 'files',
 		'srl' => (int)$this->params['srl'],
 		'data' => $data,
 	]);
