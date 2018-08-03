@@ -15,28 +15,34 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
-	{
-		throw new Exception('Not found srl', 500);
-	}
+	$tableName = 'articles';
+	$srl = (int)$this->params['srl'];
 
-	// check authorization
-	$token = Auth::checkAuthorization();
+	// check srl
+	if (!($srl && $srl > 0))
+	{
+		throw new Exception('Not found srl', 204);
+	}
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
-	// TODO: 조회할때 nest 에서 레벨검사 필요함
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+		'useStrict' => true,
+	]);
 
 	// set output
 	$output = Controller::item((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'articles',
+		'table' => $tableName,
 		'json_field' => ['json'],
-		'srl' => (int)$this->params['srl'],
+		'srl' => $srl,
 	]);
 
 	// get category name
@@ -58,14 +64,14 @@ try
 	{
 		$hit = (int)$output->data->hit + 1;
 		$model->edit((object)[
-			'table' => 'articles',
-			'where' => 'srl='.(int)$this->params['srl'],
+			'table' => $tableName,
+			'where' => 'srl='.$srl,
 			'data' => [ "hit='$hit'" ]
 		]);
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

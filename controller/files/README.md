@@ -4,12 +4,12 @@
 
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
+
 ## get files list
 - url: `/files`
 - method: GET
-- token level: public
 
-다음은 이 요청에서 사용하는 파라메터 목록
+사용하는 파라메터 목록
 
 | name | type | example | description |
 |:---:|:---:|---|---|
@@ -17,16 +17,23 @@
 | name | string | `filename` | filename |
 | type | string | `png` | file type |
 | ready | string | `true,false` | 대기상태 |
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
 
 ## get file
 - url: `/files/[n]` (n:srl)
 - method: GET
-- token level: public
+
+사용하는 파라메터 목록
+
+| name | type | example | description |
+|:---:|:---:|---|---|
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
 
 ## add file
 - url: `/files`
 - method: POST
-- token level: admin
 
 서버에 파일을 업로드하고 데이터베이스에 등록합니다.  
 전송할때 `multipart`형식으로 전송합니다.
@@ -37,10 +44,10 @@
 | ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 
+
 ## edit file
 - url: `/files/[n]/edit` (n:srl)
 - method: POST
-- token level: admin
 
 서버에 파일을 삭제하고 다시 업로드하고나서 데이터베이스에서 수정합니다.  
 전송할때 `multipart`형식으로 전송합니다.
@@ -51,15 +58,15 @@
 | ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 
+
 ## delete file
 - url: `/files/[n]/delete` (n:srl)
 - method: POST
-- token level: admin
+
 
 ## upload file
 - url: `/files/upload-file`
 - method: POST
-- token level: admin
 
 데이터베이스에 등록하지 않고 서버에 파일을 업로드할 수 있습니다.
 
@@ -68,10 +75,10 @@
 | sub_dir | string | `thumbnail` | 서브 디렉토리 이름 |
 | file | File,string | | 업로드할 파일입니다. multipart에서 File로 넣거나 base64 문자열로 넣어서 업로드할 수 있습니다. |
 
+
 ## remove file
 - url: `/files/remove-file`
 - method: POST
-- token level: admin
 
 데이터베이스에 등록하지 않고 서버에 파일을 삭제합니다.
 

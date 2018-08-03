@@ -21,9 +21,6 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
-
 	// set where
 	$where = '';
 	if ($email = Util::getParameter('email'))
@@ -38,7 +35,10 @@ try
 	{
 		$where .= ' and admin='.(int)$admin;
 	}
-	if (!$token->data->admin && $token->data->type === 'user')
+
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+	if (!$token->data->admin)
 	{
 		$where .= ' and srl='.$token->data->user_srl;
 	}

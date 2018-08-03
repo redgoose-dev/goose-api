@@ -18,24 +18,25 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
+	// set model
+	$model = new Model();
+	$model->connect();
 
 	// set where
 	$where = '';
-	if ($article = Util::getParameter('article'))
+	if ($article = $_GET['article'])
 	{
 		$where .= ' and article_srl='.$article;
 	}
-	if ($name = Util::getParameter('name'))
+	if ($name = $_GET['name'])
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
-	if ($type = Util::getParameter('type'))
+	if ($type = $_GET['type'])
 	{
 		$where .= ' and type LIKE \'%'.$type.'%\'';
 	}
-	if ($ready = Util::getParameter('ready'))
+	if ($ready = $_GET['ready'])
 	{
 		switch ($ready)
 		{
@@ -47,6 +48,10 @@ try
 				break;
 		}
 	}
+
+	// check access
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller::index((object)[

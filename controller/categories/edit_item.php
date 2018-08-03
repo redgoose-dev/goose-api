@@ -12,47 +12,60 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'categories';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+	]);
 
 	// check exist nest
-	if ($_POST['nest_srl'])
+	if (isset($_POST['nest_srl']))
 	{
-		$nestCount = $model->getCount((object)[
+		$cnt = $model->getCount((object)[
 			'table' => 'nests',
 			'where' => 'srl='.(int)$_POST['nest_srl'],
-			'debug' => __DEBUG__,
 		]);
-		if (!$nestCount->data)
+		if (!$cnt->data)
 		{
-			throw new Exception('There is no `nest` data.', 500);
+			throw new Exception('There is no `nest` data.', 204);
 		}
 	}
 
 	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'categories',
-		'srl' => (int)$this->params['srl'],
-		'data' => [
-			$_POST['nest_srl'] ? "nest_srl='$_POST[nest_srl]'" : '',
-			$_POST['name'] ? "name='$_POST[name]'" : '',
-		],
-	]);
+	try
+	{
+		$output = Controller::edit((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => $tableName,
+			'srl' => $srl,
+			'data' => [
+				isset($_POST['nest_srl']) ? 'nest_srl='.(int)$_POST['nest_srl'] : '',
+				isset($_POST['name']) ? "name='$_POST[name]'" : '',
+			],
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed edit category', 204);
+	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

@@ -20,42 +20,50 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// check exist nest
-	$nestCount = $model->getCount((object)[
+	$cnt = $model->getCount((object)[
 		'table' => 'nests',
 		'where' => 'srl='.(int)$_POST['nest_srl'],
-		'debug' => __DEBUG__,
 	]);
-	if (!$nestCount->data)
+	if (!$cnt->data)
 	{
-		throw new Exception('There is no `nest` data.', 500);
+		throw new Exception('There is no `nest` data.', 204);
 	}
 
 	// get max turn
-	$max = 'select max(turn) as maximum from '.$model->getTableName('categories').' where nest_srl='.(int)$_POST['nest_srl'];
+	$tableName = $model->getTableName('categories');
+	$max = 'select max(turn) as maximum from '.$tableName.' where nest_srl='.(int)$_POST['nest_srl'];
 	$max = $model->db->prepare($max);
 	$max->execute();
 	$max = (int)$max->fetchColumn();
 	$max += 1;
 
 	// set output
-	$output = Controller::add((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'categories',
-		'data' => (object)[
-			'srl' => null,
-			'nest_srl' => $_POST['nest_srl'],
-			'turn' => $max,
-			'name' => $_POST['name'],
-			'regdate' => date('YmdHis'),
-		]
-	]);
+	try
+	{
+		$output = Controller::add((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'categories',
+			'data' => (object)[
+				'srl' => null,
+				'nest_srl' => $_POST['nest_srl'],
+				'user_srl' => (int)$token->data->user_srl,
+				'turn' => $max,
+				'name' => $_POST['name'],
+				'regdate' => date('YmdHis'),
+			]
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed add category', 204);
+	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

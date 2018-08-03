@@ -32,24 +32,31 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// set output
-	$output = Controller::add((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'json',
-		'data' => (object)[
-			'srl' => null,
-			'name' => $_POST['name'],
-			'description' => $_POST['description'],
-			'json' => $json,
-			'regdate' => date('YmdHis'),
-		]
-	]);
+	try
+	{
+		$output = Controller::add((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'json',
+			'data' => (object)[
+				'srl' => null,
+				'name' => $_POST['name'],
+				'description' => $_POST['description'],
+				'json' => $json,
+				'regdate' => date('YmdHis'),
+			]
+		]);
+	}
+	catch(Exception $e)
+	{
+		throw new Exception('Failed add json.', 204);
+	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

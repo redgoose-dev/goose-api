@@ -12,25 +12,37 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'json';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
-	// check authorization
-	$token = Auth::checkAuthorization();
+	// set model
+	$model = new Model();
+	$model->connect();
+
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+		'useStrict' => true,
+	]);
 
 	// set output
 	$output = Controller::item((object)[
 		'goose' => $this,
-		'table' => 'json',
-		'srl' => (int)$this->params['srl'],
+		'table' => $tableName,
+		'srl' => $srl,
 		'json_field' => ['json'],
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output data
 	Output::data($output);

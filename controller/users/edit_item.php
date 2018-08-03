@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'users';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
@@ -22,34 +25,29 @@ try
 	$model = new Model();
 	$model->connect();
 
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+	if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
+	{
+		throw new Exception('You can not access.', 401);
+	}
+
 	// check data
 	$cnt = $model->getCount((object)[
-		'table' => 'users',
-		'where' => 'srl='.(int)$this->params['srl'],
-	])->data;
-	if (!$cnt) throw new Exception('No user data.', 204);
-
-	// check authorization
-	$token = null;
-	$jwt = Token::get(__TOKEN__);
-	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
-	{
-		$token = Auth::checkAuthorization($model, 'user'); // self
-	}
-	else
-	{
-		$token = Auth::checkAuthorization($model, 'admin'); // admin
-	}
+		'table' => $tableName,
+		'where' => 'srl='.$srl,
+	]);
+	if (!$cnt->data) throw new Exception('No user data.', 204);
 
 	// check email address
 	if (!!$_POST['email'])
 	{
 		$cnt = $model->getCount((object)[
-			'table' => 'users',
-			'where' => 'email="'.$_POST['email'].'" and srl!='.(int)$this->params['srl'],
+			'table' => $tableName,
+			'where' => 'email="'.$_POST['email'].'" and srl!='.$srl,
 			'debug' => __DEBUG__
 		]);
-		if (isset($cnt->data) && $cnt->data > 0)
+		if (!!$cnt->data)
 		{
 			throw new Exception('The email address already exists.', 204);
 		}
@@ -61,8 +59,8 @@ try
 		$output = Controller::edit((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'users',
-			'srl' => (int)$this->params['srl'],
+			'table' => $tableName,
+			'srl' => $srl,
 			'data' => [
 				$_POST['email'] ? "email='$_POST[email]'" : '',
 				$_POST['name'] ? "name='$_POST[name]'" : '',

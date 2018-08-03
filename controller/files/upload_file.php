@@ -16,6 +16,13 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	// set model
+	$model = new Model();
+	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+
 	// set values
 	$subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : 'user';
 	$month = date('Ym');
@@ -36,14 +43,14 @@ try
 		// check file size
 		if ((int)$file['size'] > (int)getenv('FILE_LIMIT_SIZE'))
 		{
-			throw new Exception('The attachment size exceeds the allowable limit.');
+			throw new Exception('The attachment size exceeds the allowable limit.', 204);
 		}
 
 		// check filename
 		$file['name'] = File::checkFilename($file['name'], false);
 		if (!$file['name'])
 		{
-			throw new Exception('This file is a format that is not allowed.');
+			throw new Exception('This file is a format that is not allowed.', 204);
 		}
 
 		// check exist file
@@ -57,7 +64,7 @@ try
 
 		if (!($file['tmp_name'] && is_dir($path_absolute_dest)))
 		{
-			throw new Exception('upload error');
+			throw new Exception('upload error', 204);
 		}
 
 		// copy file
@@ -90,7 +97,7 @@ try
 		}
 		else
 		{
-			throw new Exception('Only jpg and png files can be uploaded.');
+			throw new Exception('Only jpg and png files can be uploaded.', 204);
 		}
 		$imgData = str_replace(' ', '+', $imgData);
 		$imgSource = base64_decode($imgData);
@@ -98,14 +105,14 @@ try
 		// check file size
 		if ((int)strlen($imgSource) > (int)getenv('FILE_LIMIT_SIZE'))
 		{
-			throw new Exception('The attachment size exceeds the allowable limit.');
+			throw new Exception('The attachment size exceeds the allowable limit.', 204);
 		}
 
 		// check filename
 		$filename = File::checkFilename($filename, false);
 		if (!$filename)
 		{
-			throw new Exception('This file is a format that is not allowed.');
+			throw new Exception('This file is a format that is not allowed.', 204);
 		}
 
 		// check exist file
@@ -120,7 +127,7 @@ try
 		// check dest dir
 		if (!is_dir($path_absolute_dest))
 		{
-			throw new Exception('upload error');
+			throw new Exception('upload error', 204);
 		}
 
 		// upload file
@@ -136,13 +143,14 @@ try
 	}
 	else
 	{
-		throw new Exception('No value to upload.');
+		throw new Exception('No value to upload.', 204);
 	}
 
 	// set output
 	$output = (object)[];
 	$output->code = 200;
 	$output->data = $data;
+	if ($token) $output->_token = $token->jwt;
 
 	Output::data($output);
 }

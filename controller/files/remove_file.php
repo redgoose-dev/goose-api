@@ -14,10 +14,17 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	// set model
+	$model = new Model();
+	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
+
 	// check value
 	if (!$_POST['path'])
 	{
-		throw new Exception('The value `path` does not exist.');
+		throw new Exception('The value `path` does not exist.', 204);
 	}
 
 	// set path
@@ -26,7 +33,7 @@ try
 	// check exist file
 	if (!file_exists($path))
 	{
-		throw new Exception('There are no files in this path.');
+		throw new Exception('There are no files in this path.', 204);
 	}
 
 	// delete file
@@ -35,6 +42,7 @@ try
 	// set output
 	$output = (object)[];
 	$output->code = 200;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

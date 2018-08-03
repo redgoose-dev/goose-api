@@ -15,15 +15,20 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set where
 	$where = '';
 	if ($name = Util::getParameter('name'))
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
+
+	// set model
+	$model = new Model();
+	$model->connect();
+
+	// check access
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// output
 	$output = Controller::index((object)[
@@ -34,7 +39,7 @@ try
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

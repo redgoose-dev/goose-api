@@ -15,7 +15,7 @@ try
 	// check file
 	if (!($_FILES['files'] && $_FILES['files']['name']))
 	{
-		throw new Exception('No files found.');
+		throw new Exception('No files found.', 204);
 	}
 
 	// set model
@@ -23,7 +23,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// set ready
 	if (isset($_POST['article_srls']))
@@ -126,6 +126,7 @@ try
 				'data' => (object)[
 					'srl' => null,
 					'article_srl' => isset($article_srls) ? (int)$article_srls[$k] : null,
+					'user-srl' => (int)$token->data->user_srl,
 					'name' => $file['name'][$k],
 					'loc' => $path.'/'.$month.'/'.$file['name'][$k],
 					'type' => $file['type'][$k],
@@ -133,7 +134,6 @@ try
 					'regdate' => date("YmdHis"),
 					'ready' => $ready,
 				],
-				'debug' => __DEBUG__,
 			]);
 
 			// set result
@@ -162,12 +162,11 @@ try
 	// set token
 	$output = (object)[];
 	$output->code = 200;
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 	$output->data = $result;
 
 	// output data
 	Output::data($output);
-
 }
 catch (Exception $e)
 {

@@ -42,7 +42,7 @@ try
 			'type' => 'user',
 			'user_srl' => $user->srl,
 			'email' => $user->email,
-			'admin' => !!$user->admin,
+			'admin' => !!($user->admin === 2),
 			'host' => $_POST['host'],
 		],
 	]);

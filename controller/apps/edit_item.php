@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'apps';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
@@ -28,23 +31,17 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
-
-	// if not admin
-	if (!$token->data->admin)
-	{
-		// check self data
-		if ((int)$token->data->user_srl !== (int)$this->params['srl'])
-		{
-			throw new Exception('You can not access data.', 401);
-		}
-	}
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+	]);
 
 	// check app id
 	$check_id = $model->getCount((object)[
-		'table' => 'apps',
-		'where' => "id LIKE '$_POST[id]' and srl!=".(int)$this->params['srl'],
+		'table' => $tableName,
+		'where' => "id LIKE '$_POST[id]' and srl!=".$srl,
 	]);
 	if (!!$check_id->data)
 	{
@@ -57,8 +54,8 @@ try
 		$output = Controller::edit((object)[
 			'goose' => $this,
 			'model' => $model,
-			'table' => 'apps',
-			'srl' => (int)$this->params['srl'],
+			'table' => $tableName,
+			'srl' => $srl,
 			'data' => [
 				$_POST['id'] ? "id='$_POST[id]'" : '',
 				$_POST['name'] ? "name='$_POST[name]'" : '',

@@ -12,25 +12,33 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'categories';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 500);
 	}
-
-	// check authorization
-	$token = Auth::checkAuthorization();
 
 	// set model
 	$model = new Model();
 	$model->connect();
 
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+		'useStrict' => true,
+	]);
+
 	// set output
 	$output = Controller::item((object)[
-		'model' => $model,
 		'goose' => $this,
-		'table' => 'categories',
-		'srl' => (int)$this->params['srl'],
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
 	]);
 
 	// get article count
@@ -44,7 +52,7 @@ try
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output data
 	Output::data($output);

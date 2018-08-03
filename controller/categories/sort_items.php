@@ -22,7 +22,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	$token = Auth::checkAuthorization($model, 'admin');
 
 	// set srls
 	$srls = explode(',', $_POST['srls']);
@@ -41,7 +41,7 @@ try
 	// set output
 	$output = (object)[];
 	$output->code = 200;
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

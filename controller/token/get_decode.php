@@ -13,11 +13,15 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set values
-	$output = (object)[];
+	// set model
+	$model = new Model();
+	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization();
+	$token = Auth::checkAuthorization($model, 'user');
+
+	// set values
+	$output = (object)[];
 
 	// get decode token
 	$jwt = Token::get(__TOKEN__);

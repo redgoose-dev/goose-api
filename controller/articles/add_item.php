@@ -31,14 +31,34 @@ try
 	$cnt = $model->getCount((object)[
 		'table' => 'nests',
 		'where' => 'srl='.(int)$_POST['nest_srl'],
-		'debug' => true
 	]);
 	if (!$cnt->data)
 	{
-		throw new Exception('There is no `nest` data.', 204);
+		throw new Exception('There is no `nests` data.', 204);
 	}
 
-	// TODO: check app
+	// check app
+	$cnt = $model->getCount((object)[
+		'table' => 'apps',
+		'where' => 'srl='.(int)$_POST['app_srl'],
+	]);
+	if (!$cnt->data)
+	{
+		throw new Exception('There is no `apps` data.', 204);
+	}
+
+	// check category
+	if (isset($_POST['category_srl']))
+	{
+		$cnt = $model->getCount((object)[
+			'table' => 'categories',
+			'where' => 'srl='.(int)$_POST['category_srl'],
+		]);
+		if (!$cnt->data)
+		{
+			throw new Exception('There is no `categories` data.', 204);
+		}
+	}
 
 	// set output
 	$output = Controller::add((object)[
@@ -50,7 +70,7 @@ try
 			'app_srl' => $_POST['app_srl'],
 			'nest_srl' => $_POST['nest_srl'],
 			'category_srl' => $_POST['category_srl'],
-			'user_srl' => $_POST['user_srl'],
+			'user-srl' => (int)$token->data->user_srl,
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],
 			'hit' => 0,

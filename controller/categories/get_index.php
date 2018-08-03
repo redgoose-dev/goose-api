@@ -16,33 +16,34 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set model
 	$model = new Model();
 	$model->connect();
 
 	// set where
 	$where = '';
-	if ($nest = (int)Util::getParameter('nest'))
+	if ($nest = (int)$_GET['nest'])
 	{
 		$where .= ' and nest_srl='.$nest;
 	}
-	if ($name = Util::getParameter('name'))
+	if ($name = $_GET['name'])
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
 
+	// check access
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+
 	// set output
 	$output = Controller::index((object)[
-		'model' => $model,
 		'goose' => $this,
+		'model' => $model,
 		'table' => 'categories',
 		'where' => $where
 	]);
 
-	if ($output->data)
+	if ($output->data && isset($_GET['ext_field']))
 	{
 		// get article count
 		if (Util::checkKeyInExtField('count_article'))
@@ -75,14 +76,13 @@ try
 				]);
 				$item->count_article = $cnt->data;
 			}
-
 			// add item
 			array_unshift($output->data->index, $item);
 		}
 	}
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

@@ -325,4 +325,70 @@ class Controller {
 		return $output;
 	}
 
+	/**
+	 * check access item
+	 * 하나의 데이터를 가져오면서 접근할 수 있는지 검사한다.
+	 * 하는김에 데이터를 가져오고 토큰 검사하면서 토큰 decode값을 가져오면서 리턴해준다.
+	 *
+	 * @param object $op
+	 * @return object token
+	 * @throws Exception
+	 */
+	public static function checkAccessItem($op=null)
+	{
+		/**
+		 * $op guide
+		 *
+		 * @param Model    $op->model
+		 * @param string   $op->table
+		 * @param int      $op->srl
+		 * @param boolean  $op->useStrict  getItem 상황이라면 꼭 사용한다.
+		 */
+
+		if (!($op->model && $op->table && $op->srl))
+		{
+			throw new Exception('No parameter.', 204);
+		}
+
+		if (!!$op->useStrict && !($_GET['strict'] || $_POST['strict']))
+		{
+			// strict 검사를 하면서 strict값이 없을때..
+			return Auth::checkAuthorization($op->model);
+		}
+
+		// get data
+		$res = $op->model->getItem((object)[
+			'table' => $op->table,
+			'field' => $op->field ? $op->field : 'user_srl',
+			'where' => 'srl='.(int)$op->srl,
+		]);
+		if (!$res->data) throw new Exception('No data.', 404);
+
+		// check authorization
+		$token = Auth::checkAuthorization($op->model, 'user');
+		// check data and user_srl
+		if (!$token->data->admin && ((int)$token->data->user_srl !== (int)$res->data->user_srl))
+		{
+			throw new Exception('You can not access data.', 401);
+		}
+		return $token;
+	}
+
+	/**
+	 * check access index
+	 *
+	 * @param Model $model
+	 * @param boolean useStrict
+	 * @return object token
+	 * @throws Exception
+	 */
+	public static function checkAccessIndex($model=null, $useStrict=false)
+	{
+		if (!$model) throw new Exception('No model', 204);
+
+		// `$op->useStrict`가 있는 상태에서 `strict=false` 이거나 $op->useStrict가 없으면 public
+		$param = (($useStrict && !$_GET['strict']) || !$useStrict) ? '' : 'user';
+
+		return Auth::checkAuthorization($model, $param);
+	}
 }

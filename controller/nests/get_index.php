@@ -37,15 +37,8 @@ try
 	}
 
 	// check access
-	if ($_GET['strict'])
-	{
-		$token = Auth::checkAuthorization($model, 'user');
-		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
-	}
-	else
-	{
-		$token = Auth::checkAuthorization($model);
-	}
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// output
 	$output = Controller::index((object)[

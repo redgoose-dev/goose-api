@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'apps';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
@@ -22,28 +25,12 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// get app data
-	$app = $model->getItem((object)[
-		'table' => 'apps',
-		'field' => 'user_srl',
-		'where' => 'srl='.(int)$this->params['srl'],
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
 	]);
-	if (!$app = $app->data)
-	{
-		throw new Exception('There is no `apps` data.', 204);
-	}
-
-	// check authorization
-	$token = null;
-	$jwt = Token::get(__TOKEN__);
-	if ((int)$jwt->data->user_srl === (int)$app->user_srl)
-	{
-		$token = Auth::checkAuthorization($model, 'user'); // self
-	}
-	else
-	{
-		$token = Auth::checkAuthorization($model, 'admin'); // admin
-	}
 
 	// TODO: 현재는 app만 삭제하도록 되어있음
 	// TODO: 파라메터를 하나 더 만들어서 데이터 삭제할지 선택권 만들어야함. (remove_children)
@@ -55,8 +42,8 @@ try
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'apps',
-		'srl' => (int)$this->params['srl'],
+		'table' => $tableName,
+		'srl' => $srl,
 	]);
 
 	// set output

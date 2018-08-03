@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'users';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
@@ -24,35 +27,24 @@ try
 
 	// check data
 	$cnt = $model->getCount((object)[
-		'table' => 'users',
-		'where' => 'srl='.(int)$this->params['srl'],
-	])->data;
-	if (!$cnt) throw new Exception('No user data.', 204);
+		'table' => $tableName,
+		'where' => 'srl='.$srl,
+	]);
+	if (!$cnt->data) throw new Exception('No user data.', 204);
 
 	// check authorization
-	$token = null;
-	$jwt = Token::get(__TOKEN__);
-	if ($jwt->data->type !== 'user')
+	$token = Auth::checkAuthorization($model, 'user');
+	if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
 	{
-		throw new Exception('You are not a logged in user.',204);
-	}
-	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
-	{
-		// 본인일때..
-		$token = Auth::checkAuthorization($model);
-	}
-	else
-	{
-		// 자신의 데이터가 아닐때 관리자 검사를 한다.
-		$token = Auth::checkAuthorization($model, 'admin');
+		throw new Exception('You can not access.', 401);
 	}
 
 	// remove item
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'users',
-		'srl' => (int)$this->params['srl'],
+		'table' => $tableName,
+		'srl' => $srl,
 	]);
 
 	// set output

@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'json';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 500);
 	}
@@ -37,15 +40,19 @@ try
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($this->level->admin, $model);
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => $tableName,
+		'srl' => $srl,
+	]);
 
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'json',
-		'srl' => (int)$this->params['srl'],
+		'table' => $tableName,
+		'srl' => $srl,
 		'data' => [
 			$_POST['name'] ? "name='$_POST[name]'" : '',
 			$_POST['description'] ? "description='$_POST[description]'" : '',
@@ -54,7 +61,7 @@ try
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

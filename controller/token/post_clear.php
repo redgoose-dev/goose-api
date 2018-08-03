@@ -13,15 +13,15 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set values
-	$output = (object)[];
-
-	// check authorization
-	Auth::checkAuthorization($this->level->admin);
-
 	// set model
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'admin');
+
+	// set values
+	$output = (object)[];
 
 	// get datas
 	$get_tokens = $model->getItems((object)[
@@ -42,6 +42,7 @@ try
 
 	// set output
 	$output->code = 200;
+	if ($token) $output->_token = $token->jwt;
 
 	// disconnect db
 	$model->disconnect();

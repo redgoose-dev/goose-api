@@ -16,10 +16,6 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
-
 	// set where
 	$where = '';
 	if ($id = $_GET['id'])
@@ -31,16 +27,13 @@ try
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check access
-	if ($_GET['strict'])
-	{
-		$token = Auth::checkAuthorization($model, 'user');
-		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
-	}
-	else
-	{
-		$token = Auth::checkAuthorization($model);
-	}
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller::index((object)[

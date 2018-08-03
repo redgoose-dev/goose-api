@@ -12,8 +12,11 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
+	$tableName = 'users';
+	$srl = (int)$this->params['srl'];
+
 	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
+	if (!($srl && $srl > 0))
 	{
 		throw new Exception('Not found srl', 204);
 	}
@@ -23,35 +26,22 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = null;
-	$jwt = Token::get(__TOKEN__);
-	if ($jwt->data->type !== 'user')
+	$token = Auth::checkAuthorization($model, 'user');
+	if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
 	{
-		throw new Exception('You are not a logged in user.',401);
-	}
-	if ((int)$jwt->data->user_srl === (int)$this->params['srl'])
-	{
-		// 본인일때..
-		$token = Auth::checkAuthorization($model);
-	}
-	else
-	{
-		// 자신의 데이터가 아닐때 관리자 검사를 한다.
-		$token = Auth::checkAuthorization($model, 'admin');
+		throw new Exception('You can not access.', 401);
 	}
 
 	// set output
 	$output = Controller::item((object)[
 		'goose' => $this,
 		'model' => $model,
-		'table' => 'users',
-		'srl' => (int)$this->params['srl'],
+		'table' => $tableName,
+		'srl' => $srl,
 	], function($result=null) {
+		// delete pw field
 		if (!isset($result->data)) return $result;
-		if (isset($result->data->pw))
-		{
-			unset($result->data->pw);
-		}
+		if (isset($result->data->pw)) unset($result->data->pw);
 		return $result;
 	});
 

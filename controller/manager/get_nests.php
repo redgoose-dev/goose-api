@@ -12,12 +12,12 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set model
 	$model = new Model();
 	$model->connect();
+
+	// check authorization
+	$token = Auth::checkAuthorization($model, 'user');
 
 	// get apps
 	$apps = $model->getItems((object)[ 'table' => 'apps' ]);
@@ -62,13 +62,10 @@ try
 	// set output
 	$output = (object)[];
 	$output->code = count($tree) ? 200 : 404;
-	if (count($tree))
-	{
-		$output->data = $tree;
-	}
+	if (count($tree)) $output->data = $tree;
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

@@ -21,13 +21,6 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
-
-	// check authorization
-	$token = Auth::checkAuthorization($model);
-
 	// set where
 	$where = '';
 	if ($app = Util::getParameter('app'))
@@ -55,16 +48,13 @@ try
 		$where .= ' and content LIKE \'%'.$content.'%\'';
 	}
 
+	// set model
+	$model = new Model();
+	$model->connect();
+
 	// check access
-	if ($_GET['strict'])
-	{
-		$token = Auth::checkAuthorization($model, 'user');
-		$where .= ($token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
-	}
-	else
-	{
-		$token = Auth::checkAuthorization($model);
-	}
+	$token = Controller::checkAccessIndex($model, true);
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller::index((object)[
