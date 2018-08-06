@@ -20,7 +20,10 @@ try
 	$token = Auth::checkAuthorization($model, 'user');
 
 	// get apps
-	$apps = $model->getItems((object)[ 'table' => 'apps' ]);
+	$apps = $model->getItems((object)[
+		'table' => 'apps',
+		'where' => (!$token->data->admin) ? 'user_srl='.(int)$token->data->user_srl : ''
+	]);
 	if (!isset($apps->data))
 	{
 		throw new Exception('Not found apps.', 404);

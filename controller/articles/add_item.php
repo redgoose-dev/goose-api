@@ -23,7 +23,7 @@ try
 	$token = Auth::checkAuthorization($model, 'user');
 
 	// filtering text
-	$_POST['title'] = htmlspecialchars(addslashes($_POST['title']));
+	$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
 	// TODO: `content`에서 `json`으로 들어오는 경우에 문제가 일어날 수 있기 때문에 사용에 옵션을 둬야할 수 있음.
 	$_POST['content'] = addslashes($_POST['content']);
 
@@ -48,7 +48,7 @@ try
 	}
 
 	// check category
-	if (isset($_POST['category_srl']))
+	if ($_POST['category_srl'] && (int)$_POST['category_srl'] > 0)
 	{
 		$cnt = $model->getCount((object)[
 			'table' => 'categories',
@@ -70,7 +70,7 @@ try
 			'app_srl' => $_POST['app_srl'],
 			'nest_srl' => $_POST['nest_srl'],
 			'category_srl' => $_POST['category_srl'],
-			'user-srl' => (int)$token->data->user_srl,
+			'user_srl' => (int)$token->data->user_srl,
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],
 			'hit' => 0,

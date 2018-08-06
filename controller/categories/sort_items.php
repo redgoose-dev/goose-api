@@ -15,14 +15,18 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'srls' ]);
+	Util::checkExistValue($_POST, [ 'nest_srl', 'srls' ]);
 
 	// set model and connect db
 	$model = new Model();
 	$model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'admin');
+	// check access
+	$token = Controller::checkAccessItem((object)[
+		'model' => $model,
+		'table' => 'nests',
+		'srl' => (int)$_POST['nest_srl'],
+	]);
 
 	// set srls
 	$srls = explode(',', $_POST['srls']);

@@ -64,7 +64,7 @@ try
 			'data' => [
 				$_POST['email'] ? "email='$_POST[email]'" : '',
 				$_POST['name'] ? "name='$_POST[name]'" : '',
-				($_POST['admin'] && $jwt->data->admin) ? "admin=".(int)$_POST['admin'] : '',
+				($_POST['admin'] && $token->data->admin) ? "admin=".(int)$_POST['admin'] : '',
 			],
 		]);
 	}

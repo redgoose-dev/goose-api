@@ -66,7 +66,7 @@ try
 	// check duplicate nest id
 	$cnt = $model->getCount((object)[
 		'table' => $tableName,
-		'where' => 'id="'.$_POST['id'].'" and srl!='.$srl,
+		'where' => 'id="'.trim($_POST['id']).'" and srl!='.$srl,
 	]);
 	if ($cnt->data)
 	{
@@ -81,9 +81,9 @@ try
 		'srl' => $srl,
 		'data' => [
 			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
-			$_POST['id'] ? "id='$_POST[id]'" : '',
-			$_POST['name'] ? "name='$_POST[name]'" : '',
-			$_POST['description'] ? "description='$_POST[description]'" : '',
+			$_POST['id'] ? "id='".trim($_POST['id'])."'" : '',
+			$_POST['name'] ? "name='".trim($_POST['name'])."'" : '',
+			$_POST['description'] ? "description='".trim($_POST['description'])."'" : '',
 			$_POST['json'] ? "json='$json'" : '',
 		]
 	]);

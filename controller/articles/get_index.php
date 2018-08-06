@@ -35,10 +35,6 @@ try
 	{
 		$where .= ' and category_srl='.$category;
 	}
-	if ($user = Util::getParameter('user'))
-	{
-		$where .= ' and user_srl='.$user;
-	}
 	if ($title = Util::getParameter('title'))
 	{
 		$where .= ' and title LIKE \'%'.$title.'%\'';
@@ -54,7 +50,7 @@ try
 
 	// check access
 	$token = Controller::checkAccessIndex($model, true);
-	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+	$where .= (!!$token->data->admin) ? '' : ' and user_srl='.(int)$token->data->user_srl;
 
 	// set output
 	$output = Controller::index((object)[

@@ -18,7 +18,7 @@ try
 	$model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+	$token = Auth::checkAuthorization($model);
 
 	// set values
 	$output = (object)[];

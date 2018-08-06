@@ -42,7 +42,7 @@ try
 			'type' => 'user',
 			'user_srl' => $user->srl,
 			'email' => $user->email,
-			'admin' => !!($user->admin === 2),
+			'admin' => !!((int)$user->admin === 2),
 			'host' => $_POST['host'],
 		],
 	]);
@@ -51,7 +51,7 @@ try
 	$data->srl = (int)$user->srl;
 	$data->email = $user->email;
 	$data->name = $user->name;
-	$data->admin = !!$user->admin;
+	$data->admin = !!((int)$user->admin === 2);
 	$data->token = $jwt->token;
 	$data->host = $_POST['host'];
 

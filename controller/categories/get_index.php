@@ -63,21 +63,44 @@ try
 		{
 			// set item
 			$item = (object)[
-				'srl' => 0,
+				'type' => 'all',
 				'nest_srl' => $nest,
 				'name' => 'All',
 			];
 			// get article count
 			if (Util::checkKeyInExtField('count_article'))
 			{
+				$where = $nest ? 'nest_srl='.$nest : '';
+				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 				$cnt = $model->getCount((object)[
 					'table' => 'articles',
-					'where' => $nest ? 'nest_srl='.$nest : null,
+					'where' => $where,
 				]);
 				$item->count_article = $cnt->data;
 			}
 			// add item
 			array_unshift($output->data->index, $item);
+		}
+
+		// get un category
+		if (Util::checkKeyInExtField('none') && Util::checkKeyInExtField('count_article'))
+		{
+			// set item
+			$item = (object)[
+				'type' => 'none',
+				'nest_srl' => $nest,
+				'name' => 'none',
+			];
+			$where = $nest ? 'nest_srl='.$nest : '';
+			$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+			$where .= ' and category_srl IS NULL';
+			$cnt = $model->getCount((object)[
+				'table' => 'articles',
+				'where' => $where,
+			]);
+			$item->count_article = $cnt->data;
+			// add item
+			array_push($output->data->index, $item);
 		}
 	}
 

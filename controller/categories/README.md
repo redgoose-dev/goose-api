@@ -22,6 +22,8 @@ article에 대한 분류로 사용합니다. 가장 작은 단위로 그루핑�
 
 ### ext_field
 - `count_article`: 분류에 해당되는 articles 아이템 갯수
+- `item_all`: 모든 article 갯수가 들어있는 항목
+- `un_category`: 분류에 해당안되는 항목
 
 
 ## get category

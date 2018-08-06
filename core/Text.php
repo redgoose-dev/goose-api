@@ -31,6 +31,7 @@ class Text {
 	 */
 	public static function allowString($value, $type=null)
 	{
+		$value = trim($value);
 		switch ($type)
 		{
 			case 'string':

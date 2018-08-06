@@ -43,6 +43,7 @@ try
 			'table' => 'json',
 			'data' => (object)[
 				'srl' => null,
+				'user_srl' => $token->data->user_srl,
 				'name' => $_POST['name'],
 				'description' => $_POST['description'],
 				'json' => $json,

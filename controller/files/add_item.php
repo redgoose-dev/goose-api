@@ -126,7 +126,7 @@ try
 				'data' => (object)[
 					'srl' => null,
 					'article_srl' => isset($article_srls) ? (int)$article_srls[$k] : null,
-					'user-srl' => (int)$token->data->user_srl,
+					'user_srl' => (int)$token->data->user_srl,
 					'name' => $file['name'][$k],
 					'loc' => $path.'/'.$month.'/'.$file['name'][$k],
 					'type' => $file['type'][$k],

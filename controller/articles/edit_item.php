@@ -18,7 +18,7 @@ try
 	// check srl
 	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 500);
+		throw new Exception('Not found srl', 204);
 	}
 
 	// set model
@@ -32,6 +32,17 @@ try
 		'srl' => $srl,
 	]);
 
+	// filtering text
+	if (isset($_POST['title']))
+	{
+		$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
+	}
+	if (isset($_POST['content']))
+	{
+		// TODO: `content`에서 `json`으로 들어오는 경우에 문제가 일어날 수 있기 때문에 사용에 옵션을 둬야할 수 있음.
+		$_POST['content'] = addslashes($_POST['content']);
+	}
+
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
@@ -39,14 +50,14 @@ try
 		'table' => $tableName,
 		'srl' => $srl,
 		'data' => [
-			isset($_POST['app_srl']) ? "app_srl='$_POST[app_srl]'" : '',
-			isset($_POST['nest_srl']) ? "nest_srl='$_POST[nest_srl]'" : '',
-			isset($_POST['category_srl']) ? "category_srl='$_POST[category_srl]'" : '',
-			isset($_POST['user_srl']) ? "user_srl='$_POST[user_srl]'" : '',
-			isset($_POST['title']) ? "title='$_POST[title]'" : '',
-			isset($_POST['content']) ? "content='$_POST[content]'" : '',
-			isset($_POST['hit']) ? "hit='$_POST[hit]'" : '',
-			isset($_POST['json']) ? "json='$_POST[json]'" : '',
+			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
+			$_POST['nest_srl'] ? "nest_srl='$_POST[nest_srl]'" : '',
+			$_POST['category_srl'] ? "category_srl='$_POST[category_srl]'" : '',
+			$_POST['user_srl'] ? "user_srl='$_POST[user_srl]'" : '',
+			$_POST['title'] ? "title='$_POST[title]'" : '',
+			$_POST['content'] ? "content='$_POST[content]'" : '',
+			$_POST['hit'] ? "hit='$_POST[hit]'" : '',
+			$_POST['json'] ? "json='$_POST[json]'" : '',
 			"modate='".date("YmdHis")."'"
 		],
 	]);
