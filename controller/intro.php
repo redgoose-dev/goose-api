@@ -19,7 +19,7 @@ try
 	$output = (object)[];
 	$output->code = 200;
 	$output->message = 'hello world';
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);

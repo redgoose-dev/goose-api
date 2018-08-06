@@ -33,7 +33,7 @@ try
 	}
 	if ($category = Util::getParameter('category'))
 	{
-		$where .= ' and category_srl='.$category;
+		$where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
 	}
 	if ($title = Util::getParameter('title'))
 	{

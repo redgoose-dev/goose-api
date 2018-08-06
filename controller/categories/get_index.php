@@ -63,7 +63,7 @@ try
 		{
 			// set item
 			$item = (object)[
-				'type' => 'all',
+				'srl' => '',
 				'nest_srl' => $nest,
 				'name' => 'All',
 			];
@@ -87,7 +87,7 @@ try
 		{
 			// set item
 			$item = (object)[
-				'type' => 'none',
+				'srl' => 'null',
 				'nest_srl' => $nest,
 				'name' => 'none',
 			];
