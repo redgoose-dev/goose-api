@@ -36,6 +36,17 @@ try
 			'where' => 'app_srl='.(int)$v->srl,
 			'json_field' => ['json'],
 		]);
+		if ($nests->data && count($nests->data))
+		{
+			foreach ($nests->data as $kk=>$nest)
+			{
+				$cnt = $model->getCount((object)[
+					'table' => 'articles',
+					'where' => 'nest_srl='.(int)$nest->srl
+				]);
+				$nests->data[$kk]->count_articles = $cnt->data;
+			}
+		}
 		$tree[] = (object)[
 			'srl' => (int)$v->srl,
 			'name' => $v->name,
