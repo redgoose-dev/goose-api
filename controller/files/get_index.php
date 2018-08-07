@@ -51,7 +51,7 @@ try
 
 	// check access
 	$token = Controller::checkAccessIndex($model, true);
-	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller::index((object)[
@@ -61,7 +61,7 @@ try
 	]);
 
 	// set token
-	if ($token) $output->_token = $token;
+	if ($token) $output->_token = $token->jwt;
 
 	// output
 	Output::data($output);
