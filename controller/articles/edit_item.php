@@ -43,6 +43,12 @@ try
 		$_POST['content'] = addslashes($_POST['content']);
 	}
 
+	// set values
+	if (isset($_POST['category_srl']))
+	{
+		$category_srl = ($_POST['category_srl']) ? "'$_POST[category_srl]'" : 'NULL';
+	}
+
 	// set output
 	$output = Controller::edit((object)[
 		'goose' => $this,
@@ -51,8 +57,8 @@ try
 		'srl' => $srl,
 		'data' => [
 			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
-			$_POST['nest_srl'] ? "nest_srl='$_POST[nest_srl]'" : '',
-			$_POST['category_srl'] ? "category_srl='$_POST[category_srl]'" : '',
+			isset($_POST['nest_srl']) ? "nest_srl='$_POST[nest_srl]'" : '',
+			isset($category_srl) ? "category_srl=$category_srl" : '',
 			$_POST['user_srl'] ? "user_srl='$_POST[user_srl]'" : '',
 			$_POST['title'] ? "title='$_POST[title]'" : '',
 			$_POST['content'] ? "content='$_POST[content]'" : '',
