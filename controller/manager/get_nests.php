@@ -31,18 +31,23 @@ try
 	$tree = [];
 	foreach ($apps->data as $k=>$v)
 	{
+		$where = 'app_srl='.(int)$v->srl;
+		$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+		// $token->data->user_srl
 		$nests = $model->getItems((object)[
 			'table' => 'nests',
-			'where' => 'app_srl='.(int)$v->srl,
+			'where' => $where,
 			'json_field' => ['json'],
 		]);
 		if ($nests->data && count($nests->data))
 		{
 			foreach ($nests->data as $kk=>$nest)
 			{
+				$where = 'nest_srl='.(int)$nest->srl;
+				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 				$cnt = $model->getCount((object)[
 					'table' => 'articles',
-					'where' => 'nest_srl='.(int)$nest->srl
+					'where' => $where
 				]);
 				$nests->data[$kk]->count_articles = $cnt->data;
 			}

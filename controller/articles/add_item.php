@@ -67,9 +67,9 @@ try
 		'table' => 'articles',
 		'data' => (object)[
 			'srl' => null,
-			'app_srl' => $_POST['app_srl'],
-			'nest_srl' => $_POST['nest_srl'],
-			'category_srl' => $_POST['category_srl'],
+			'app_srl' => (int)$_POST['app_srl'],
+			'nest_srl' => (int)$_POST['nest_srl'],
+			'category_srl' => (int)$_POST['category_srl'],
 			'user_srl' => (int)$token->data->user_srl,
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],

@@ -44,10 +44,7 @@ try
 	}
 
 	// set values
-	if (isset($_POST['category_srl']))
-	{
-		$category_srl = ($_POST['category_srl']) ? "'$_POST[category_srl]'" : 'NULL';
-	}
+	$category_srl = ($_POST['category_srl']) ? "'$_POST[category_srl]'" : 'NULL';
 
 	// set output
 	$output = Controller::edit((object)[

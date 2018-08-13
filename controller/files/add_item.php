@@ -10,12 +10,18 @@ if (!defined('__GOOSE__')) exit();
  * @var Goose $this
  */
 
+
 try
 {
+	if ($_FILES['file'])
+	{
+		$_FILES['files'] = $_FILES['file'];
+	}
+
 	// check file
 	if (!($_FILES['files'] && $_FILES['files']['name']))
 	{
-		throw new Exception('No files found.', 204);
+		throw new Exception('No files found.', 500);
 	}
 
 	// set model

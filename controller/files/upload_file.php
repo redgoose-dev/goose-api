@@ -74,6 +74,7 @@ try
 		$data = (object)[
 			'name' => $file['name'],
 			'path' => $path.'/'.$month.'/'.$file['name'],
+			'pathFull' => getenv('PATH_URL').'/'.$path.'/'.$month.'/'.$file['name'],
 			'type' => $file['type'],
 			'size' => $file['size'],
 		];
@@ -137,6 +138,7 @@ try
 		$data = (object)[
 			'name' => $filename,
 			'path' => $path.'/'.$month.'/'.$filename,
+			'pathFull' => getenv('PATH_URL').'/'.$path.'/'.$month.'/'.$filename,
 			'type' => $imgType,
 			'size' => $uploadedFileSize,
 		];
