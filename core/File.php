@@ -47,6 +47,8 @@ class File {
 		// check file type
 		if (!in_array($src[1], $allowFileType)) return null;
 
+		// only eng or number
+		$src[0] = preg_replace("/[^A-Za-z0-9-_]+/", 'x', $src[0]);
 		// remove special characters
 		$src[0] = Text::removeSpecialChar($src[0]);
 

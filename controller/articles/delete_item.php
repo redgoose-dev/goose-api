@@ -32,6 +32,36 @@ try
 		'srl' => $srl,
 	]);
 
+	// remove thumbnail image
+	$article = $model->getItem((object)[
+		'table' => 'articles',
+		'where' => 'srl='.$srl
+	]);
+	var_dump($article);
+	// TODO: 썸네일 이미지 삭제
+	exit;
+
+	// remove files
+	$files = $model->getItems((object)[
+		'table' => 'files',
+		'where' => 'article_srl='.$srl,
+	]);
+	if ($files->data && count($files->data))
+	{
+		foreach ($files->data as $k=>$v)
+		{
+			if (isset($v->loc) && $v->loc && file_exists(__PATH__.'/'.$v->loc))
+			{
+				unlink(__PATH__.'/'.$v->loc);
+			}
+		}
+		// remove db
+		$model->delete((object)[
+			'table' => 'files',
+			'where' => 'article_srl='.$srl
+		]);
+	}
+
 	// remove item
 	$output = Controller::delete((object)[
 		'goose' => $this,
