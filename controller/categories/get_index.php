@@ -43,10 +43,10 @@ try
 		'where' => $where
 	]);
 
-	if ($output->data && isset($_GET['ext_field']))
+	if (isset($_GET['ext_field']))
 	{
 		// get article count
-		if (Util::checkKeyInExtField('count_article'))
+		if ($output->data && count($output->data) && Util::checkKeyInExtField('count_article'))
 		{
 			foreach ($output->data->index as $k=>$v)
 			{
@@ -61,6 +61,8 @@ try
 		// get all item
 		if (Util::checkKeyInExtField('item_all'))
 		{
+			if (!$output->data) $output->data->index = [];
+
 			// set item
 			$item = (object)[
 				'srl' => '',
@@ -83,22 +85,27 @@ try
 		}
 
 		// get un category
-		if (Util::checkKeyInExtField('none') && Util::checkKeyInExtField('count_article'))
+		if (Util::checkKeyInExtField('none'))
 		{
+			if (!$output->data) $output->data->index = [];
+
 			// set item
 			$item = (object)[
 				'srl' => 'null',
 				'nest_srl' => $nest,
 				'name' => 'none',
 			];
-			$where = $nest ? 'nest_srl='.$nest : '';
-			$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
-			$where .= ' and category_srl IS NULL';
-			$cnt = $model->getCount((object)[
-				'table' => 'articles',
-				'where' => $where,
-			]);
-			$item->count_article = $cnt->data;
+			if (Util::checkKeyInExtField('count_article'))
+			{
+				$where = $nest ? 'nest_srl='.$nest : '';
+				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+				$where .= ' and category_srl IS NULL';
+				$cnt = $model->getCount((object)[
+					'table' => 'articles',
+					'where' => $where,
+				]);
+				$item->count_article = $cnt->data;
+			}
 			// add item
 			array_push($output->data->index, $item);
 		}

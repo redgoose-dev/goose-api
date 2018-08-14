@@ -32,13 +32,54 @@ try
 		'srl' => $srl,
 	]);
 
-	// TODO: 현재는 app만 삭제하도록 되어있음
-	// TODO: 파라메터를 하나 더 만들어서 데이터 삭제할지 선택권 만들어야함. (remove_children)
-	// TODO: 하위 데이터를 삭제한다면 nests, categories, articles 삭제하기
-	// TODO: 하위 데이터를 삭제안한다면 nests, articles 에 있는 app_srl 값 삭제하기
-	// TODO: 만약 하위 데이터를 삭제안한다면 어떻게 할지도 생각해야함. (app_srl을 null로 변경한다던지, 옵션을 빼고 몽땅 삭제한다던지 결정 필요함.)
+	// get articles list
+	$articles = $model->getItems((object)[
+		'table' => 'articles',
+		'field' => 'srl',
+		'where' => 'app_srl='.$srl,
+	]);
+	if ($articles->data && count($articles->data))
+	{
+		foreach($articles->data as $k=>$v)
+		{
+			// remove thumbnail image
+			Controller::removeThumbnailImage($model, $v->srl);
 
-	// remove item
+			// remove files
+			Controller::removeAttachFiles($model, $v->srl);
+		}
+		// remove articles
+		$model->delete((object)[
+			'table' => 'articles',
+			'where' => 'app_srl='.$srl
+		]);
+	}
+
+	// get nests list
+	$nests = $model->getItems((object)[
+		'table' => 'nests',
+		'field' => 'srl',
+		'where' => 'app_srl='.$srl,
+	]);
+	if ($nests->data && count($nests->data))
+	{
+		foreach($nests->data as $k=>$v)
+		{
+			// remove categories
+			$model->delete((object)[
+				'table' => 'categories',
+				'where' => 'nest_srl='.(int)$v->srl,
+			]);
+		}
+
+		// remove nests
+		$model->delete((object)[
+			'table' => 'nests',
+			'where' => 'app_srl='.$srl
+		]);
+	}
+
+	// remove app
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,

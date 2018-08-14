@@ -44,7 +44,6 @@ article에 대한 분류로 사용합니다. 가장 작은 단위로 그루핑�
 ## add category
 - url: `/categories/[n]` (n:srl)
 - method: POST
-- token level: admin
 
 데이터를 추가할때 사용하는 body 항목
 
@@ -57,7 +56,6 @@ article에 대한 분류로 사용합니다. 가장 작은 단위로 그루핑�
 ## edit category
 - url: `/categories/[n]/edit` (n:srl)
 - method: POST
-- token level: admin
 
 데이터를 추가할때 사용하는 body 항목
 

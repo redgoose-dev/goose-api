@@ -18,7 +18,7 @@ try
 	// check srl
 	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 204);
+		throw new Exception('Not found srl', 500);
 	}
 
 	// set model
@@ -33,34 +33,10 @@ try
 	]);
 
 	// remove thumbnail image
-	$article = $model->getItem((object)[
-		'table' => 'articles',
-		'where' => 'srl='.$srl
-	]);
-	var_dump($article);
-	// TODO: 썸네일 이미지 삭제
-	exit;
+	Controller::removeThumbnailImage($model, $srl);
 
 	// remove files
-	$files = $model->getItems((object)[
-		'table' => 'files',
-		'where' => 'article_srl='.$srl,
-	]);
-	if ($files->data && count($files->data))
-	{
-		foreach ($files->data as $k=>$v)
-		{
-			if (isset($v->loc) && $v->loc && file_exists(__PATH__.'/'.$v->loc))
-			{
-				unlink(__PATH__.'/'.$v->loc);
-			}
-		}
-		// remove db
-		$model->delete((object)[
-			'table' => 'files',
-			'where' => 'article_srl='.$srl
-		]);
-	}
+	Controller::removeAttachFiles($model, $srl);
 
 	// remove item
 	$output = Controller::delete((object)[

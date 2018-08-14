@@ -32,9 +32,44 @@ try
 		'srl' => $srl,
 	]);
 
-	// TODO: articles, categories, files 데이터 삭제
+	// articles
+	$articles = $model->getItems((object)[
+		'table' => 'articles',
+		'field' => 'srl',
+		'where' => 'nest_srl='.$srl,
+	]);
+	if ($articles->data && count($articles->data))
+	{
+		foreach($articles->data as $k=>$v)
+		{
+			// remove thumbnail image
+			Controller::removeThumbnailImage($model, $v->srl);
 
-	// remove item
+			// remove files
+			Controller::removeAttachFiles($model, $v->srl);
+		}
+		// remove articles
+		$model->delete((object)[
+			'table' => 'articles',
+			'where' => 'nest_srl='.$srl
+		]);
+	}
+
+	// categories
+	$categoriesCount = $model->getCount((object)[
+		'table' => 'categories',
+		'where' => 'nest_srl'.$srl,
+	]);
+	if ($categoriesCount->data > 0)
+	{
+		// remove categories
+		$model->delete((object)[
+			'table' => 'categories',
+			'where' => 'nest_srl='.$srl
+		]);
+	}
+
+	// remove nest
 	$output = Controller::delete((object)[
 		'goose' => $this,
 		'model' => $model,

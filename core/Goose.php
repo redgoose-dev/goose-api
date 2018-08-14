@@ -14,7 +14,6 @@ use Exception;
  * @property Router router
  * @property string target
  * @property array params
- * @property object level
  * @property array modules
  */
 
@@ -25,7 +24,6 @@ class Goose {
 		$this->router = new Router();
 		$this->target = null;
 		$this->params = null;
-		$this->level = (object)[];
 		$this->modules = ['apps', 'articles', 'categories', 'files', 'json', 'nests', 'users'];
 	}
 
@@ -76,11 +74,6 @@ class Goose {
 		// set router values
 		$this->target = $this->router->match['target'];
 		$this->params = $this->router->match['params'];
-
-		// set level
-		// TODO: 삭제예정
-		$this->level->public = (int)getenv('LEVEL_PUBLIC');
-		$this->level->admin = (int)getenv('LEVEL_ADMIN');
 
 		// run turning point
 		$this->turningPoint();

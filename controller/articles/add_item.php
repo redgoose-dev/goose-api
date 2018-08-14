@@ -24,8 +24,10 @@ try
 
 	// filtering text
 	$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
-	// TODO: `content`에서 `json`으로 들어오는 경우에 문제가 일어날 수 있기 때문에 사용에 옵션을 둬야할 수 있음.
-	$_POST['content'] = addslashes($_POST['content']);
+	if ($_GET['content'] !== 'raw')
+	{
+		$_POST['content'] = addslashes($_POST['content']);
+	}
 
 	// check nest
 	$cnt = $model->getCount((object)[
@@ -67,9 +69,9 @@ try
 		'table' => 'articles',
 		'data' => (object)[
 			'srl' => null,
-			'app_srl' => (int)$_POST['app_srl'],
-			'nest_srl' => (int)$_POST['nest_srl'],
-			'category_srl' => (int)$_POST['category_srl'],
+			'app_srl' => (int)$_POST['app_srl'] ? (int)$_POST['app_srl'] : null,
+			'nest_srl' => (int)$_POST['nest_srl'] ? (int)$_POST['nest_srl'] : null,
+			'category_srl' => (int)$_POST['category_srl'] ? (int)$_POST['category_srl'] : null,
 			'user_srl' => (int)$token->data->user_srl,
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],

@@ -37,9 +37,8 @@ try
 	{
 		$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
 	}
-	if (isset($_POST['content']))
+	if (isset($_POST['content']) && $_GET['content'] !== 'raw')
 	{
-		// TODO: `content`에서 `json`으로 들어오는 경우에 문제가 일어날 수 있기 때문에 사용에 옵션을 둬야할 수 있음.
 		$_POST['content'] = addslashes($_POST['content']);
 	}
 

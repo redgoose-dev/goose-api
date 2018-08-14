@@ -8,7 +8,6 @@
 ## get articles list
 - url: `/articles`
 - method: GET
-- token level: public
 
 사용하는 파라메터 목록
 
@@ -30,7 +29,6 @@
 ## get article
 - url: `/articles/[n]` (n:srl)
 - method: GET
-- token level: public
 
 사용하는 파라메터 목록
 
@@ -47,7 +45,6 @@
 ## add article
 - url: `/articles`
 - method: POST
-- token level: admin
 
 사용하는 body 항목
 
@@ -60,12 +57,24 @@
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | 글 본문 |
+
+- method: GET
+
+사용하는 params 항목
+
+| key | type | default | description |
+|:---:|:---:|---|---|
+| content | string | `` | content 타입 |
+
+### (GET) content
+
+- ``: 일반적인 글을 작성하는데 사용되며 markdown용
+- `raw`: 소스 그대로 저장합니다.
 
 
 ## edit article
 - url: `/articles/[n]/edit` (n:srl)
 - method: POST
-- token level: admin
 
 사용하는 body 항목
 
@@ -79,8 +88,20 @@
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | 글 본문 |
 
+- method: GET
+
+사용하는 params 항목
+
+| key | type | default | description |
+|:---:|:---:|---|---|
+| content | string | `` | content 타입 |
+
+### (GET) content
+
+- ``: 일반적인 글을 작성하는데 사용되며 markdown용
+- `raw`: 소스 그대로 저장합니다.
+
 
 ## delete article
 - url: `/articles/[n]/delete` (n:srl)
 - method: POST
-- token level: admin

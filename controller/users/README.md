@@ -23,7 +23,6 @@
 ## add user
 - url: `/users`
 - method: POST
-- token level: admin
 
 데이터를 추가할때 사용하는 body 항목입니다.
 
@@ -38,7 +37,6 @@
 ## edit user
 - url: `/nests/[n]/edit` (n:srl)
 - method: POST
-- token level: admin
 
 데이터를 수정할때 사용하는 body 항목입니다.
 
@@ -51,12 +49,10 @@
 ## delete user
 - url: `/users/[n]/delete` (n:srl)
 - method: POST
-- token level: admin
 
 ## change password
 - url: `/users/[n]/change-password` (n:srl)
 - method: POST
-- token level: admin
 
 비밀번호를 변경합니다. 다음은 필요한 body 항목입니다.  
 기존 패스워드를 맞춰야지 변경할 수 있음을 주의해주세요. (관리자라도 기존 패스워드를 모르면 변경할 수 없습니다.)

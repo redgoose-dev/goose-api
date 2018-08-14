@@ -10,7 +10,6 @@ if (!defined('__GOOSE__')) exit();
  * url params
  * - @param string email
  * - @param string name
- * - @param int level
  *
  * @var Goose $this
  */

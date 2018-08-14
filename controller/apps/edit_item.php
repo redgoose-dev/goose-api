@@ -57,9 +57,9 @@ try
 			'table' => $tableName,
 			'srl' => $srl,
 			'data' => [
-				$_POST['id'] ? "id='$_POST[id]'" : '',
-				$_POST['name'] ? "name='$_POST[name]'" : '',
-				$_POST['description'] ? "description='$_POST[description]'" : '',
+				isset($_POST['id']) ? "id='$_POST[id]'" : '',
+				isset($_POST['name']) ? "name='$_POST[name]'" : '',
+				isset($_POST['description']) ? "description='$_POST[description]'" : '',
 			],
 		]);
 	}
