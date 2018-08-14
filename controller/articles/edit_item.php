@@ -59,6 +59,7 @@ try
 			$_POST['title'] ? "title='$_POST[title]'" : '',
 			$_POST['content'] ? "content='$_POST[content]'" : '',
 			$_POST['hit'] ? "hit='$_POST[hit]'" : '',
+			$_POST['star'] ? "star='$_POST[star]'" : '',
 			$_POST['json'] ? "json='$_POST[json]'" : '',
 			"modate='".date("YmdHis")."'"
 		],

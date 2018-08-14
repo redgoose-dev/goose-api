@@ -76,6 +76,7 @@ try
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],
 			'hit' => 0,
+			'star' => 0,
 			'json' => $_POST['json'],
 			'ip' => ($_SERVER['REMOTE_ADDR'] !== '::1') ? $_SERVER['REMOTE_ADDR'] : 'localhost',
 			'regdate' => date('YmdHis'),

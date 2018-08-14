@@ -86,6 +86,8 @@
 | user_srl | number | `1` | user srl 번호 |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
+| hit | number | `0` | 조회수 |
+| star | number | `0` | 좋아요 수 |
 | json | string | `{"foo", "bar"}` | 글 본문 |
 
 - method: GET

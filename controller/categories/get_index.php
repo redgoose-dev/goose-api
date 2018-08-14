@@ -46,7 +46,7 @@ try
 	if (isset($_GET['ext_field']))
 	{
 		// get article count
-		if ($output->data && count($output->data) && Util::checkKeyInExtField('count_article'))
+		if ($output->data && Util::checkKeyInExtField('count_article'))
 		{
 			foreach ($output->data->index as $k=>$v)
 			{

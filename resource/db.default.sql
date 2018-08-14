@@ -26,6 +26,7 @@ CREATE TABLE `goose_articles` (
   `title` varchar(255) DEFAULT NULL,
   `content` longtext,
   `hit` int(11) DEFAULT 0,
+  `star` int(11) DEFAULT 0,
   `json` text,
   `ip` varchar(15) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL,
