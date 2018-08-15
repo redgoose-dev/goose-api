@@ -4,9 +4,24 @@ use Dotenv\Dotenv, Exception;
 
 if (!defined('__GOOSE__')) exit();
 
+// load autoload
+require __DIR__.'/../vendor/autoload.php';
+
+// set dotenv
+try
+{
+	$dotenv = new Dotenv(__PATH__);
+	$dotenv->load();
+}
+catch(Exception $e)
+{
+	throw new Exception('.env error');
+}
+
 // set header
 // check OPTIONS method
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
+{
 	if (
 		isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
 		(
@@ -25,24 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	}
 	exit;
 }
-header('Content-Type: application/json');
 
-// load autoload
-require __DIR__.'/../vendor/autoload.php';
+// set json header
+header('Content-Type: application/json');
 
 try
 {
-	// set dotenv
-	try
-	{
-		$dotenv = new Dotenv(__PATH__);
-		$dotenv->load();
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('.env error');
-	}
-
 	// set development
 	define('__DEBUG__', getenv('API_DEBUG') === 'true');
 
