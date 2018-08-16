@@ -18,7 +18,7 @@ try
 	// check srl
 	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 204);
+		throw new Exception('Not found srl', 500);
 	}
 
 	// set model

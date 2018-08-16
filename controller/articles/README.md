@@ -107,3 +107,15 @@
 ## delete article
 - url: `/articles/[n]/delete` (n:srl)
 - method: POST
+
+
+## update hit|star
+- url: `/articles/[n]/update` (n:srl)
+- method: GET
+
+사용하는 파라메터 목록
+
+| name | type | example | description |
+|:---:|:---:|---|---|
+| type | string | `hit,star` | 조회수를 올릴건지 좋아요 카운트를 올릴건지 정합니다. |
+| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
