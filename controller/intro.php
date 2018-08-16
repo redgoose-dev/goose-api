@@ -12,14 +12,10 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check authorization
-	$token = Auth::checkAuthorization();
-
 	// set output
 	$output = (object)[];
 	$output->code = 200;
-	$output->message = 'hello world';
-	if ($token) $output->_token = $token->jwt;
+	$output->message = 'hello goose api';
 
 	// output
 	Output::data($output);
