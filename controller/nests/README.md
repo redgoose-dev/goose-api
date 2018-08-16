@@ -21,10 +21,11 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## get nest
-- url: `/nests/[n]` (n:srl)
+- url: `/nests/[n]` (n:srl) or `/nests/id/[s]` (s:id)
 - method: GET
 
-사용하는 파라메터 목록
+사용하는 파라메터 목록.  
+`srl`번호로 사용할 수 있지만 `id` 이름으로 사용할 수 있다는것을 참고해주세요.
 
 | name | type | example | description |
 |:---:|:---:|---|---|

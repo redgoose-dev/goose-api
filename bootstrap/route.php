@@ -49,6 +49,7 @@ return [
 	// nests
 	[ 'GET', '/nests', 'nests/get_index', 'getNests' ],
 	[ 'GET', '/nests/[i:srl]', 'nests/get_item', 'getNest' ],
+	[ 'GET', '/nests/id/[aa:id]', 'nests/get_item', 'getNestId' ],
 	[ 'POST', '/nests', 'nests/add_item', 'addNest' ],
 	[ 'POST', '/nests/[i:srl]/edit', 'nests/edit_item', 'editNest' ],
 	[ 'POST', '/nests/[i:srl]/delete', 'nests/delete_item', 'deleteNest' ],

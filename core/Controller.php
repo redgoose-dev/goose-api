@@ -152,6 +152,7 @@ class Controller {
 		 * @param Model $op->model
 		 * @param string $op->table
 		 * @param int $op->srl
+		 * @param string $op->id
 		 * @param array $op->json_field
 		 * @param string $op->where
 		 *
@@ -159,7 +160,7 @@ class Controller {
 		 * @param string field
 		 */
 
-		if (!$op->goose || !$op->table || !$op->srl)
+		if (!($op->goose && $op->table && ($op->srl || $op->id)))
 		{
 			throw new Exception('no object in Controller::item()', 500);
 		}
@@ -175,7 +176,7 @@ class Controller {
 			'table' => $op->table,
 			'field' => $_GET['field'],
 			'json_field' => $op->json_field,
-			'where' => 'srl='.(int)$op->srl.$op->where,
+			'where' => ($op->srl ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : '')).$op->where,
 			'debug' => __DEBUG__,
 		]);
 		// 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
@@ -342,10 +343,11 @@ class Controller {
 		 * @param Model    $op->model
 		 * @param string   $op->table
 		 * @param int      $op->srl
+		 * @param string   $op->id
 		 * @param boolean  $op->useStrict  getItem 상황이라면 꼭 사용한다.
 		 */
 
-		if (!($op->model && $op->table && $op->srl))
+		if (!($op->model && $op->table && ($op->srl || $op->id)))
 		{
 			throw new Exception('No parameter.', 204);
 		}
@@ -360,9 +362,9 @@ class Controller {
 		$res = $op->model->getItem((object)[
 			'table' => $op->table,
 			'field' => $op->field ? $op->field : 'user_srl',
-			'where' => 'srl='.(int)$op->srl,
+			'where' => ($op->srl) ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : ''),
 		]);
-		if (!$res->data) throw new Exception('No data.', 404);
+		if (!$res->data) throw new Exception("No data from $op->table.", 404);
 
 		// check authorization
 		$token = Auth::checkAuthorization($op->model, 'user');

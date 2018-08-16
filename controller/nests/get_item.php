@@ -13,12 +13,17 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	$tableName = 'nests';
-	$srl = (int)$this->params['srl'];
-
-	// check srl
-	if (!($srl && $srl > 0))
+	if ($this->params['srl'] && (int)$this->params['srl'] > 0)
 	{
-		throw new Exception('Not found srl', 500);
+		$srl = (int)$this->params['srl'];
+	}
+	else if ($this->params['id'])
+	{
+		$id = $this->params['id'];
+	}
+	else
+	{
+		throw new Exception('Not found srl or id', 500);
 	}
 
 	// set model
@@ -29,7 +34,8 @@ try
 	$token = Controller::checkAccessItem((object)[
 		'model' => $model,
 		'table' => $tableName,
-		'srl' => $srl,
+		'srl' => isset($srl) ? $srl : null,
+		'id' => isset($id) ? $id : null,
 		'useStrict' => true,
 	]);
 
@@ -38,7 +44,8 @@ try
 		'goose' => $this,
 		'model' => $model,
 		'table' => $tableName,
-		'srl' => $srl,
+		'srl' => isset($srl) ? $srl : null,
+		'id' => isset($id) ? $id : null,
 		'json_field' => ['json'],
 	]);
 
