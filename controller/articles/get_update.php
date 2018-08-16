@@ -67,6 +67,16 @@ try
 		'data' => $data,
 	]);
 
+	switch ($type)
+	{
+		case 'hit':
+			$output->data = (object)[ 'hit' => (int)$article->data->hit + 1 ];
+			break;
+		case 'star':
+			$output->data = (object)[ 'star' => (int)$article->data->star + 1 ];
+			break;
+	}
+
 	// set token
 	if ($token) $output->_token = $token->jwt;
 
