@@ -83,7 +83,7 @@ try
 			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
 			$_POST['id'] ? "id='".trim($_POST['id'])."'" : '',
 			$_POST['name'] ? "name='".trim($_POST['name'])."'" : '',
-			$_POST['description'] ? "description='".trim($_POST['description'])."'" : '',
+			isset($_POST['description']) ? "description='".trim($_POST['description'])."'" : '',
 			$_POST['json'] ? "json='$json'" : '',
 		]
 	]);
