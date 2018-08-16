@@ -50,9 +50,11 @@ try
 		{
 			foreach ($output->data->index as $k=>$v)
 			{
+				$where = 'category_srl='.(int)$v->srl;
+				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 				$cnt = $model->getCount((object)[
 					'table' => 'articles',
-					'where' => 'category_srl='.(int)$v->srl,
+					'where' => $where,
 				]);
 				$output->data->index[$k]->count_article = $cnt->data;
 			}
@@ -73,7 +75,7 @@ try
 			if (Util::checkKeyInExtField('count_article'))
 			{
 				$where = $nest ? 'nest_srl='.$nest : '';
-				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 				$cnt = $model->getCount((object)[
 					'table' => 'articles',
 					'where' => $where,
@@ -98,7 +100,7 @@ try
 			if (Util::checkKeyInExtField('count_article'))
 			{
 				$where = $nest ? 'nest_srl='.$nest : '';
-				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 				$where .= ' and category_srl IS NULL';
 				$cnt = $model->getCount((object)[
 					'table' => 'articles',
