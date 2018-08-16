@@ -79,6 +79,25 @@ try
 		}
 	}
 
+	// get next page
+	if ($output->data && Util::checkKeyInExtField('next_page'))
+	{
+		if (!$_GET['page']) $_GET['page'] = 1;
+		$_GET['page'] = (int)$_GET['page'] + 1;
+		$_GET['field'] = 'srl';
+		$next_output = Controller::index((object)[
+			'goose' => $this,
+			'model' => $model,
+			'table' => 'articles',
+			'field' => 'srl',
+			'where' => $where,
+		]);
+		if ($next_output->data && $next_output->data->index && count($next_output->data->index))
+		{
+			$output->data->nextPage = (int)$_GET['page'];
+		}
+	}
+
 	// set token
 	if ($token) $output->_token = $token->jwt;
 
