@@ -103,7 +103,7 @@ class Controller {
 		}
 
 		// get datas
-		$items = $model->getItems((object)[
+		$opts = (object)[
 			'table' => $op->table,
 			'field' => $_GET['field'],
 			'json_field' => $op->json_field,
@@ -112,7 +112,8 @@ class Controller {
 			'limit' => $limit,
 			'where' => $op->where,
 			'debug' => __DEBUG__
-		]);
+		];
+		$items = $model->getItems($opts);
 		// 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
 		if (is_callable($callback))
 		{
