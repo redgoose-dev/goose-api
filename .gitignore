@@ -14,6 +14,9 @@ data/
 
 # ETC
 
+## user resource
+usr/
+
 ## custom controller
 controller/external/*
 !controller/external/index.php

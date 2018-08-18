@@ -50,11 +50,12 @@ class Controller {
 	{
 		/**
 		 * # $op guide
-		 * @param Goose $op->goose
-		 * @param Model $op->model
-		 * @param string $op->table
-		 * @param string $op->where
-		 * @param array $op->json_field
+		 * @param Goose    $op->goose
+		 * @param Model    $op->model
+		 * @param string   $op->table
+		 * @param string   $op->where
+		 * @param array    $op->json_field
+		 * @param boolean  $op->object       객체만 필요할때가 있어서 사용하면 결과값만 나온 객체만 리턴한다.
 		 *
 		 * # url params guide
 		 * @param string field
@@ -101,6 +102,7 @@ class Controller {
 		{
 			$limit = (int)getenv('DEFAULT_INDEX_SIZE');
 		}
+		//var_dump($limit);
 
 		// get datas
 		$opts = (object)[
@@ -124,14 +126,24 @@ class Controller {
 		self::disconnect($model, $op->model);
 
 		// set output
-		$output->code = $total->data ? 200 : 404;
-		$output->query = $items->query;
-		if ($total->data)
+		if (!(isset($op->object) && $op->object))
 		{
-			$output->data = (object)[
-				'total' => $total->data,
-				'index' => $items->data,
-			];
+			$output->code = $total->data ? 200 : 404;
+			$output->query = $items->query;
+			if ($total->data)
+			{
+				$output->data = (object)[
+					'total' => $total->data,
+					'index' => $items->data,
+				];
+			}
+		}
+		else
+		{
+			$output = (object)[];
+			$output->total = $total->data;
+			$output->index = $items->data;
+			if (isset($items->query)) $output->query = $items->query;
 		}
 
 		return $output;
