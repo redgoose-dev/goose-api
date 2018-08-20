@@ -35,7 +35,7 @@ try
 	// filtering text
 	if (isset($_POST['title']))
 	{
-		$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
+		$_POST['title'] = addslashes(trim($_POST['title']));
 	}
 	if (isset($_POST['content']) && $_GET['content'] !== 'raw')
 	{

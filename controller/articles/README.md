@@ -70,7 +70,7 @@
 ### (GET) content
 
 - ``: 일반적인 글을 작성하는데 사용되며 markdown용
-- `raw`: 소스 그대로 저장합니다.
+- `raw`: 소스 그대로 `content`항목의 내용을 저장합니다.
 
 
 ## edit article
