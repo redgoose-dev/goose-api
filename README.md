@@ -18,4 +18,4 @@
 
 goose-api 설치에 관란 자세한 내용은 wiki에서 확인할 수 있습니다.
 
-https://github.com/RedgooseDev/goose-api/wiki
+https://github.com/redgoose-dev/goose-api/wiki
