@@ -18,10 +18,6 @@ catch(Exception $e)
 	throw new Exception('.env error');
 }
 
-// show error message
-error_reporting(E_ALL);
-ini_set("display_errors", getenv('API_DEBUG') === 'true' ? 1 : 0);
-
 // set header
 // check OPTIONS method
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
@@ -42,6 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && getenv('USE_CHECK_OPTIONS_METHOD'
 		header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 		header('Access-Control-Max-Age: 86400');
 	}
+	exit;
+}
+else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+{
 	exit;
 }
 
