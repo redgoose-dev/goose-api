@@ -1,6 +1,5 @@
 <?php
 namespace Controller\Categories;
-use Exception;
 
 /**
  * util for categories

@@ -64,38 +64,14 @@ try
 	// get category name
 	if ($output->data && Util::checkKeyInExtField('category_name'))
 	{
-		foreach ($output->data->index as $k=>$v)
-		{
-			if (!$v->category_srl) continue;
-			$category = $model->getItem((object)[
-				'table' => 'categories',
-				'field' => 'name',
-				'where' => 'srl='.(int)$v->category_srl,
-			]);
-			if ($category->data && $category->data->name)
-			{
-				$output->data->index[$k]->category_name = $category->data->name;
-			}
-		}
+		$output->data->index = \Controller\articles\Util::extendCategoryNameInItems($model, $output->data->index);
 	}
 
 	// get next page
 	if ($output->data && Util::checkKeyInExtField('next_page'))
 	{
-		if (!$_GET['page']) $_GET['page'] = 1;
-		$_GET['page'] = (int)$_GET['page'] + 1;
-		$_GET['field'] = 'srl';
-		$next_output = Controller::index((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => 'articles',
-			'field' => 'srl',
-			'where' => $where,
-		]);
-		if ($next_output->data && $next_output->data->index && count($next_output->data->index))
-		{
-			$output->data->nextPage = (int)$_GET['page'];
-		}
+		$nextPage = \Controller\articles\Util::getNextPage($this, $model, $where);
+		if ($nextPage) $output->data->nextPage = $nextPage;
 	}
 
 	// set token
