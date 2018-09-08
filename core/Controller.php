@@ -102,7 +102,6 @@ class Controller {
 		{
 			$limit = (int)getenv('DEFAULT_INDEX_SIZE');
 		}
-		//var_dump($limit);
 
 		// get datas
 		$opts = (object)[
