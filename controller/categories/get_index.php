@@ -45,72 +45,12 @@ try
 
 	if (isset($_GET['ext_field']))
 	{
-		// get article count
-		if ($output->data && Util::checkKeyInExtField('count_article'))
-		{
-			foreach ($output->data->index as $k=>$v)
-			{
-				$where = 'category_srl='.(int)$v->srl;
-				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
-				$cnt = $model->getCount((object)[
-					'table' => 'articles',
-					'where' => $where,
-				]);
-				$output->data->index[$k]->count_article = $cnt->data;
-			}
-		}
-
-		// get all item
-		if (Util::checkKeyInExtField('item_all'))
-		{
-			if (!$output->data) $output->data->index = [];
-
-			// set item
-			$item = (object)[
-				'srl' => '',
-				'nest_srl' => $nest,
-				'name' => 'All',
-			];
-			// get article count
-			if (Util::checkKeyInExtField('count_article'))
-			{
-				$where = $nest ? 'nest_srl='.$nest : '';
-				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
-				$cnt = $model->getCount((object)[
-					'table' => 'articles',
-					'where' => $where,
-				]);
-				$item->count_article = $cnt->data;
-			}
-			// add item
-			array_unshift($output->data->index, $item);
-		}
-
-		// get un category
-		if (Util::checkKeyInExtField('none'))
-		{
-			if (!$output->data) $output->data->index = [];
-
-			// set item
-			$item = (object)[
-				'srl' => 'null',
-				'nest_srl' => $nest,
-				'name' => 'none',
-			];
-			if (Util::checkKeyInExtField('count_article'))
-			{
-				$where = $nest ? 'nest_srl='.$nest : '';
-				$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
-				$where .= ' and category_srl IS NULL';
-				$cnt = $model->getCount((object)[
-					'table' => 'articles',
-					'where' => $where,
-				]);
-				$item->count_article = $cnt->data;
-			}
-			// add item
-			array_push($output->data->index, $item);
-		}
+		$output->data->index = \Controller\categories\Util::extendItems(
+			$model,
+			$token,
+			$output->data->index,
+			$nest
+		);
 	}
 
 	// set token
