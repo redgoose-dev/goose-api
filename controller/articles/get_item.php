@@ -8,7 +8,9 @@ if (!defined('__GOOSE__')) exit();
  * get article
  *
  * url params
+ * - @param int srl
  * - @param int hit 조회수 증가 사용
+ * - @param string ext_field `category_name,nest_name`
  *
  * @var Goose $this
  */
@@ -46,7 +48,7 @@ try
 	]);
 
 	// get category name
-	if ($output->data && Util::checkKeyInExtField('category_name'))
+	if ($output->data && $output->data->category_srl && Util::checkKeyInExtField('category_name'))
 	{
 		$category = $model->getItem((object)[
 			'table' => 'categories',
@@ -56,6 +58,19 @@ try
 		if ($category->data && $category->data->name)
 		{
 			$output->data->category_name = $category->data->name;
+		}
+	}
+
+	// get nest name
+	if ($output->data && $output->data->nest_srl && Util::checkKeyInExtField('nest_name'))
+	{
+		$nest = $model->getItem((object)[
+			'table' => 'nests',
+			'where' => 'srl='.(int)$output->data->nest_srl,
+		]);
+		if (isset($nest->data->name))
+		{
+			$output->data->nest_name = $nest->data->name;
 		}
 	}
 

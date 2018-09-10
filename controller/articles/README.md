@@ -41,6 +41,7 @@
 
 ### ext_field
 - `category_name`: 분류 이름을 가져옵니다.
+- `nest_name`: 분류 이름을 가져옵니다.
 
 
 ## add article
