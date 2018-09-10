@@ -18,5 +18,4 @@ data/
 usr/
 
 ## custom controller
-controller/external/*
-!controller/external/index.php
+controller/external
