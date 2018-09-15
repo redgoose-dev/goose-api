@@ -24,6 +24,7 @@ try
 
 	// filtering text
 	$_POST['title'] = htmlspecialchars(addslashes(trim($_POST['title'])));
+	$_POST['title'] = str_replace('&amp;', '&', $_POST['title']);
 	if ($_GET['content'] !== 'raw')
 	{
 		$_POST['content'] = addslashes($_POST['content']);
