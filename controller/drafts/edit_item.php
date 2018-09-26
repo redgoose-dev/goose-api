@@ -49,10 +49,11 @@ try
 		'table' => $tableName,
 		'srl' => $srl,
 		'data' => [
-			$_POST['user_srl'] ? "user_srl='$_POST[user_srl]'" : '',
-			$_POST['title'] ? "title='$_POST[title]'" : '',
-			$_POST['content'] ? "content='$_POST[content]'" : '',
-			$_POST['json'] ? "json='$_POST[json]'" : '',
+			isset($_POST['user_srl']) ? "user_srl='$_POST[user_srl]'" : '',
+			isset($_POST['title']) ? "title='$_POST[title]'" : '',
+			isset($_POST['content']) ? "content='$_POST[content]'" : '',
+			isset($_POST['json']) ? "json='$_POST[json]'" : '',
+			isset($_POST['description']) ? "description='$_POST[description]'" : '',
 		],
 	]);
 

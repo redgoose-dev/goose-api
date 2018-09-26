@@ -44,6 +44,7 @@ CREATE TABLE `goose_drafts` (
   `title` varchar(255) DEFAULT NULL,
   `content` longtext,
   `json` text,
+  `description` varchar(100) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

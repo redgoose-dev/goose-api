@@ -44,6 +44,7 @@ try
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],
 			'json' => $_POST['json'],
+			'description' => $_POST['description'],
 			'regdate' => date('YmdHis'),
 		]
 	]);

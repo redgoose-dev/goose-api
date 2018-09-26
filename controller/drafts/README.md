@@ -25,7 +25,8 @@
 |:---:|:---:|---|---|
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
-| json | string | `{"foo", "bar"}` | 글 본문 |
+| json | string | `{"foo", "bar"}` | json 데이터 |
+| description | string | `description text` | description |
 
 - method: GET
 
@@ -51,7 +52,8 @@
 |:---:|:---:|---|---|
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
-| json | string | `{"foo", "bar"}` | 글 본문 |
+| json | string | `{"foo", "bar"}` | json 데이터 |
+| description | string | `description text` | description |
 
 - method: GET
 
