@@ -20,9 +20,10 @@ catch(Exception $e)
 
 // set header
 // check OPTIONS method
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
+if (getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
 {
 	if (
+		$_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&
 		isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
 		(
 			$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST' ||
@@ -35,8 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && getenv('USE_CHECK_OPTIONS_METHOD'
 		header('Access-Control-Allow-Headers: X-Requested-With,Content-Type,Authorization');
 		header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 		header('Access-Control-Max-Age: 86400');
+		exit;
 	}
-	exit;
+	else
+	{
+		header('Access-Control-Allow-Origin: *');
+	}
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 {
