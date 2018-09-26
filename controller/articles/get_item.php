@@ -43,8 +43,8 @@ try
 		'goose' => $this,
 		'model' => $model,
 		'table' => $tableName,
-		'json_field' => ['json'],
 		'srl' => $srl,
+		'json_field' => ['json'],
 	]);
 
 	// get category name

@@ -37,6 +37,11 @@ try
 		$ready = 0;
 		$article_srls = explode(',', $_POST['article_srls']);
 	}
+	else if (isset($_POST['draft_srls']))
+	{
+		$ready = 0;
+		$draft_srls = explode(',', $_POST['draft_srls']);
+	}
 	else
 	{
 		$ready = 1;
@@ -132,6 +137,7 @@ try
 				'data' => (object)[
 					'srl' => null,
 					'article_srl' => isset($article_srls) ? (int)$article_srls[$k] : null,
+					'draft_srl' => isset($draft_srls) ? (int)$draft_srls[$k] : null,
 					'user_srl' => (int)$token->data->user_srl,
 					'name' => $file['name'][$k],
 					'loc' => $path.'/'.$month.'/'.$file['name'][$k],

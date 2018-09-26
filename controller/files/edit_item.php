@@ -130,9 +130,23 @@ try
 		}
 	}
 
+	// check draft data
+	if ($_POST['draft_srl'])
+	{
+		$cnt = $model->getCount((object)[
+			'table' => 'drafts',
+			'where' => 'srl='.(int)$_POST['draft_srl'],
+		]);
+		if (!$cnt->data)
+		{
+			throw new Exception('Not found draft data.', 500);
+		}
+	}
+
 	// update data
 	$data = [];
 	if ($_POST['article_srl']) $data[] = "article_srl='$_POST[article_srl]'";
+	if ($_POST['draft_srl']) $data[] = "draft_srl='$_POST[draft_srl]'";
 	if (isset($_POST['ready'])) $data[] = "ready='$_POST[ready]'";
 	if ($newFile)
 	{

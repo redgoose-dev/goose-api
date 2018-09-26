@@ -14,6 +14,7 @@
 | name | type | example | description |
 |:---:|:---:|---|---|
 | article | number | `1` | article srl |
+| draft | number | `1` | draft srl |
 | name | string | `filename` | filename |
 | type | string | `png` | file type |
 | ready | string | `true,false` | 대기상태 |
@@ -41,6 +42,7 @@
 | key | type | example | description |
 |:---:|:---:|---|---|
 | article_srls | number | `1` | `article srl` 값입니다. 파일을 여러개 올리면 그 갯수만큼 여러개 지정해줄 수 있습니다. ex) 1,2,3 |
+| draft_srls | number | `1` | `article_srls`과 동일한 역할을 하지만 임시용입니다. ex) 1,2,3 |
 | ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 
@@ -55,6 +57,7 @@
 | key | type | example | description |
 |:---:|:---:|---|---|
 | article_srl | number | `1` | `article srl` 값입니다. |
+| draft_srl | number | `1` | `draft srl` 값입니다. |
 | ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 

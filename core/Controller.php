@@ -441,17 +441,29 @@ class Controller {
 	 * Remove attach files
 	 *
 	 * @param Model $model
-	 * @param int $article_srl
+	 * @param int $srl
+	 * @param string $type `article|draft`
 	 * @throws Exception
 	 */
-	public static function removeAttachFiles($model, $article_srl)
+	public static function removeAttachFiles($model, $srl, $type='article')
 	{
 		try
 		{
+			switch ($type)
+			{
+				case 'draft':
+					$where = 'draft_srl='.$srl;
+					break;
+				case 'article':
+				default:
+					$where = 'article_srl='.$srl;
+					break;
+			}
+
 			// remove files
 			$files = $model->getItems((object)[
 				'table' => 'files',
-				'where' => 'article_srl='.$article_srl,
+				'where' => $where,
 			]);
 			if ($files->data && count($files->data))
 			{
@@ -465,7 +477,7 @@ class Controller {
 				// remove db
 				$model->delete((object)[
 					'table' => 'files',
-					'where' => 'article_srl='.$article_srl
+					'where' => $where,
 				]);
 			}
 		}

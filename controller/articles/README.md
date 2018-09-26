@@ -55,7 +55,6 @@
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
-| user_srl | number | `1` | user srl 번호 |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | 글 본문 |
@@ -85,7 +84,6 @@
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
-| user_srl | number | `1` | user srl 번호 |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | hit | number | `0` | 조회수 |

@@ -37,6 +37,20 @@ ALTER TABLE `goose_articles` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_articles` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 
+-- table `drafts`
+CREATE TABLE `goose_drafts` (
+  `srl` int(11) NOT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `content` longtext,
+  `json` text,
+  `regdate` varchar(14) DEFAULT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `goose_drafts` ADD PRIMARY KEY (`srl`);
+ALTER TABLE `goose_drafts` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
+
+
 -- table `categories`
 CREATE TABLE `goose_categories` (
   `srl` int(11) NOT NULL,
@@ -55,6 +69,7 @@ ALTER TABLE `goose_categories` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 CREATE TABLE `goose_files` (
   `srl` int(11) NOT NULL,
   `article_srl` int(11) DEFAULT NULL,
+  `draft_srl` int(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(120) DEFAULT NULL,
   `loc` varchar(255) DEFAULT NULL,

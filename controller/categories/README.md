@@ -1,6 +1,6 @@
 # Controller / categories
 
-article에 대한 분류로 사용합니다. 가장 작은 단위로 그루핑을 할 수 있습니다.
+`article`에 대한 분류로 사용합니다. 가장 작은 단위로 그루핑을 할 수 있습니다.
 
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
