@@ -45,7 +45,7 @@ CREATE TABLE `goose_drafts` (
   `content` longtext,
   `json` text,
   `description` varchar(100) DEFAULT NULL,
-  `regdate` varchar(14) DEFAULT NULL,
+  `regdate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `goose_drafts` ADD PRIMARY KEY (`srl`);
