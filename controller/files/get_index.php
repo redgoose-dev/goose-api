@@ -29,10 +29,6 @@ try
 	{
 		$where .= ' and article_srl='.$article;
 	}
-	if ($draft = $_GET['draft'])
-	{
-		$where .= ' and draft_srl='.$draft;
-	}
 	if ($name = $_GET['name'])
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';

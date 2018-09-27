@@ -70,7 +70,6 @@ ALTER TABLE `goose_categories` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 CREATE TABLE `goose_files` (
   `srl` int(11) NOT NULL,
   `article_srl` int(11) DEFAULT NULL,
-  `draft_srl` int(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(120) DEFAULT NULL,
   `loc` varchar(255) DEFAULT NULL,

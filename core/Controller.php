@@ -451,9 +451,6 @@ class Controller {
 		{
 			switch ($type)
 			{
-				case 'draft':
-					$where = 'draft_srl='.$srl;
-					break;
 				case 'article':
 				default:
 					$where = 'article_srl='.$srl;
