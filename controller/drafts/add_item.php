@@ -13,7 +13,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'title', 'content' ]);
+	Util::checkExistValue($_POST, [ 'content' ]);
 
 	// set model
 	$model = new Model();
