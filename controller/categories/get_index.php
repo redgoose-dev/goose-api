@@ -43,7 +43,7 @@ try
 		'where' => $where
 	]);
 
-	if (isset($_GET['ext_field']))
+	if (isset($_GET['ext_field']) && $output->data)
 	{
 		$output->data->index = \Controller\categories\Util::extendItems(
 			$model,
