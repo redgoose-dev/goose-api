@@ -62,30 +62,6 @@ try
 		$output->data->index = \Controller\articles\Util::extendCategoryNameInItems($model, $output->data->index);
 	}
 
-	// get page navigation
-	if ($output->data && Util::checkKeyInExtField('page_navigation'))
-	{
-		// get total count
-		$count = $model->getCount((object)[
-			'table' => 'articles',
-			'where' => $where,
-		]);
-		if ($count->data && $count->data > 0)
-		{
-			// set values
-			$params = [ 'keyword' => ($_GET['keyword']) ? $_GET['keyword'] : '' ];
-			$page = ($_GET['page']) ? (int)$_GET['page'] : 1;
-			$size = ($_GET['size']) ? (int)$_GET['size'] : 10;
-			$scale = ($_GET['size']) ? (int)$_GET['scale'] : 10;
-			// set paginate
-			$paginate = new Paginate($count->data, $page, $params, $size, $scale);
-			// make navigation object
-			$pageNavigation = $paginate->createNavigationToObject();
-			// set output data
-			$output->data->navigation = $pageNavigation ? $pageNavigation : null;
-		}
-	}
-
 	// get next page
 	if ($output->data && Util::checkKeyInExtField('next_page'))
 	{

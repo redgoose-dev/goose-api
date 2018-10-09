@@ -23,7 +23,6 @@
 
 ### ext_field
 - `category_name`: 분류 이름을 가져옵니다.
-- `page_navigation`: 페이지 네비게이션 데이터를 가져옵니다.
 - `next_page`: 다음페이지 번호를 가져옵니다.
 
 
