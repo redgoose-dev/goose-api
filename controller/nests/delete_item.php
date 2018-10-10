@@ -58,7 +58,7 @@ try
 	// categories
 	$categoriesCount = $model->getCount((object)[
 		'table' => 'categories',
-		'where' => 'nest_srl'.$srl,
+		'where' => 'nest_srl='.$srl,
 	]);
 	if ($categoriesCount->data > 0)
 	{
