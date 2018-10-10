@@ -71,4 +71,32 @@ class Util {
 		return $index;
 	}
 
+	/**
+	 * extend nest name in items
+	 *
+	 * @param \Core\Model $model
+	 * @param array $index
+	 * @return array
+	 */
+	public static function extendNestNameInItems($model, $index)
+	{
+		if (!(isset($index) && count($index))) return [];
+
+		foreach ($index as $k=>$v)
+		{
+			if (!$v->nest_srl) continue;
+			$nest = $model->getItem((object)[
+				'table' => 'nests',
+				'field' => 'name',
+				'where' => 'srl='.(int)$v->nest_srl,
+			]);
+			if ($nest->data && $nest->data->name)
+			{
+				$index[$k]->nest_name = $nest->data->name;
+			}
+		}
+
+		return $index;
+	}
+
 }

@@ -62,6 +62,12 @@ try
 		$output->data->index = \Controller\articles\Util::extendCategoryNameInItems($model, $output->data->index);
 	}
 
+	// get nest name
+	if ($output->data && Util::checkKeyInExtField('nest_name'))
+	{
+		$output->data->index = \Controller\articles\Util::extendNestNameInItems($model, $output->data->index);
+	}
+
 	// get next page
 	if ($output->data && Util::checkKeyInExtField('next_page'))
 	{

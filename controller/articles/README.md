@@ -23,6 +23,7 @@
 
 ### ext_field
 - `category_name`: 분류 이름을 가져옵니다.
+- `nest_name`: 둥지 이름을 가져옵니다.
 - `next_page`: 다음페이지 번호를 가져옵니다.
 
 
