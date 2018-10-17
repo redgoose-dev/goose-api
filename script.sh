@@ -7,7 +7,7 @@
 
 # func / start server
 start() {
-	php -S 0.0.0.0:$port -t ./
+	php -S 0.0.0.0:$port server.php
 }
 
 
