@@ -12,8 +12,7 @@ if (!defined('__GOOSE__')) exit();
  * - @param int nest
  * - @param int category
  * - @param int user
- * - @param string keyword
- * - @param string ip
+ * - @param string q
  *
  * @var Goose $this
  */
@@ -22,21 +21,21 @@ try
 {
 	// set where
 	$where = '';
-	if ($app = Util::getParameter('app'))
+	if ($app = $_GET['app'])
 	{
 		$where .= ' and app_srl='.$app;
 	}
-	if ($nest = Util::getParameter('nest'))
+	if ($nest = $_GET['nest'])
 	{
 		$where .= ' and nest_srl='.$nest;
 	}
-	if ($category = Util::getParameter('category'))
+	if ($category = $_GET['category'])
 	{
 		$where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
 	}
-	if ($keyword = Util::getParameter('keyword'))
+	if ($q = $_GET['q'])
 	{
-		$where .= ' and (title LIKE \'%'.$keyword.'%\' or content LIKE \'%'.$keyword.'%\')';
+		$where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
 	}
 
 	// set model
@@ -83,5 +82,6 @@ try
 }
 catch (Exception $e)
 {
+	if (isset($model)) $model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

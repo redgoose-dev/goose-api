@@ -16,7 +16,7 @@ article 들을 그루핑하는 역할을 합니다.
 |:---:|:---:|---|---|
 | app | number | `1` | app srl |
 | id | string | `hello` | 고유 id값 |
-| name | string | `Hello nest` | filename |
+| name | string | `Hello` | name |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 

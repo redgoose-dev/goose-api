@@ -17,7 +17,7 @@
 | nest | number | `1` | nest srl |
 | category | number | `1` | category srl |
 | user | number | `1` | user srl |
-| keyword | string | `toy` | 제목과 본문내용 검색어 |
+| q | string | `toy` | 제목과 본문내용 검색어 |
 | ext_field | string | `category_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 

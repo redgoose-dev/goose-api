@@ -17,6 +17,7 @@ return [
 
 	// articles
 	[ 'GET', '/articles', 'articles/get_index', 'getArticles' ],
+	[ 'GET', '/articles-ex', 'articles/get_index-extend', 'getArticleExtend' ],
 	[ 'GET', '/articles/[i:srl]', 'articles/get_item', 'getArticle' ],
 	[ 'GET', '/articles/[i:srl]/update', 'articles/get_update', 'updateArticle' ],
 	[ 'POST', '/articles', 'articles/add_item', 'addArticle' ],
