@@ -12,10 +12,9 @@ if (!defined('__GOOSE__')) exit();
  * # url params
  * - @param int app : app srl
  * - @param int nest : nest srl
- * - @param int nest_id : nest id
+ * - @param string nest_id : nest id
  * - @param int category : category srl
- * - @param int user : user srl
- * - @param string q : search keyword
+ * - @param string ext_filed : external field
  *
  * @var Goose $this
  */
