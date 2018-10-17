@@ -88,5 +88,6 @@ try
 }
 catch (Exception $e)
 {
+	if (isset($model)) $model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }
