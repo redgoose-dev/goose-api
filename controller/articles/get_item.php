@@ -77,7 +77,8 @@ try
 	// update hit
 	if ($_GET['hit'] && isset($output->data->hit))
 	{
-		$hit = (int)$output->data->hit + 1;
+		$output->data->hit = $output->data->hit + 1;
+		$hit = (int)$output->data->hit;
 		$model->edit((object)[
 			'table' => $tableName,
 			'where' => 'srl='.$srl,
