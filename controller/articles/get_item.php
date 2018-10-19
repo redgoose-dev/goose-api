@@ -26,6 +26,21 @@ try
 		throw new Exception('Not found srl', 204);
 	}
 
+	// set where
+	$where = '';
+	if ($app = $_GET['app'])
+	{
+		$where .= ' and app_srl='.$app;
+	}
+	if ($nest = $_GET['nest'])
+	{
+		$where .= ' and nest_srl='.$nest;
+	}
+	if ($category = $_GET['category'])
+	{
+		$where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
+	}
+
 	// set model
 	$model = new Model();
 	$model->connect();
@@ -44,6 +59,7 @@ try
 		'model' => $model,
 		'table' => $tableName,
 		'srl' => $srl,
+		'where' => $where,
 		'json_field' => ['json'],
 	]);
 

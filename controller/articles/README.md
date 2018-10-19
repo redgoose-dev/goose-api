@@ -35,6 +35,9 @@
 
 | name | type | example | description |
 |:---:|:---:|---|---|
+| app | number | `1` | app srl |
+| nest | number | `1` | nest srl |
+| category | number | `1` | category srl |
 | hit | number | `0,1` | 이 항목을 `1`로 넣어서 사용하면 응답을 받을때 조회수가 올라갑니다. |
 | ext_field | string | `category_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
