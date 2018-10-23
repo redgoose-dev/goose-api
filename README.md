@@ -1,7 +1,13 @@
 # goose-api
 
 이것은 개인용 CMS [Goose](https://github.com/RedgooseDev/goose) 프로젝트에서 API 기능에 집중한 프로젝트입니다.  
-[goose manager](https://github.com/redgoose-dev/goose-manager) 에서 컨텐츠를 제작하고 api를 활용하여 다른 플랫폼에서 사용하기 위한 용도로 만들어진 마이크로 cms api라고 볼 수 있습니다.
+[goose manager](https://github.com/redgoose-dev/goose-manager) 에서 컨텐츠를 제작하고 API를 활용하여 다른 플랫폼에서 사용하기 위한 용도로 만들어진 마이크로 CMS API라고 볼 수 있습니다.
+
+
+## 함께 사용할 수 있는 프로그램
+
+- goose-manager: https://github.com/redgoose-dev/goose-manager
+- goose-app: https://github.com/redgoose-dev/goose-app
 
 
 ## 사용을 위한 환경
