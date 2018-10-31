@@ -25,3 +25,12 @@
 goose-api 설치에 관란 자세한 내용은 wiki에서 확인할 수 있습니다.
 
 https://github.com/redgoose-dev/goose-api/wiki
+
+
+## TODO
+
+- [ ] nginx.conf 설정 만들기 (포트 80을 목표)
+- [ ] 빌드 스크립트 이후에 해야할일들 정하기 (readme에 작성 필요있음.)
+- [ ] docker에서 .env 수정하는 명령 찾아보기
+- [ ] docker에서 `./script.sh install` 명령 실행할 수 있도록 스크립트 작성하기
+- [ ] mysql과의 접속에 대하여 검증해보기
