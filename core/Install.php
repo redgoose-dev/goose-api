@@ -163,6 +163,13 @@ class Install {
 			try
 			{
 				Util::createDirectory(__PATH__.'/data', 0707);
+			}
+			catch(Exception $e)
+			{
+				$out .= "ERROR: ".$e->getMessage()."\n";
+			}
+			try
+			{
 				Util::createDirectory(__PATH__.'/data/upload', 0707);
 			}
 			catch(Exception $e)
@@ -219,10 +226,10 @@ class Install {
 			if ($out) $out .= "\n";
 			$out .= "Success install!\n";
 			$out .= "\n";
-			$out .= "* Manager url\n";
-			$out .= getenv('PATH_URL')."/manager\n";
+			$out .= "* URL guide\n";
+			$out .= getenv('PATH_URL')."\n";
 			$out .= "\n";
-			$out .= "* The root account\n";
+			$out .= "* Root account guide\n";
 			$out .= "- e-mail : $defaultEmail\n";
 			$out .= "- name : $defaultName\n";
 			$out .= "- password : $defaultPassword\n";
