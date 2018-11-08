@@ -18,7 +18,7 @@ init-docker() {
 	chmod 707 data/upload
 	curl -O https://raw.githubusercontent.com/redgoose-dev/goose-api/master/resource/.env.example
 	curl -O https://raw.githubusercontent.com/redgoose-dev/goose-api/master/docker-compose.yml
-	mv .env.example data/.env
+	mv .env.example .env
 }
 
 
