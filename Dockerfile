@@ -6,11 +6,6 @@ WORKDIR /goose
 RUN apt-get -qq update
 RUN apt-get -y -qq install nano net-tools
 
-# install nginx
-RUN apt-get -y -qq install nginx
-RUN rm -rf /etc/nginx/nginx.conf
-#ADD ./resource/nginx.conf /etc/nginx/nginx.conf
-
 # install php
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -33,6 +28,6 @@ RUN composer install
 RUN ./script.sh ready
 
 # play command
-CMD service php7.2-fpm start && nginx -g "daemon off;"
+CMD service php7.2-fpm start && php -S 0.0.0.0:8000 server.php
 
-EXPOSE 80
+EXPOSE 8000
