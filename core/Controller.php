@@ -442,20 +442,14 @@ class Controller {
 	 *
 	 * @param Model $model
 	 * @param int $srl
-	 * @param string $type `article|draft`
 	 * @throws Exception
 	 */
 	public static function removeAttachFiles($model, $srl, $type='article')
 	{
 		try
 		{
-			switch ($type)
-			{
-				case 'article':
-				default:
-					$where = 'article_srl='.$srl;
-					break;
-			}
+			// set where
+			$where = 'article_srl='.$srl;
 
 			// remove files
 			$files = $model->getItems((object)[

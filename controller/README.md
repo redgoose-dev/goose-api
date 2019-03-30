@@ -7,7 +7,6 @@
 
 - [./apps](https://github.com/redgoose-dev/goose-api/tree/master/controller/apps)
 - [./articles](https://github.com/redgoose-dev/goose-api/tree/master/controller/articles)
-- [./drafts](https://github.com/redgoose-dev/goose-api/tree/master/controller/drafts)
 - [./auth](https://github.com/redgoose-dev/goose-api/tree/master/controller/auth)
 - [./categories](https://github.com/redgoose-dev/goose-api/tree/master/controller/categories)
 - [./files](https://github.com/redgoose-dev/goose-api/tree/master/controller/files)

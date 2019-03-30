@@ -14,7 +14,6 @@
 | name | type | example | description |
 |:---:|:---:|---|---|
 | article | number | `1` | article srl |
-| draft | number | `1` | draft srl |
 | name | string | `filename` | filename |
 | type | string | `png` | file type |
 | ready | string | `true,false` | 대기상태 |

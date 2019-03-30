@@ -29,27 +29,13 @@ CREATE TABLE `goose_articles` (
   `star` int(11) DEFAULT 0,
   `json` text,
   `ip` varchar(15) DEFAULT NULL,
+  `type` varchar(20) DEFAULT NULL,
   `regdate` varchar(14) DEFAULT NULL,
   `modate` varchar(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `goose_articles` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_articles` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
-
-
--- table `drafts`
-CREATE TABLE `goose_drafts` (
-  `srl` int(11) NOT NULL,
-  `user_srl` smallint(11) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `content` longtext,
-  `json` text,
-  `description` varchar(100) DEFAULT NULL,
-  `regdate` varchar(14) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE `goose_drafts` ADD PRIMARY KEY (`srl`);
-ALTER TABLE `goose_drafts` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 
 
 -- table `categories`

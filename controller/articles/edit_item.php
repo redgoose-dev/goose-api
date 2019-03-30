@@ -56,6 +56,7 @@ try
 			isset($_POST['nest_srl']) ? "nest_srl='$_POST[nest_srl]'" : '',
 			isset($category_srl) ? "category_srl=$category_srl" : '',
 			$_POST['user_srl'] ? "user_srl='$_POST[user_srl]'" : '',
+			$_POST['type'] ? "type='$_POST[type]'" : 'type=NULL',
 			$_POST['title'] ? "title='$_POST[title]'" : '',
 			$_POST['content'] ? "content='$_POST[content]'" : '',
 			$_POST['hit'] ? "hit='$_POST[hit]'" : '',

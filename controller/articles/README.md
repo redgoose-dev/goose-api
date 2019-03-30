@@ -17,6 +17,7 @@
 | nest | number | `1` | nest srl |
 | category | number | `1` | category srl |
 | user | number | `1` | user srl |
+| visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | q | string | `toy` | 제목과 본문내용 검색어 |
 | ext_field | string | `category_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
@@ -39,6 +40,7 @@
 | nest | number | `1` | nest srl |
 | category | number | `1` | category srl |
 | hit | number | `0,1` | 이 항목을 `1`로 넣어서 사용하면 응답을 받을때 조회수가 올라갑니다. |
+| visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | ext_field | string | `category_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
@@ -58,6 +60,7 @@
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
+| type | string | null | 글 타입 ('hidden',null) |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | json 데이터 |
@@ -72,7 +75,7 @@
 
 ### (GET) content
 
-- ``: 일반적인 글을 작성하는데 사용되며 markdown용
+- ``: 일반적인 글을 작성하는데 사용되며 `markdown` 형식으로 사용합니다.
 - `raw`: 소스 그대로 `content`항목의 내용을 저장합니다.
 
 
@@ -87,6 +90,7 @@
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
+| type | string | null | 글 타입 ('hidden',null) |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | hit | number | `0` | 조회수 |
@@ -137,6 +141,7 @@
 | nest | number | `1` | nest srl |
 | nest_id | string | `foo` | nest id |
 | category | number | `1` | category srl |
+| visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | ext_field | string | `category_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
