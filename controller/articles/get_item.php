@@ -40,6 +40,12 @@ try
 	{
 		$where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
 	}
+	if ($_GET['visible_type'] === 'all')
+	{}
+	else
+	{
+		$where .= ' and type IS NULL'; // type 필드가 `null`일때 공개된 글입니다.
+	}
 
 	// set model
 	$model = new Model();

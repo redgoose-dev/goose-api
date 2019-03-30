@@ -24,13 +24,6 @@ return [
 	[ 'POST', '/articles/[i:srl]/edit', 'articles/edit_item', 'editArticle' ],
 	[ 'POST', '/articles/[i:srl]/delete', 'articles/delete_item', 'deleteArticle' ],
 
-	// drafts
-	[ 'GET', '/drafts', 'drafts/get_index', 'getDrafts' ],
-	[ 'GET', '/drafts/[i:srl]', 'drafts/get_item', 'getDraft' ],
-	[ 'POST', '/drafts', 'drafts/add_item', 'addDrafts' ],
-	[ 'POST', '/drafts/[i:srl]/edit', 'drafts/edit_item', 'editDraft' ],
-	[ 'POST', '/drafts/[i:srl]/delete', 'drafts/delete_item', 'deleteDraft' ],
-
 	// categories
 	[ 'GET', '/categories', 'categories/get_index', 'getCategories' ],
 	[ 'GET', '/categories/[i:srl]', 'categories/get_item', 'getCategory' ],

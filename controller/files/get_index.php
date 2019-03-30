@@ -9,7 +9,6 @@ if (!defined('__GOOSE__')) exit();
  *
  * url params
  * - @param int article
- * - @param int draft
  * - @param string name
  * - @param string type
  * - @param string ready

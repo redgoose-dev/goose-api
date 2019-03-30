@@ -77,6 +77,7 @@ try
 			'nest_srl' => (int)$_POST['nest_srl'] ? (int)$_POST['nest_srl'] : null,
 			'category_srl' => (int)$_POST['category_srl'] ? (int)$_POST['category_srl'] : null,
 			'user_srl' => (int)$token->data->user_srl,
+			'type' => $_POST['type'] ? $_POST['type'] : null,
 			'title' => $_POST['title'],
 			'content' => $_POST['content'],
 			'hit' => 0,
