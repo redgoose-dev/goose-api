@@ -14,7 +14,6 @@ if (!defined('__GOOSE__')) exit();
  * - @param int nest : nest srl
  * - @param string nest_id : nest id
  * - @param int category : category srl
- * - @param string ext_filed : external field
  *
  * @var Goose $this
  */
@@ -55,7 +54,6 @@ try
 	if (!($nest && $nest->data)) throw new Exception('Not found nest data', 404);
 	$nest = $nest->data;
 
-
 	// get categories
 	$categories = null;
 	if (isset($nest->json->useCategory) && (int)$nest->json->useCategory === 1)
@@ -72,7 +70,6 @@ try
 		$categories = \Controller\categories\Util::extendArticleCountInItems($model, $token, $categories);
 		$categories = \Controller\categories\Util::extendAllArticlesInItems($model, $token, $categories, $nest->srl);
 	}
-
 
 	// get articles area
 
@@ -105,10 +102,8 @@ try
 		if ($nextPage) $output->data->nextPage = $nextPage;
 	}
 
-
 	// set token
 	if ($token) $output->_token = $token->jwt;
-
 
 	// output
 	if ($output->data)
