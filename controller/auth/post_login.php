@@ -14,7 +14,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'email', 'pw', 'host' ]);
+	Util::checkExistValue($_POST, [ 'email', 'password', 'host' ]);
 
 	// set model
 	$model = new Model();
@@ -31,7 +31,7 @@ try
 	$user = Auth::login((object)[
 		'model' => $model,
 		'email' => $_POST['email'],
-		'password' => $_POST['pw']
+		'password' => $_POST['password']
 	]);
 
 	// make token
@@ -44,6 +44,7 @@ try
 			'email' => $user->email,
 			'admin' => !!((int)$user->admin === 2),
 			'host' => $_POST['host'],
+			'regdate' => date('Y-m-d H:i:s'),
 		],
 	]);
 

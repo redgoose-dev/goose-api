@@ -208,9 +208,9 @@ class Install {
 						'srl' => null,
 						'email' => $defaultEmail,
 						'name' => $defaultName,
-						'pw' => password_hash($defaultPassword, PASSWORD_DEFAULT),
+						'password' => password_hash($defaultPassword, PASSWORD_DEFAULT),
 						'admin' => 2,
-						'regdate' => date('YmdHis')
+						'regdate' => date('Y-m-d H:i:s')
 					],
 					'debug' => true
 				]);

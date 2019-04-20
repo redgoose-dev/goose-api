@@ -51,7 +51,7 @@ try
 				'id' => $_POST['id'],
 				'name' => $_POST['name'],
 				'description' => $_POST['description'],
-				'regdate' => date('YmdHis'),
+				'regdate' => date('Y-m-d H:i:s'),
 			]
 		]);
 	}

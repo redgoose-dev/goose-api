@@ -53,7 +53,7 @@ try
 				'user_srl' => (int)$token->data->user_srl,
 				'turn' => $max,
 				'name' => $_POST['name'],
-				'regdate' => date('YmdHis'),
+				'regdate' => date('Y-m-d H:i:s'),
 			]
 		]);
 	}

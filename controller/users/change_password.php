@@ -19,12 +19,12 @@ try
 	}
 
 	// check post values
-	Util::checkExistValue($_POST, [ 'pw', 'new_pw', 'confirm_pw' ]);
+	Util::checkExistValue($_POST, [ 'password', 'new_password', 'confirm_password' ]);
 
-	// check new_pw and confirm_pw
-	if ($_POST['new_pw'] !== $_POST['confirm_pw'])
+	// check new_password and confirm_password
+	if ($_POST['new_password'] !== $_POST['confirm_password'])
 	{
-		throw new Exception('`new_pw` and `confirm_pw` are different.', 204);
+		throw new Exception('`new_password` and `confirm_password` are different.', 204);
 	}
 
 	// set model
@@ -39,7 +39,7 @@ try
 		// check password
 		Auth::login((object)[
 			'user_srl' => (int)$this->params['srl'],
-			'password' => $_POST['pw']
+			'password' => $_POST['password']
 		]);
 
 		// set output
@@ -48,7 +48,7 @@ try
 			'model' => $model,
 			'table' => 'users',
 			'srl' => (int)$this->params['srl'],
-			'data' => [ "pw='".password_hash($_POST['new_pw'], PASSWORD_DEFAULT)."'" ],
+			'data' => [ "password='".password_hash($_POST['new_password'], PASSWORD_DEFAULT)."'" ],
 		]);
 	}
 	catch(Exception $e)

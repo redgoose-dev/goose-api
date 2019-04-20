@@ -47,7 +47,7 @@ try
 				'name' => $_POST['name'],
 				'description' => $_POST['description'],
 				'json' => $json,
-				'regdate' => date('YmdHis'),
+				'regdate' => date('Y-m-d H:i:s'),
 			]
 		]);
 	}

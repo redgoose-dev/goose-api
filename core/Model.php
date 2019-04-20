@@ -281,13 +281,13 @@ class Model {
 
 		// set query
 		$query = '';
-		$query = 'insert into '.$this->getTableName($op->table).' ';
+		$query = 'insert into `'.$this->getTableName($op->table).'` ';
 
 		// set keys
 		$str = '';
 		foreach ($op->data as $k=>$v)
 		{
-			$str .= ','.$k;
+			$str .= ',`'.$k.'`';
 		}
 		$str = preg_replace("/^,/", "", $str);
 		$query .= '('.$str.')';

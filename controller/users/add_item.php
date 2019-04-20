@@ -10,8 +10,8 @@ if (!defined('__GOOSE__')) exit();
  * data params
  * - @param string email
  * - @param string name
- * - @param string pw
- * - @param string pw2
+ * - @param string password
+ * - @param string password2
  * - @param int admin
  *
  * @var Goose $this
@@ -20,10 +20,10 @@ if (!defined('__GOOSE__')) exit();
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'name', 'email', 'pw' ]);
+	Util::checkExistValue($_POST, [ 'name', 'email', 'password' ]);
 
 	// confirm match password
-	if ($_POST['pw'] !== $_POST['pw2'])
+	if ($_POST['password'] !== $_POST['password2'])
 	{
 		throw new Exception('Passwords must match.', 204);
 	}
@@ -56,9 +56,9 @@ try
 				'srl' => null,
 				'email' => $_POST['email'],
 				'name' => $_POST['name'],
-				'pw' => password_hash($_POST['pw'], PASSWORD_DEFAULT),
+				'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
 				'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
-				'regdate' => date('YmdHis')
+				'regdate' => date('Y-m-d H:i:s')
 			]
 		]);
 	}

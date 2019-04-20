@@ -62,7 +62,8 @@ try
 			$_POST['hit'] ? "hit='$_POST[hit]'" : '',
 			$_POST['star'] ? "star='$_POST[star]'" : '',
 			$_POST['json'] ? "json='$_POST[json]'" : '',
-			"modate='".date("YmdHis")."'"
+			"modate='".date("Y-m-d H:i:s")."'"
+			// TODO
 		],
 	]);
 

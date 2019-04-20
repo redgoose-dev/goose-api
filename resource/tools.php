@@ -176,7 +176,7 @@ function resetPassword()
 		$update = $model->edit((object)[
 			'table' => 'users',
 			'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
-			'data' => [ "pw='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
+			'data' => [ "password='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
 			'debug' => true,
 		]);
 		if (!$update->success)

@@ -73,7 +73,7 @@ try
 			'name' => trim($_POST['name']),
 			'description' => trim($_POST['description']),
 			'json' => $json,
-			'regdate' => date('YmdHis'),
+			'regdate' => date('Y-m-d H:i:s'),
 		]
 	]);
 

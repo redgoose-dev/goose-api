@@ -30,8 +30,8 @@
 |:---:|:---:|---|---|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `name` | name |
-| pw | string | `1234` | 비밀번호 |
-| pw2 | string | `1234` | 비밀번호 확인 |
+| password | string | `1234` | 비밀번호 |
+| password2 | string | `1234` | 비밀번호 확인 |
 | admin | number | `0,1` | 관리자 사용유무 |
 
 ## edit user
@@ -59,6 +59,6 @@
 
 | key | type | example | description |
 |:---:|:---:|---|---|
-| pw | string | `foo` | 현재 패스워드 |
-| new_pw | string | `bar` | 새로운 패스워드 |
-| confirm_pw | string | `bar` | 새로운 패스워드 확인 |
+| password | string | `foo` | 현재 패스워드 |
+| new_password | string | `bar` | 새로운 패스워드 |
+| confirm_password | string | `bar` | 새로운 패스워드 확인 |

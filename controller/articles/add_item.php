@@ -84,8 +84,9 @@ try
 			'star' => 0,
 			'json' => $_POST['json'],
 			'ip' => ($_SERVER['REMOTE_ADDR'] !== '::1') ? $_SERVER['REMOTE_ADDR'] : 'localhost',
-			'regdate' => date('YmdHis'),
-			'modate' => date('YmdHis'),
+			'regdate' => date('Y-m-d H:i:s'),
+			'modate' => date('Y-m-d H:i:s'),
+			'order' => $_POST['order'] ? date('Y-m-d', strtotime($_POST['order'])) : date('Y-m-d'),
 		]
 	]);
 

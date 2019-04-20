@@ -39,9 +39,9 @@ try
 		'table' => $tableName,
 		'srl' => $srl,
 	], function($result=null) {
-		// delete pw field
+		// delete password field
 		if (!isset($result->data)) return $result;
-		if (isset($result->data->pw)) unset($result->data->pw);
+		if (isset($result->data->password)) unset($result->data->password);
 		return $result;
 	});
 

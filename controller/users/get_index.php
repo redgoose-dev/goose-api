@@ -53,10 +53,10 @@ try
 		if (!isset($result->data)) return $result;
 		foreach ($result->data as $k=>$o)
 		{
-			// remove pw field
-			if (isset($result->data[$k]->pw))
+			// remove password field
+			if (isset($result->data[$k]->password))
 			{
-				unset($result->data[$k]->pw);
+				unset($result->data[$k]->password);
 			}
 		}
 		return $result;

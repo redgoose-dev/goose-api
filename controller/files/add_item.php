@@ -137,7 +137,7 @@ try
 					'loc' => $path.'/'.$month.'/'.$file['name'][$k],
 					'type' => $file['type'][$k],
 					'size' => (int)$file['size'][$k],
-					'regdate' => date("YmdHis"),
+					'regdate' => date('Y-m-d H:i:s'),
 					'ready' => $ready,
 				],
 			]);
