@@ -7,12 +7,9 @@ class Output {
 	 * print data
 	 *
 	 * @param object|array obj
-	 * @param string $format
 	 */
-	public static function data($result=null, $format='json')
+	public static function data($result=null)
 	{
-		if (isset($_GET['format'])) $format = $_GET['format'];
-
 		if ($result)
 		{
 			// filtering query
