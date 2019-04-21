@@ -21,6 +21,12 @@ try
 		throw new Exception('Not found srl', 500);
 	}
 
+	// check order date
+	if (!($_POST['order'] && preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order'])))
+	{
+		throw new Exception('Error order date', 500);
+	}
+
 	// set model
 	$model = new Model();
 	$model->connect();
@@ -52,18 +58,18 @@ try
 		'table' => $tableName,
 		'srl' => $srl,
 		'data' => [
-			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
-			isset($_POST['nest_srl']) ? "nest_srl='$_POST[nest_srl]'" : '',
-			isset($category_srl) ? "category_srl=$category_srl" : '',
-			$_POST['user_srl'] ? "user_srl='$_POST[user_srl]'" : '',
-			$_POST['type'] ? "type='$_POST[type]'" : 'type=NULL',
-			$_POST['title'] ? "title='$_POST[title]'" : '',
-			$_POST['content'] ? "content='$_POST[content]'" : '',
-			$_POST['hit'] ? "hit='$_POST[hit]'" : '',
-			$_POST['star'] ? "star='$_POST[star]'" : '',
-			$_POST['json'] ? "json='$_POST[json]'" : '',
-			"modate='".date("Y-m-d H:i:s")."'"
-			// TODO
+			$_POST['app_srl'] ? "`app_srl`='$_POST[app_srl]'" : '',
+			isset($_POST['nest_srl']) ? "`nest_srl`='$_POST[nest_srl]'" : '',
+			isset($category_srl) ? "`category_srl`=$category_srl" : '',
+			$_POST['user_srl'] ? "`user_srl`='$_POST[user_srl]'" : '',
+			$_POST['type'] ? "`type`='$_POST[type]'" : 'type=NULL',
+			$_POST['title'] ? "`title`='$_POST[title]'" : '',
+			$_POST['content'] ? "`content`='$_POST[content]'" : '',
+			$_POST['hit'] ? "`hit`='$_POST[hit]'" : '',
+			$_POST['star'] ? "`star`='$_POST[star]'" : '',
+			$_POST['json'] ? "`json`='$_POST[json]'" : '',
+			"`modate`='".date("Y-m-d H:i:s")."'",
+			$_POST['order'] ? "`order`='".date('Y-m-d', strtotime($_POST['order']))."'" : date('Y-m-d'),
 		],
 	]);
 
