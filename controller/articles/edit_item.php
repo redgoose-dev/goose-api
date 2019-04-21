@@ -22,7 +22,7 @@ try
 	}
 
 	// check order date
-	if (!($_POST['order'] && preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order'])))
+	if ($_POST['order'] && !preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order']))
 	{
 		throw new Exception('Error order date', 500);
 	}
@@ -69,7 +69,7 @@ try
 			$_POST['star'] ? "`star`='$_POST[star]'" : '',
 			$_POST['json'] ? "`json`='$_POST[json]'" : '',
 			"`modate`='".date("Y-m-d H:i:s")."'",
-			$_POST['order'] ? "`order`='".date('Y-m-d', strtotime($_POST['order']))."'" : date('Y-m-d'),
+			"`order`='".($_POST['order'] ? date('Y-m-d', strtotime($_POST['order'])) : date('Y-m-d'))."'",
 		],
 	]);
 

@@ -15,6 +15,12 @@ try
 	// check post values
 	Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'title', 'content' ]);
 
+	// check order date
+	if ($_POST['order'] && !preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order']))
+	{
+		throw new Exception('Error order date', 500);
+	}
+
 	// set model
 	$model = new Model();
 	$model->connect();
