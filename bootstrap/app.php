@@ -22,6 +22,11 @@ catch(Exception $e)
 // check OPTIONS method
 if (getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
 {
+	header('Access-Control-Allow-Origin: *');
+	header('Access-Control-Allow-Headers: origin, content-type, accept, Authorization');
+	header('Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS, DELETE');
+	header('Access-Control-Max-Age: 3600');
+
 	if (
 		$_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&
 		isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
@@ -31,16 +36,7 @@ if (getenv('USE_CHECK_OPTIONS_METHOD') === 'true')
 		)
 	)
 	{
-		header('Access-Control-Allow-Origin: *');
-		header("Access-Control-Allow-Credentials: true");
-		header('Access-Control-Allow-Headers: X-Requested-With,Content-Type,Authorization');
-		header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-		header('Access-Control-Max-Age: 86400');
 		exit;
-	}
-	else
-	{
-		header('Access-Control-Allow-Origin: *');
 	}
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
@@ -49,7 +45,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 }
 
 // set json header
-header('Content-Type: application/json');
+header('Content-Type: application/json,text/plane;charset=UTF-8');
 
 try
 {
