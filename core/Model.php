@@ -23,7 +23,7 @@ class Model {
 	 *
 	 * @param array $item
 	 * @param array $fields
-	 * @return object
+	 * @return object|array
 	 */
 	private static function convertJsonToObject($item, $fields)
 	{
@@ -203,7 +203,7 @@ class Model {
 		$output = (object)[];
 
 		$op->act = 'select';
-		$op->field = ($op->field) ? $op->field : '*';
+		$op->field = ($op->field) ? Util::convertFields($op->field) : '*';
 
 		// make query
 		$query = $this->query($op);
@@ -226,7 +226,7 @@ class Model {
 		}
 
 		// set output
-		$output->data = $result ? $result : [];
+		$output->data = isset($result) ? $result : [];
 		if ($op->debug === true) $output->query = $query;
 
 		return $output;
@@ -243,7 +243,7 @@ class Model {
 		$output = (object)[];
 
 		$op->act = 'select';
-		$op->field = ($op->field) ? $op->field : '*';
+		$op->field = ($op->field) ? Util::convertFields($op->field) : '*';
 
 		// make query
 		$query = $this->query($op);
@@ -272,6 +272,7 @@ class Model {
 	 *
 	 * @param object $op
 	 * @return object
+	 * @throws Exception
 	 */
 	public function add($op=null)
 	{
@@ -363,6 +364,7 @@ class Model {
 	 *
 	 * @param object $op
 	 * @return object
+	 * @throws Exception
 	 */
 	public function delete($op)
 	{

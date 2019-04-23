@@ -89,4 +89,23 @@ class Util {
 		return (array_search($keyword, $arr) === false) ? false : true;
 	}
 
+	/**
+	 * convert fields
+	 *
+	 * @param string $fields
+	 * @return string
+	 */
+	public static function convertFields($fields=null)
+	{
+		if (!$fields || $fields === '*') return '*';
+
+		$arr = explode(',', $fields);
+		for ($i=0; $i<count($arr); $i++)
+		{
+			$arr[$i] = "`".$arr[$i]."`";
+		}
+		$result = implode(',', $arr);
+		$result = preg_replace("/\`\`/i", "`", $result);
+		return $result;
+	}
 }
