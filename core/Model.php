@@ -52,23 +52,23 @@ class Model {
 	 */
 	private function query($op=null)
 	{
-		if (!($op->act && $op->table)) return null;
+		if (!(isset($op->act) && isset($op->table))) return null;
 
 		// filtering where
-		if ($op->where)
+		if (isset($op->where))
 		{
 			$op->where = preg_replace("/^ and/", "", $op->where);
 			$op->where = trim($op->where);
 		}
 
 		$str = $op->act;
-		$str .= ($op->field) ? ' '.$op->field : ' *';
+		$str .= (isset($op->field)) ? ' '.$op->field : ' *';
 		$str .= ' from '.$this->getTableName($op->table);
-		$str .= ($op->where) ? ' where '.$op->where : '';
-		$str .= ($op->order) ? ' order by '.$op->order : '';
-		$str .= ($op->order && $op->sort) ? ' ' . (($op->sort === 'asc') ? 'asc' : 'desc') : '';
+		$str .= (isset($op->where)) ? ' where '.$op->where : '';
+		$str .= (isset($op->order)) ? ' order by '.$op->order : '';
+		$str .= (isset($op->order) && isset($op->sort)) ? ' ' . ((isset($op->sort) && $op->sort === 'asc') ? 'asc' : 'desc') : '';
 
-		if ($op->limit)
+		if (isset($op->limit))
 		{
 			if (is_array($op->limit))
 			{
