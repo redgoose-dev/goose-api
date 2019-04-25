@@ -64,11 +64,11 @@ class Model {
 		$str = $op->act;
 		$str .= (isset($op->field)) ? ' '.$op->field : ' *';
 		$str .= ' from '.$this->getTableName($op->table);
-		$str .= (isset($op->where)) ? ' where '.$op->where : '';
-		$str .= (isset($op->order)) ? ' order by '.$op->order : '';
-		$str .= (isset($op->order) && isset($op->sort)) ? ' ' . ((isset($op->sort) && $op->sort === 'asc') ? 'asc' : 'desc') : '';
+		$str .= (isset($op->where) && $op->where) ? ' where '.$op->where : '';
+		$str .= (isset($op->order) && $op->order) ? ' order by '.$op->order : '';
+		$str .= (isset($op->order) && isset($op->sort) && $op->order && $op->sort) ? ' ' . ((isset($op->sort) && $op->sort && $op->sort === 'asc') ? 'asc' : 'desc') : '';
 
-		if (isset($op->limit))
+		if (isset($op->limit) && $op->limit)
 		{
 			if (is_array($op->limit))
 			{
