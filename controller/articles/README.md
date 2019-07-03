@@ -126,25 +126,3 @@
 |:---:|:---:|---|---|
 | type | string | `hit,star` | 조회수를 올릴건지 좋아요 카운트를 올릴건지 정합니다. |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
-
-
-## get articles list extend
-- url: `/articles/extend`
-- method: GET
-
-`articles` 목록을 가져오면서 동시에 `nest`와 `categories` 데이터를 가져오기 위하여 만들어졌습니다.  
-많은 요청을 하기 때문에 자주 사용하지 않는것을 권장합니다.
-
-| name | type | example | description |
-|:---:|:---:|---|---|
-| app | number | `1` | app srl |
-| nest | number | `1` | nest srl |
-| nest_id | string | `foo` | nest id |
-| category | number | `1` | category srl |
-| visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
-| ext_field | string | `category_name` | 확장 필드 |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
-
-### ext_field
-- `category_name`: 분류 이름을 가져옵니다.
-- `next_page`: 다음페이지 번호를 가져옵니다.
