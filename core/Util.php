@@ -34,7 +34,7 @@ class Util {
 	 * check exist value
 	 * 배열속에 필수값이 들어있는지 확인
 	 *
-	 * @param array $target 확인할 배열
+	 * @param array|object $target 확인할 배열
 	 * @param array $required 키값이 들어있는 배열
 	 * @throws Exception
 	 */
@@ -43,6 +43,7 @@ class Util {
 		if (!isset($target)) throw new Exception('No value `$target`');
 		if ($required)
 		{
+			$target = (array)$target;
 			foreach ($required as $k=>$v)
 			{
 				if (!array_key_exists($v, $target) || !$target[$v])
