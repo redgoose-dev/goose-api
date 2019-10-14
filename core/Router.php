@@ -11,29 +11,29 @@ use AltoRouter, Exception;
 
 class Router {
 
-	public function __construct()
-	{
-		$this->match = null;
-	}
+  public function __construct()
+  {
+    $this->match = null;
+  }
 
-	private function map()
-	{
-		return require __DIR__.'/../bootstrap/route.php';
-	}
+  private function map()
+  {
+    return require __DIR__.'/../bootstrap/route.php';
+  }
 
-	/**
-	 * @throws Exception
-	 */
-	public function init()
-	{
-		$router = new AltoRouter();
-		$router->setBasePath(getenv('PATH_RELATIVE'));
-		$router->addMatchTypes([ 'aa' => '[0-9A-Za-z_-]++' ]);
-		$router->addRoutes($this->map());
-		$match = $router->match();
+  /**
+   * @throws Exception
+   */
+  public function init()
+  {
+    $router = new AltoRouter();
+    $router->setBasePath(getenv('PATH_RELATIVE'));
+    $router->addMatchTypes([ 'aa' => '[0-9A-Za-z_-]++' ]);
+    $router->addRoutes($this->map());
+    $match = $router->match();
 
-		// set public router value
-		$this->match = $match;
-	}
+    // set public router value
+    $this->match = $match;
+  }
 
 }

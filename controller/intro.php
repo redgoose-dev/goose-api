@@ -12,15 +12,15 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set output
-	$output = (object)[];
-	$output->code = 200;
-	$output->message = 'hello goose api';
+  // set output
+  $output = (object)[];
+  $output->code = 200;
+  $output->message = 'hello goose api';
 
-	// output
-	Output::data($output);
+  // output
+  Output::data($output);
 }
 catch(Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  Error::data($e->getMessage(), $e->getCode());
 }

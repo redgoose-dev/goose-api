@@ -6,8 +6,8 @@ use Dotenv\Dotenv;
 // check environment
 if (php_sapi_name() !== 'cli')
 {
-	echo 'Can not run in browser.';
-	exit;
+  echo 'Can not run in browser.';
+  exit;
 }
 
 // load autoload
@@ -25,15 +25,15 @@ define('__PATH__', realpath(__DIR__.'/../'));
  */
 function loadEnv()
 {
-	try
-	{
-		$dotenv = new Dotenv(__PATH__);
-		$dotenv->load();
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('.env error');
-	}
+  try
+  {
+    $dotenv = new Dotenv(__PATH__);
+    $dotenv->load();
+  }
+  catch(Exception $e)
+  {
+    throw new Exception('.env error');
+  }
 }
 
 /**
@@ -45,38 +45,38 @@ function loadEnv()
  */
 function getPassword($stars = false)
 {
-	// Get current style
-	$oldStyle = shell_exec('stty -g');
+  // Get current style
+  $oldStyle = shell_exec('stty -g');
 
-	if ($stars === false) {
-		shell_exec('stty -echo');
-		$password = rtrim(fgets(STDIN), "\n");
-	} else {
-		shell_exec('stty -icanon -echo min 1 time 0');
+  if ($stars === false) {
+    shell_exec('stty -echo');
+    $password = rtrim(fgets(STDIN), "\n");
+  } else {
+    shell_exec('stty -icanon -echo min 1 time 0');
 
-		$password = '';
-		while (true) {
-			$char = fgetc(STDIN);
+    $password = '';
+    while (true) {
+      $char = fgetc(STDIN);
 
-			if ($char === "\n") {
-				break;
-			} else if (ord($char) === 127) {
-				if (strlen($password) > 0) {
-					fwrite(STDOUT, "\x08 \x08");
-					$password = substr($password, 0, -1);
-				}
-			} else {
-				fwrite(STDOUT, "*");
-				$password .= $char;
-			}
-		}
-	}
+      if ($char === "\n") {
+        break;
+      } else if (ord($char) === 127) {
+        if (strlen($password) > 0) {
+          fwrite(STDOUT, "\x08 \x08");
+          $password = substr($password, 0, -1);
+        }
+      } else {
+        fwrite(STDOUT, "*");
+        $password .= $char;
+      }
+    }
+  }
 
-	// Reset old style
-	shell_exec('stty ' . $oldStyle);
+  // Reset old style
+  shell_exec('stty ' . $oldStyle);
 
-	// Return the password
-	return $password;
+  // Return the password
+  return $password;
 }
 
 /**
@@ -88,18 +88,18 @@ function getPassword($stars = false)
  */
 function quiz($prompt='', $password=false)
 {
-	if ($password)
-	{
-		fwrite(STDOUT, $prompt.': ');
-		$password = getPassword(true);
-		echo "\n";
-		return $password;
-	}
-	else
-	{
-		echo $prompt.': ';
-		return rtrim( fgets( STDIN ), "\n" );
-	}
+  if ($password)
+  {
+    fwrite(STDOUT, $prompt.': ');
+    $password = getPassword(true);
+    echo "\n";
+    return $password;
+  }
+  else
+  {
+    echo $prompt.': ';
+    return rtrim( fgets( STDIN ), "\n" );
+  }
 }
 
 
@@ -110,26 +110,26 @@ function quiz($prompt='', $password=false)
  */
 function makeToken()
 {
-	try
-	{
-		loadEnv();
+  try
+  {
+    loadEnv();
 
-		// check install
-		Install::check();
+    // check install
+    Install::check();
 
-		// make public token
-		$jwt = Token::make((object)[
-			'time' => true,
-			'exp' => false,
-		]);
+    // make public token
+    $jwt = Token::make((object)[
+      'time' => true,
+      'exp' => false,
+    ]);
 
-		// print token
-		return $jwt->token;
-	}
-	catch(Exception $e)
-	{
-		return $e->getMessage();
-	}
+    // print token
+    return $jwt->token;
+  }
+  catch(Exception $e)
+  {
+    return $e->getMessage();
+  }
 }
 
 /**
@@ -137,84 +137,84 @@ function makeToken()
  */
 function resetPassword()
 {
-	try
-	{
-		// load env
-		loadEnv();
+  try
+  {
+    // load env
+    loadEnv();
 
-		// print header message
-		echo "\n***\n";
-		echo "RESET USER PASSWORD\n";
-		echo "Please be careful to use.\n";
-		echo "***\n\n";
+    // print header message
+    echo "\n***\n";
+    echo "RESET USER PASSWORD\n";
+    echo "Please be careful to use.\n";
+    echo "***\n\n";
 
-		// quiz - id
-		$answer_id = quiz('Please input user `srl` or `e-mail`');
+    // quiz - id
+    $answer_id = quiz('Please input user `srl` or `e-mail`');
 
-		// set modal
-		$model = new Model();
-		$model->connect();
+    // set modal
+    $model = new Model();
+    $model->connect();
 
-		// search user
-		$user = $model->getCount((object)[
-			'table' => 'users',
-			'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
-			'debug' => true
-		]);
-		if (!$user->data) throw new Exception('No users found.');
+    // search user
+    $user = $model->getCount((object)[
+      'table' => 'users',
+      'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
+      'debug' => true
+    ]);
+    if (!$user->data) throw new Exception('No users found.');
 
-		// quiz - new password
-		$answer_new_password = quiz('New password', true);
-		$answer_confirm_password = quiz('Confirm password', true);
+    // quiz - new password
+    $answer_new_password = quiz('New password', true);
+    $answer_confirm_password = quiz('Confirm password', true);
 
-		if ($answer_new_password !== $answer_confirm_password)
-		{
-			throw new Exception('`New password` and `Confirm password` are different.');
-		}
+    if ($answer_new_password !== $answer_confirm_password)
+    {
+      throw new Exception('`New password` and `Confirm password` are different.');
+    }
 
-		// update password
-		$update = $model->edit((object)[
-			'table' => 'users',
-			'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
-			'data' => [ "password='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
-			'debug' => true,
-		]);
-		if (!$update->success)
-		{
-			throw new Exception('Failed update user password.');
-		}
+    // update password
+    $update = $model->edit((object)[
+      'table' => 'users',
+      'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
+      'data' => [ "password='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
+      'debug' => true,
+    ]);
+    if (!$update->success)
+    {
+      throw new Exception('Failed update user password.');
+    }
 
-		// end
-		echo "\nSuccess update password.";
-	}
-	catch(Exception $e)
-	{
-		print_r("\nERROR: ".$e->getMessage());
-	}
+    // end
+    echo "\nSuccess update password.";
+  }
+  catch(Exception $e)
+  {
+    print_r("\nERROR: ".$e->getMessage());
+  }
 }
 
 // switching action
 switch ($argv[1])
 {
-	case 'ready':
-		Install::ready();
-		break;
+  case 'ready':
+    Install::ready();
+    break;
 
-	case 'install':
-		Install::install();
-		break;
+  case 'install':
+    Install::install();
+    break;
 
-	case 'make-token':
-		echo makeToken();
-		echo "\n";
-		break;
+  case 'make-token':
+    echo makeToken();
+    echo "\n";
+    break;
 
-	case 'reset-password':
-		resetPassword();
-		echo "\n";
-		break;
+  case 'reset-password':
+    resetPassword();
+    echo "\n";
+    break;
 
-	default:
-		echo "ERROR: no argv. `php tools.php {ready,install,make-token,reset-password}`\n";
-		break;
+  default:
+    echo "ERROR: no argv. `php tools.php {ready,install,make-token,reset-password}`\n";
+    break;
 }

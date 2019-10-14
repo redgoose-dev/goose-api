@@ -16,15 +16,15 @@ $filename = strtolower($_SERVER['REQUEST_METHOD']).'_'.$this->params['name'].'.p
 
 try
 {
-	// check file
-	if (!file_exists($path.$filename))
-	{
-		throw new Exception('Not found controller.', 404);
-	}
+  // check file
+  if (!file_exists($path.$filename))
+  {
+    throw new Exception('Not found controller.', 404);
+  }
 }
 catch(Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  Error::data($e->getMessage(), $e->getCode());
 }
 
 
