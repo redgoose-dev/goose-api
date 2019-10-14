@@ -26,6 +26,10 @@ try
     throw new Exception('Not found srl', 204);
   }
 
+  // set model
+  $model = new Model();
+  $model->connect();
+
   // set where
   $where = ($app = $_GET['app']) ? 'app_srl='.$app : '';
   if ($nest = $_GET['nest'])
@@ -42,10 +46,6 @@ try
   {
     $where .= ' and type IS NULL'; // type 필드가 `null`일때 공개된 글입니다.
   }
-
-  // set model
-  $model = new Model();
-  $model->connect();
 
   // check access
   $token = Controller::checkAccessItem((object)[
