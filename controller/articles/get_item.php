@@ -31,7 +31,7 @@ try
   $model->connect();
 
   // set where
-  $where = ($app = $_GET['app']) ? 'app_srl='.$app : '';
+  $where = ($app = $_GET['app']) ? ' and app_srl='.$app : '';
   if ($nest = $_GET['nest'])
   {
     $where .= ' and nest_srl='.$nest;
