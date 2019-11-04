@@ -54,6 +54,7 @@ class Controller {
      * @param Model    $op->model
      * @param string   $op->table
      * @param string   $op->where
+     * @param string   $op->field
      * @param array    $op->json_field
      * @param boolean  $op->object       객체만 필요할때가 있어서 사용하면 결과값만 나온 객체만 리턴한다.
      *
@@ -106,10 +107,10 @@ class Controller {
     // get datas
     $opts = (object)[
       'table' => $op->table,
-      'field' => $_GET['field'],
+      'field' => isset($op->field) ? $op->field : $_GET['field'],
       'json_field' => $op->json_field,
-      'order' => $_GET['order'],
-      'sort' => $_GET['sort'],
+      'order' => isset($op->order) ? $op->order : $_GET['order'],
+      'sort' => isset($op->sort) ? $op->sort : $_GET['sort'],
       'limit' => $limit,
       'where' => $op->where,
       'debug' => __DEBUG__
