@@ -445,7 +445,7 @@ class Controller {
    * @param int $srl
    * @throws Exception
    */
-  public static function removeAttachFiles($model, $srl, $type='article')
+  public static function removeAttachFiles($model, $srl)
   {
     try
     {
