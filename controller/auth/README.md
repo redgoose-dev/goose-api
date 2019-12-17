@@ -5,7 +5,7 @@
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
 ## login
-- url: `/auth/login`
+- url: `/auth/login/`
 - method: POST
 
 사용자 로그인을 합니다.  
@@ -19,7 +19,7 @@
 
 
 ## logout
-- url: `/auth/logout`
+- url: `/auth/logout/`
 - method: POST
 
 로그아웃 합니다.  

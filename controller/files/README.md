@@ -6,7 +6,7 @@
 
 
 ## get files list
-- url: `/files`
+- url: `/files/`
 - method: GET
 
 사용하는 파라메터 목록
@@ -21,7 +21,7 @@
 
 
 ## get file
-- url: `/files/[n]` (n:srl)
+- url: `/files/[n]/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
@@ -32,7 +32,7 @@
 
 
 ## add file
-- url: `/files`
+- url: `/files/`
 - method: POST
 
 서버에 파일을 업로드하고 데이터베이스에 등록합니다.  
@@ -46,7 +46,7 @@
 
 
 ## edit file
-- url: `/files/[n]/edit` (n:srl)
+- url: `/files/[n]/edit/` (n:srl)
 - method: POST
 
 서버에 파일을 삭제하고 다시 업로드하고나서 데이터베이스에서 수정합니다.  
@@ -60,12 +60,12 @@
 
 
 ## delete file
-- url: `/files/[n]/delete` (n:srl)
+- url: `/files/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## upload file
-- url: `/files/upload-file`
+- url: `/files/upload-file/`
 - method: POST
 
 데이터베이스에 등록하지 않고 서버에 파일을 업로드할 수 있습니다.
@@ -77,7 +77,7 @@
 
 
 ## remove file
-- url: `/files/remove-file`
+- url: `/files/remove-file/`
 - method: POST
 
 데이터베이스에 등록하지 않고 서버에 파일을 삭제합니다.

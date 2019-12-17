@@ -6,7 +6,7 @@
 
 
 ## get categories list
-- url: `/categories`
+- url: `/categories/`
 - method: GET
 
 사용하는 파라메터 목록
@@ -27,7 +27,7 @@
 
 
 ## get category
-- url: `/categories/[n]` (n:srl)
+- url: `/categories/[n]/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
@@ -42,7 +42,7 @@
 
 
 ## add category
-- url: `/categories/[n]` (n:srl)
+- url: `/categories/[n]/` (n:srl)
 - method: POST
 
 데이터를 추가할때 사용하는 body 항목
@@ -54,7 +54,7 @@
 
 
 ## edit category
-- url: `/categories/[n]/edit` (n:srl)
+- url: `/categories/[n]/edit/` (n:srl)
 - method: POST
 
 데이터를 추가할때 사용하는 body 항목
@@ -66,12 +66,12 @@
 
 
 ## delete category
-- url: `/categories/[n]/delete` (n:srl)
+- url: `/categories/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## sort categories
-- url: `/categories/sort`
+- url: `/categories/sort/`
 - method: POST
 
 분류를 새로 정렬할때 사용합니다. 정렬할때 사용하는 body 항목입니다.

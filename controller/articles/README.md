@@ -6,7 +6,7 @@
 
 
 ## get articles list
-- url: `/articles`
+- url: `/articles/`
 - method: GET
 
 사용하는 파라메터 목록
@@ -29,7 +29,7 @@
 
 
 ## get article
-- url: `/articles/[n]` (n:srl)
+- url: `/articles/[n]/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
@@ -50,7 +50,7 @@
 
 
 ## add article
-- url: `/articles`
+- url: `/articles/`
 - method: POST
 
 사용하는 body 항목
@@ -80,7 +80,7 @@
 
 
 ## edit article
-- url: `/articles/[n]/edit` (n:srl)
+- url: `/articles/[n]/edit/` (n:srl)
 - method: POST
 
 사용하는 body 항목
@@ -112,12 +112,12 @@
 
 
 ## delete article
-- url: `/articles/[n]/delete` (n:srl)
+- url: `/articles/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## update hit|star
-- url: `/articles/[n]/update` (n:srl)
+- url: `/articles/[n]/update/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
