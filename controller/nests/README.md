@@ -7,7 +7,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## get nests list
-- url: `/nests`
+- url: `/nests/`
 - method: GET
 
 사용하는 파라메터 목록
@@ -21,7 +21,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## get nest
-- url: `/nests/[n]` (n:srl) or `/nests/id/[s]` (s:id)
+- url: `/nests/[n]/` (n:srl) or `/nests/id/[s]/` (s:id)
 - method: GET
 
 사용하는 파라메터 목록.  
@@ -33,7 +33,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## add nest
-- url: `/nests`
+- url: `/nests/`
 - method: POST
 
 사용하는 body 항목
@@ -48,7 +48,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## edit nest
-- url: `/nests/[n]/edit` (n:srl)
+- url: `/nests/[n]/edit/` (n:srl)
 - method: POST
 
 사용하는 body 항목
@@ -63,5 +63,5 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## delete nest
-- url: `/nests/[n]/delete` (n:srl)
+- url: `/nests/[n]/delete/` (n:srl)
 - method: POST

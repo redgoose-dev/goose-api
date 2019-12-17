@@ -5,7 +5,7 @@
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
 ## get users list
-- url: `/users`
+- url: `/users/`
 - method: GET
 
 다음은 이 요청에서 사용하는 파라메터 목록
@@ -17,11 +17,11 @@
 | admin | number | `0,1` | 관리자 유무 |
 
 ## get user
-- url: `/users/[n]` (n:srl)
+- url: `/users/[n]/` (n:srl)
 - method: GET
 
 ## add user
-- url: `/users`
+- url: `/users/`
 - method: POST
 
 데이터를 추가할때 사용하는 body 항목입니다.
@@ -35,7 +35,7 @@
 | admin | number | `0,1` | 관리자 사용유무 |
 
 ## edit user
-- url: `/nests/[n]/edit` (n:srl)
+- url: `/nests/[n]/edit/` (n:srl)
 - method: POST
 
 데이터를 수정할때 사용하는 body 항목입니다.
@@ -47,11 +47,11 @@
 | admin | number | `0,1` | 관리자 사용유무 |
 
 ## delete user
-- url: `/users/[n]/delete` (n:srl)
+- url: `/users/[n]/delete/` (n:srl)
 - method: POST
 
 ## change password
-- url: `/users/[n]/change-password` (n:srl)
+- url: `/users/[n]/change-password/` (n:srl)
 - method: POST
 
 비밀번호를 변경합니다. 다음은 필요한 body 항목입니다.  
