@@ -104,7 +104,7 @@ class Controller {
       $limit = (int)getenv('DEFAULT_INDEX_SIZE');
     }
 
-    // get datas
+    // get data
     $opts = (object)[
       'table' => $op->table,
       'field' => isset($op->field) ? $op->field : $_GET['field'],
