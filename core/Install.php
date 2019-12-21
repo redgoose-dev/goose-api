@@ -208,7 +208,7 @@ class Install {
             'srl' => null,
             'email' => $defaultEmail,
             'name' => $defaultName,
-            'password' => password_hash($defaultPassword, PASSWORD_DEFAULT),
+            'password' => Text::createPassword($defaultPassword),
             'admin' => 2,
             'regdate' => date('Y-m-d H:i:s')
           ],

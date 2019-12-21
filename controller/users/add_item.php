@@ -56,7 +56,7 @@ try
 				'srl' => null,
 				'email' => $_POST['email'],
 				'name' => $_POST['name'],
-				'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+				'password' => Text::createPassword($_POST['password']),
 				'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
 				'regdate' => date('Y-m-d H:i:s')
 			]

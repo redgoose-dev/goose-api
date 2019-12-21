@@ -149,7 +149,7 @@ function resetPassword()
     echo "***\n\n";
 
     // quiz - id
-    $answer_id = quiz('Please input user `srl` or `e-mail`');
+    $answer_email = quiz('Please input user `e-mail`');
 
     // set modal
     $model = new Model();
@@ -158,8 +158,8 @@ function resetPassword()
     // search user
     $user = $model->getCount((object)[
       'table' => 'users',
-      'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
-      'debug' => true
+      'where' => "email='$answer_email'",
+      'debug' => false
     ]);
     if (!$user->data) throw new Exception('No users found.');
 
@@ -175,9 +175,9 @@ function resetPassword()
     // update password
     $update = $model->edit((object)[
       'table' => 'users',
-      'where' => "srl='$answer_id' OR email LIKE '$answer_id'",
-      'data' => [ "password='".password_hash($answer_new_password, PASSWORD_DEFAULT)."'" ],
-      'debug' => true,
+      'where' => "email='$answer_email'",
+      'data' => [ "password='".Text::createPassword($answer_new_password)."'" ],
+      'debug' => false,
     ]);
     if (!$update->success)
     {

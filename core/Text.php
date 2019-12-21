@@ -45,4 +45,15 @@ class Text {
     }
   }
 
+  /**
+   * create password
+   *
+   * @param string $str
+   * @return string
+   */
+  public static function createPassword($str)
+  {
+    return password_hash($str, PASSWORD_DEFAULT);
+  }
+
 }

@@ -48,7 +48,7 @@ try
 			'model' => $model,
 			'table' => 'users',
 			'srl' => (int)$this->params['srl'],
-			'data' => [ "password='".password_hash($_POST['new_password'], PASSWORD_DEFAULT)."'" ],
+			'data' => [ "password='".Text::createPassword($_POST['new_password'])."'" ],
 		]);
 	}
 	catch(Exception $e)
