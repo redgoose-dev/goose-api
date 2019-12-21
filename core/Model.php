@@ -368,29 +368,39 @@ class Model {
    */
   public function delete($op)
   {
-    if (!isset($op->table)) throw new Exception('no value `table`');
-    if (!isset($op->where)) throw new Exception('no value `where`');
-
-    // set value
     $output = (object)[];
-
-    // check exist data
-    $cnt = $this->getCount((object)[
-      'table' => $op->table,
-      'where' => $op->where
-    ]);
-    if (!$cnt->data) throw new Exception('Not found data');
-
-    // set query
-    $query = "delete from ".$this->getTableName($op->table)." where $op->where";
-
-    // action
-    $this->action($query);
-
-    // set output
-    if ($op->debug === true) $output->query = $query;
-    $output->success = true;
-
-    return $output;
+    try
+    {
+      if (!isset($op->table)) throw new Exception('no value `table`');
+      if (!isset($op->where)) throw new Exception('no value `where`');
+      // check exist data
+      $cnt = $this->getCount((object)[
+        'table' => $op->table,
+        'where' => $op->where
+      ]);
+      if ($cnt->data)
+      {
+        // set query
+        $query = "delete from ".$this->getTableName($op->table)." where $op->where";
+        // action
+        $this->action($query);
+        $output->success = true;
+      }
+      else
+      {
+        $output->success = false;
+      }
+    }
+    catch(Exception $e)
+    {
+      throw new Exception($e->getMessage());
+    }
+    finally
+    {
+      // set output
+      if ($op->debug === true) $output->query = $query;
+      return $output;
+    }
   }
+
 }
