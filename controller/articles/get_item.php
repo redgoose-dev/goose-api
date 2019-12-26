@@ -30,6 +30,14 @@ try
   $model = new Model();
   $model->connect();
 
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $model,
+    'table' => $tableName,
+    'srl' => $srl,
+    'useStrict' => true,
+  ]);
+
   // set where
   $where = ($app = $_GET['app']) ? ' and app_srl='.$app : '';
   if ($nest = $_GET['nest'])
@@ -41,19 +49,17 @@ try
     $where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
   }
   if ($_GET['visible_type'] === 'all')
-  {}
+  {
+    if (!$token->data->admin)
+    {
+      $user_srl = isset($token->data->user_srl) ? (int)$token->data->user_srl : '';
+      $where .= ' and user_srl=\''.$user_srl.'\'';
+    }
+  }
   else
   {
     $where .= ' and type IS NULL'; // type 필드가 `null`일때 공개된 글입니다.
   }
-
-  // check access
-  $token = Controller::checkAccessItem((object)[
-    'model' => $model,
-    'table' => $tableName,
-    'srl' => $srl,
-    'useStrict' => true,
-  ]);
 
   // set output
   $output = Controller::item((object)[
