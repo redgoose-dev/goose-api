@@ -70,7 +70,7 @@ try
   // get category name
   if ($output->data && Util::checkKeyInExtField('category_name'))
   {
-    $output->data->index = \Controller\Articles\UtilForArticles::extendCategoryNameInItems(
+    $output->data->index = \Controller\articles\UtilForArticles::extendCategoryNameInItems(
       $this->model,
       $output->data->index
     );
@@ -79,7 +79,7 @@ try
   // get nest name
   if ($output->data && Util::checkKeyInExtField('nest_name'))
   {
-    $output->data->index = \Controller\Articles\UtilForArticles::extendNestNameInItems(
+    $output->data->index = \Controller\articles\UtilForArticles::extendNestNameInItems(
       $this->model,
       $output->data->index
     );
@@ -88,7 +88,7 @@ try
   // get next page
   if ($output->data && Util::checkKeyInExtField('next_page'))
   {
-    $nextPage = \Controller\Articles\UtilForArticles::getNextPage(
+    $nextPage = \Controller\articles\UtilForArticles::getNextPage(
       $this->model,
       $where
     );
