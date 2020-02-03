@@ -1,5 +1,5 @@
 <?php
-namespace Controller\Articles;
+namespace Controller\articles;
 use Exception, Core;
 
 /**

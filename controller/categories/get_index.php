@@ -40,7 +40,7 @@ try
   // extend fields
   if ($output->data && isset($_GET['ext_field']))
   {
-    $output->data->index = \Controller\Categories\UtilForCategories::extendItems(
+    $output->data->index = \Controller\categories\UtilForCategories::extendItems(
       $this->model,
       $token,
       $output->data->index,

@@ -1,5 +1,5 @@
 <?php
-namespace Controller\Files;
+namespace Controller\files;
 use Exception, Core;
 
 /**

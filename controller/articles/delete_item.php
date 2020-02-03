@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Controller\Files\UtilForFiles;
+use Controller\files\UtilForFiles;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();

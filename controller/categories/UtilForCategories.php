@@ -1,5 +1,5 @@
 <?php
-namespace Controller\Categories;
+namespace Controller\categories;
 use Core;
 
 /**
