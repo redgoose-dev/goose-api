@@ -1,9 +1,10 @@
 <?php
-namespace Core;
+namespace Controller;
 use Exception;
+use Core;
 
 
-class Controller {
+class Main {
 
   /**
    * get items
@@ -17,12 +18,12 @@ class Controller {
   {
     /**
      * $op guide
-     * @param Model    $op->model
-     * @param string   $op->table
-     * @param string   $op->where
-     * @param string   $op->field
-     * @param array    $op->json_field
-     * @param boolean  $op->object       객체만 필요할때가 있어서 사용하면 결과값만 나온 객체만 리턴한다.
+     * @param Core\Model $op->model
+     * @param string $op->table
+     * @param string $op->where
+     * @param string $op->field
+     * @param array $op->json_field
+     * @param boolean $op->object 객체만 필요할때가 있어서 사용하면 결과값만 나온 객체만 리턴한다.
      *
      * url params guide
      * @param string order
@@ -33,14 +34,14 @@ class Controller {
     if (!$op->table)
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::index()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::index()'),
         500
       );
     }
     if (!$op->model)
     {
       throw new Exception(
-        Message::make('error.notFound', '$op->model'),
+        Core\Message::make('error.notFound', '$op->model'),
         500
       );
     }
@@ -130,7 +131,7 @@ class Controller {
   {
     /**
      * $op guide
-     * @param Model $op->model
+     * @param Core\Model $op->model
      * @param string $op->table
      * @param int $op->srl
      * @param string $op->id
@@ -144,14 +145,14 @@ class Controller {
     if (!($op->table && ($op->srl || $op->id)))
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::item()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::item()'),
         500
       );
     }
     if (!$op->model)
     {
       throw new Exception(
-        Message::make('error.notFound', '$op->model'),
+        Core\Message::make('error.notFound', '$op->model'),
         500
       );
     }
@@ -194,7 +195,7 @@ class Controller {
     if (!$op->table || !$op->data)
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::add()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::add()'),
         500
       );
     }
@@ -232,7 +233,7 @@ class Controller {
     if (!$op->table || !$op->srl || !$op->data)
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::edit()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::edit()'),
         500
       );
     }
@@ -269,7 +270,7 @@ class Controller {
   {
     /**
      * $op guide
-     * @param Model $op->model
+     * @param Core\Model $op->model
      * @param string $op->table
      * @param int $op->srl
      */
@@ -277,7 +278,7 @@ class Controller {
     if (!$op->table || !$op->srl)
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::delete()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::delete()'),
         500
       );
     }
@@ -314,14 +315,14 @@ class Controller {
     if (!$op->table)
     {
       throw new Exception(
-        Message::make('error.noValue', 'object', 'Controller::count()'),
+        Core\Message::make('error.noValue', 'object', 'Controller\Main::count()'),
         500
       );
     }
     if (!$op->model)
     {
       throw new Exception(
-        Message::make('error.notFound', '$op->model'),
+        Core\Message::make('error.notFound', '$op->model'),
         500
       );
     }
@@ -353,22 +354,22 @@ class Controller {
     /**
      * $op guide
      *
-     * @param Model    $op->model
-     * @param string   $op->table
-     * @param int      $op->srl
-     * @param string   $op->id
-     * @param boolean  $op->useStrict  getItem 상황이라면 꼭 사용한다.
+     * @param Core\Model $op->model
+     * @param string     $op->table
+     * @param int        $op->srl
+     * @param string     $op->id
+     * @param boolean    $op->useStrict  getItem 상황이라면 꼭 사용한다.
      */
 
     // check parameter
     if (!($op->model && $op->table && ($op->srl || $op->id)))
     {
-      throw new Exception(Message::make('msg.noParams'), 500);
+      throw new Exception(Core\Message::make('msg.noParams'), 500);
     }
     // strict 검사를 하면서 strict값이 없을때..
     if (!!$op->useStrict && !($_GET['strict'] || $_POST['strict']))
     {
-      return Auth::checkAuthorization($op->model);
+      return Core\Auth::checkAuthorization($op->model);
     }
 
     // get data
@@ -379,15 +380,15 @@ class Controller {
     ]);
     if (!$res->data)
     {
-      throw new Exception(Message::make('error.noFrom', 'data', $op->table), 404);
+      throw new Exception(Core\Message::make('error.noFrom', 'data', $op->table), 404);
     }
 
     // check authorization
-    $token = Auth::checkAuthorization($op->model, 'user');
+    $token = Core\Auth::checkAuthorization($op->model, 'user');
     // check data and user_srl
     if (!$token->data->admin && ((int)$token->data->user_srl !== (int)$res->data->user_srl))
     {
-      throw new Exception(Message::make('msg.notAccessData'), 401);
+      throw new Exception(Core\Message::make('msg.notAccessData'), 401);
     }
     return $token;
   }
@@ -395,7 +396,7 @@ class Controller {
   /**
    * check access index
    *
-   * @param Model $model
+   * @param Core\Model $model
    * @param boolean useStrict
    * @return object token
    * @throws Exception
@@ -404,19 +405,17 @@ class Controller {
   {
     if (!$model)
     {
-      throw new Exception(Message::make('error.noItem', 'model'));
+      throw new Exception(Core\Message::make('error.noItem', 'model'));
     }
-
     // `$op->useStrict`가 있는 상태에서 `strict=false` 이거나 $op->useStrict가 없으면 public
     $param = (($useStrict && !$_GET['strict']) || !$useStrict) ? '' : 'user';
-
-    return Auth::checkAuthorization($model, $param);
+    return Core\Auth::checkAuthorization($model, $param);
   }
 
   /**
    * remove thumbnail image
    *
-   * @param Model $model
+   * @param Core\Model $model
    * @param int $article_srl
    * @throws Exception
    */
@@ -447,7 +446,7 @@ class Controller {
   /**
    * Remove attach files
    *
-   * @param Model $model
+   * @param Core\Model $model
    * @param int $srl
    * @throws Exception
    */

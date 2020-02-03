@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -16,7 +16,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller::checkAccessIndex($this->model, true);
+  $token = Controller\Main::checkAccessIndex($this->model, true);
 
   // set where
   $where = '';
@@ -60,7 +60,7 @@ try
   }
 
   // set output
-  $output = Controller::index((object)[
+  $output = Controller\Main::index((object)[
     'model' => $this->model,
     'table' => 'articles',
     'where' => $where,
@@ -70,7 +70,7 @@ try
   // get category name
   if ($output->data && Util::checkKeyInExtField('category_name'))
   {
-    $output->data->index = \Controller\articles\UtilForArticles::extendCategoryNameInItems(
+    $output->data->index = Controller\articles\UtilForArticles::extendCategoryNameInItems(
       $this->model,
       $output->data->index
     );
@@ -79,7 +79,7 @@ try
   // get nest name
   if ($output->data && Util::checkKeyInExtField('nest_name'))
   {
-    $output->data->index = \Controller\articles\UtilForArticles::extendNestNameInItems(
+    $output->data->index = Controller\articles\UtilForArticles::extendNestNameInItems(
       $this->model,
       $output->data->index
     );
@@ -88,7 +88,7 @@ try
   // get next page
   if ($output->data && Util::checkKeyInExtField('next_page'))
   {
-    $nextPage = \Controller\articles\UtilForArticles::getNextPage(
+    $nextPage = Controller\articles\UtilForArticles::getNextPage(
       $this->model,
       $where
     );

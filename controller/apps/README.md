@@ -18,6 +18,10 @@
 | name | string | `Goose` | name |
 | description | string | `app description` | description |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| ext_field | string | `count_nests` | 확장 필드 |
+
+### ext_field
+- `count_nests`: 하위 `nests`갯수를 가져옵니다.
 
 
 ## get app

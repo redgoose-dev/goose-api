@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -23,7 +23,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller::checkAccessItem((object)[
+  $token = Controller\Main::checkAccessItem((object)[
     'model' => $this->model,
     'table' => 'json',
     'srl' => $srl,
@@ -31,7 +31,7 @@ try
   ]);
 
   // set output
-  $output = Controller::item((object)[
+  $output = Controller\Main::item((object)[
     'model' => $this->model,
     'table' => 'json',
     'srl' => $srl,

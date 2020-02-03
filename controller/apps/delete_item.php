@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\files\UtilForFiles;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -24,7 +23,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller::checkAccessItem((object)[
+  $token = Controller\Main::checkAccessItem((object)[
     'model' => $this->model,
     'table' => 'apps',
     'srl' => $srl,
@@ -41,9 +40,9 @@ try
     foreach($articles->data as $k=>$v)
     {
       // remove thumbnail image
-      UtilForFiles::removeThumbnailImage($this->model, $v->srl);
+      Controller\files\UtilForFiles::removeThumbnailImage($this->model, $v->srl);
       // remove files
-      UtilForFiles::removeAttachFiles($this->model, $v->srl);
+      Controller\files\UtilForFiles::removeAttachFiles($this->model, $v->srl);
     }
     // remove articles
     $this->model->delete((object)[
@@ -76,7 +75,7 @@ try
   }
 
   // remove app
-  $output = Controller::delete((object)[
+  $output = Controller\Main::delete((object)[
     'model' => $this->model,
     'table' => 'apps',
     'srl' => $srl,

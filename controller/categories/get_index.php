@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -27,11 +27,11 @@ try
   }
 
   // check access
-  $token = Controller::checkAccessIndex($this->model, true);
+  $token = Controller\Main::checkAccessIndex($this->model, true);
   $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
   // set output
-  $output = Controller::index((object)[
+  $output = Controller\Main::index((object)[
     'model' => $this->model,
     'table' => 'categories',
     'where' => $where,
@@ -40,7 +40,7 @@ try
   // extend fields
   if ($output->data && isset($_GET['ext_field']))
   {
-    $output->data->index = \Controller\categories\UtilForCategories::extendItems(
+    $output->data->index = Controller\categories\UtilForCategories::extendItems(
       $this->model,
       $token,
       $output->data->index,

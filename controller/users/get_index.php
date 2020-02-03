@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -35,7 +35,7 @@ try
   if (!$token->data->admin) $where .= ' and srl='.$token->data->user_srl;
 
   // output
-  $output = Controller::index((object)[
+  $output = Controller\Main::index((object)[
     'model' => $this->model,
     'auth' => true,
     'table' => 'users',

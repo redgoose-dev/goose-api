@@ -1,6 +1,6 @@
 <?php
 namespace Controller\articles;
-use Exception, Core;
+use Exception, Core, Controller;
 
 /**
  * util for articles
@@ -24,7 +24,7 @@ class UtilForArticles {
       $_GET['page'] = (int)$_GET['page'] + 1;
       $_GET['field'] = 'srl';
 
-      $next_output = Core\Controller::index((object)[
+      $next_output = Controller\Main::index((object)[
         'model' => $model,
         'table' => 'articles',
         'field' => 'srl',

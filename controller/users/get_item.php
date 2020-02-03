@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -30,7 +30,7 @@ try
   }
 
   // set output
-  $output = Controller::item((object)[
+  $output = Controller\Main::item((object)[
     'model' => $this->model,
     'table' => 'users',
     'srl' => $srl,

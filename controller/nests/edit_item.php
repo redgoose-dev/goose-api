@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -44,7 +44,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller::checkAccessItem((object)[
+  $token = Controller\Main::checkAccessItem((object)[
     'model' => $this->model,
     'table' => 'nests',
     'srl' => $srl,
@@ -61,7 +61,7 @@ try
   }
 
   // set output
-  $output = Controller::edit((object)[
+  $output = Controller\Main::edit((object)[
     'model' => $this->model,
     'table' => 'nests',
     'srl' => $srl,

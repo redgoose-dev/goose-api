@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -49,11 +49,11 @@ try
 	}
 
 	// check access
-	$token = Controller::checkAccessIndex($this->model, true);
+	$token = Controller\Main::checkAccessIndex($this->model, true);
 	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
-	$output = Controller::index((object)[
+	$output = Controller\Main::index((object)[
 		'model' => $this->model,
 		'table' => 'files',
 		'where' => $where,

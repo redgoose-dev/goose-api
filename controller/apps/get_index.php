@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -25,17 +25,29 @@ try
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
+  if ($user_srl = $_GET['user'])
+  {
+    $where .= ' and user_srl='.(int)$user_srl;
+  }
 
   // check access
-  $token = Controller::checkAccessIndex($this->model, true);
+  $token = Controller\Main::checkAccessIndex($this->model, true);
   $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
   // set output
-  $output = Controller::index((object)[
+  $output = Controller\Main::index((object)[
     'model' => $this->model,
     'table' => 'apps',
     'where' => $where,
   ]);
+
+  if ($output->data && Util::checkKeyInExtField('count_nests'))
+  {
+    $output->data->index = Controller\apps\UtilForApps::getCountNests(
+      $this->model,
+      $output->data->index
+    );
+  }
 
   // set token
   if ($token) $output->_token = $token->jwt;

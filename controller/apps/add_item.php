@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -38,7 +38,7 @@ try
   }
 
   // set output
-  $output = Controller::add((object)[
+  $output = Controller\Main::add((object)[
     'model' => $this->model,
     'table' => 'apps',
     'data' => (object)[

@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -29,7 +29,7 @@ try
   $this->model->connect();
 
 	// check access
-	$token = Controller::checkAccessItem((object)[
+	$token = Controller\Main::checkAccessItem((object)[
 		'model' => $this->model,
 		'table' => 'apps',
 		'srl' => $srl,
@@ -46,11 +46,12 @@ try
 	}
 
 	// check category
+  // TODO: 이 주석이 뭐지??
 
 	// set output
 	try
 	{
-		$output = Controller::edit((object)[
+		$output = Controller\Main::edit((object)[
 			'model' => $this->model,
 			'table' => 'apps',
 			'srl' => $srl,

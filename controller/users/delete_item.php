@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -40,7 +40,7 @@ try
   }
 
   // remove item
-  $output = Controller::delete((object)[
+  $output = Controller\Main::delete((object)[
     'model' => $this->model,
     'table' => 'users',
     'srl' => $srl,
