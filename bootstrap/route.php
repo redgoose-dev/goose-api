@@ -70,10 +70,6 @@ return [
   [ 'GET', '/token/decode/', 'token/get_decode', 'postTokenDecode' ],
   [ 'POST', '/token/clear/', 'token/post_clear', 'postTokenClear' ],
 
-  // manager
-  [ 'GET', '/manager/[aa:name]/', 'manager/index', 'manager' ],
-  [ 'GET', '/manager/[aa:name]/[aa:srl]/', 'manager/index', 'managerParam' ],
-
   // external (user controller)
   [ 'GET', '/external/[aa:name]/', 'external', 'getExternal' ],
   [ 'GET', '/external/[aa:name]/[aa:srl]/', 'external', 'getExternalParam' ],
