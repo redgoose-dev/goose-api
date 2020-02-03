@@ -12,21 +12,20 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+	$token = Auth::checkAuthorization($this->model, 'user');
 
 	// get apps
-	$apps = $model->getItems((object)[
+	$apps = $this->model->getItems((object)[
 		'table' => 'apps',
 		'where' => (!$token->data->admin) ? 'user_srl='.(int)$token->data->user_srl : ''
 	]);
 	if (!isset($apps->data))
 	{
-		throw new Exception('Not found apps.', 404);
+		throw new Exception(Message::make('error.notFound', 'apps'), 404);
 	}
 	$tree = [];
 	foreach ($apps->data as $k=>$v)
@@ -34,7 +33,7 @@ try
 		$where = 'app_srl='.(int)$v->srl;
 		$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 		// $token->data->user_srl
-		$nests = $model->getItems((object)[
+		$nests = $this->model->getItems((object)[
 			'table' => 'nests',
 			'where' => $where,
 			'json_field' => ['json'],
@@ -45,7 +44,7 @@ try
 			{
 				$where = 'nest_srl='.(int)$nest->srl;
 				$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
-				$cnt = $model->getCount((object)[
+				$cnt = $this->model->getCount((object)[
 					'table' => 'articles',
 					'where' => $where
 				]);
@@ -62,7 +61,7 @@ try
 	}
 
 	// add no app
-	$nests = $model->getItems((object)[
+	$nests = $this->model->getItems((object)[
 		'table' => 'nests',
 		'where' => 'app_srl IS NULL',
 		'json_field' => ['json'],
@@ -86,11 +85,14 @@ try
 	// set token
 	if ($token) $output->_token = $token->jwt;
 
+  // disconnect db
+  $this->model->disconnect();
+
 	// output
 	Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

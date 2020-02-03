@@ -7,35 +7,38 @@ if (!defined('__GOOSE__')) exit();
 /**
  * decode token
  *
- *
  * @var Goose $this
  */
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // set values
+  $output = (object)[];
 
-	// check authorization
-	$token = Auth::checkAuthorization($model);
+  // connect db
+  $this->model->connect();
 
-	// set values
-	$output = (object)[];
+  // check authorization
+  $token = Auth::checkAuthorization($this->model);
 
-	// get decode token
-	$jwt = Token::get(__TOKEN__);
+  // get decode token
+  $jwt = Token::get(__TOKEN__);
 
-	// set output
-	$output->code = 200;
-	$output->data = $jwt->data;
-	if ($token) $output->_token = $token->jwt;
+  // set output
+  $output->code = 200;
+  $output->data = $jwt->data;
 
-	// output
-	Output::data($output);
+  // set token
+  if ($token) $output->_token = $token->jwt;
+
+  // disconnect db
+  $this->model->disconnect();
+
+  // output
+  Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

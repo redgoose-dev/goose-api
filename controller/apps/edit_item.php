@@ -12,49 +12,47 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'apps';
-	$srl = (int)$this->params['srl'];
-
-	// check srl
+  // check and set srl
+  $srl = (int)$this->params['srl'];
 	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 204);
+		throw new Exception(Message::make('error.notFound', 'srl'));
 	}
 
 	// id check
 	if ($_POST['id'] && !Text::allowString($_POST['id']))
 	{
-		throw new Exception('`id` can be used only in numbers and English.', 204);
+    throw new Exception(Message::make('error.onlyKeywordType', 'id'));
 	}
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// check access
 	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
+		'model' => $this->model,
+		'table' => 'apps',
 		'srl' => $srl,
 	]);
 
 	// check app id
-	$check_id = $model->getCount((object)[
-		'table' => $tableName,
+	$check_id = $this->model->getCount((object)[
+		'table' => 'apps',
 		'where' => "id LIKE '$_POST[id]' and srl!=".$srl,
 	]);
 	if (!!$check_id->data)
 	{
-		throw new Exception('The same name `id` is registered.', 204);
+    throw new Exception(Message::make('error.checkSame', 'id'));
 	}
+
+	// check category
 
 	// set output
 	try
 	{
 		$output = Controller::edit((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => $tableName,
+			'model' => $this->model,
+			'table' => 'apps',
 			'srl' => $srl,
 			'data' => [
 				isset($_POST['id']) ? "id='$_POST[id]'" : '',
@@ -65,20 +63,20 @@ try
 	}
 	catch(Exception $e)
 	{
-		throw new Exception('Failed edit app', 204);
+		throw new Exception(Message::make('error.failedEdit', 'app'));
 	}
 
 	// set token
 	if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
 	// output data
 	Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

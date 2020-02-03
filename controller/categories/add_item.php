@@ -12,67 +12,65 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check post values
-	Util::checkExistValue($_POST, [ 'nest_srl', 'name' ]);
+  // check post values
+  Util::checkExistValue($_POST, [ 'nest_srl', 'name' ]);
 
-	// set model and connect db
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
 
-	// check exist nest
-	$cnt = $model->getCount((object)[
-		'table' => 'nests',
-		'where' => 'srl='.(int)$_POST['nest_srl'],
-	]);
-	if (!$cnt->data)
-	{
-		throw new Exception('There is no `nest` data.', 204);
-	}
+  // check exist nest
+  $cnt = $this->model->getCount((object)[
+    'table' => 'nests',
+    'where' => 'srl='.(int)$_POST['nest_srl'],
+  ]);
+  if (!$cnt->data)
+  {
+    throw new Exception(Message::make('error.noData', 'nest'));
+  }
 
-	// get max turn
-	$tableName = $model->getTableName('categories');
-	$max = 'select max(turn) as maximum from '.$tableName.' where nest_srl='.(int)$_POST['nest_srl'];
-	$max = $model->db->prepare($max);
-	$max->execute();
-	$max = (int)$max->fetchColumn();
-	$max += 1;
+  // get max turn
+  $max = $this->model->getMax((object)[
+    'table' => 'categories',
+    'field' => 'turn',
+    'where' => 'nest_srl='.(int)$_POST['nest_srl'],
+    'debug' => true,
+  ]);
 
-	// set output
-	try
-	{
-		$output = Controller::add((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => 'categories',
-			'data' => (object)[
-				'srl' => null,
-				'nest_srl' => $_POST['nest_srl'],
-				'user_srl' => (int)$token->data->user_srl,
-				'turn' => $max,
-				'name' => $_POST['name'],
-				'regdate' => date('Y-m-d H:i:s'),
-			]
-		]);
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('Failed add category', 204);
-	}
+  // set output
+  try
+  {
+    $output = Controller::add((object)[
+      'model' => $this->model,
+      'table' => 'categories',
+      'data' => (object)[
+        'srl' => null,
+        'nest_srl' => $_POST['nest_srl'],
+        'user_srl' => (int)$token->data->user_srl,
+        'turn' => isset($max->data) ? $max->data + 1 : 1,
+        'name' => $_POST['name'],
+        'regdate' => date('Y-m-d H:i:s'),
+      ],
+    ]);
+  }
+  catch(Exception $e)
+  {
+    throw new Exception(Message::make('error.failedAdd', 'category'));
+  }
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

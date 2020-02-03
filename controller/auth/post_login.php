@@ -13,58 +13,60 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check post values
-	Util::checkExistValue($_POST, [ 'email', 'password', 'host' ]);
+  // check post values
+  Util::checkExistValue($_POST, [ 'email', 'password', 'host' ]);
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	Auth::checkAuthorization($model);
+  // check authorization
+  Auth::checkAuthorization($this->model);
 
-	// set values
-	$output = (object)[];
-	$data = (object)[];
+  // set values
+  $output = (object)[];
+  $data = (object)[];
 
-	// get user data
-	$user = Auth::login((object)[
-		'model' => $model,
-		'email' => $_POST['email'],
-		'password' => $_POST['password']
-	]);
+  // get user data
+  $user = Auth::login((object)[
+    'model' => $this->model,
+    'email' => $_POST['email'],
+    'password' => $_POST['password'],
+  ]);
 
-	// make token
-	$jwt = Token::make((object)[
-		'exp' => true,
-		'time' => true,
-		'data' => (object)[
-			'type' => 'user',
-			'user_srl' => $user->srl,
-			'email' => $user->email,
-			'admin' => !!((int)$user->admin === 2),
-			'host' => $_POST['host'],
-			'regdate' => date('Y-m-d H:i:s'),
-		],
-	]);
+  // make token
+  $jwt = Token::make((object)[
+    'exp' => true,
+    'time' => true,
+    'data' => (object)[
+      'type' => 'user',
+      'user_srl' => $user->srl,
+      'email' => $user->email,
+      'admin' => !!((int)$user->admin === 2),
+      'host' => $_POST['host'],
+      'regdate' => date('Y-m-d H:i:s'),
+    ],
+  ]);
 
-	// set data
-	$data->srl = (int)$user->srl;
-	$data->email = $user->email;
-	$data->name = $user->name;
-	$data->admin = !!((int)$user->admin === 2);
-	$data->token = $jwt->token;
-	$data->host = $_POST['host'];
+  // set data
+  $data->srl = (int)$user->srl;
+  $data->email = $user->email;
+  $data->name = $user->name;
+  $data->admin = !!((int)$user->admin === 2);
+  $data->token = $jwt->token;
+  $data->host = $_POST['host'];
 
-	// set output
-	$output->code = 200;
-	$output->data = $data;
+  // disconnect db
+  $this->model->disconnect();
 
-	// output
-	Output::data($output);
+  // set output
+  $output->code = 200;
+  $output->data = $data;
+
+  // output
+  Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

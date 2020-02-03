@@ -7,48 +7,50 @@ if (!defined('__GOOSE__')) exit();
 /**
  * remove file
  *
- * @_POST string path
- *
  * @var Goose $this
  */
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
 
-	// check value
-	if (!$_POST['path'])
-	{
-		throw new Exception('The value `path` does not exist.', 204);
-	}
+  // check value
+  if (!$_POST['path'])
+  {
+    throw new Exception(Message::make('msg.notExist', 'path'));
+  }
 
-	// set path
-	$path = __PATH__.'/'.$_POST['path'];
+  // set path
+  $path = __PATH__.'/'.$_POST['path'];
 
-	// check exist file
-	if (!file_exists($path))
-	{
-		throw new Exception('There are no files in this path.', 204);
-	}
+  // check exist file
+  if (!file_exists($path))
+  {
+    throw new Exception(Message::make('msg.noFiles'));
+  }
 
-	// delete file
-	unlink($path);
+  // delete file
+  unlink($path);
 
-	// set output
-	$output = (object)[];
-	$output->code = 200;
-	if ($token) $output->_token = $token->jwt;
+  // set output
+  $output = (object)[];
+  $output->code = 200;
 
-	// output
-	Output::data($output);
+  // set token
+  if ($token) $output->_token = $token->jwt;
+
+  // disconnect db
+  $this->model->disconnect();
+
+  // output
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

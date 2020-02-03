@@ -12,65 +12,61 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'json';
-	$srl = (int)$this->params['srl'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 500);
-	}
+  // check post values
+  Util::checkExistValue($_POST, [ 'name', 'json' ]);
 
-	// check post values
-	Util::checkExistValue($_POST, [ 'name', 'json' ]);
+  // set value
+  $json = null;
+  if (isset($_POST['json']))
+  {
+    $json = json_decode(urldecode($_POST['json']), false);
+    if (!$json)
+    {
+      throw new Exception(Message::make('error.json'));
+    }
+    $json = urlencode(json_encode($json, false));
+  }
 
-	// set value
-	$json = null;
-	if (isset($_POST['json']))
-	{
-		$json = json_decode(urldecode($_POST['json']), false);
-		if (!$json)
-		{
-			throw new Exception('The json syntax is incorrect.', 500);
-		}
-		$json = urlencode(json_encode($json, false));
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'json',
+    'srl' => $srl,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // set output
+  $output = Controller::edit((object)[
+    'model' => $this->model,
+    'table' => 'json',
+    'srl' => $srl,
+    'data' => [
+      $_POST['name'] ? "name='$_POST[name]'" : '',
+      $_POST['description'] ? "description='$_POST[description]'" : '',
+      $_POST['json'] ? "json='$json'" : '',
+    ],
+  ]);
 
-	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-		'data' => [
-			$_POST['name'] ? "name='$_POST[name]'" : '',
-			$_POST['description'] ? "description='$_POST[description]'" : '',
-			$_POST['json'] ? "json='$json'" : '',
-		],
-	]);
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // disconnect db
+  $this->model->disconnect();
 
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

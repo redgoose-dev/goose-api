@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Controller\Files\UtilForFiles;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();
@@ -12,51 +13,47 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'articles';
+  // check and set srl
 	$srl = (int)$this->params['srl'];
-
-	// check srl
 	if (!($srl && $srl > 0))
 	{
-		throw new Exception('Not found srl', 500);
+    throw new Exception(Message::make('error.notFound', 'srl'));
 	}
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// check access
 	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
+		'model' => $this->model,
+		'table' => 'articles',
 		'srl' => $srl,
 	]);
 
 	// remove thumbnail image
-	Controller::removeThumbnailImage($model, $srl);
+  UtilForFiles::removeThumbnailImage($this->model, $srl);
 
 	// remove files
-	Controller::removeAttachFiles($model, $srl);
+  UtilForFiles::removeAttachFiles($this->model, $srl);
 
 	// remove item
 	$output = Controller::delete((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
+		'model' => $this->model,
+		'table' => 'articles',
 		'srl' => $srl,
 	]);
 
 	// set output
 	if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
 	// output data
 	Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

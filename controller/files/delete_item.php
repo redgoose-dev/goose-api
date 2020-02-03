@@ -12,65 +12,60 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'files';
-	$srl = (int)$this->params['srl'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 500);
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'files',
+    'srl' => $srl,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  /**
+   * remove file
+   */
+  // get item
+  $file = $this->model->getItem((object)[
+    'table' => 'files',
+    'field' => 'loc',
+    'where' => 'srl='.$srl,
+  ]);
 
-	/**
-	 * remove file
-	 */
-	// get item
-	$file = $model->getItem((object)[
-		'table' => $tableName,
-		'field' => 'loc',
-		'where' => 'srl='.$srl,
-	]);
+  // check exist file
+  if (
+    isset($file->data->loc) && $file->data->loc &&
+    file_exists(__PATH__.'/'.$file->data->loc)
+  )
+  {
+    unlink(__PATH__.'/'.$file->data->loc);
+  }
 
-	// check exist file
-	if (
-		isset($file->data->loc) && $file->data->loc &&
-		file_exists(__PATH__.'/'.$file->data->loc)
-	)
-	{
-		unlink(__PATH__.'/'.$file->data->loc);
-	}
+  // remove item
+  $output = Controller::delete((object)[
+    'model' => $this->model,
+    'table' => 'files',
+    'srl' => $srl,
+  ]);
 
-	// remove item
-	$output = Controller::delete((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // set output
+  if ($token) $output->_token = $token->jwt;
 
-	// set output
-	if ($token) $output->_token = $token->jwt;
+  // disconnect db
+  $this->model->disconnect();
 
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
-
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

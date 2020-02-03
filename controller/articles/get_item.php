@@ -7,33 +7,25 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get article
  *
- * url params
- * - @param int srl
- * - @param int hit 조회수 증가 사용
- * - @param string ext_field `category_name,nest_name`
- *
  * @var Goose $this
  */
 
 try
 {
-  $tableName = 'articles';
+  // check and set srl
   $srl = (int)$this->params['srl'];
-
-  // check srl
   if (!($srl && $srl > 0))
   {
-    throw new Exception('Not found srl', 204);
+    throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
-  // set model
-  $model = new Model();
-  $model->connect();
+  // connect db
+  $this->model->connect();
 
   // check access
   $token = Controller::checkAccessItem((object)[
-    'model' => $model,
-    'table' => $tableName,
+    'model' => $this->model,
+    'table' => 'articles',
     'srl' => $srl,
     'useStrict' => true,
   ]);
@@ -63,9 +55,8 @@ try
 
   // set output
   $output = Controller::item((object)[
-    'goose' => $this,
-    'model' => $model,
-    'table' => $tableName,
+    'model' => $this->model,
+    'table' => 'articles',
     'srl' => $srl,
     'where' => $where,
     'json_field' => ['json'],
@@ -74,7 +65,7 @@ try
   // get category name
   if ($output->data && $output->data->category_srl && Util::checkKeyInExtField('category_name'))
   {
-    $category = $model->getItem((object)[
+    $category = $this->model->getItem((object)[
       'table' => 'categories',
       'field' => 'name',
       'where' => 'srl='.(int)$output->data->category_srl,
@@ -88,7 +79,7 @@ try
   // get nest name
   if ($output->data && $output->data->nest_srl && Util::checkKeyInExtField('nest_name'))
   {
-    $nest = $model->getItem((object)[
+    $nest = $this->model->getItem((object)[
       'table' => 'nests',
       'where' => 'srl='.(int)$output->data->nest_srl,
     ]);
@@ -103,8 +94,8 @@ try
   {
     $output->data->hit = $output->data->hit + 1;
     $hit = (int)$output->data->hit;
-    $model->edit((object)[
-      'table' => $tableName,
+    $this->model->edit((object)[
+      'table' => 'articles',
       'where' => 'srl='.$srl,
       'data' => [ "hit='$hit'" ]
     ]);
@@ -114,13 +105,13 @@ try
   if ($token) $output->_token = $token->jwt;
 
   // disconnect db
-  $model->disconnect();
+  $this->model->disconnect();
 
   // output data
   Output::data($output);
 }
 catch (Exception $e)
 {
-  if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
   Error::data($e->getMessage(), $e->getCode());
 }

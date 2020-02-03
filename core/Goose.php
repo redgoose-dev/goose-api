@@ -15,6 +15,7 @@ use Exception;
  * @property string target
  * @property array params
  * @property array modules
+ * @property Model model
  */
 
 class Goose {
@@ -25,6 +26,7 @@ class Goose {
     $this->target = null;
     $this->params = null;
     $this->modules = ['apps', 'articles', 'categories', 'files', 'json', 'nests', 'users'];
+    $this->model = null;
   }
 
   /**
@@ -74,6 +76,9 @@ class Goose {
     // set router values
     $this->target = $this->router->match['target'];
     $this->params = $this->router->match['params'];
+
+    // set model
+    $this->model = new Model();
 
     // run turning point
     $this->turningPoint();

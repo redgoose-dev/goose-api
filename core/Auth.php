@@ -35,8 +35,8 @@ class Auth {
   public static function login($op=null)
   {
     if (!$op) throw new Exception('There is no option.', 401);
-    if (!$op->email && !$op->user_srl) throw new Exception('No user_srl or email', 401);
-    if (!$op->password) throw new Exception('no password', 401);
+    if (!$op->email && !$op->user_srl) throw new Exception('No user_srl or email.', 401);
+    if (!$op->password) throw new Exception('No password.', 401);
     if (!$op->model) $op->model = self::getModel();
 
     // set where

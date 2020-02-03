@@ -7,24 +7,16 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get articles
  *
- * url params
- * - @param int app
- * - @param int nest
- * - @param int category
- * - @param int user
- * - @param string q
- *
  * @var Goose $this
  */
 
 try
 {
-  // set model
-  $model = new Model();
-  $model->connect();
+  // connect db
+  $this->model->connect();
 
   // check access
-  $token = Controller::checkAccessIndex($model, true);
+  $token = Controller::checkAccessIndex($this->model, true);
 
   // set where
   $where = '';
@@ -69,8 +61,7 @@ try
 
   // set output
   $output = Controller::index((object)[
-    'goose' => $this,
-    'model' => $model,
+    'model' => $this->model,
     'table' => 'articles',
     'where' => $where,
     'json_field' => ['json']
@@ -79,30 +70,42 @@ try
   // get category name
   if ($output->data && Util::checkKeyInExtField('category_name'))
   {
-    $output->data->index = \Controller\articles\Util::extendCategoryNameInItems($model, $output->data->index);
+    $output->data->index = \Controller\Articles\UtilForArticles::extendCategoryNameInItems(
+      $this->model,
+      $output->data->index
+    );
   }
 
   // get nest name
   if ($output->data && Util::checkKeyInExtField('nest_name'))
   {
-    $output->data->index = \Controller\articles\Util::extendNestNameInItems($model, $output->data->index);
+    $output->data->index = \Controller\Articles\UtilForArticles::extendNestNameInItems(
+      $this->model,
+      $output->data->index
+    );
   }
 
   // get next page
   if ($output->data && Util::checkKeyInExtField('next_page'))
   {
-    $nextPage = \Controller\articles\Util::getNextPage($this, $model, $where);
+    $nextPage = \Controller\Articles\UtilForArticles::getNextPage(
+      $this->model,
+      $where
+    );
     if ($nextPage) $output->data->nextPage = $nextPage;
   }
 
   // set token
   if ($token) $output->_token = $token->jwt;
 
+  // disconnect db
+  $this->model->disconnect();
+
   // output
   Output::data($output);
 }
 catch (Exception $e)
 {
-  if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
   Error::data($e->getMessage(), $e->getCode());
 }

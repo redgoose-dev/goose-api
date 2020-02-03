@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Controller\Files\UtilForFiles;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();
@@ -12,82 +13,76 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'nests';
-	$srl = (int)$this->params['srl'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 204);
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'nests',
+    'srl' => $srl,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // remove articles
+  $articles = $this->model->getItems((object)[
+    'table' => 'articles',
+    'field' => 'srl',
+    'where' => 'nest_srl='.$srl,
+  ]);
+  if ($articles->data && count($articles->data))
+  {
+    foreach($articles->data as $k=>$v)
+    {
+      // remove thumbnail image
+      UtilForFiles::removeThumbnailImage($this->model, $v->srl);
+      // remove files
+      UtilForFiles::removeAttachFiles($this->model, $v->srl);
+    }
+    // remove articles
+    $this->model->delete((object)[
+      'table' => 'articles',
+      'where' => 'nest_srl='.$srl,
+    ]);
+  }
 
-	// articles
-	$articles = $model->getItems((object)[
-		'table' => 'articles',
-		'field' => 'srl',
-		'where' => 'nest_srl='.$srl,
-	]);
-	if ($articles->data && count($articles->data))
-	{
-		foreach($articles->data as $k=>$v)
-		{
-			// remove thumbnail image
-			Controller::removeThumbnailImage($model, $v->srl);
+  // remove categories
+  $categoriesCount = $this->model->getCount((object)[
+    'table' => 'categories',
+    'where' => 'nest_srl='.$srl,
+  ]);
+  if ($categoriesCount->data > 0)
+  {
+    $this->model->delete((object)[
+      'table' => 'categories',
+      'where' => 'nest_srl='.$srl,
+    ]);
+  }
 
-			// remove files
-			Controller::removeAttachFiles($model, $v->srl);
-		}
-		// remove articles
-		$model->delete((object)[
-			'table' => 'articles',
-			'where' => 'nest_srl='.$srl
-		]);
-	}
+  // remove nest
+  $output = Controller::delete((object)[
+    'model' => $this->model,
+    'table' => 'nests',
+    'srl' => $srl,
+  ]);
 
-	// categories
-	$categoriesCount = $model->getCount((object)[
-		'table' => 'categories',
-		'where' => 'nest_srl='.$srl,
-	]);
-	if ($categoriesCount->data > 0)
-	{
-		// remove categories
-		$model->delete((object)[
-			'table' => 'categories',
-			'where' => 'nest_srl='.$srl
-		]);
-	}
+  // set output
+  if ($token) $output->_token = $token->jwt;
 
-	// remove nest
-	$output = Controller::delete((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // disconnect db
+  $this->model->disconnect();
 
-	// set output
-	if ($token) $output->_token = $token->jwt;
-
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

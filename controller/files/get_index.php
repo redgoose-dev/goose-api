@@ -18,9 +18,8 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// set where
 	$where = '';
@@ -50,24 +49,27 @@ try
 	}
 
 	// check access
-	$token = Controller::checkAccessIndex($model, true);
+	$token = Controller::checkAccessIndex($this->model, true);
 	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller::index((object)[
-		'goose' => $this,
+		'model' => $this->model,
 		'table' => 'files',
-		'where' => $where
+		'where' => $where,
 	]);
 
 	// set token
 	if ($token) $output->_token = $token->jwt;
+
+  // disconnect db
+  $this->model->disconnect();
 
 	// output
 	Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

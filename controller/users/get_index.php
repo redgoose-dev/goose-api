@@ -7,68 +7,63 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get users
  *
- * url params
- * - @param string email
- * - @param string name
- *
  * @var Goose $this
  */
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// set where
-	$where = '';
-	if ($email = Util::getParameter('email'))
-	{
-		$where .= ' and email LIKE \''.$email.'\'';
-	}
-	if ($name = Util::getParameter('name'))
-	{
-		$where .= ' and name LIKE \'%'.$name.'%\'';
-	}
-	if ($admin = Util::getParameter('admin'))
-	{
-		$where .= ' and admin='.(int)$admin;
-	}
+  // set where
+  $where = '';
+  if ($email = $_GET['email'])
+  {
+    $where .= ' and email LIKE \''.$email.'\'';
+  }
+  if ($name = $_GET['name'])
+  {
+    $where .= ' and name LIKE \'%'.$name.'%\'';
+  }
+  if ($admin = $_GET['admin'])
+  {
+    $where .= ' and admin='.(int)$admin;
+  }
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
-	if (!$token->data->admin)
-	{
-		$where .= ' and srl='.$token->data->user_srl;
-	}
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
+  if (!$token->data->admin) $where .= ' and srl='.$token->data->user_srl;
 
-	// output
-	$output = Controller::index((object)[
-		'goose' => $this,
-		'model' => $model,
-		'auth' => true,
-		'table' => 'users',
-		'where' => $where,
-	], function($result=null) {
-		if (!isset($result->data)) return $result;
-		foreach ($result->data as $k=>$o)
-		{
-			// remove password field
-			if (isset($result->data[$k]->password))
-			{
-				unset($result->data[$k]->password);
-			}
-		}
-		return $result;
-	});
+  // output
+  $output = Controller::index((object)[
+    'model' => $this->model,
+    'auth' => true,
+    'table' => 'users',
+    'where' => $where,
+  ], function($result=null) {
+    if (!isset($result->data)) return $result;
+    foreach ($result->data as $k=>$o)
+    {
+      // remove password field
+      if (isset($result->data[$k]->password))
+      {
+        unset($result->data[$k]->password);
+      }
+    }
+    return $result;
+  });
 
-	// set token
-	if ($token->jwt) $output->_token = $token->jwt;
+  // set token
+  if ($token->jwt) $output->_token = $token->jwt;
 
-	// output
-	Output::data($output);
+  // disconnect db
+  $this->model->disconnect();
+
+  // output
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

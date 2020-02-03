@@ -9,7 +9,7 @@ RUN apt-get -y -qq install nano net-tools
 # install php
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get -y -qq install php7.2-cli php7.2-fpm php7.2-curl php7.2-mysql php7.2-mbstring
+RUN apt-get -y -qq install php7.4-cli php7.4-fpm php7.4-curl php7.4-mysql php7.4-mbstring
 
 # install composer
 RUN apt-get -y -qq install openssl ca-certificates
@@ -28,6 +28,6 @@ RUN composer install
 RUN ./script.sh ready
 
 # play command
-CMD service php7.2-fpm start && php -S 0.0.0.0:8000 server.php
+CMD service php7.4-fpm start && php -S 0.0.0.0:8000 server.php
 
 EXPOSE 8000

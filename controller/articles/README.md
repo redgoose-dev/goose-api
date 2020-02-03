@@ -6,13 +6,14 @@
 
 
 ## get articles list
+
 - url: `/articles/`
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | app | number | `1` | app srl |
 | nest | number | `1` | nest srl |
 | category | number | `1` | category srl |
@@ -29,13 +30,14 @@
 
 
 ## get article
+
 - url: `/articles/[n]/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | app | number | `1` | app srl |
 | nest | number | `1` | nest srl |
 | category | number | `1` | category srl |
@@ -50,13 +52,14 @@
 
 
 ## add article
+
 - url: `/articles/`
 - method: POST
 
 사용하는 body 항목
 
 | key | type | example | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
@@ -70,7 +73,7 @@
 사용하는 params 항목
 
 | key | type | default | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | content | string | `` | content 타입 |
 
 ### (GET) content
@@ -80,13 +83,14 @@
 
 
 ## edit article
+
 - url: `/articles/[n]/edit/` (n:srl)
 - method: POST
 
 사용하는 body 항목
 
 | key | type | example | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | app_srl | number | `1` | app srl 번호 |
 | nest_srl | number | `1` | nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
@@ -102,7 +106,7 @@
 사용하는 params 항목
 
 | key | type | default | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | content | string | `` | content 타입 |
 
 ### (GET) content
@@ -112,17 +116,19 @@
 
 
 ## delete article
+
 - url: `/articles/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## update hit|star
+
 - url: `/articles/[n]/update/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | type | string | `hit,star` | 조회수를 올릴건지 좋아요 카운트를 올릴건지 정합니다. |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |

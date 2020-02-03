@@ -13,27 +13,26 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($model, 'admin');
+	$token = Auth::checkAuthorization($this->model, 'admin');
 
 	// set values
 	$output = (object)[];
 
-	// get datas
-	$get_tokens = $model->getItems((object)[
+	// get data
+	$get_tokens = $this->model->getItems((object)[
 		'table' => 'tokens',
 		'field' => 'srl',
-		'where' => 'expired < '.time()
+    'debug' => __DEBUG__,
 	]);
 
 	foreach ($get_tokens->data as $k=>$v)
 	{
 		$v = (object)$v;
-		$model->delete((object)[
+    $this->model->delete((object)[
 			'table' => 'tokens',
 			'where' => 'srl='.(int)$v->srl,
 			'debug' => __DEBUG__,
@@ -42,16 +41,18 @@ try
 
 	// set output
 	$output->code = 200;
+
+  // set token
 	if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
 	// output data
 	Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

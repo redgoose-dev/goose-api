@@ -1,0 +1,37 @@
+{
+  "error": {
+    "noItem": "No {0}.",
+    "noItems_or": "Not found `{0}` or `{1}`.",
+    "notFound": "Not found `{0}`.",
+    "noValue": "No {0} in {1}.",
+    "noValueTo": "No {0} to {1}.",
+    "noFrom": "No {0} from {1}.",
+    "noData": "There is no `{0}` data.",
+    "notInData": "This {0} is not in {1}.",
+    "onlyKeywordType": "`{0}` can be used only in numbers and English.",
+    "checkSame": "The same name `{0}` is registered.",
+    "failedAdd": "Failed add `{0}`.",
+    "failedEdit": "Failed edit `{0}`.",
+    "failedChange": "Failed change `{0}`.",
+    "json": "The json syntax is incorrect.",
+    "duplicate": "There is a duplicate `{0}`.",
+    "access": "You can not access.",
+    "matchPassword": "Passwords must match.",
+    "existsValue": "The {0} already exists.",
+    "different": "`new_password` and `confirm_password` are different.",
+    "date": "Error {0} date.",
+    "limitFileSize": "The attachment size exceeds the allowable limit.",
+    "allowFileType": "This file is a format that is not allowed.",
+    "upload": "Upload error"
+  },
+  "msg": {
+    "noParams": "No parameter.",
+    "notAccessData": "You can not access data.",
+    "notUserToken": "This is not a user token.",
+    "tokenExpired": "Token without expiration time.",
+    "blacklistTokens": "Blacklist has tokens.",
+    "onlyImage": "Only jpg and png files can be uploaded.",
+    "notExist": "The value `{0}` does not exist",
+    "noFiles": "There are no files in this path"
+  }
+}

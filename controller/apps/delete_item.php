@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Controller\Files\UtilForFiles;
 use Exception;
 
 if (!defined('__GOOSE__')) exit();
@@ -12,28 +13,25 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-  $tableName = 'apps';
+  // check and set srl
   $srl = (int)$this->params['srl'];
-
-  // check srl
   if (!($srl && $srl > 0))
   {
-    throw new Exception('Not found srl', 204);
+    throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
-  // set model
-  $model = new Model();
-  $model->connect();
+  // connect db
+  $this->model->connect();
 
   // check access
   $token = Controller::checkAccessItem((object)[
-    'model' => $model,
-    'table' => $tableName,
+    'model' => $this->model,
+    'table' => 'apps',
     'srl' => $srl,
   ]);
 
   // get articles list
-  $articles = $model->getItems((object)[
+  $articles = $this->model->getItems((object)[
     'table' => 'articles',
     'field' => 'srl',
     'where' => 'app_srl='.$srl,
@@ -43,20 +41,19 @@ try
     foreach($articles->data as $k=>$v)
     {
       // remove thumbnail image
-      Controller::removeThumbnailImage($model, $v->srl);
-
+      UtilForFiles::removeThumbnailImage($this->model, $v->srl);
       // remove files
-      Controller::removeAttachFiles($model, $v->srl);
+      UtilForFiles::removeAttachFiles($this->model, $v->srl);
     }
     // remove articles
-    $model->delete((object)[
+    $this->model->delete((object)[
       'table' => 'articles',
-      'where' => 'app_srl='.$srl
+      'where' => 'app_srl='.$srl,
     ]);
   }
 
   // get nests list
-  $nests = $model->getItems((object)[
+  $nests = $this->model->getItems((object)[
     'table' => 'nests',
     'field' => 'srl',
     'where' => 'app_srl='.$srl,
@@ -66,14 +63,13 @@ try
     // remove categories
     foreach($nests->data as $k=>$v)
     {
-      $model->delete((object)[
+      $this->model->delete((object)[
         'table' => 'categories',
         'where' => 'nest_srl='.(int)$v->srl,
       ]);
     }
-
     // remove nests
-    $model->delete((object)[
+    $this->model->delete((object)[
       'table' => 'nests',
       'where' => 'app_srl='.$srl
     ]);
@@ -81,9 +77,8 @@ try
 
   // remove app
   $output = Controller::delete((object)[
-    'goose' => $this,
-    'model' => $model,
-    'table' => $tableName,
+    'model' => $this->model,
+    'table' => 'apps',
     'srl' => $srl,
   ]);
 
@@ -91,13 +86,13 @@ try
   if ($token) $output->_token = $token->jwt;
 
   // disconnect db
-  $model->disconnect();
+  $this->model->disconnect();
 
   // output data
   Output::data($output);
 }
 catch (Exception $e)
 {
-  if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
   Error::data($e->getMessage(), $e->getCode());
 }

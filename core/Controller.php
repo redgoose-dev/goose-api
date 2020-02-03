@@ -6,40 +6,7 @@ use Exception;
 class Controller {
 
   /**
-   * connect db
-   *
-   * @param Model $model
-   * @return Model
-   * @throws Exception
-   */
-  public static function connect($model)
-  {
-    if (!!$model)
-    {
-      return $model;
-    }
-    else
-    {
-      $model = new Model();
-      $model->connect();
-      return $model;
-    }
-  }
-
-  /**
-   * disconnect db
-   *
-   * @param Model $model
-   * @param boolean $sw make user model
-   */
-  public static function disconnect($model, $sw=false)
-  {
-    // 컨트롤러 클래스에서 만든 모델이라면 disconnect() 실행
-    if (!$sw) $model->disconnect();
-  }
-
-  /**
-   * index
+   * get items
    *
    * @param object $op
    * @param callable $callback
@@ -49,8 +16,7 @@ class Controller {
   public static function index($op=null, callable $callback=null)
   {
     /**
-     * # $op guide
-     * @param Goose    $op->goose
+     * $op guide
      * @param Model    $op->model
      * @param string   $op->table
      * @param string   $op->where
@@ -58,16 +24,25 @@ class Controller {
      * @param array    $op->json_field
      * @param boolean  $op->object       객체만 필요할때가 있어서 사용하면 결과값만 나온 객체만 리턴한다.
      *
-     * # url params guide
-     * @param string field
+     * url params guide
      * @param string order
      * @param string sort
      * @param string limit
      */
 
-    if (!$op->goose || !$op->table)
+    if (!$op->table)
     {
-      throw new Exception('no object in Controller::index()', 500);
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::index()'),
+        500
+      );
+    }
+    if (!$op->model)
+    {
+      throw new Exception(
+        Message::make('error.notFound', '$op->model'),
+        500
+      );
     }
 
     // get values
@@ -76,13 +51,13 @@ class Controller {
     $size = ($_GET['size']) ? (int)$_GET['size'] : getenv('DEFAULT_INDEX_SIZE');
 
     // set model
-    $model = self::connect($op->model);
+    $model = $op->model;
 
     // get total
     $total = $model->getCount((object)[
       'table' => $op->table,
       'where' => $op->where,
-      'debug' => __DEBUG__
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ]);
 
     // set limit
@@ -113,17 +88,12 @@ class Controller {
       'sort' => isset($op->sort) ? $op->sort : $_GET['sort'],
       'limit' => $limit,
       'where' => $op->where,
-      'debug' => __DEBUG__
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ];
     $items = $model->getItems($opts);
-    // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
-    if (is_callable($callback))
-    {
-      $items = $callback($items);
-    }
 
-    // disconnect db
-    self::disconnect($model, $op->model);
+    // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
+    if (is_callable($callback)) $items = $callback($items);
 
     // set output
     if (!(isset($op->object) && $op->object))
@@ -140,7 +110,6 @@ class Controller {
     }
     else
     {
-      $output = (object)[];
       $output->total = $total->data;
       $output->index = $items->data;
       if (isset($items->query)) $output->query = $items->query;
@@ -150,7 +119,7 @@ class Controller {
   }
 
   /**
-   * item
+   * get item
    *
    * @param object $op
    * @param callable $callback
@@ -160,8 +129,7 @@ class Controller {
   public static function item($op=null, callable $callback=null)
   {
     /**
-     * # $op guide
-     * @param Goose $op->goose
+     * $op guide
      * @param Model $op->model
      * @param string $op->table
      * @param int $op->srl
@@ -169,20 +137,30 @@ class Controller {
      * @param array $op->json_field
      * @param string $op->where
      *
-     * # url params guide
+     * url params guide
      * @param string field
      */
 
-    if (!($op->goose && $op->table && ($op->srl || $op->id)))
+    if (!($op->table && ($op->srl || $op->id)))
     {
-      throw new Exception('no object in Controller::item()', 500);
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::item()'),
+        500
+      );
+    }
+    if (!$op->model)
+    {
+      throw new Exception(
+        Message::make('error.notFound', '$op->model'),
+        500
+      );
     }
 
     // get values
     $output = (object)[];
 
     // set model
-    $model = self::connect($op->model);
+    $model = $op->model;
 
     // get data
     $item = $model->getItem((object)[
@@ -190,16 +168,11 @@ class Controller {
       'field' => $_GET['field'],
       'json_field' => $op->json_field,
       'where' => ($op->srl ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : '')).$op->where,
-      'debug' => __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ]);
-    // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
-    if (is_callable($callback))
-    {
-      $item = $callback($item);
-    }
 
-    // disconnect db
-    self::disconnect($model, $op->model);
+    // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
+    if (is_callable($callback)) $item = $callback($item);
 
     // set output
     $output->code = $item->data ? 200 : 404;
@@ -210,7 +183,7 @@ class Controller {
   }
 
   /**
-   * add
+   * add item
    *
    * @param object $op
    * @return object
@@ -218,22 +191,25 @@ class Controller {
    */
   public static function add($op=null)
   {
-    if (!$op->goose || !$op->table || !$op->data)
+    if (!$op->table || !$op->data)
     {
-      throw new Exception('no object in Controller::item()', 500);
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::add()'),
+        500
+      );
     }
 
     // get values
     $output = (object)[];
 
     // set model
-    $model = self::connect($op->model);
+    $model = $op->model;
 
     // add data
     $result = $model->add((object)[
       'table' => $op->table,
       'data' => $op->data,
-      'debug' => __DEBUG__
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ]);
 
     // set output
@@ -241,14 +217,11 @@ class Controller {
     $output->query = $result->query;
     $output->srl = $model->getLastIndex();
 
-    // disconnect db
-    self::disconnect($model, $op->model);
-
     return $output;
   }
 
   /**
-   * edit
+   * edit item
    *
    * @param object $op
    * @return object
@@ -256,36 +229,27 @@ class Controller {
    */
   public static function edit($op=null)
   {
-    /**
-     * # $op guide
-     * @param Goose $op->goose
-     * @param Model $op->model
-     * @param string $op->table
-     * @param int $op->srl
-     * @param array $op->data
-     */
-
-    if (!$op->goose || !$op->table || !$op->srl || !$op->data)
+    if (!$op->table || !$op->srl || !$op->data)
     {
-      throw new Exception('no object in Controller::item()', 500);
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::edit()'),
+        500
+      );
     }
 
     // get values
     $output = (object)[];
 
     // set model
-    $model = self::connect($op->model);
+    $model = $op->model;
 
     // update data
     $result = $model->edit((object)[
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
       'data' => $op->data,
-      'debug' => __DEBUG__
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ]);
-
-    // disconnect db
-    self::disconnect($model, $op->model);
 
     // set output
     $output->code = 200;
@@ -295,7 +259,7 @@ class Controller {
   }
 
   /**
-   * delete
+   * delete item
    *
    * @param object $op
    * @return object
@@ -304,39 +268,75 @@ class Controller {
   public static function delete($op=null)
   {
     /**
-     * # $op guide
-     * @param Goose $op->goose
+     * $op guide
      * @param Model $op->model
      * @param string $op->table
      * @param int $op->srl
      */
 
-    if (!$op->goose || !$op->table || !$op->srl)
+    if (!$op->table || !$op->srl)
     {
-      throw new Exception('no object in Controller::delete()', 500);
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::delete()'),
+        500
+      );
     }
 
     // get values
     $output = (object)[];
 
     // set model
-    $model = self::connect($op->model);
+    $model = $op->model;
 
     // delete data
     $result = $model->delete((object)[
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
-      'debug' => __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
     ]);
-
-    // disconnect db
-    self::disconnect($model, $op->model);
 
     // set output
     $output->code = 200;
     $output->query = $result->query;
 
     return $output;
+  }
+
+  /**
+   * count item
+   *
+   * @param object $op
+   * @return object
+   * @throws Exception
+   */
+  public static function count($op=null)
+  {
+    if (!$op->table)
+    {
+      throw new Exception(
+        Message::make('error.noValue', 'object', 'Controller::count()'),
+        500
+      );
+    }
+    if (!$op->model)
+    {
+      throw new Exception(
+        Message::make('error.notFound', '$op->model'),
+        500
+      );
+    }
+
+    // set model
+    $model = $op->model;
+
+    // get total
+    $total = $model->getCount((object)[
+      'table' => $op->table,
+      'where' => $op->where,
+      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+    ]);
+
+    return $total->data;
   }
 
   /**
@@ -360,14 +360,14 @@ class Controller {
      * @param boolean  $op->useStrict  getItem 상황이라면 꼭 사용한다.
      */
 
+    // check parameter
     if (!($op->model && $op->table && ($op->srl || $op->id)))
     {
-      throw new Exception('No parameter.', 204);
+      throw new Exception(Message::make('msg.noParams'), 500);
     }
-
+    // strict 검사를 하면서 strict값이 없을때..
     if (!!$op->useStrict && !($_GET['strict'] || $_POST['strict']))
     {
-      // strict 검사를 하면서 strict값이 없을때..
       return Auth::checkAuthorization($op->model);
     }
 
@@ -377,14 +377,17 @@ class Controller {
       'field' => $op->field ? $op->field : 'user_srl',
       'where' => ($op->srl) ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : ''),
     ]);
-    if (!$res->data) throw new Exception("No data from $op->table.", 404);
+    if (!$res->data)
+    {
+      throw new Exception(Message::make('error.noFrom', 'data', $op->table), 404);
+    }
 
     // check authorization
     $token = Auth::checkAuthorization($op->model, 'user');
     // check data and user_srl
     if (!$token->data->admin && ((int)$token->data->user_srl !== (int)$res->data->user_srl))
     {
-      throw new Exception('You can not access data.', 401);
+      throw new Exception(Message::make('msg.notAccessData'), 401);
     }
     return $token;
   }
@@ -399,7 +402,10 @@ class Controller {
    */
   public static function checkAccessIndex($model=null, $useStrict=false)
   {
-    if (!$model) throw new Exception('No model', 204);
+    if (!$model)
+    {
+      throw new Exception(Message::make('error.noItem', 'model'));
+    }
 
     // `$op->useStrict`가 있는 상태에서 `strict=false` 이거나 $op->useStrict가 없으면 public
     $param = (($useStrict && !$_GET['strict']) || !$useStrict) ? '' : 'user';

@@ -6,6 +6,7 @@
 
 
 ## get categories list
+
 - url: `/categories/`
 - method: GET
 
@@ -18,15 +19,16 @@
 | ext_field | string | `count_article` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
-`order=turn`를 활용하여 직접 변경한 순서대로 출렬할 수 있습니다.
+`order=turn`를 활용하여 직접 변경한 순서대로 출력할 수 있습니다.
 
 ### ext_field
 - `count_article`: 분류에 해당되는 articles 아이템 갯수
 - `item_all`: 모든 article 갯수가 들어있는 항목
-- `un_category`: 분류에 해당안되는 항목
+- `none`: 분류에 해당안되는 항목
 
 
 ## get category
+
 - url: `/categories/[n]/` (n:srl)
 - method: GET
 
@@ -42,6 +44,7 @@
 
 
 ## add category
+
 - url: `/categories/[n]/` (n:srl)
 - method: POST
 
@@ -54,6 +57,7 @@
 
 
 ## edit category
+
 - url: `/categories/[n]/edit/` (n:srl)
 - method: POST
 
@@ -66,11 +70,13 @@
 
 
 ## delete category
+
 - url: `/categories/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## sort categories
+
 - url: `/categories/sort/`
 - method: POST
 

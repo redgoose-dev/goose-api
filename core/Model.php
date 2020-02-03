@@ -403,4 +403,45 @@ class Model {
     }
   }
 
+  /**
+   * get max in field
+   *
+   * @param object $op
+   * @return int
+   * @throws Exception
+   */
+  public function getMax($op=null)
+  {
+    $output = (object)[];
+    try
+    {
+      if (!isset($op->table)) throw new Exception('no value `table`');
+      if (!isset($op->field)) throw new Exception('no value `field`');
+      // set value
+      $tableName = $this->getTableName($op->table);
+      $field = isset($op->field) ? $op->field : 'srl';
+      // set query
+      $query = 'select max('.$op->field.') as maximum from '.$tableName;
+      if (isset($op->where)) $query .= ' where '.$op->where;
+      // action
+      $max = $this->db->prepare($query);
+      $max->execute();
+      $max = (int)$max->fetchColumn();
+      // set output
+      $output->success = true;
+      $output->data = $max;
+      return $output;
+    }
+    catch(Exception $e)
+    {
+      throw new Exception($e->getMessage());
+    }
+    finally
+    {
+      // set output
+      if ($op->debug === true) $output->query = $query;
+      return $output;
+    }
+  }
+
 }

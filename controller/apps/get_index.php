@@ -7,50 +7,47 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get apps
  *
- * url params
- * - @param string id
- * - @param string name
- *
  * @var Goose $this
  */
 
 try
 {
-	// set where
-	$where = '';
-	if ($id = $_GET['id'])
-	{
-		$where .= ' and id LIKE \''.$id.'\'';
-	}
-	if ($name = $_GET['name'])
-	{
-		$where .= ' and name LIKE \'%'.$name.'%\'';
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // set where
+  $where = '';
+  if ($id = $_GET['id'])
+  {
+    $where .= ' and id LIKE \''.$id.'\'';
+  }
+  if ($name = $_GET['name'])
+  {
+    $where .= ' and name LIKE \'%'.$name.'%\'';
+  }
 
-	// check access
-	$token = Controller::checkAccessIndex($model, true);
-	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  // check access
+  $token = Controller::checkAccessIndex($this->model, true);
+  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
-	// set output
-	$output = Controller::index((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => 'apps',
-		'where' => $where,
-	]);
+  // set output
+  $output = Controller::index((object)[
+    'model' => $this->model,
+    'table' => 'apps',
+    'where' => $where,
+  ]);
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// output
-	Output::data($output);
+  // disconnect db
+  $this->model->disconnect();
+
+  // output
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  if (isset($model)) $model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

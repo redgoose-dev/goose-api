@@ -12,60 +12,62 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check srl
-	if (!((int)$this->params['srl'] && $this->params['srl'] > 0))
-	{
-		throw new Exception('Not found srl', 204);
-	}
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check post values
-	Util::checkExistValue($_POST, [ 'password', 'new_password', 'confirm_password' ]);
+  // check post values
+  Util::checkExistValue($_POST, [ 'password', 'new_password', 'confirm_password' ]);
 
-	// check new_password and confirm_password
-	if ($_POST['new_password'] !== $_POST['confirm_password'])
-	{
-		throw new Exception('`new_password` and `confirm_password` are different.', 204);
-	}
+  // check new_password and confirm_password
+  if ($_POST['new_password'] !== $_POST['confirm_password'])
+  {
+    throw new Exception(Message::make('error.different', 'new_password', 'confirm_password'));
+  }
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
 
-	try
-	{
-		// check password
-		Auth::login((object)[
-			'user_srl' => (int)$this->params['srl'],
-			'password' => $_POST['password']
-		]);
+  try
+  {
+    // check password
+    $user = Auth::login((object)[
+      'model' => $this->model,
+      'user_srl' => (int)$this->params['srl'],
+      'password' => $_POST['password']
+    ]);
 
-		// set output
-		$output = Controller::edit((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => 'users',
-			'srl' => (int)$this->params['srl'],
-			'data' => [ "password='".Text::createPassword($_POST['new_password'])."'" ],
-		]);
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('Failed change password.', 204);
-	}
+    // set output
+    $output = Controller::edit((object)[
+      'model' => $this->model,
+      'table' => 'users',
+      'srl' => (int)$this->params['srl'],
+      'data' => [ "password='".Text::createPassword($_POST['new_password'])."'" ],
+    ]);
+  }
+  catch(Exception $e)
+  {
+    throw new Exception($e->getMessage(), $e->getCode());
+  }
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  $message = __DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
+  Error::data($message, $e->getCode());
 }

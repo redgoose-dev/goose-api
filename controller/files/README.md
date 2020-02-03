@@ -5,14 +5,15 @@
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
 
-## get files list
+## get files
+
 - url: `/files/`
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | article | number | `1` | article srl |
 | name | string | `filename` | filename |
 | type | string | `png` | file type |
@@ -21,17 +22,19 @@
 
 
 ## get file
+
 - url: `/files/[n]/` (n:srl)
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
 ## add file
+
 - url: `/files/`
 - method: POST
 
@@ -39,13 +42,14 @@
 전송할때 `multipart`형식으로 전송합니다.
 
 | key | type | example | description |
-|:---:|:---:|---|---|
-| article_srls | number | `1` | `article srl` 값입니다. 파일을 여러개 올리면 그 갯수만큼 여러개 지정해줄 수 있습니다. ex) 1,2,3 |
+|:---:|:----:|---------|-------------|
+| article_srl | number | `1` | `article srl` 값입니다. |
 | ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 
 
 ## edit file
+
 - url: `/files/[n]/edit/` (n:srl)
 - method: POST
 
@@ -60,28 +64,31 @@
 
 
 ## delete file
+
 - url: `/files/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## upload file
+
 - url: `/files/upload-file/`
 - method: POST
 
 데이터베이스에 등록하지 않고 서버에 파일을 업로드할 수 있습니다.
 
 | key | type | example | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | sub_dir | string | `thumbnail` | 서브 디렉토리 이름 |
-| file | File,string | | 업로드할 파일입니다. multipart에서 File로 넣거나 base64 문자열로 넣어서 업로드할 수 있습니다. |
+| file | File,string | | 업로드할 파일입니다. `multipart`에서 `File`로 넣거나 base64 문자열로 넣어서 업로드할 수 있습니다. |
 
 
 ## remove file
+
 - url: `/files/remove-file/`
 - method: POST
 
 데이터베이스에 등록하지 않고 서버에 파일을 삭제합니다.
 
 | key | type | example | description |
-|:---:|:---:|---|---|
+|:---:|:----:|---------|-------------|
 | path | string | `filename.jpg` | 삭제할 파일 경로를 입력해줍니다. 프로젝트 루트경로 기준으로 입력합니다. |

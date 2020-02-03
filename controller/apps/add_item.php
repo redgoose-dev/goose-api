@@ -12,64 +12,56 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// check post values
-	Util::checkExistValue($_POST, [ 'id', 'name' ]);
+  // check post values
+  Util::checkExistValue($_POST, [ 'id', 'name' ]);
 
-	// id check
-	if (!Text::allowString($_POST['id']))
-	{
-		throw new Exception('`id` can be used only in numbers and English.', 204);
-	}
+  // check `id`
+  if (!Text::allowString($_POST['id']))
+  {
+    throw new Exception(Message::make('error.onlyKeywordType', 'id'));
+  }
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
 
-	// check id
-	$cnt = $model->getCount((object)[
-		'table' => 'apps',
-		'where' => "id LIKE '$_POST[id]'",
-	]);
-	if (!!$cnt->data)
-	{
-		throw new Exception('The same name `id` is registered.', 204);
-	}
+  // check id
+  $cnt = $this->model->getCount((object)[
+    'table' => 'apps',
+    'where' => "id LIKE '$_POST[id]'",
+  ]);
+  if (!!$cnt->data)
+  {
+    throw new Exception(Message::make('error.checkSame', 'id'));
+  }
 
-	// set output
-	try
-	{
-		$output = Controller::add((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => 'apps',
-			'data' => (object)[
-				'srl' => null,
-				'user_srl' => (int)$token->data->user_srl,
-				'id' => $_POST['id'],
-				'name' => $_POST['name'],
-				'description' => $_POST['description'],
-				'regdate' => date('Y-m-d H:i:s'),
-			]
-		]);
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('Failed add app', 204);
-	}
+  // set output
+  $output = Controller::add((object)[
+    'model' => $this->model,
+    'table' => 'apps',
+    'data' => (object)[
+      'srl' => null,
+      'user_srl' => (int)$token->data->user_srl,
+      'id' => $_POST['id'],
+      'name' => $_POST['name'],
+      'description' => $_POST['description'],
+      'regdate' => date('Y-m-d H:i:s'),
+    ]
+  ]);
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

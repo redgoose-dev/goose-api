@@ -12,45 +12,41 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'json';
-	$srl = (int)$this->params['srl'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 204);
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'json',
+    'srl' => $srl,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // remove item
+  $output = Controller::delete((object)[
+    'model' => $this->model,
+    'table' => 'json',
+    'srl' => $srl,
+  ]);
 
-	// remove item
-	$output = Controller::delete((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // set output
+  if ($token) $output->_token = $token->jwt;
 
-	// set output
-	if ($token) $output->_token = $token->jwt;
+  // disconnect db
+  $this->model->disconnect();
 
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

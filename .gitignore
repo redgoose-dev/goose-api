@@ -1,19 +1,16 @@
 # DIRECTORY
-
 .idea/
 vendor/
 data/
 .AppleDouble/
 
-
 # FILES
-
 .DS_Store
+._.DS_Store
 .env
 
 
 # ETC
-
 ## user resource
 usr/
 

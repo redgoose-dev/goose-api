@@ -18,52 +18,50 @@ try
 	// check `id`
 	if (!Text::allowString($_POST['id']))
 	{
-		throw new Exception('`id` can be used only in numbers and English.');
+    throw new Exception(Message::make('error.onlyKeywordType', 'id'));
 	}
 
-	// check,set json
+	// check and set json
 	$json = null;
 	if (isset($_POST['json']))
 	{
 		$json = json_decode(urldecode($_POST['json']), false);
 		if (!$json)
 		{
-			throw new Exception('The json syntax is incorrect.', 204);
+			throw new Exception(Message::make('error.json'));
 		}
 		$json = urlencode(json_encode($json, false));
 	}
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
 	// check authorization
-	$token = Auth::checkAuthorization($model, 'user');
+	$token = Auth::checkAuthorization($this->model, 'user');
 
 	// check app
-	$cnt = $model->getCount((object)[
+	$cnt = $this->model->getCount((object)[
 		'table' => 'apps',
-		'where' => 'srl='.(int)$_POST['app_srl']
+		'where' => 'srl='.(int)$_POST['app_srl'],
 	]);
 	if (!$cnt->data)
 	{
-		throw new Exception('There is no `apps` data.', 204);
+		throw new Exception(Message::make('error.noData', 'apps'));
 	}
 
 	// check duplicate nest id
-	$cnt = $model->getCount((object)[
+	$cnt = $this->model->getCount((object)[
 		'table' => 'nests',
-		'where' => 'id="'.trim($_POST['id']).'"'
+		'where' => 'id="'.trim($_POST['id']).'"',
 	]);
 	if ($cnt->data)
 	{
-		throw new Exception('There is a duplicate `id`.', 204);
+		throw new Exception(Message::make('error.duplicate', 'id'));
 	}
 
 	// set output
 	$output = Controller::add((object)[
-		'goose' => $this,
-		'model' => $model,
+		'model' => $this->model,
 		'table' => 'nests',
 		'data' => (object)[
 			'srl' => null,
@@ -80,14 +78,14 @@ try
 	// set token
 	if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
 	// output data
 	Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
+  $this->model->disconnect();
 	Error::data($e->getMessage(), $e->getCode());
 }

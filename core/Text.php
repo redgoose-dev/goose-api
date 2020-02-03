@@ -56,4 +56,22 @@ class Text {
     return password_hash($str, PASSWORD_DEFAULT);
   }
 
+  /**
+   * printf
+   * `I'am a {0}` 같은 형식을 두번째 파라메터부터 값을 넣어주는 도구
+   *
+   * @param string $str
+   * @param array $args
+   * @return string
+   */
+  public static function printf($str, ...$args)
+  {
+    foreach ($args as $key=>$value)
+    {
+      $str = preg_replace("/\{{$key}\}/", $value, $str);
+    }
+    //$str = preg_replace("/{[0-9]}/", '', $str);
+    return $str;
+  }
+
 }

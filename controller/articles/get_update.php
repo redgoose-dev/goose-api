@@ -12,82 +12,83 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'articles';
-	$srl = (int)$this->params['srl'];
-	$type = $_GET['type'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
+  // check type
+  $type = $_GET['type'];
+  if (!($type === 'hit' || $type === 'star'))
+  {
+    throw new Exception(Message::make('error.notFound', 'type'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 500);
-	}
-	// check type
-	if (!($type === 'hit' || $type === 'star'))
-	{
-		throw new Exception('Not found type', 500);
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'articles',
+    'srl' => $srl,
+    'useStrict' => true,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-		'useStrict' => true,
-	]);
+  // get article
+  $article = $this->model->getItem((object)[
+    'table' => 'articles',
+    'field' => 'srl,hit,star',
+    'where' => 'srl='.$srl,
+    'debug' => __DEBUG__,
+  ]);
+  if (!$article->data)
+  {
+    throw new Exception(Message::make('error.noData', 'article'), 404);
+  }
 
-	// get article
-	$article = $model->getItem((object)[
-		'table' => $tableName,
-		'field' => 'srl,hit,star',
-		'where' => 'srl='.$srl,
-		'debug' => true,
-	]);
+  // set data
+  $data = [];
+  switch ($type)
+  {
+    case 'hit':
+      $data[] = 'hit='.((int)$article->data->hit + 1);
+      break;
+    case 'star':
+      $data[] = 'star='.((int)$article->data->star + 1);
+      break;
+  }
 
-	$data = [];
-	switch ($type)
-	{
-		case 'hit':
-			$data[] = 'hit='.((int)$article->data->hit + 1);
-			break;
-		case 'star':
-			$data[] = 'star='.((int)$article->data->star + 1);
-			break;
-	}
+  // set output
+  $output = Controller::edit((object)[
+    'model' => $this->model,
+    'table' => 'articles',
+    'srl' => $srl,
+    'data' => $data,
+  ]);
 
-	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-		'data' => $data,
-	]);
+  switch ($type)
+  {
+    case 'hit':
+      $output->data = (object)[ 'hit' => (int)$article->data->hit + 1 ];
+      break;
+    case 'star':
+      $output->data = (object)[ 'star' => (int)$article->data->star + 1 ];
+      break;
+  }
 
-	switch ($type)
-	{
-		case 'hit':
-			$output->data = (object)[ 'hit' => (int)$article->data->hit + 1 ];
-			break;
-		case 'star':
-			$output->data = (object)[ 'star' => (int)$article->data->star + 1 ];
-			break;
-	}
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // disconnect db
+  $this->model->disconnect();
 
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

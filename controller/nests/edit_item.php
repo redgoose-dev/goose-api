@@ -12,93 +12,79 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	$tableName = 'nests';
-	$srl = (int)$this->params['srl'];
+  // check and set srl
+  $srl = (int)$this->params['srl'];
+  if (!($srl && $srl > 0))
+  {
+    throw new Exception(Message::make('error.notFound', 'srl'));
+  }
 
-	// check srl
-	if (!($srl && $srl > 0))
-	{
-		throw new Exception('Not found srl', 204);
-	}
+  // check post values
+  Util::checkExistValue($_POST, [ 'id', 'name' ]);
 
-	// check post values
-	Util::checkExistValue($_POST, [ 'app_srl', 'id', 'name' ]);
+  // check `id`
+  if (!Text::allowString($_POST['id']))
+  {
+    throw new Exception(Message::make('error.onlyKeywordType', 'id'));
+  }
 
-	// check `id`
-	if (!Text::allowString($_POST['id']))
-	{
-		throw new Exception('`id` can be used only in numbers and English.');
-	}
+  // check and set json
+  $json = null;
+  if (isset($_POST['json']))
+  {
+    $json = json_decode(urldecode($_POST['json']), false);
+    if (!$json)
+    {
+      throw new Exception(Message::make('error.json'));
+    }
+    $json = urlencode(json_encode($json, false));
+  }
 
-	// check,set json
-	$json = null;
-	if (isset($_POST['json']))
-	{
-		$json = json_decode(urldecode($_POST['json']), false);
-		if (!$json)
-		{
-			throw new Exception('The json syntax is incorrect.', 204);
-		}
-		$json = urlencode(json_encode($json, false));
-	}
+  // connect db
+  $this->model->connect();
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // check access
+  $token = Controller::checkAccessItem((object)[
+    'model' => $this->model,
+    'table' => 'nests',
+    'srl' => $srl,
+  ]);
 
-	// check access
-	$token = Controller::checkAccessItem((object)[
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-	]);
+  // check duplicate nest id
+  $cnt = $this->model->getCount((object)[
+    'table' => 'nests',
+    'where' => 'id="'.trim($_POST['id']).'" and srl!='.$srl,
+  ]);
+  if ($cnt->data)
+  {
+    throw new Exception(Message::make('error.duplicate', 'id'));
+  }
 
-	// check app
-	$cnt = $model->getCount((object)[
-		'table' => 'apps',
-		'where' => 'srl='.(int)$_POST['app_srl']
-	]);
-	if (!$cnt->data)
-	{
-		throw new Exception('There is no `apps` data.', 204);
-	}
+  // set output
+  $output = Controller::edit((object)[
+    'model' => $this->model,
+    'table' => 'nests',
+    'srl' => $srl,
+    'data' => [
+      isset($_POST['app_srl']) ? "app_srl='$_POST[app_srl]'" : '',
+      isset($_POST['id']) ? "id='".trim($_POST['id'])."'" : '',
+      isset($_POST['name']) ? "name='".trim($_POST['name'])."'" : '',
+      isset($_POST['description']) ? "description='".trim($_POST['description'])."'" : '',
+      isset($_POST['json']) ? "json='$json'" : '',
+    ],
+  ]);
 
-	// check duplicate nest id
-	$cnt = $model->getCount((object)[
-		'table' => $tableName,
-		'where' => 'id="'.trim($_POST['id']).'" and srl!='.$srl,
-	]);
-	if ($cnt->data)
-	{
-		throw new Exception('There is a duplicate `id`.', 204);
-	}
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// set output
-	$output = Controller::edit((object)[
-		'goose' => $this,
-		'model' => $model,
-		'table' => $tableName,
-		'srl' => $srl,
-		'data' => [
-			$_POST['app_srl'] ? "app_srl='$_POST[app_srl]'" : '',
-			$_POST['id'] ? "id='".trim($_POST['id'])."'" : '',
-			$_POST['name'] ? "name='".trim($_POST['name'])."'" : '',
-			isset($_POST['description']) ? "description='".trim($_POST['description'])."'" : '',
-			$_POST['json'] ? "json='$json'" : '',
-		]
-	]);
+  // disconnect db
+  $this->model->disconnect();
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
-
-	// disconnect db
-	$model->disconnect();
-
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

@@ -7,76 +7,68 @@ if (!defined('__GOOSE__')) exit();
 /**
  * add user
  *
- * data params
- * - @param string email
- * - @param string name
- * - @param string password
- * - @param string password2
- * - @param int admin
- *
  * @var Goose $this
  */
 
 try
 {
-	// check post values
-	Util::checkExistValue($_POST, [ 'name', 'email', 'password' ]);
+  // check post values
+  Util::checkExistValue($_POST, [ 'name', 'email', 'password' ]);
 
-	// confirm match password
-	if ($_POST['password'] !== $_POST['password2'])
-	{
-		throw new Exception('Passwords must match.', 204);
-	}
+  // confirm match password
+  if ($_POST['password'] !== $_POST['password2'])
+  {
+    throw new Exception(Message::make('error.matchPassword'));
+  }
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($model, 'admin');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'admin');
 
-	// check email address
-	$cnt = $model->getCount((object)[
-		'table' => 'users',
-		'where' => 'email="'.$_POST['email'].'"'
-	]);
-	if (isset($cnt->data) && $cnt->data > 0)
-	{
-		throw new Exception('The email address already exists.', 204);
-	}
+  // check email address
+  $cnt = $this->model->getCount((object)[
+    'table' => 'users',
+    'where' => 'email="'.$_POST['email'].'"',
+  ]);
+  if (isset($cnt->data) && $cnt->data > 0)
+  {
+    throw new Exception(Message::make('error.existsValue', 'email address'));
+  }
 
-	try
-	{
-		// set output
-		$output = Controller::add((object)[
-			'goose' => $this,
-			'model' => $model,
-			'table' => 'users',
-			'data' => (object)[
-				'srl' => null,
-				'email' => $_POST['email'],
-				'name' => $_POST['name'],
-				'password' => Text::createPassword($_POST['password']),
-				'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
-				'regdate' => date('Y-m-d H:i:s')
-			]
-		]);
-	}
-	catch(Exception $e)
-	{
-		throw new Exception('Failed add user', 204);
-	}
+  // set output
+  try
+  {
+    $output = Controller::add((object)[
+      'model' => $this->model,
+      'table' => 'users',
+      'data' => (object)[
+        'srl' => null,
+        'email' => $_POST['email'],
+        'name' => $_POST['name'],
+        'password' => Text::createPassword($_POST['password']),
+        'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
+        'regdate' => date('Y-m-d H:i:s'),
+      ],
+    ]);
+  }
+  catch(Exception $e)
+  {
+    throw new Exception(Message::make('error.failedAdd', 'user'));
+  }
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
-	// output data
-	Output::data($output);
+  // output data
+  Output::data($output);
 }
 catch (Exception $e)
 {
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

@@ -7,45 +7,44 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get json
  *
- * url params
- * - @param string name
- *
  * @var Goose $this
  */
 
 try
 {
-	// set where
-	$where = '';
-	if ($name = Util::getParameter('name'))
-	{
-		$where .= ' and name LIKE \'%'.$name.'%\'';
-	}
+  // set where
+  $where = '';
+  if ($name = Util::getParameter('name'))
+  {
+    $where .= ' and name LIKE \'%'.$name.'%\'';
+  }
 
-	// set model
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check access
-	$token = Controller::checkAccessIndex($model, true);
-	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  // check access
+  $token = Controller::checkAccessIndex($this->model, true);
+  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
-	// output
-	$output = Controller::index((object)[
-		'goose' => $this,
-		'table' => 'json',
-		'where' => $where,
-		'json_field' => ['json'],
-	]);
+  // output
+  $output = Controller::index((object)[
+    'model' => $this->model,
+    'table' => 'json',
+    'where' => $where,
+    'json_field' => ['json'],
+  ]);
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
-	// output
-	Output::data($output);
+  // disconnect db
+  $this->model->disconnect();
+
+  // output
+  Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

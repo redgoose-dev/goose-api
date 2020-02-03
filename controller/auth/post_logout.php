@@ -14,65 +14,65 @@ if (!defined('__GOOSE__')) exit();
 
 try
 {
-	// set values
-	$output = (object)[];
-	$sign = explode('.', __TOKEN__)[2];
+  // set values
+  $output = (object)[];
+  $sign = explode('.', __TOKEN__)[2];
 
-	// get decode token
-	$jwt = Token::get(__TOKEN__);
+  // get decode token
+  $jwt = Token::get(__TOKEN__);
 
-	// if user token
-	if ($jwt->data->type !== 'user')
-	{
-		throw new Exception('This is not a user token.');
-	}
-	if (!$jwt->exp)
-	{
-		throw new Exception('Token without expiration time.');
-	}
+  // if user token
+  if ($jwt->data->type !== 'user')
+  {
+    throw new Exception(Message::make('msg.notUserToken'));
+  }
+  if (!$jwt->exp)
+  {
+    throw new Exception(Message::make('msg.tokenExpired'));
+  }
 
-	// make model and connect db
-	$model = new Model();
-	$model->connect();
+  // connect db
+  $this->model->connect();
 
-	// check blacklist token
-	$blacklistToken = $model->getCount((object)[
-		'table' => 'tokens',
-		'where' => 'token LIKE \''.$sign.'\''
-	]);
-	if ($blacklistToken->data)
-	{
-		throw new Exception('Blacklist has tokens.');
-	}
+  // check blacklist token
+  $blacklistToken = $this->model->getCount((object)[
+    'table' => 'tokens',
+    'where' => 'token LIKE \''.$sign.'\'',
+  ]);
+  if ($blacklistToken->data)
+  {
+    throw new Exception(Message::make('msg.blacklistTokens'));
+  }
 
-	// add token to blacklist
-	$model->add((object)[
-		'table' => 'tokens',
-		'data' => (object)[
-			'srl' => null,
-			'token' => $sign,
-			'expired' => $jwt->exp,
-		],
-	]);
+  // add token to blacklist
+  $this->model->add((object)[
+    'table' => 'tokens',
+    'data' => (object)[
+      'srl' => null,
+      'token' => $sign,
+      'expired' => $jwt->exp,
+      'regdate' => date('Y-m-d H:i:s'),
+    ],
+  ]);
 
-	// make new public token
-	$newToken = Token::make((object)[
-		'time' => true,
-		'exp' => false,
-	]);
+  // make new public token
+  $newToken = Token::make((object)[
+    'time' => true,
+    'exp' => false,
+  ]);
 
-	// set output
-	$output->code = 200;
-	$output->token = $newToken->token;
+  // set output
+  $output->code = 200;
+  $output->token = $newToken->token;
 
-	// disconnect db
-	$model->disconnect();
+  // disconnect db
+  $this->model->disconnect();
 
-	// output
-	Output::data($output);
+  // output
+  Output::data($output);
 }
 catch(Exception $e)
 {
-	if (isset($model)) $model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  $this->model->disconnect();
+  Error::data($e->getMessage(), $e->getCode());
 }

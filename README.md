@@ -15,18 +15,16 @@
 다음과 같은 환경을 구성하기 위하여 필요한 패키지들을 설치할 필요가 있습니다.
 
 - apache or nginx
-- php 5.6 or higher version
+- php 7.x or higher version
 - mysql
 - composer
 
 
 ## Documentation
 
-goose-api 설치에 관란 자세한 내용은 wiki에서 확인할 수 있습니다.
+goose-api 설치에 관란 자세한 내용은 [wiki](https://github.com/redgoose-dev/goose-api/wiki)에서 확인할 수 있습니다.
 
-https://github.com/redgoose-dev/goose-api/wiki
-
-docker를 통하여 설치할 수 있습니다. 자세하 내용은 다음 링크들으 참고하세요.
+`docker`를 통하여 설치할 수 있습니다. 자세하 내용은 다음 링크들을 참고하세요.
 
 - wiki: https://github.com/redgoose-dev/goose-api/wiki/Using-goose-api-on-docker
 - docker hub: https://hub.docker.com/r/redgoose/goose-api/

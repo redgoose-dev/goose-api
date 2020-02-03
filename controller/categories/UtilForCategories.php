@@ -1,16 +1,17 @@
 <?php
 namespace Controller\Categories;
+use Core;
 
 /**
  * util for categories
  */
 
-class Util {
+class UtilForCategories {
 
 	/**
 	 * extend article count
 	 *
-	 * @param \Core\Model $model
+	 * @param Core\Model $model
 	 * @param object $token
 	 * @param array $index
 	 * @return array
@@ -34,7 +35,7 @@ class Util {
 	/**
 	 * extend all item
 	 *
-	 * @param \Core\Model $model
+	 * @param Core\Model $model
 	 * @param object $token
 	 * @param array $index
 	 * @param int $nest_srl
@@ -51,7 +52,7 @@ class Util {
 		];
 
 		// get article count
-		if (\Core\Util::checkKeyInExtField('count_article'))
+		if (Core\Util::checkKeyInExtField('count_article'))
 		{
 			$where = $nest_srl ? 'nest_srl='.$nest_srl : '';
 			$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
@@ -71,7 +72,7 @@ class Util {
 	/**
 	 * extend none item
 	 *
-	 * @param \Core\Model $model
+	 * @param Core\Model $model
 	 * @param object $token
 	 * @param array $index
 	 * @param int $nest_srl
@@ -86,7 +87,7 @@ class Util {
 			'nest_srl' => $nest_srl,
 			'name' => 'none',
 		];
-		if (\Core\Util::checkKeyInExtField('count_article'))
+		if (Core\Util::checkKeyInExtField('count_article'))
 		{
 			$where = $nest_srl ? 'nest_srl='.$nest_srl : '';
 			$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
@@ -107,7 +108,7 @@ class Util {
 	 * extend item
 	 * 목록에 대한 확장기능
 	 *
-	 * @param \Core\Model $model
+	 * @param Core\Model $model
 	 * @param object $token
 	 * @param array $index
 	 * @param int $nest_srl
@@ -119,17 +120,17 @@ class Util {
 		if (!(isset($index) && count($index))) return [];
 
 		// get article count
-		if (\Core\Util::checkKeyInExtField('count_article'))
+		if (Core\Util::checkKeyInExtField('count_article'))
 		{
 			$index = self::extendArticleCountInItems($model, $token, $index);
 		}
 		// get all item
-		if (\Core\Util::checkKeyInExtField('item_all'))
+		if (Core\Util::checkKeyInExtField('item_all'))
 		{
 			$index = self::extendAllArticlesInItems($model, $token, $index, $nest_srl);
 		}
 		// get none category
-		if (\Core\Util::checkKeyInExtField('none'))
+		if (Core\Util::checkKeyInExtField('none'))
 		{
 			$index = self::extendNoneArticleInItems($model, $token, $index, $nest_srl);
 		}

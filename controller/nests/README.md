@@ -7,13 +7,14 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## get nests list
+
 - url: `/nests/`
 - method: GET
 
 사용하는 파라메터 목록
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | app | number | `1` | app srl |
 | id | string | `hello` | 고유 id값 |
 | name | string | `Hello` | name |
@@ -21,6 +22,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## get nest
+
 - url: `/nests/[n]/` (n:srl) or `/nests/id/[s]/` (s:id)
 - method: GET
 
@@ -28,18 +30,19 @@ article 들을 그루핑하는 역할을 합니다.
 `srl`번호로 사용할 수 있지만 `id` 이름으로 사용할 수 있다는것을 참고해주세요.
 
 | name | type | example | description |
-|:---:|:---:|---|---|
+|:----:|:----:|---------|-------------|
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
 ## add nest
+
 - url: `/nests/`
 - method: POST
 
 사용하는 body 항목
 
 | key | type | example | required | description |
-|:---:|:---:|---|:---:|---|
+|:---:|:----:|---------|:--------:|-------------|
 | app_srl | number | `1` | true | app srl |
 | id | string | `hello` | true | nest id |
 | name | string | `hello app` | true | name |
@@ -48,13 +51,14 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## edit nest
+
 - url: `/nests/[n]/edit/` (n:srl)
 - method: POST
 
 사용하는 body 항목
 
 | key | type | example | required | description |
-|:---:|:---:|---|:---:|---|
+|:---:|:----:|---------|:--------:|-------------|
 | app_srl | number | `1` | true | app srl |
 | id | string | `hello` | true | nest id |
 | name | string | `hello app` | true | name |
@@ -63,5 +67,6 @@ article 들을 그루핑하는 역할을 합니다.
 
 
 ## delete nest
+
 - url: `/nests/[n]/delete/` (n:srl)
 - method: POST

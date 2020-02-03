@@ -50,7 +50,7 @@ header('Content-Type: application/json,text/plane;charset=UTF-8');
 try
 {
   // set development
-  define('__DEBUG__', getenv('API_DEBUG') === 'true');
+  define('__DEBUG__', getenv('DEBUG') === 'true');
 
   // set error report
   if (__DEBUG__)
