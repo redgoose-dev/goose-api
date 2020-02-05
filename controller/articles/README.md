@@ -5,7 +5,7 @@
 공통되는 요소는 [Reference](https://github.com/redgoose-dev/goose-api/tree/master/controller#reference) 섹션을 참고해주세요.
 
 
-## get articles list
+## get articles
 
 - url: `/articles/`
 - method: GET

@@ -7,6 +7,7 @@
 
 
 ## get apps list
+
 - url: `/apps/`
 - method: GET
 
@@ -25,6 +26,7 @@
 
 
 ## get app
+
 - url: `/apps/[n]/` (n:srl)
 - method: GET
 
@@ -36,6 +38,7 @@
 
 
 ## add app
+
 - url: `/apps/`
 - method: POST
 
@@ -49,6 +52,7 @@
 
 
 ## edit app
+
 - url: `/apps/[n]/edit/` (n:srl)
 - method: POST
 
@@ -62,6 +66,7 @@
 
 
 ## delete app
+
 - url: `/apps/[n]/delete/` (n:srl)
 - method: POST
 

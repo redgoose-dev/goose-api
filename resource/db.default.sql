@@ -1,6 +1,5 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
-
 -- table `apps`
 CREATE TABLE `goose_apps` (
   `srl` tinyint(11) NOT NULL,
@@ -123,3 +122,16 @@ CREATE TABLE `goose_tokens` (
 
 ALTER TABLE `goose_tokens` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `token` (`token`);
 ALTER TABLE `goose_tokens` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
+
+
+-- table `comments`
+CREATE TABLE `goose_comments` (
+  `srl` int(11) NOT NULL,
+  `article_srl` int(11) DEFAULT NULL,
+  `user_srl` smallint(11) DEFAULT NULL,
+  `content` text,
+  `regdate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `goose_comments` ADD PRIMARY KEY (`srl`);
+ALTER TABLE `goose_comments` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;

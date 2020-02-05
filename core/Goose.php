@@ -2,7 +2,6 @@
 namespace Core;
 use Exception;
 
-
 /**
  * Goose
  * 인스톨이 된 상태에서 진행되는 행동에 관한 클래스.
@@ -14,7 +13,6 @@ use Exception;
  * @property Router router
  * @property string target
  * @property array params
- * @property array modules
  * @property Model model
  */
 
@@ -25,7 +23,6 @@ class Goose {
     $this->router = new Router();
     $this->target = null;
     $this->params = null;
-    $this->modules = ['apps', 'articles', 'categories', 'files', 'json', 'nests', 'users'];
     $this->model = null;
   }
 
@@ -40,13 +37,13 @@ class Goose {
       // check $target
       if (!$this->target)
       {
-        throw new Exception('Not found target', 404);
+        throw new Exception(Message::make('error.notFound', 'target'), 404);
       }
 
       // search controller
       if (!file_exists(__PATH__.'/controller/'.$this->target.'.php'))
       {
-        throw new Exception('Not found controller', 404);
+        throw new Exception(Message::make('error.notFound', 'controller'), 404);
       }
 
       require __PATH__.'/controller/'.$this->target.'.php';
@@ -70,7 +67,7 @@ class Goose {
     // check router match
     if (!$this->router->match)
     {
-      return Error::data('Not found match', 404);
+      return Error::data(Message::make('msg.notFoundMatch'), 404);
     }
 
     // set router values

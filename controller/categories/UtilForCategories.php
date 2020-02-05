@@ -1,6 +1,6 @@
 <?php
 namespace Controller\categories;
-use Core;
+use Core, Controller;
 
 /**
  * util for categories

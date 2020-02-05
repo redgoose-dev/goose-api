@@ -36,36 +36,32 @@ try
 	]);
 
 	// check app id
-	$check_id = $this->model->getCount((object)[
-		'table' => 'apps',
-		'where' => "id LIKE '$_POST[id]' and srl!=".$srl,
-	]);
-	if (!!$check_id->data)
-	{
-    throw new Exception(Message::make('error.checkSame', 'id'));
-	}
+  if (isset($_POST['id']))
+  {
+    $check_id = $this->model->getCount((object)[
+      'table' => 'apps',
+      'where' => "id LIKE '$_POST[id]' and srl!=".$srl,
+    ]);
+    if (!!$check_id->data)
+    {
+      throw new Exception(Message::make('error.checkSame', 'id'));
+    }
+  }
 
 	// check category
   // TODO: 이 주석이 뭐지??
 
 	// set output
-	try
-	{
-		$output = Controller\Main::edit((object)[
-			'model' => $this->model,
-			'table' => 'apps',
-			'srl' => $srl,
-			'data' => [
-				isset($_POST['id']) ? "id='$_POST[id]'" : '',
-				isset($_POST['name']) ? "name='$_POST[name]'" : '',
-				isset($_POST['description']) ? "description='$_POST[description]'" : '',
-			],
-		]);
-	}
-	catch(Exception $e)
-	{
-		throw new Exception(Message::make('error.failedEdit', 'app'));
-	}
+  $output = Controller\Main::edit((object)[
+    'model' => $this->model,
+    'table' => 'apps',
+    'srl' => $srl,
+    'data' => [
+      $_POST['id'] ? "id='$_POST[id]'" : '',
+      $_POST['name'] ? "name='$_POST[name]'" : '',
+      $_POST['description'] ? "description='$_POST[description]'" : '',
+    ],
+  ]);
 
 	// set token
 	if ($token) $output->_token = $token->jwt;

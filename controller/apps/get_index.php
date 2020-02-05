@@ -32,7 +32,10 @@ try
 
   // check access
   $token = Controller\Main::checkAccessIndex($this->model, true);
-  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  if (!$token->data->admin && $token->data->user_srl)
+  {
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
+  }
 
   // set output
   $output = Controller\Main::index((object)[

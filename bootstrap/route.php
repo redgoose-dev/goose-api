@@ -62,6 +62,13 @@ return [
   [ 'POST', '/users/[i:srl]/delete/', 'users/delete_item', 'deleteUser' ],
   [ 'POST', '/users/[i:srl]/change-password/', 'users/change_password', 'changePasswordUser' ],
 
+  // comments
+  [ 'GET', '/comments/', 'comments/get_index', 'getComments' ],
+  [ 'GET', '/comments/[i:srl]/', 'comments/get_item', 'getComment' ],
+  [ 'POST', '/comments/', 'comments/add_item', 'addComment' ],
+  [ 'POST', '/comments/[i:srl]/edit/', 'comments/edit_item', 'editComment' ],
+  [ 'POST', '/comments/[i:srl]/delete/', 'comments/delete_item', 'deleteComment' ],
+
   // auth
   [ 'POST', '/auth/login/', 'auth/post_login', 'postLogin' ],
   [ 'POST', '/auth/logout/', 'auth/post_logout', 'postLogout' ],

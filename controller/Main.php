@@ -388,7 +388,7 @@ class Main {
     // check data and user_srl
     if (!$token->data->admin && ((int)$token->data->user_srl !== (int)$res->data->user_srl))
     {
-      throw new Exception(Core\Message::make('msg.notAccessData'), 401);
+      throw new Exception(Core\Message::make('msg.notAccessItem'), 401);
     }
     return $token;
   }
