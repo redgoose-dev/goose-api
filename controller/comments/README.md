@@ -20,7 +20,11 @@
 | article | int | `1` | article_srl |
 | user | int | `1` | user_srl |
 | q | string | `toy` | 본문내용 키워드 검색 |
+| ext_field | string | `user_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
+### ext_field
+- `user_name`: 댓글 작성한 사람의 이름을 가져옵니다.
 
 
 ## get comment
@@ -34,9 +38,11 @@
 
 | name | type | example | description |
 |:----:|:----:|---------|-------------|
+| ext_field | string | `user_name` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
-사용하는 파라메터 목록
+### ext_field
+- `user_name`: 댓글 작성한 사람의 이름을 가져옵니다.
 
 
 ## add comment
@@ -52,6 +58,7 @@
 |:---:|:----:|---------|-------------|
 | article_srl | number | `1` | article srl 번호 |
 | content | string | `content body text` | 글 본문 |
+| get | number | `0,1` | 코멘트를 추가하고 그 데이터를 출력합니다. |
 
 
 ## edit comment

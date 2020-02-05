@@ -31,6 +31,15 @@ try
     'where' => $where,
   ]);
 
+  // get user name
+  if ($output->data && Util::checkKeyInExtField('user_name'))
+  {
+    $output->data->index = Controller\comments\UtilForComments::getUserName(
+      $this->model,
+      $output->data->index
+    );
+  }
+
   // set token
   if ($token) $output->_token = $token->jwt;
 

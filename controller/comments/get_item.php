@@ -37,6 +37,17 @@ try
     'srl' => $srl,
   ]);
 
+  // get user name
+  if ($output->data && Util::checkKeyInExtField('user_name'))
+  {
+    $user = $this->model->getItem((object)[
+      'table' => 'users',
+      'field' => 'name',
+      'where' => 'srl='.(int)$output->data->user_srl,
+    ]);
+    $output->data->user_name = $user->data->name;
+  }
+
   // set token
   if ($token) $output->_token = $token->jwt;
 

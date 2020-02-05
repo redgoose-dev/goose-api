@@ -32,4 +32,27 @@ class UtilForComments {
     }
   }
 
+  /**
+   * get user name
+   *
+   * @param Core\Model $model
+   * @param array $index
+   * @return array
+   * @throws Exception
+   */
+  public static function getUserName($model, $index)
+  {
+    if (!(isset($index) && count($index))) return [];
+    foreach ($index as $k=>$v)
+    {
+      $user = $model->getItem((object)[
+        'table' => 'users',
+        'field' => 'name',
+        'where' => 'srl='.(int)$v->user_srl,
+      ]);
+      $index[$k]->user_name = isset($user->data->name) ? $user->data->name : Core\Message::make('word.anonymous');
+    }
+    return $index;
+  }
+
 }

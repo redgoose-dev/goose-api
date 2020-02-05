@@ -35,5 +35,8 @@
     "notExist": "The value `{0}` does not exist",
     "noFiles": "There are no files in this path",
     "notFoundMatch": "Not found match."
+  },
+  "word": {
+    "anonymous": "anonymous"
   }
 }
