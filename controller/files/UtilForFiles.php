@@ -43,15 +43,16 @@ class UtilForFiles {
    * Remove attach files
    *
    * @param Core\Model $model
-   * @param int $srl
+   * @param int $target_srl
+   * @param int $module
    * @throws Exception
    */
-  public static function removeAttachFiles($model, $srl)
+  public static function removeAttachFiles($model, $target_srl, $module)
   {
     try
     {
       // set where
-      $where = 'article_srl='.$srl;
+      $where = 'target_srl='.$target_srl.' and module LIKE \''.$module.'\'';
 
       // remove files
       $files = $model->getItems((object)[
@@ -77,6 +78,29 @@ class UtilForFiles {
     catch(Exception $e)
     {
       throw new Exception($e->getMessage());
+    }
+  }
+
+  /**
+   * check target data
+   *
+   * @param Core\Model $model
+   * @param int $target_srl
+   * @param string $module
+   * @param object $token
+   * @throws Exception
+   */
+  public static function checkTargetData($model, $target_srl, $module, $token)
+  {
+    $where = 'srl='.$target_srl;
+    $where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+    $cnt = $model->getCount((object)[
+      'table' => $module,
+      'where' => $where,
+    ]);
+    if ($cnt->data <= 0)
+    {
+      throw new Exception(Core\Message::make('error.notInData', 'target_srl', $module));
     }
   }
 

@@ -33,7 +33,7 @@ try
   Controller\files\UtilForFiles::removeThumbnailImage($this->model, $srl);
 
 	// remove files
-  Controller\files\UtilForFiles::removeAttachFiles($this->model, $srl);
+  Controller\files\UtilForFiles::removeAttachFiles($this->model, $srl, 'articles');
 
 	// remove item
 	$output = Controller\Main::delete((object)[

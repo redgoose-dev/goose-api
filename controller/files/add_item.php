@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Controller;
 
 if (!defined('__GOOSE__')) exit();
 
@@ -25,33 +25,19 @@ try
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'user');
 
-  // check article_srl
-  $existArticleSrl = false;
-  if (isset($_POST['article_srl']) && (int)$_POST['article_srl'] > 0)
+  // check target_srl
+  if (isset($_POST['check']) && isset($_POST['target_srl']) && isset($_POST['module']))
   {
-    $cnt = $this->model->getCount((object)[
-      'table' => 'articles',
-      'where' => 'srl='.(int)$_POST['article_srl'],
-    ]);
-    if ($cnt->data <= 0)
-    {
-      throw new Exception(Message::make('error.notInData', 'srl', 'article'));
-    }
-    else
-    {
-      $existArticleSrl = true;
-    }
+    Controller\files\UtilForFiles::checkTargetData(
+      $this->model,
+      (int)$_POST['target_srl'],
+      $_POST['module'],
+      $token
+    );
   }
 
   // set ready
-  if (isset($_POST['ready']))
-  {
-    $ready = isset($_POST['ready']) ? (int)$_POST['ready'] : 0;
-  }
-  else
-  {
-    $ready = $existArticleSrl ? 0 : 1;
-  }
+  $ready = isset($_POST['ready']) ? 1 : 0;
 
   // string to array files
   if (!is_array($_FILES['files']['name']))
@@ -141,13 +127,14 @@ try
         'table' => 'files',
         'data' => (object)[
           'srl' => null,
-          'article_srl' => $_POST['article_srl'] ? (int)$_POST['article_srl'] : null,
+          'target_srl' => $_POST['target_srl'] ? (int)$_POST['target_srl'] : null,
           'user_srl' => (int)$token->data->user_srl,
           'name' => $file['name'][$k],
           'loc' => $path.'/'.$month.'/'.$file['name'][$k],
           'type' => $file['type'][$k],
           'size' => (int)$file['size'][$k],
           'regdate' => date('Y-m-d H:i:s'),
+          'module' => $_POST['module'] ? $_POST['module'] : null,
           'ready' => $ready,
         ],
       ]);

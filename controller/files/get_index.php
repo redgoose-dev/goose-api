@@ -7,12 +7,6 @@ if (!defined('__GOOSE__')) exit();
 /**
  * get files
  *
- * url params
- * - @param int article
- * - @param string name
- * - @param string type
- * - @param string ready
- *
  * @var Goose $this
  */
 
@@ -23,9 +17,9 @@ try
 
 	// set where
 	$where = '';
-	if ($article = $_GET['article'])
+	if ($target = $_GET['target'])
 	{
-		$where .= ' and article_srl='.$article;
+		$where .= ' and target_srl='.$target;
 	}
 	if ($name = $_GET['name'])
 	{
@@ -35,6 +29,10 @@ try
 	{
 		$where .= ' and type LIKE \'%'.$type.'%\'';
 	}
+  if ($module = $_GET['module'])
+  {
+    $where .= ' and module LIKE \''.$module.'\'';
+  }
 	if ($ready = $_GET['ready'])
 	{
 		switch ($ready)
@@ -50,7 +48,7 @@ try
 
 	// check access
 	$token = Controller\Main::checkAccessIndex($this->model, true);
-	$where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
 
 	// set output
 	$output = Controller\Main::index((object)[

@@ -29,17 +29,15 @@ try
     'srl' => $srl,
   ]);
 
-  // check article data
-  if (isset($_POST['article_srl']) && (int)$_POST['article_srl'] > 0)
+  // check target data
+  if (isset($_POST['check']) && isset($_POST['target_srl']) && isset($_POST['module']))
   {
-    $cnt = $this->model->getCount((object)[
-      'table' => 'articles',
-      'where' => 'srl='.(int)$_POST['article_srl'],
-    ]);
-    if (!$cnt->data)
-    {
-      throw new Exception(Message::make('error.notFound', 'article data'));
-    }
+    Controller\files\UtilForFiles::checkTargetData(
+      $this->model,
+      (int)$_POST['target_srl'],
+      $_POST['module'],
+      $token
+    );
   }
 
   // remove and upload file
@@ -118,7 +116,8 @@ try
 
   // update data
   $data = [];
-  if ($_POST['article_srl']) $data[] = "article_srl='$_POST[article_srl]'";
+  if ($_POST['target_srl']) $data[] = "target_srl='$_POST[target_srl]'";
+  if ($_POST['module']) $data[] = "module='$_POST[module]'";
   if (isset($_POST['ready'])) $data[] = "ready='$_POST[ready]'";
   if ($newFile)
   {

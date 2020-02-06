@@ -54,14 +54,15 @@ ALTER TABLE `goose_categories` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
 -- table `files`
 CREATE TABLE `goose_files` (
   `srl` int(11) NOT NULL,
-  `article_srl` int(11) DEFAULT NULL,
+  `target_srl` int(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(120) DEFAULT NULL,
   `loc` varchar(255) DEFAULT NULL,
   `type` varchar(40) DEFAULT NULL,
   `size` bigint(11) DEFAULT 0,
   `regdate` datetime DEFAULT NULL,
-  `ready` int(1) DEFAULT 0
+  `module` varchar(20) DEFAULT NULL,
+  `ready` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `goose_files` ADD PRIMARY KEY (`srl`);

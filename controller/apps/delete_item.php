@@ -42,7 +42,7 @@ try
       // remove thumbnail image
       Controller\files\UtilForFiles::removeThumbnailImage($this->model, $v->srl);
       // remove files
-      Controller\files\UtilForFiles::removeAttachFiles($this->model, $v->srl);
+      Controller\files\UtilForFiles::removeAttachFiles($this->model, $v->srl, 'articles');
     }
     // remove articles
     $this->model->delete((object)[
