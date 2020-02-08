@@ -35,17 +35,17 @@ try
   // get item
   $file = $this->model->getItem((object)[
     'table' => 'files',
-    'field' => 'loc',
+    'field' => 'path',
     'where' => 'srl='.$srl,
   ]);
 
   // check exist file
   if (
-    isset($file->data->loc) && $file->data->loc &&
-    file_exists(__PATH__.'/'.$file->data->loc)
+    isset($file->data->path) && $file->data->path &&
+    file_exists(__PATH__.'/'.$file->data->path)
   )
   {
-    unlink(__PATH__.'/'.$file->data->loc);
+    unlink(__PATH__.'/'.$file->data->path);
   }
 
   // remove item

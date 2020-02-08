@@ -57,7 +57,7 @@ CREATE TABLE `goose_files` (
   `target_srl` int(11) DEFAULT NULL,
   `user_srl` smallint(11) DEFAULT NULL,
   `name` varchar(120) DEFAULT NULL,
-  `loc` varchar(255) DEFAULT NULL,
+  `path` varchar(255) DEFAULT NULL,
   `type` varchar(40) DEFAULT NULL,
   `size` bigint(11) DEFAULT 0,
   `regdate` datetime DEFAULT NULL,

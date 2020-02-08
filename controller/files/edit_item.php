@@ -86,7 +86,7 @@ try
     // set new file
     $newFile = (object)[
       'name' => $file['name'],
-      'loc' => $path.'/'.$month.'/'.$file['name'],
+      'path' => $path.'/'.$month.'/'.$file['name'],
       'type' => $file['type'],
       'size' => $file['size'],
     ];
@@ -97,16 +97,16 @@ try
     // get item
     $file = $this->model->getItem((object)[
       'table' => 'files',
-      'field' => 'loc',
+      'field' => 'path',
       'where' => 'srl='.$srl,
     ]);
     // check exist file
     if (
-      isset($file->data->loc) && $file->data->loc &&
-      file_exists(__PATH__.'/'.$file->data->loc)
+      isset($file->data->path) && $file->data->path &&
+      file_exists(__PATH__.'/'.$file->data->path)
     )
     {
-      @unlink(__PATH__.'/'.$file->data->loc);
+      @unlink(__PATH__.'/'.$file->data->path);
     }
   }
   else
@@ -122,7 +122,7 @@ try
   if ($newFile)
   {
     $data[] = "name='$newFile->name'";
-    $data[] = "loc='$newFile->loc'";
+    $data[] = "path='$newFile->path'";
     $data[] = "type='$newFile->type'";
     $data[] = "size='$newFile->size'";
   }

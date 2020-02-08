@@ -130,7 +130,7 @@ try
           'target_srl' => $_POST['target_srl'] ? (int)$_POST['target_srl'] : null,
           'user_srl' => (int)$token->data->user_srl,
           'name' => $file['name'][$k],
-          'loc' => $path.'/'.$month.'/'.$file['name'][$k],
+          'path' => $path.'/'.$month.'/'.$file['name'][$k],
           'type' => $file['type'][$k],
           'size' => (int)$file['size'][$k],
           'regdate' => date('Y-m-d H:i:s'),
@@ -142,7 +142,7 @@ try
       // set result
       $result[] = (object)[
         'status' => 'success',
-        'loc' => $path.'/'.$month.'/'.$file['name'][$k],
+        'path' => $path.'/'.$month.'/'.$file['name'][$k],
         'name' => $file['name'][$k],
         'size' => $file['size'][$k],
         'type' => $file['type'][$k],

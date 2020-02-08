@@ -63,9 +63,9 @@ class UtilForFiles {
       {
         foreach ($files->data as $k=>$v)
         {
-          if (isset($v->loc) && $v->loc && file_exists(__PATH__.'/'.$v->loc))
+          if (isset($v->path) && $v->path && file_exists(__PATH__.'/'.$v->path))
           {
-            unlink(__PATH__.'/'.$v->loc);
+            unlink(__PATH__.'/'.$v->path);
           }
         }
         // remove db
