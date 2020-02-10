@@ -71,4 +71,34 @@ class Message {
     return Text::printf($value, ...$args);
   }
 
+  /**
+   * get error upload file message
+   *
+   * @param int $code
+   * @return string
+   */
+  static public function errorUploadFile($code)
+  {
+    switch ($code)
+    {
+      case UPLOAD_ERR_INI_SIZE:
+        return self::make('file.UPLOAD_ERR_INI_SIZE');
+      case UPLOAD_ERR_FORM_SIZE:
+        return self::make('file.UPLOAD_ERR_FORM_SIZE');
+      case UPLOAD_ERR_PARTIAL:
+        return self::make('file.UPLOAD_ERR_PARTIAL');
+      case UPLOAD_ERR_NO_FILE:
+        return self::make('file.UPLOAD_ERR_NO_FILE');
+      case UPLOAD_ERR_NO_TMP_DIR:
+        return self::make('file.UPLOAD_ERR_NO_TMP_DIR');
+      case UPLOAD_ERR_CANT_WRITE:
+        return self::make('file.UPLOAD_ERR_CANT_WRITE');
+      case UPLOAD_ERR_EXTENSION:
+        return self::make('file.UPLOAD_ERR_EXTENSION');
+      case UPLOAD_ERR_OK:
+      default:
+        return self::make('file.UPLOAD_ERR_OK');
+    }
+  }
+
 }

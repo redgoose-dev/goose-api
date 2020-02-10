@@ -77,7 +77,7 @@ try
     {
       $result[] = (object)[
         'status' => 'error',
-        'message' => $file['error'][$k],
+        'message' => Message::errorUploadFile($file['error'][$k]),
       ];
       continue;
     }

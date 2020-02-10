@@ -1,5 +1,15 @@
 {
   "error": {
     "notFound": "`{0}`이 없습니다."
+  },
+  "file": {
+    "UPLOAD_ERR_INI_SIZE": "`php.ini`에 설정된 최대 파일크기 초과",
+    "UPLOAD_ERR_FORM_SIZE": "HTML 폼에 설정된 최대 파일크기 초과",
+    "UPLOAD_ERR_PARTIAL": "파일의 일부만 업로드됨",
+    "UPLOAD_ERR_NO_FILE": "업로드할 파일이 없음",
+    "UPLOAD_ERR_NO_TMP_DIR": "웹서버에 임시폴더가 없음",
+    "UPLOAD_ERR_CANT_WRITE": "웹서버에 파일을 쓸 수 없음",
+    "UPLOAD_ERR_EXTENSION": "PHP 확장기능에 의한 업로드 중단",
+    "UPLOAD_ERR_OK": "업로드 정상 완료"
   }
 }
