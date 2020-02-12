@@ -36,6 +36,7 @@ return [
   [ 'POST', '/files/', 'files/add_item', 'addFile' ],
   [ 'POST', '/files/[i:srl]/edit/', 'files/edit_item', 'editFile' ],
   [ 'POST', '/files/[i:srl]/delete/', 'files/delete_item', 'deleteFile' ],
+  [ 'GET', '/files/get-files/[aa:dir]/', 'files/get_files', 'getFilesInDir' ],
   [ 'POST', '/files/upload-file/', 'files/upload_file', 'uploadFile' ],
   [ 'POST', '/files/remove-file/', 'files/remove_file', 'removeFile' ],
 

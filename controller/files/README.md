@@ -67,6 +67,14 @@
 | files | File |  | 업로드 파일 |
 
 
+## get files in directory
+
+디렉토리속에 파일들의 목록을 가져옵니다.
+
+- url: `/files/get-files/[dir]/` (dir: directory name)
+- method: GET
+
+
 ## delete file
 
 - url: `/files/[n]/delete/` (n:srl)

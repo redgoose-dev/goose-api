@@ -403,10 +403,6 @@ class Main {
    */
   public static function checkAccessIndex($model=null, $useStrict=false)
   {
-    if (!$model)
-    {
-      throw new Exception(Core\Message::make('error.noItem', 'model'));
-    }
     // `$op->useStrict`가 있는 상태에서 `strict=false` 이거나 $op->useStrict가 없으면 public
     $param = (($useStrict && !$_GET['strict']) || !$useStrict) ? '' : 'user';
     return Core\Auth::checkAuthorization($model, $param);

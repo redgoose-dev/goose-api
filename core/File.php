@@ -30,7 +30,7 @@ class File {
    * @param boolean $useRandomText
    * @return string
    */
-  public static function CheckFilename($name, $useRandomText=false)
+  public static function checkFilename($name, $useRandomText=false)
   {
     if (!$name) return null;
 
@@ -94,6 +94,45 @@ class File {
     {
       return $new;
     }
+  }
+
+  /**
+   * get directories
+   *
+   * @param string $path
+   * @return array
+   */
+  public static function getDirectories($path=null)
+  {
+    if (!$path) return [];
+    $result = [];
+    $dir_index = array_diff(scandir($path), ['.', '..', '.DS_Store']);
+    foreach($dir_index as $item)
+    {
+      if (is_dir($path.'/'.$item)) $result[] = $item;
+    }
+    return $result;
+  }
+
+  /**
+   * get files in directory
+   *
+   * @param string
+   * @return array
+   */
+  public static function getFiles($path)
+  {
+    $result = [];
+    $allowFileType = getenv('FILE_ALLOW_TYPE');
+    $allowFileType = explode(',', $allowFileType);
+    $items = array_diff(scandir($path), ['.', '..', '.DS_Store']);
+    foreach ($items as $item)
+    {
+      $ext = strtolower(substr(strrchr($item, '.'), 1));
+      if (!in_array($ext, $allowFileType)) continue;
+      $result[] = $item;
+    }
+    return $result;
   }
 
 }
