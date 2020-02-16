@@ -118,7 +118,6 @@ try
   $data = [];
   if ($_POST['target_srl']) $data[] = "target_srl='$_POST[target_srl]'";
   if ($_POST['module']) $data[] = "module='$_POST[module]'";
-  if (isset($_POST['ready'])) $data[] = "ready='$_POST[ready]'";
   if ($newFile)
   {
     $data[] = "name='$newFile->name'";

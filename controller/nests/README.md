@@ -20,6 +20,7 @@ article 들을 그루핑하는 역할을 합니다.
 | name | string | `Hello` | name |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 | ext_field | string | `count_articles` | 확장 필드 |
+| visible_type | string | `all` | `articles` 출력 타입을 정합니다. `ext_field=count_articles`값을 사용할때 이용됩니다. |
 
 ### ext_field
 - `count_articles`: 하위 `articles`갯수를 가져옵니다.

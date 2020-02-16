@@ -40,17 +40,11 @@ try
   {
     $where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
   }
-  if ($_GET['visible_type'] === 'all')
+  $where .= Controller\articles\UtilForArticles::getWhereType();
+  // `user_srl`값에 해당되는 값 가져오기
+  if (isset($token->data->user_srl) && !$token->data->admin)
   {
-    if (!$token->data->admin)
-    {
-      $user_srl = isset($token->data->user_srl) ? (int)$token->data->user_srl : '';
-      $where .= ' and user_srl=\''.$user_srl.'\'';
-    }
-  }
-  else
-  {
-    $where .= ' and type IS NULL'; // type 필드가 `null`일때 공개된 글입니다.
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
   }
 
   // set output

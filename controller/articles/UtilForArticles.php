@@ -98,4 +98,35 @@ class UtilForArticles {
     return $index;
   }
 
+  /**
+   * type 값 구분용 where 쿼리 만들기
+   *
+   * @return string
+   */
+  public static function getWhereType()
+  {
+    // 모든 글 가져오기
+    if ($_GET['visible_type'] === 'all')
+    {
+      return ' and (NOT type LIKE \'ready\' or type IS NULL)';
+    }
+    // 특정 type 글 가져오기
+    else if ($_GET['visible_type'])
+    {
+      switch ($_GET['visible_type'])
+      {
+        case 'ready':
+        case 'hidden':
+          return ' and type LIKE \''.$_GET['visible_type'].'\'';
+        default:
+          return ' and type IS NULL';
+      }
+    }
+    // 공개된 글만 가져오기
+    else
+    {
+      return ' and type IS NULL';
+    }
+  }
+
 }

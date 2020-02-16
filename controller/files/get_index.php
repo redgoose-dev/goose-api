@@ -15,6 +15,9 @@ try
   // connect db
   $this->model->connect();
 
+  // check access
+  $token = Controller\Main::checkAccessIndex($this->model, true);
+
 	// set where
 	$where = '';
 	if ($target = $_GET['target'])
@@ -33,22 +36,10 @@ try
   {
     $where .= ' and module LIKE \''.$module.'\'';
   }
-	if ($ready = $_GET['ready'])
-	{
-		switch ($ready)
-		{
-			case 'true':
-				$where .= ' and ready=1';
-				break;
-			case 'false':
-				$where .= ' and ready=0';
-				break;
-		}
-	}
-
-	// check access
-	$token = Controller\Main::checkAccessIndex($this->model, true);
-	$where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  if (!$token->data->admin)
+  {
+    $where .= isset($token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  }
 
 	// set output
 	$output = Controller\Main::index((object)[

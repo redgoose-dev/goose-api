@@ -36,27 +36,11 @@ try
   {
     $where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
   }
-  // 모든 글 가져오기
-  if ($_GET['visible_type'] === 'all')
+  $where .= Controller\articles\UtilForArticles::getWhereType();
+  // `user_srl`값에 해당되는 값 가져오기
+  if (isset($token->data->user_srl) && !$token->data->admin)
   {
-    // 관리자가 아닐경우 `type=NULL or type!=NULL and user_srl` 조건이 부합되는 쿼리
-    if (!$token->data->admin)
-    {
-      $user_srl = isset($token->data->user_srl) ? (int)$token->data->user_srl : '';
-      $checkUserSrl = $user_srl ? ' and user_srl=\''.$user_srl.'\'' : '';
-      $where .= ' and ((NOT type IS NULL and user_srl=\''.$user_srl.'\') or (type IS NULL'.$checkUserSrl.'))';
-    }
-  }
-  // 공개된 글 가져오기
-  else
-  {
-    // 관리자가 아니고 유저토큰인 경우라면 자신의 데이터만 가져오기
-    if (!$token->data->admin && isset($token->data->user_srl))
-    {
-      $where .= ' and user_srl='.(int)$token->data->user_srl;
-    }
-    // type 필드가 `NULL`일때 공개된 글입니다.
-    $where .= ' and type IS NULL';
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
   }
 
   // set output

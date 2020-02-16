@@ -18,6 +18,7 @@
 | name | string | `name` | 카테고리 이름 |
 | ext_field | string | `count_article` | 확장 필드 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| visible_type | string | `all` | `articles` 출력 타입을 정합니다. `ext_field=count_articles`값을 사용할때 이용됩니다. |
 
 `order=turn`를 활용하여 직접 변경한 순서대로 출력할 수 있습니다.
 

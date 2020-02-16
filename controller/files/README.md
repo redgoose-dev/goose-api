@@ -18,7 +18,6 @@
 | name | string | `filename` | filename |
 | type | string | `png` | file type |
 | module | string | `articles` | module name |
-| ready | string | `true,false` | 대기상태 |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
@@ -46,7 +45,6 @@
 |:---:|:----:|---------|-------------|
 | target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
 | module | string | `articles` | module name |
-| ready | string | `0,1` | 대기상태 |
 | check | string | `1` | `target_srl`의 실제값이 존재하는지 검사합니다. |
 | files | File |  | 업로드 파일 |
 
@@ -63,7 +61,6 @@
 |:---:|:----:|---------|-------------|
 | target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
 | module | string | `articles` | module name |
-| ready | string | `0,1` | 대기상태 |
 | files | File |  | 업로드 파일 |
 
 

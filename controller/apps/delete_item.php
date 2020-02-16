@@ -39,6 +39,11 @@ try
   {
     foreach($articles->data as $k=>$v)
     {
+      // remove comments
+      $this->model->delete((object)[
+        'table' => 'comments',
+        'where' => 'article_srl='.$v->srl,
+      ]);
       // remove thumbnail image
       Controller\files\UtilForFiles::removeThumbnailImage($this->model, $v->srl);
       // remove files

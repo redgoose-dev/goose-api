@@ -50,7 +50,8 @@ try
   {
     $output->data->index = Controller\nests\UtilForNests::getCountArticles(
       $this->model,
-      $output->data->index
+      $output->data->index,
+      $token
     );
   }
 

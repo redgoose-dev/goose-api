@@ -61,8 +61,7 @@ CREATE TABLE `goose_files` (
   `type` varchar(40) DEFAULT NULL,
   `size` bigint(11) DEFAULT 0,
   `regdate` datetime DEFAULT NULL,
-  `module` varchar(20) DEFAULT NULL,
-  `ready` tinyint(1) DEFAULT 0
+  `module` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `goose_files` ADD PRIMARY KEY (`srl`);

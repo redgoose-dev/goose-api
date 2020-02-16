@@ -13,7 +13,7 @@ if (!defined('__GOOSE__')) exit();
 try
 {
   // check post values
-  Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl', 'title', 'content' ]);
+  Util::checkExistValue($_POST, [ 'app_srl', 'nest_srl' ]);
 
   // check order date
   if ($_POST['order'] && !preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order']))

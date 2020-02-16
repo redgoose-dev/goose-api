@@ -36,9 +36,6 @@ try
     );
   }
 
-  // set ready
-  $ready = isset($_POST['ready']) ? 1 : 0;
-
   // string to array files
   if (!is_array($_FILES['files']['name']))
   {
@@ -135,7 +132,6 @@ try
           'size' => (int)$file['size'][$k],
           'regdate' => date('Y-m-d H:i:s'),
           'module' => $_POST['module'] ? $_POST['module'] : null,
-          'ready' => $ready,
         ],
       ]);
 
@@ -147,7 +143,6 @@ try
         'size' => $file['size'][$k],
         'type' => $file['type'][$k],
         'srl' => $this->model->getLastIndex(),
-        'ready' => $ready,
       ];
     }
     catch (Exception $e)
