@@ -23,7 +23,6 @@ class UtilForCategories {
       $cnt = $model->getCount((object)[
         'table' => 'articles',
         'where' => $where.' and category_srl='.(int)$v->srl,
-        'debug' => true,
       ]);
       $index[$k]->count_article = $cnt->data;
     }
