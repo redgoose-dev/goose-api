@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:19.04
 MAINTAINER redgoose <scripter@me.com>
 
 WORKDIR /goose
@@ -9,6 +9,8 @@ RUN apt-get -y -qq install nano net-tools
 # install php
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get -y -qq install software-properties-common
+RUN add-apt-repository ppa:ondrej/php
 RUN apt-get -y -qq install php7.4-cli php7.4-fpm php7.4-curl php7.4-mysql php7.4-mbstring
 
 # install composer
