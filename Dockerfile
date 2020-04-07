@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 MAINTAINER redgoose <scripter@me.com>
 
-WORKDIR /goose
+WORKDIR /goose-api
 
 RUN apt-get -qq update
 RUN apt-get -y -qq install curl git zip software-properties-common
