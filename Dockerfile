@@ -24,7 +24,7 @@ COPY ./ .
 
 # setting in project
 RUN composer install
-RUN ./script.sh ready
+RUN ./cmd.sh ready
 
 # play command
 CMD service php7.4-fpm start && php -S 0.0.0.0:8000 server.php
