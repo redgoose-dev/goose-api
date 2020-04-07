@@ -1,9 +1,7 @@
 #!/bin/bash
 
-
 # set port
 [[ -z "$2" ]] && port=8000 || port=$2
-
 
 # func / start server
 start() {
@@ -20,7 +18,6 @@ init-docker() {
   curl -O https://raw.githubusercontent.com/redgoose-dev/goose-api/master/docker-compose.yml
   mv .env.example .env
 }
-
 
 case "$1" in
   start)
