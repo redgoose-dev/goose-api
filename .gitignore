@@ -15,4 +15,5 @@ data/
 usr/
 
 ## custom controller
-controller/external
+controller/external/*
+!controller/external/.keep
