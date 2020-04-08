@@ -21,6 +21,7 @@ return [
   [ 'POST', '/articles/', 'articles/add_item', 'addArticle' ],
   [ 'POST', '/articles/[i:srl]/edit/', 'articles/edit_item', 'editArticle' ],
   [ 'POST', '/articles/[i:srl]/delete/', 'articles/delete_item', 'deleteArticle' ],
+  [ 'POST', '/articles/[i:srl]/change-nest/', 'articles/change_nest', 'changeNest' ],
 
   // categories
   [ 'GET', '/categories/', 'categories/get_index', 'getCategories' ],

@@ -7,6 +7,8 @@
 
 ## get articles
 
+여러개의 `article` 데이터들을 가져옵니다.
+
 - url: `/articles/`
 - method: GET
 
@@ -31,6 +33,8 @@
 
 ## get article
 
+하나의 `article` 데이터를 가져옵니다.
+
 - url: `/articles/[n]/` (n:srl)
 - method: GET
 
@@ -52,6 +56,8 @@
 
 
 ## add article
+
+하나의 `article` 데이터 하나를 추가합니다.
 
 - url: `/articles/`
 - method: POST
@@ -83,6 +89,8 @@
 
 
 ## edit article
+
+하나의 `article` 데이터를 편집합니다.
 
 - url: `/articles/[n]/edit/` (n:srl)
 - method: POST
@@ -117,11 +125,15 @@
 
 ## delete article
 
+하나의 `article` 데이터를 삭제합니다.
+
 - url: `/articles/[n]/delete/` (n:srl)
 - method: POST
 
 
 ## update hit|star
+
+`조회수`, `좋아요` 값을 올려주는 역할을 합니다.
 
 - url: `/articles/[n]/update/` (n:srl)
 - method: GET
@@ -132,3 +144,19 @@
 |:----:|:----:|---------|-------------|
 | type | string | `hit,star` | 조회수를 올릴건지 좋아요 카운트를 올릴건지 정합니다. |
 | strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
+
+## change nest
+
+선택한 article 데이터의 `nest_srl`을 바꿔줍니다.  
+바뀐 `nest_srl`에 의하여 `app_srl`, `category_srl`값도 변하게 됩니다.
+
+`nest_srl` 변경은 article 데이터에 큰 영향을 줄 수 있기 때문에 주의가 필요합니다.
+
+- url: `/articles/[n]/change-nest/` (n:srl)
+- method: POST
+
+| name | type | example | description |
+|:----:|:----:|---------|-------------|
+| nest_srl | number | 1 | (required) 바꿀 `nest`의 번호입니다. |
+| category_srl | number | 1 | 바꿀 `category_srl`의 값 |
