@@ -46,9 +46,20 @@ try
 		'json_field' => ['json'],
 	]);
 
+	// get articles count
   if ($output->data && Util::checkKeyInExtField('count_articles'))
   {
     $output->data->index = Controller\nests\UtilForNests::getCountArticles(
+      $this->model,
+      $output->data->index,
+      $token
+    );
+  }
+
+  // get app title
+  if ($output->data && Util::checkKeyInExtField('app_name'))
+  {
+    $foo = Controller\nests\UtilForNests::getAppName(
       $this->model,
       $output->data->index,
       $token

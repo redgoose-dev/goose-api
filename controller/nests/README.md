@@ -24,6 +24,7 @@ article 들을 그루핑하는 역할을 합니다.
 
 ### ext_field
 - `count_articles`: 하위 `articles`갯수를 가져옵니다.
+- `app_name`: `apps` 이름을 가져옵니다.
 
 
 ## get nest
