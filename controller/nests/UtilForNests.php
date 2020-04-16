@@ -50,7 +50,7 @@ class UtilForNests {
     {
       if ($v->app_srl)
       {
-        $index[$k]->app_title = $model->getItem((object)[
+        $index[$k]->app_name = $model->getItem((object)[
           'table' => 'apps',
           'field' => 'name',
           'where' => 'srl='.(int)$v->app_srl,
