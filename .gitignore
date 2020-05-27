@@ -8,6 +8,7 @@ data/
 .DS_Store
 ._.DS_Store
 .env
+composer.lock
 
 
 # ETC
