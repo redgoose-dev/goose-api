@@ -83,13 +83,13 @@ class Auth {
       $jwt = Token::get(__TOKEN__);
 
       // check url
-      if (getenv('PATH_URL') !== $jwt->url)
+      if ($_ENV['PATH_URL'] !== $jwt->url)
       {
         throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
       }
 
       // check token id
-      if (getenv('TOKEN_ID') !== $jwt->token_id)
+      if ($_ENV['TOKEN_ID'] !== $jwt->token_id)
       {
         throw new Exception('Not found `TOKEN_ID`');
       }

@@ -57,10 +57,10 @@ class Install {
    */
   static private function checkEnvValues()
   {
-    if (!getenv('SERVICE_NAME')) throw new Exception('The value `SERVICE_NAME` does not exist.');
-    if (!getenv('TOKEN_KEY')) throw new Exception('The value `TOKEN_KEY` does not exist.');
-    if (!getenv('TOKEN_ID')) throw new Exception('The value `TOKEN_ID` does not exist.');
-    if (!getenv('PATH_URL')) throw new Exception('The value `PATH_URL` does not exist.');
+    if (!$_ENV['SERVICE_NAME']) throw new Exception('The value `SERVICE_NAME` does not exist.');
+    if (!$_ENV['TOKEN_KEY']) throw new Exception('The value `TOKEN_KEY` does not exist.');
+    if (!$_ENV['TOKEN_ID']) throw new Exception('The value `TOKEN_ID` does not exist.');
+    if (!$_ENV['PATH_URL']) throw new Exception('The value `PATH_URL` does not exist.');
   }
 
   /**
@@ -182,9 +182,9 @@ class Install {
       }
 
       // set default timezone
-      if (getenv('TIMEZONE'))
+      if ($_ENV['TIMEZONE'])
       {
-        date_default_timezone_set(getenv('TIMEZONE'));
+        date_default_timezone_set($_ENV['TIMEZONE']);
       }
 
       // make tables
@@ -231,7 +231,7 @@ class Install {
       $out .= "Success install!\n";
       $out .= "\n";
       $out .= "* URL guide\n";
-      $out .= getenv('PATH_URL')."\n";
+      $out .= $_ENV['PATH_URL']."\n";
       $out .= "\n";
       $out .= "* Root account guide\n";
       $out .= "- e-mail : $defaultEmail\n";
