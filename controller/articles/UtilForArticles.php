@@ -116,7 +116,7 @@ class UtilForArticles {
       switch ($_GET['visible_type'])
       {
         case 'ready':
-        case 'hidden':
+        case 'private':
           return ' and type LIKE \''.$_GET['visible_type'].'\'';
         default:
           return ' and type IS NULL';
