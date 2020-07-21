@@ -66,10 +66,10 @@
 
 | key | type | example | description |
 |:---:|:----:|---------|-------------|
-| app_srl | number | `1` | app srl 번호 |
-| nest_srl | number | `1` | nest srl 번호 |
+| app_srl | number | `1` | (required) app srl 번호 |
+| nest_srl | number | `1` | (required) nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
-| type | string | null | 글 타입 ('private',null) |
+| type | string | `public` | 글 타입 ('public','private') |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | json 데이터 |
@@ -97,17 +97,18 @@
 
 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| app_srl | number | `1` | app srl 번호 |
-| nest_srl | number | `1` | nest srl 번호 |
-| category_srl | number | `1` | category srl 번호 |
-| type | string | null | 글 타입 ('private',null) |
-| title | string | `title name` | 글 제목 |
-| content | string | `content body text` | 글 본문 |
-| hit | number | `0` | 조회수 |
-| star | number | `0` | 좋아요 수 |
-| json | string | `{"foo", "bar"}` | 글 본문 |
+| key          | type   | value | example | description |
+|:------------:|:------:|-------|---------|-------------|
+| mode         | string | `add,edit` | `add` | 글 작성 방식 |
+| app_srl      | number |  | `1` | app srl 번호 |
+| nest_srl     | number |  | `1` | nest srl 번호 |
+| category_srl | number |  | `1` | category srl 번호 |
+| type         | string | `public,private` | `public` | 글 타입 |
+| title        | string |  | `title name` | 글 제목 |
+| content      | string |  | `content body text` | 글 본문 |
+| hit          | number |  | `0` | 조회수 |
+| star         | number |  | `0` | 좋아요 수 |
+| json         | string |  | `{"foo", "bar"}` | 글 본문 |
 
 - method: GET
 

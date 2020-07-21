@@ -108,7 +108,7 @@ class UtilForArticles {
     // 모든 글 가져오기
     if ($_GET['visible_type'] === 'all')
     {
-      return ' and (NOT type LIKE \'ready\' or type IS NULL)';
+      return ' and NOT type LIKE \'ready\'';
     }
     // 특정 type 글 가져오기
     else if ($_GET['visible_type'])
@@ -119,13 +119,13 @@ class UtilForArticles {
         case 'private':
           return ' and type LIKE \''.$_GET['visible_type'].'\'';
         default:
-          return ' and type IS NULL';
+          return ' and type LIKE \'public\'';
       }
     }
     // 공개된 글만 가져오기
     else
     {
-      return ' and type IS NULL';
+      return ' and type LIKE \'public\'';
     }
   }
 

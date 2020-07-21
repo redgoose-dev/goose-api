@@ -41,7 +41,7 @@ try
   if ($output->data && Util::checkKeyInExtField('count_article'))
   {
     $where = (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
-    $where .= ' and (NOT type LIKE \'ready\' or type IS NULL)';
+    $where .= ' and (NOT type LIKE \'ready\' or type=\'public\')';
     $cnt = $this->model->getCount((object)[
       'table' => 'articles',
       'where' => $where.' and category_srl='.(int)$output->data->srl,
