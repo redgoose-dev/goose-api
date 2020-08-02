@@ -27,7 +27,7 @@ function loadEnv()
 {
   try
   {
-    $dotenv = new Dotenv(__PATH__);
+    $dotenv = Dotenv::createImmutable(__PATH__);
     $dotenv->load();
   }
   catch(Exception $e)
