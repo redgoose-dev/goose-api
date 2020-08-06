@@ -33,7 +33,7 @@ try
   }
 
   // check authorization
-  $token = Auth::checkAuthorization($this->model, 'user');
+  $token = Auth::checkAuthorization($this->model, 'admin');
   if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
   {
     throw new Exception(Message::make('error.access'), 401);
