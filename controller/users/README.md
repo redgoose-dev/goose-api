@@ -16,7 +16,7 @@
 |:----:|:----:|---------|-------------|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `foo` | 이름 |
-| admin | number | `0,1` | 관리자 유무 |
+| admin | number | `2` | 관리자 유무 |
 
 
 ## get user
@@ -38,7 +38,7 @@
 | name | string | `name` | name |
 | password | string | `1234` | 비밀번호 |
 | password2 | string | `1234` | 비밀번호 확인 |
-| admin | number | `0,1` | 관리자 사용유무 |
+| admin | number | `2` | 관리자 유무 |
 
 
 ## edit user
@@ -52,7 +52,7 @@
 |:---:|:----:|---------|-------------|
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `name` | name |
-| admin | number | `0,1` | 관리자 사용유무 |
+| admin | number | `2` | 관리자 유무 |
 
 
 ## delete user
