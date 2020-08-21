@@ -83,7 +83,25 @@ class Auth {
       $jwt = Token::get(__TOKEN__);
 
       // check url
-      if ($_ENV['PATH_URL'] !== $jwt->url)
+      try
+      {
+        if (!$jwt->url)
+        {
+          throw new Exception('error');
+        }
+        if (preg_match('/^http/', $jwt->url))
+        {
+          if ($_ENV['PATH_URL'] !== $jwt->url)
+          {
+            throw new Exception('error');
+          }
+        }
+        else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['PATH_URL']))
+        {
+          throw new Exception('error');
+        }
+      }
+      catch(Exception $e)
       {
         throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
       }
