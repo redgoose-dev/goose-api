@@ -37,7 +37,7 @@ class Install {
    */
   static private function checkDirectoryPath($dir=null)
   {
-    $dir = $dir ? $dir : __PATH__;
+    $dir = $dir ? $dir : __API_PATH__;
     if (!is_dir($dir))
     {
       self::error("Directory does not exist. path: `$dir`");
@@ -71,21 +71,21 @@ class Install {
   static public function check()
   {
     // check `/data`
-    if (!is_dir(__PATH__.'/data'))
+    if (!is_dir(__API_PATH__.'/data'))
     {
       throw new Exception('The directory `/data` does not exist.');
     }
-    if (!is_writable(__PATH__.'/data'))
+    if (!is_writable(__API_PATH__.'/data'))
     {
       throw new Exception('The `/data` directory permission is invalid.');
     }
 
     // check `/data/upload`
-    if (!is_dir(__PATH__.'/data/upload'))
+    if (!is_dir(__API_PATH__.'/data/upload'))
     {
       throw new Exception('The directory `/data/upload` does not exist.');
     }
-    if (!is_writable(__PATH__.'/data/upload'))
+    if (!is_writable(__API_PATH__.'/data/upload'))
     {
       throw new Exception('The `/data/upload` directory permission is invalid.');
     }
@@ -102,12 +102,12 @@ class Install {
     self::checkDirectoryPath();
 
     // make data directory
-    if (!(is_dir(__PATH__.'/data/upload') && is_writable(__PATH__.'/data/upload')))
+    if (!(is_dir(__API_PATH__.'/data/upload') && is_writable(__API_PATH__.'/data/upload')))
     {
       try
       {
-        Util::createDirectory(__PATH__.'/data', 0707);
-        Util::createDirectory(__PATH__.'/data/upload', 0707);
+        Util::createDirectory(__API_PATH__.'/data', 0707);
+        Util::createDirectory(__API_PATH__.'/data/upload', 0707);
       }
       catch(Exception $e)
       {
@@ -116,7 +116,7 @@ class Install {
     }
 
     // check exist `.env`
-    if (file_exists(__PATH__.'/.env'))
+    if (file_exists(__API_PATH__.'/.env'))
     {
       echo "The `.env` file exists. Do you want to proceed? (y/N) ";
       $ask = fgets(STDIN);
@@ -128,7 +128,7 @@ class Install {
     }
 
     // copy .env file
-    if (!copy(__PATH__.'/resource/.env.example', __PATH__.'/.env'))
+    if (!copy(__API_PATH__.'/resource/.env.example', __API_PATH__.'/.env'))
     {
       self::error('Can not copy the `.env` file.');
     }
@@ -159,7 +159,7 @@ class Install {
       // set dotenv
       try
       {
-        $dotenv = Dotenv::createImmutable(__PATH__);
+        $dotenv = Dotenv::createImmutable(__API_PATH__);
         $dotenv->load();
       }
       catch(Exception $e)
@@ -176,7 +176,7 @@ class Install {
       if (!$model->db) throw new Exception('Not found db object');
 
       // make directories
-      if (!(is_dir(__PATH__.'/data/upload') && is_writable(__PATH__.'/data/upload')))
+      if (!(is_dir(__API_PATH__.'/data/upload') && is_writable(__API_PATH__.'/data/upload')))
       {
         throw new Exception('Not found `/data` or `/data/upload`');
       }
@@ -190,7 +190,7 @@ class Install {
       // make tables
       try
       {
-        $sql = file_get_contents(__PATH__.'/resource/db.default.sql');
+        $sql = file_get_contents(__API_PATH__.'/resource/db.default.sql');
         $qr = $model->db->exec($sql);
         if ($qr) throw new Exception('error');
       }

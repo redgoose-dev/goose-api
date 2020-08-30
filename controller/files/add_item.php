@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * add file
@@ -58,7 +58,7 @@ try
 
   // set path
   $path = 'data/upload/'.$subDir;
-  $path_absolute = __PATH__.'/'.$path;
+  $path_absolute = __API_PATH__.'/'.$path;
   $path_absolute_dest = $path_absolute.'/'.$month;
 
   // make sub directory

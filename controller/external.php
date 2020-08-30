@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * external controller router
@@ -11,7 +11,7 @@ if (!defined('__GOOSE__')) exit();
  */
 
 // set variables
-$path = __PATH__.'/controller/external/';
+$path = __API_PATH__.'/controller/external/';
 $filename = strtolower($_SERVER['REQUEST_METHOD']).'_'.$this->params['name'].'.php';
 
 try

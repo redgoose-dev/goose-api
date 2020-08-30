@@ -1,5 +1,5 @@
 <?php
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 return [
   // intro

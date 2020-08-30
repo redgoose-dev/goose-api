@@ -54,7 +54,7 @@ class Auth {
     $user = $op->model->getItem((object)[
       'table' => 'users',
       'where' => $where,
-      'debug' => __DEBUG__,
+      'debug' => __API_DEBUG__,
     ]);
     if (!$user->data) throw new Exception('No user in database', 401);
 
@@ -76,11 +76,11 @@ class Auth {
   {
     try
     {
-      if (!__TOKEN__)
+      if (!__API_TOKEN__)
       {
         throw new Exception('Not found `Authorization` in header');
       }
-      $jwt = Token::get(__TOKEN__);
+      $jwt = Token::get(__API_TOKEN__);
 
       // check url
       try
@@ -135,7 +135,7 @@ class Auth {
       $model = ($getModel) ? $getModel : self::getModel();
 
       // check blacklist token
-      $sign = explode('.', __TOKEN__)[2];
+      $sign = explode('.', __API_TOKEN__)[2];
       $blacklistToken = $model->getCount((object)[
         'table' => 'tokens',
         'where' => 'token LIKE \''.$sign.'\''

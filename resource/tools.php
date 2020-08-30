@@ -14,9 +14,9 @@ if (php_sapi_name() !== 'cli')
 require __DIR__.'/../vendor/autoload.php';
 
 // set static values
-define('__GOOSE__', true);
-define('__DEBUG__', true);
-define('__PATH__', realpath(__DIR__.'/../'));
+define('__API_GOOSE__', true);
+define('__API_DEBUG__', true);
+define('__API_PATH__', realpath(__DIR__.'/../'));
 
 /**
  * load env
@@ -27,7 +27,7 @@ function loadEnv()
 {
   try
   {
-    $dotenv = Dotenv::createImmutable(__PATH__);
+    $dotenv = Dotenv::createImmutable(__API_PATH__);
     $dotenv->load();
   }
   catch(Exception $e)

@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * clear tokens
@@ -26,7 +26,7 @@ try
 	$get_tokens = $this->model->getItems((object)[
 		'table' => 'tokens',
 		'field' => 'srl',
-    'debug' => __DEBUG__,
+    'debug' => __API_DEBUG__,
 	]);
 
 	foreach ($get_tokens->data as $k=>$v)
@@ -35,7 +35,7 @@ try
     $this->model->delete((object)[
 			'table' => 'tokens',
 			'where' => 'srl='.(int)$v->srl,
-			'debug' => __DEBUG__,
+			'debug' => __API_DEBUG__,
 		]);
 	}
 

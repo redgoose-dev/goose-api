@@ -58,7 +58,7 @@ class Main {
     $total = $model->getCount((object)[
       'table' => $op->table,
       'where' => $op->where,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     // set limit
@@ -89,7 +89,7 @@ class Main {
       'sort' => isset($op->sort) ? $op->sort : $_GET['sort'],
       'limit' => $limit,
       'where' => $op->where,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ];
     $items = $model->getItems($opts);
 
@@ -169,7 +169,7 @@ class Main {
       'field' => $_GET['field'],
       'json_field' => $op->json_field,
       'where' => ($op->srl ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : '')).$op->where,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
@@ -210,7 +210,7 @@ class Main {
     $result = $model->add((object)[
       'table' => $op->table,
       'data' => $op->data,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     // set output
@@ -249,7 +249,7 @@ class Main {
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
       'data' => $op->data,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     // set output
@@ -293,7 +293,7 @@ class Main {
     $result = $model->delete((object)[
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     // set output
@@ -334,7 +334,7 @@ class Main {
     $total = $model->getCount((object)[
       'table' => $op->table,
       'where' => $op->where,
-      'debug' => (isset($op->debug)) ? $op->debug : __DEBUG__,
+      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
 
     return $total->data;

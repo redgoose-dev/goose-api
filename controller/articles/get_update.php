@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * update hit or star from article
@@ -41,7 +41,7 @@ try
     'table' => 'articles',
     'field' => 'srl,hit,star',
     'where' => 'srl='.$srl,
-    'debug' => __DEBUG__,
+    'debug' => __API_DEBUG__,
   ]);
   if (!$article->data)
   {

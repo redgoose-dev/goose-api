@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * post logout
@@ -16,10 +16,10 @@ try
 {
   // set values
   $output = (object)[];
-  $sign = explode('.', __TOKEN__)[2];
+  $sign = explode('.', __API_TOKEN__)[2];
 
   // get decode token
-  $jwt = Token::get(__TOKEN__);
+  $jwt = Token::get(__API_TOKEN__);
 
   // if user token
   if ($jwt->data->type !== 'user')

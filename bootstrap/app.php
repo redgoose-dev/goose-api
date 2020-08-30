@@ -2,7 +2,7 @@
 namespace Core;
 use Dotenv\Dotenv, Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
@@ -10,7 +10,7 @@ require __DIR__.'/../vendor/autoload.php';
 // set dotenv
 try
 {
-  $dotenv = Dotenv::createImmutable(__PATH__);
+  $dotenv = Dotenv::createImmutable(__API_PATH__);
   $dotenv->load();
 }
 catch(Exception $e)
@@ -50,10 +50,10 @@ header('Content-Type: application/json,text/plane;charset=UTF-8');
 try
 {
   // set development
-  define('__DEBUG__', $_ENV['API_DEBUG'] === 'true');
+  define('__API_DEBUG__', $_ENV['API_DEBUG'] === 'true');
 
   // set error report
-  if (__DEBUG__)
+  if (__API_DEBUG__)
   {
     error_reporting(E_ALL & ~E_NOTICE);
   }
@@ -69,13 +69,13 @@ try
   }
 
   // set start time
-  if (__DEBUG__)
+  if (__API_DEBUG__)
   {
-    define('__START_TIME__', microtime(true));
+    define('__API_START_TIME__', microtime(true));
   }
 
   // set token
-  define('__TOKEN__', $_SERVER['HTTP_AUTHORIZATION']);
+  define('__API_TOKEN__', $_SERVER['HTTP_AUTHORIZATION']);
 
   // check install
   Install::check();

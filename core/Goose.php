@@ -41,12 +41,12 @@ class Goose {
       }
 
       // search controller
-      if (!file_exists(__PATH__.'/controller/'.$this->target.'.php'))
+      if (!file_exists(__API_PATH__.'/controller/'.$this->target.'.php'))
       {
         throw new Exception(Message::make('error.notFound', 'controller'), 404);
       }
 
-      require __PATH__.'/controller/'.$this->target.'.php';
+      require __API_PATH__.'/controller/'.$this->target.'.php';
     }
     catch(Exception $e)
     {

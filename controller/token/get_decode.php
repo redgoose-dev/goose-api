@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * decode token
@@ -22,7 +22,7 @@ try
   $token = Auth::checkAuthorization($this->model);
 
   // get decode token
-  $jwt = Token::get(__TOKEN__);
+  $jwt = Token::get(__API_TOKEN__);
 
   // set output
   $output->code = 200;

@@ -29,7 +29,7 @@ class UtilForFiles {
       {
         if (file_exists($article->data->json->thumbnail->path))
         {
-          unlink(__PATH__.'/'.$article->data->json->thumbnail->path);
+          unlink(__API_PATH__.'/'.$article->data->json->thumbnail->path);
         }
       }
     }
@@ -63,9 +63,9 @@ class UtilForFiles {
       {
         foreach ($files->data as $k=>$v)
         {
-          if (isset($v->path) && $v->path && file_exists(__PATH__.'/'.$v->path))
+          if (isset($v->path) && $v->path && file_exists(__API_PATH__.'/'.$v->path))
           {
-            unlink(__PATH__.'/'.$v->path);
+            unlink(__API_PATH__.'/'.$v->path);
           }
         }
         // remove db

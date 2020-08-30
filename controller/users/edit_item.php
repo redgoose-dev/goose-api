@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * edit user
@@ -45,7 +45,7 @@ try
     $cnt = $this->model->getCount((object)[
       'table' => 'users',
       'where' => 'email="'.$_POST['email'].'" and srl!='.$srl,
-      'debug' => __DEBUG__,
+      'debug' => __API_DEBUG__,
     ]);
     if (!!$cnt->data)
     {

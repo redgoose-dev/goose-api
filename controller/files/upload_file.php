@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * upload file
@@ -24,7 +24,7 @@ try
 
   // set path
   $path = 'data/upload/'.$subDir;
-  $path_absolute = __PATH__.'/'.$path;
+  $path_absolute = __API_PATH__.'/'.$path;
   $path_absolute_dest = $path_absolute.'/'.$month;
 
   // multipart upload

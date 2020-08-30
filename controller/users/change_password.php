@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * change password
@@ -68,6 +68,6 @@ try
 catch (Exception $e)
 {
   $this->model->disconnect();
-  $message = __DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
+  $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
   Error::data($message, $e->getCode());
 }

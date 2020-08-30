@@ -2,7 +2,7 @@
 namespace Core;
 use Exception;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * remove file
@@ -25,7 +25,7 @@ try
   }
 
   // set path
-  $path = __PATH__.'/'.$_POST['path'];
+  $path = __API_PATH__.'/'.$_POST['path'];
 
   // check exist file
   if (!file_exists($path))

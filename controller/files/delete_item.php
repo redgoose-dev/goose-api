@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * delete file
@@ -42,10 +42,10 @@ try
   // check exist file
   if (
     isset($file->data->path) && $file->data->path &&
-    file_exists(__PATH__.'/'.$file->data->path)
+    file_exists(__API_PATH__.'/'.$file->data->path)
   )
   {
-    unlink(__PATH__.'/'.$file->data->path);
+    unlink(__API_PATH__.'/'.$file->data->path);
   }
 
   // remove item

@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * get files in directory
@@ -24,7 +24,7 @@ try
 
   // set path
   $path = 'data/upload/'.$dir;
-  $path_absolute = __PATH__.'/'.$path;
+  $path_absolute = __API_PATH__.'/'.$path;
 
   // get directories
   $directories = File::getDirectories($path_absolute);

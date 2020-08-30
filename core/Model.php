@@ -104,8 +104,8 @@ class Model {
     }
     catch(PDOException $e)
     {
-      $message = (__DEBUG__) ? $e->getMessage() : 'Failed connect database';
-      $code = (__DEBUG__) ? $e->getCode() : 500;
+      $message = (__API_DEBUG__) ? $e->getMessage() : 'Failed connect database';
+      $code = (__API_DEBUG__) ? $e->getCode() : 500;
       throw new Exception($message, $code);
     }
   }

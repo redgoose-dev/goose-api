@@ -11,11 +11,11 @@ class Message {
    * @return object
    * @throws Exception
    */
-  static private function import($code)
+  static private function import($code='en')
   {
     try
     {
-      $json = file_get_contents(__PATH__.'/resource/message/'.$code.'.json');
+      $json = file_get_contents(__API_PATH__.'/resource/message/'.$code.'.json');
       return json_decode($json, true);
     }
     catch(Exception $e)
@@ -30,7 +30,7 @@ class Message {
    * @param array $path
    * @return string
    */
-  static private function find($path)
+  static private function find($path=null)
   {
     function block($tree, $path)
     {
@@ -65,7 +65,7 @@ class Message {
    * @param array $args
    * @return string
    */
-  static public function make($path, ...$args)
+  static public function make($path='', ...$args)
   {
     $value = self::find(explode('.', $path));
     return Text::printf($value, ...$args);
@@ -77,7 +77,7 @@ class Message {
    * @param int $code
    * @return string
    */
-  static public function errorUploadFile($code)
+  static public function errorUploadFile($code=null)
   {
     switch ($code)
     {

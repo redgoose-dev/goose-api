@@ -2,7 +2,7 @@
 namespace Core;
 use Exception, Controller;
 
-if (!defined('__GOOSE__')) exit();
+if (!defined('__API_GOOSE__')) exit();
 
 /**
  * edit file
@@ -52,7 +52,7 @@ try
     $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
     // set path
     $path = 'data/upload/'.$subDir;
-    $path_absolute = __PATH__.'/'.$path;
+    $path_absolute = __API_PATH__.'/'.$path;
     $path_absolute_dest = $path_absolute.'/'.$month;
     // make sub directory
     File::makeDirectory($path_absolute, 0707);
@@ -103,10 +103,10 @@ try
     // check exist file
     if (
       isset($file->data->path) && $file->data->path &&
-      file_exists(__PATH__.'/'.$file->data->path)
+      file_exists(__API_PATH__.'/'.$file->data->path)
     )
     {
-      @unlink(__PATH__.'/'.$file->data->path);
+      @unlink(__API_PATH__.'/'.$file->data->path);
     }
   }
   else

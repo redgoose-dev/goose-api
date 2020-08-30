@@ -7,11 +7,11 @@
  */
 
 
-// set keyword `__GOOSE__`
-define('__GOOSE__', true);
+// set keyword `__API_GOOSE__`
+define('__API_GOOSE__', true);
 
 // set path for global
-define('__PATH__', __DIR__);
+define('__API_PATH__', __DIR__);
 
 // bootstrap
 require 'bootstrap/app.php';
