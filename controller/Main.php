@@ -49,7 +49,7 @@ class Main {
     // get values
     $output = (object)[];
     $page = ($_GET['page']) ? (int)$_GET['page'] : 1;
-    $size = ($_GET['size']) ? (int)$_GET['size'] : $_ENV['DEFAULT_INDEX_SIZE'];
+    $size = ($_GET['size']) ? (int)$_GET['size'] : $_ENV['API_DEFAULT_INDEX_SIZE'];
 
     // set model
     $model = $op->model;
@@ -77,7 +77,7 @@ class Main {
     }
     else
     {
-      $limit = (int)$_ENV['DEFAULT_INDEX_SIZE'];
+      $limit = (int)$_ENV['API_DEFAULT_INDEX_SIZE'];
     }
 
     // get data

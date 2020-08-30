@@ -36,7 +36,7 @@ try
     if ($file['error']) throw new Exception('Error file');
 
     // check file size
-    if ((int)$file['size'] > (int)$_ENV['FILE_LIMIT_SIZE'])
+    if ((int)$file['size'] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       throw new Exception(Message::make('error.limitFileSize'));
     }
@@ -69,7 +69,7 @@ try
     $data = (object)[
       'name' => $file['name'],
       'path' => $path.'/'.$month.'/'.$file['name'],
-      'pathFull' => $_ENV['PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'],
+      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'],
       'type' => $file['type'],
       'size' => $file['size'],
     ];
@@ -99,7 +99,7 @@ try
     $imgSource = base64_decode($imgData);
 
     // check file size
-    if ((int)strlen($imgSource) > (int)$_ENV['FILE_LIMIT_SIZE'])
+    if ((int)strlen($imgSource) > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       throw new Exception(Message::make('error.limitFileSize'));
     }
@@ -133,7 +133,7 @@ try
     $data = (object)[
       'name' => $filename,
       'path' => $path.'/'.$month.'/'.$filename,
-      'pathFull' => $_ENV['PATH_URL'].'/'.$path.'/'.$month.'/'.$filename,
+      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$filename,
       'type' => $imgType,
       'size' => $uploadedFileSize,
     ];

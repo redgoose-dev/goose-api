@@ -49,7 +49,7 @@ try
     // set values
     $file = $_FILES['files'];
     $month = date('Ym');
-    $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['DEFAULT_UPLOAD_DIR_NAME'];
+    $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
     // set path
     $path = 'data/upload/'.$subDir;
     $path_absolute = __PATH__.'/'.$path;
@@ -64,7 +64,7 @@ try
       throw new Exception($file['error']);
     }
     // check file size
-    if ((int)$file['size'] > (int)$_ENV['FILE_LIMIT_SIZE'])
+    if ((int)$file['size'] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       throw new Exception(Message::make('error.limitFileSize'));
     }

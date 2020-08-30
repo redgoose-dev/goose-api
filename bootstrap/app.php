@@ -20,7 +20,7 @@ catch(Exception $e)
 
 // set header
 // check OPTIONS method
-if ($_ENV['USE_CHECK_OPTIONS_METHOD'] === 'true')
+if ($_ENV['API_USE_CHECK_OPTIONS_METHOD'] === 'true')
 {
   header('Access-Control-Allow-Origin: *');
   header('Access-Control-Allow-Headers: origin, content-type, accept, Authorization');
@@ -50,7 +50,7 @@ header('Content-Type: application/json,text/plane;charset=UTF-8');
 try
 {
   // set development
-  define('__DEBUG__', $_ENV['DEBUG'] === 'true');
+  define('__DEBUG__', $_ENV['API_DEBUG'] === 'true');
 
   // set error report
   if (__DEBUG__)
@@ -63,9 +63,9 @@ try
   }
 
   // set default timezone
-  if ($_ENV['TIMEZONE'])
+  if ($_ENV['API_TIMEZONE'])
   {
-    date_default_timezone_set($_ENV['TIMEZONE']);
+    date_default_timezone_set($_ENV['API_TIMEZONE']);
   }
 
   // set start time

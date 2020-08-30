@@ -96,9 +96,9 @@ class Model {
     try
     {
       $this->db = new PDO(
-        'mysql:dbname='.$_ENV['DB_DATABASE'].';host='.$_ENV['DB_HOST'].';port='.$_ENV['DB_PORT'],
-        $_ENV['DB_USERNAME'],
-        $_ENV['DB_PASSWORD']
+        'mysql:dbname='.$_ENV['API_DB_DATABASE'].';host='.$_ENV['API_DB_HOST'].';port='.$_ENV['API_DB_PORT'],
+        $_ENV['API_DB_USERNAME'],
+        $_ENV['API_DB_PASSWORD']
       );
       $this->action('set names utf8');
     }

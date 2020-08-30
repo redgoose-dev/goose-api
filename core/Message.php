@@ -44,8 +44,8 @@ class Message {
 
     try
     {
-      $value = block(self::import($_ENV['LANGUAGE']), $path);
-      if (!$value && $_ENV['LANGUAGE'] !== 'en')
+      $value = block(self::import($_ENV['API_LANGUAGE']), $path);
+      if (!$value && $_ENV['API_LANGUAGE'] !== 'en')
       {
         $value = block(self::import('en'), $path);
       }

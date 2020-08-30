@@ -35,7 +35,7 @@ class File {
     if (!$name) return null;
 
     // set allow file type
-    $allowFileType = $_ENV['FILE_ALLOW_TYPE'];
+    $allowFileType = $_ENV['API_FILE_ALLOW_TYPE'];
     $allowFileType = explode(',', $allowFileType);
 
     // set source
@@ -123,7 +123,7 @@ class File {
   public static function getFiles($path)
   {
     $result = [];
-    $allowFileType = $_ENV['FILE_ALLOW_TYPE'];
+    $allowFileType = $_ENV['API_FILE_ALLOW_TYPE'];
     $allowFileType = explode(',', $allowFileType);
     $items = array_diff(scandir($path), ['.', '..', '.DS_Store']);
     foreach ($items as $item)

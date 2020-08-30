@@ -91,25 +91,25 @@ class Auth {
         }
         if (preg_match('/^http/', $jwt->url))
         {
-          if ($_ENV['PATH_URL'] !== $jwt->url)
+          if ($_ENV['API_PATH_URL'] !== $jwt->url)
           {
             throw new Exception('error');
           }
         }
-        else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['PATH_URL']))
+        else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['API_PATH_URL']))
         {
           throw new Exception('error');
         }
       }
       catch(Exception $e)
       {
-        throw new Exception('The tokens "PATH_URL" and "PATH_URL" are different.');
+        throw new Exception('The tokens "API_PATH_URL" and "API_PATH_URL" are different.');
       }
 
       // check token id
-      if ($_ENV['TOKEN_ID'] !== $jwt->token_id)
+      if ($_ENV['API_TOKEN_ID'] !== $jwt->token_id)
       {
-        throw new Exception('Not found `TOKEN_ID`');
+        throw new Exception('Not found `API_TOKEN_ID`');
       }
 
       // check user type

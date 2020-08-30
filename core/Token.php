@@ -24,10 +24,10 @@ class Token {
     switch ($type)
     {
       case 'access':
-        return self::base_time * (int)$_ENV['TOKEN_ACCESS_DAY'];
+        return self::base_time * (int)$_ENV['API_TOKEN_ACCESS_DAY'];
 
       case 'refresh':
-        return self::base_time * (int)$_ENV['TOKEN_REFRESH_DAY'];
+        return self::base_time * (int)$_ENV['API_TOKEN_REFRESH_DAY'];
     }
     return 0;
   }
@@ -46,14 +46,14 @@ class Token {
 
     // set token
     $token = (object)[];
-    $token->iss = $_ENV['PATH_URL'];
-    $token->jti = $_ENV['TOKEN_ID'];
+    $token->iss = $_ENV['API_PATH_URL'];
+    $token->jti = $_ENV['API_TOKEN_ID'];
     if ($op->time) $token->iat = $now;
     if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');
     $token->data = (isset($op->data)) ? $op->data : (object)[ 'type' => 'anonymous' ];
 
     // make encode
-    $jwt = JWT::encode($token, $_ENV['TOKEN_KEY']);
+    $jwt = JWT::encode($token, $_ENV['API_TOKEN_KEY']);
 
     return (object)[
       'token' => $jwt,
@@ -72,7 +72,7 @@ class Token {
   {
     $output = (object)[];
     $decoded = null;
-    $key = $_ENV['TOKEN_KEY'];
+    $key = $_ENV['API_TOKEN_KEY'];
 
     try
     {

@@ -27,7 +27,7 @@ class Router {
   public function init()
   {
     $router = new AltoRouter();
-    $router->setBasePath($_ENV['PATH_RELATIVE']);
+    $router->setBasePath($_ENV['API_PATH_RELATIVE']);
     $router->addMatchTypes([ 'aa' => '[0-9A-Za-z_-]++' ]);
     $router->addRoutes($this->map());
     $match = $router->match();

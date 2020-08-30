@@ -54,7 +54,7 @@ try
   // set variable
   $result = [];
   $month = date('Ym');
-  $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['DEFAULT_UPLOAD_DIR_NAME'];
+  $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
 
   // set path
   $path = 'data/upload/'.$subDir;
@@ -80,7 +80,7 @@ try
     }
 
     // check file size
-    if ((int)$file['size'][$k] > (int)$_ENV['FILE_LIMIT_SIZE'])
+    if ((int)$file['size'][$k] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       $result[] = (object)[
         'status' => 'error',
