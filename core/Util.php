@@ -34,8 +34,8 @@ class Util {
    * check exist value
    * 배열속에 필수값이 들어있는지 확인
    *
-   * @param array|object $target 확인할 배열
-   * @param array $required 키값이 들어있는 배열
+   * @param array|object|null $target 확인할 배열
+   * @param array|null $required 키값이 들어있는 배열
    * @throws Exception
    */
   public static function checkExistValue($target=null, $required=null)
@@ -57,7 +57,7 @@ class Util {
   /**
    * create directory
    *
-   * @param string $path
+   * @param string|null $path
    * @param int $permission
    * @throws Exception
    */
@@ -79,8 +79,8 @@ class Util {
   /**
    * check key in the extra field
    *
-   * @param string $keyword
-   * @param string $field
+   * @param string|null $keyword
+   * @param string|null $field
    * @return boolean
    */
   public static function checkKeyInExtField($keyword=null, $field=null)
@@ -93,7 +93,7 @@ class Util {
   /**
    * convert fields
    *
-   * @param string $fields
+   * @param string|null $fields
    * @return string
    */
   public static function convertFields($fields=null)
@@ -110,4 +110,25 @@ class Util {
     return $result;
   }
 
+  /**
+   * get controller path
+   *
+   * @param string $target
+   * @return string|null
+   * @throws Exception
+   */
+  public static function getControllerPath($target='')
+  {
+    // check $target
+    if (!$target)
+    {
+      throw new Exception(Message::make('error.notFound', 'target'), 404);
+    }
+    // search controller
+    if (!file_exists(__API_PATH__.'/controller/'.$target.'.php'))
+    {
+      throw new Exception(Message::make('error.notFound', 'controller'), 404);
+    }
+    return __API_PATH__.'/controller/'.$target.'.php';
+  }
 }

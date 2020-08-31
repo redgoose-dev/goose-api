@@ -18,9 +18,9 @@ try
   $output->message = 'hello goose api';
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  Error::data($e->getMessage(), $e->getCode());
+  return Error::data($e->getMessage(), $e->getCode());
 }
