@@ -5,7 +5,7 @@
 
 ## decode
 
-- url: `/token/clear/`
+- url: `/token/decode/`
 - method: POST
 
 토큰속의 `data`필드에 있는 값들을 가져옵니다. 토큰이 어떤값이 들어있는지 확인하기 위하여 사용됩니다.

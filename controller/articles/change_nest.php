@@ -9,34 +9,29 @@ if (!defined('__API_GOOSE__')) exit();
  * 선택된 article 데이터에서 `nest_srl`값을 변경하는 역할을 한다.
  * 변경된 `nest_srl`값에의해 `category_srl`, `app_srl` 값이 변하게 된다.
  *
- * @uses $_POST['nest_srl'] required
- * @uses $_POST['category_srl']
- *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // check and set srl
   $srl = (int)$this->params['srl'];
-
   if (!($srl && $srl > 0))
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
   // check post values
-  Util::checkExistValue($_POST, [ 'nest_srl' ]);
+  Util::checkExistValue($this->post, ['nest_srl']);
 
   // set srl
-  $nest_srl = (int)$_POST['nest_srl'];
+  $nest_srl = (int)$this->post->nest_srl;
 
   // connect db
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
   ]);
@@ -70,10 +65,10 @@ try
   /**
    * set category_srl
    *
-   * `$_POST['category_srl']`값이 있으면 변경하기 위하여 실제로 데이터가 존재하는지 조회해본다.
-   * 데이터가 없거나 `$_POST['category_srl']`값이 없으면 `null`로 정의한다.
+   * `$this->post->category_srl`값이 있으면 변경하기 위하여 실제로 데이터가 존재하는지 조회해본다.
+   * 데이터가 없거나 `$this->post->category_srl`값이 없으면 `null`로 정의한다.
    */
-  $category_srl = isset($_POST['category_srl']) ? (int)$_POST['category_srl'] : null;
+  $category_srl = isset($this->post->category_srl) ? (int)$this->post->category_srl : null;
   if ($category_srl)
   {
     $cnt = $this->model->getCount((object)[
@@ -84,8 +79,7 @@ try
   }
 
   // set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'data' => [
@@ -103,10 +97,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

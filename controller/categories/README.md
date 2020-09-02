@@ -75,13 +75,16 @@
 - url: `/categories/[n]/delete/` (n:srl)
 - method: POST
 
+분류를 삭제합니다.
+
 
 ## sort categories
 
 - url: `/categories/sort/`
 - method: POST
 
-분류를 새로 정렬할때 사용합니다. 정렬할때 사용하는 body 항목입니다.
+분류를 새로 정렬할때 사용합니다. 정렬할때 사용하는 body 항목입니다.  
+turn 번호의 시작은 `1`입니다.
 
 | key | type | example | description |
 |:---:|:---:|---|---|

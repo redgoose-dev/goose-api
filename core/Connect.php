@@ -7,17 +7,25 @@ use Exception, AltoRouter;
  * Goose connect
  *
  * @property bool $loaded
+ * @property Model $model
+ * @property Router $router
+ * @property string $target
+ * @property array $params
+ * @property object $get
+ * @property object $post
+ * @property array $files
  */
 
 class Connect {
 
   private bool $loaded = false;
-  private Model $model;
   private Router $router;
-  private string $target;
-  private array $params;
-  private ?object $_get;
-  private ?object $_post;
+  public Model $model;
+  public string $target;
+  public array $params;
+  public ?object $get;
+  public ?object $post;
+  public ?array $files;
 
   /**
    * Initialize class
@@ -56,9 +64,10 @@ class Connect {
    * @param string $method get,post
    * @param string $path
    * @param object|null $query
-   * @return object
+   * @param array|null $files
+   * @return object|string
    */
-  public function request($method='get', $path='/', object $query=null)
+  public function request($method='get', $path='/', object $query=null, array $files=null)
   {
     try
     {
@@ -68,11 +77,15 @@ class Connect {
       {
         throw new Exception(Message::make('msg.notFoundMatch'), 404);
       }
+
+      // set router values
       $this->target = $this->router->match['target'];
       $this->params = $this->router->match['params'];
 
       // convert $_GET and $_POST
-      // TODO: `$_GET,$_POST`값들을 변환 작업해줘야함
+      $this->get = isset($query->get) ? $query->get : (object)[];
+      $this->post = isset($query->post) ? $query->post : (object)[];
+      $this->files = isset($query->files) ? $query->files : [];
 
       // set controller path
       $requirePath = Util::getControllerPath($this->target);

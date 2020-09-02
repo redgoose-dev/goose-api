@@ -14,6 +14,9 @@ use Exception;
  * @property string target
  * @property array params
  * @property Model model
+ * @property object $get
+ * @property object $post
+ * @property array $files
  */
 
 class Goose {
@@ -46,6 +49,11 @@ class Goose {
     // set router values
     $this->target = $this->router->match['target'];
     $this->params = $this->router->match['params'];
+
+    // convert $_GET and $_POST
+    $this->get = (object)$_GET;
+    $this->post = (object)$_POST;
+    $this->files = (array)$_FILES;
 
     // set model
     $this->model = new Model();

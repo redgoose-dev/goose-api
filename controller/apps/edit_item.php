@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit app
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -20,7 +20,7 @@ try
 	}
 
 	// id check
-	if ($_POST['id'] && !Text::allowString($_POST['id']))
+	if ($this->post->id && !Text::allowString($this->post->id))
 	{
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
 	}
@@ -29,18 +29,17 @@ try
   $this->model->connect();
 
 	// check access
-	$token = Controller\Main::checkAccessItem((object)[
-		'model' => $this->model,
+	$token = Controller\Main::checkAccessItem($this, (object)[
 		'table' => 'apps',
 		'srl' => $srl,
 	]);
 
 	// check app id
-  if (isset($_POST['id']))
+  if (isset($this->post->id))
   {
     $check_id = $this->model->getCount((object)[
       'table' => 'apps',
-      'where' => "id LIKE '$_POST[id]' and srl!=".$srl,
+      'where' => "id LIKE '{$this->post->id}' and srl!=".$srl,
     ]);
     if (!!$check_id->data)
     {
@@ -48,18 +47,14 @@ try
     }
   }
 
-	// check category
-  // TODO: 이 주석이 뭐지??
-
 	// set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
     'data' => [
-      $_POST['id'] ? "id='$_POST[id]'" : '',
-      $_POST['name'] ? "name='$_POST[name]'" : '',
-      $_POST['description'] ? "description='$_POST[description]'" : '',
+      $this->post->id ? "id='{$this->post->id}'" : '',
+      $this->post->name ? "name='{$this->post->name}'" : '',
+      $this->post->description ? "description='{$this->post->description}'" : '',
     ],
   ]);
 
@@ -70,10 +65,10 @@ try
   $this->model->disconnect();
 
 	// output data
-	Output::data($output);
+	return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+	return Error::data($e->getMessage(), $e->getCode());
 }

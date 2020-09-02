@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * delete user
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -29,7 +29,7 @@ try
   ]);
   if (!$cnt->data)
   {
-    throw new Exception(Message::make('error.noData'));
+    throw new Exception(Message::make('error.noData', 'user'));
   }
 
   // check authorization
@@ -40,8 +40,7 @@ try
   }
 
   // remove item
-  $output = Controller\Main::delete((object)[
-    'model' => $this->model,
+  $output = Controller\Main::delete($this, (object)[
     'table' => 'users',
     'srl' => $srl,
   ]);
@@ -53,10 +52,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

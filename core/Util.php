@@ -85,9 +85,9 @@ class Util {
    */
   public static function checkKeyInExtField($keyword=null, $field=null)
   {
-    if (!($field = $field ? $field : $_GET['ext_field']) || !$keyword) return false;
+    if (!($field && $keyword)) return false;
     $arr = explode(',', $field);
-    return (array_search($keyword, $arr) === false) ? false : true;
+    return !(array_search($keyword, $arr) === false);
   }
 
   /**

@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * delete app
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -23,8 +23,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
   ]);
@@ -35,7 +34,7 @@ try
     'field' => 'srl',
     'where' => 'app_srl='.$srl,
   ]);
-  if ($articles->data && count($articles->data))
+  if ($articles->data && count($articles->data) > 0)
   {
     foreach($articles->data as $k=>$v)
     {
@@ -45,9 +44,9 @@ try
         'where' => 'article_srl='.$v->srl,
       ]);
       // remove thumbnail image
-      Controller\files\UtilForFiles::removeThumbnailImage($this->model, $v->srl);
+      Controller\files\UtilForFiles::removeThumbnailImage($this, $v->srl);
       // remove files
-      Controller\files\UtilForFiles::removeAttachFiles($this->model, $v->srl, 'articles');
+      Controller\files\UtilForFiles::removeAttachFiles($this, $v->srl, 'articles');
     }
     // remove articles
     $this->model->delete((object)[
@@ -75,13 +74,12 @@ try
     // remove nests
     $this->model->delete((object)[
       'table' => 'nests',
-      'where' => 'app_srl='.$srl
+      'where' => 'app_srl='.$srl,
     ]);
   }
 
   // remove app
-  $output = Controller\Main::delete((object)[
-    'model' => $this->model,
+  $output = Controller\Main::delete($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
   ]);
@@ -93,10 +91,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

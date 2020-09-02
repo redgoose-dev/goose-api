@@ -7,16 +7,16 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * add app
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // check post values
-  Util::checkExistValue($_POST, [ 'id', 'name' ]);
+  Util::checkExistValue($this->post, [ 'id', 'name' ]);
 
   // check `id`
-  if (!Text::allowString($_POST['id']))
+  if (!Text::allowString($this->post->id))
   {
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
   }
@@ -30,7 +30,7 @@ try
   // check id
   $cnt = $this->model->getCount((object)[
     'table' => 'apps',
-    'where' => "id LIKE '$_POST[id]'",
+    'where' => "id LIKE '{$this->post->id}'",
   ]);
   if (!!$cnt->data)
   {
@@ -38,17 +38,16 @@ try
   }
 
   // set output
-  $output = Controller\Main::add((object)[
-    'model' => $this->model,
+  $output = Controller\Main::add($this, (object)[
     'table' => 'apps',
     'data' => (object)[
       'srl' => null,
       'user_srl' => (int)$token->data->user_srl,
-      'id' => $_POST['id'],
-      'name' => $_POST['name'],
-      'description' => $_POST['description'],
+      'id' => $this->post->id,
+      'name' => $this->post->name,
+      'description' => $this->post->description,
       'regdate' => date('Y-m-d H:i:s'),
-    ]
+    ],
   ]);
 
   // set token
@@ -58,10 +57,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

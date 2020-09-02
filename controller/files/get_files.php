@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get files in directory
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -20,13 +20,13 @@ try
   }
 
   // check access
-  $token = Controller\Main::checkAccessIndex(null, true);
+  $token = Controller\Main::checkAccessIndex($this, true);
 
   // set path
   $path = 'data/upload/'.$dir;
   $path_absolute = __API_PATH__.'/'.$path;
 
-  // get directories
+  // get directories (`YYYYMM`형식으로된 이름)
   $directories = File::getDirectories($path_absolute);
 
   // set tree
@@ -49,14 +49,14 @@ try
   }
   if (count($tree) > 0)
   {
-    switch ($_GET['order'])
+    switch ($this->get->order)
     {
       case 'name':
         usort($tree, function($a, $b) {
           return strcmp($a->name, $b->name);
         });
         usort($tree,function($a,$b) {
-          return ($_GET['sort'] && $_GET['sort'] === 'desc') ? $a->name < $b->name : $a->name > $b->name;
+          return ($this->get->sort && $this->get->sort === 'desc') ? $a->name < $b->name : $a->name > $b->name;
         });
         break;
       case 'date':
@@ -65,7 +65,7 @@ try
           return strcmp($a->date, $b->date);
         });
         usort($tree,function($a,$b) {
-          return ($_GET['sort'] && $_GET['sort'] === 'desc') ? $a->date < $b->date : $a->date > $b->date;
+          return ($this->get->sort && $this->get->sort === 'desc') ? $a->date < $b->date : $a->date > $b->date;
         });
         break;
     }
@@ -87,9 +87,9 @@ try
   if ($token) $output->_token = $token->jwt;
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  Error::data($e->getMessage(), $e->getCode());
+  return Error::data($e->getMessage(), $e->getCode());
 }

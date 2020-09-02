@@ -7,13 +7,13 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * add category
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // check post values
-  Util::checkExistValue($_POST, [ 'nest_srl', 'name' ]);
+  Util::checkExistValue($this->post, [ 'nest_srl', 'name' ]);
 
   // connect db
   $this->model->connect();
@@ -24,7 +24,7 @@ try
   // check exist nest
   $cnt = $this->model->getCount((object)[
     'table' => 'nests',
-    'where' => 'srl='.(int)$_POST['nest_srl'],
+    'where' => 'srl='.(int)$this->post->nest_srl,
   ]);
   if (!$cnt->data)
   {
@@ -35,22 +35,20 @@ try
   $max = $this->model->getMax((object)[
     'table' => 'categories',
     'field' => 'turn',
-    'where' => 'nest_srl='.(int)$_POST['nest_srl'],
-    'debug' => true,
+    'where' => 'nest_srl='.(int)$this->post->nest_srl,
   ]);
 
   // set output
   try
   {
-    $output = Controller\Main::add((object)[
-      'model' => $this->model,
+    $output = Controller\Main::add($this, (object)[
       'table' => 'categories',
       'data' => (object)[
         'srl' => null,
-        'nest_srl' => $_POST['nest_srl'],
+        'nest_srl' => $this->post->nest_srl,
         'user_srl' => (int)$token->data->user_srl,
         'turn' => isset($max->data) ? $max->data + 1 : 1,
-        'name' => $_POST['name'],
+        'name' => $this->post->name,
         'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);
@@ -67,10 +65,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

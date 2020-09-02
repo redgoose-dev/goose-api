@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit category
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -23,18 +23,17 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'categories',
     'srl' => $srl,
   ]);
 
   // check exist nest
-  if (isset($_POST['nest_srl']))
+  if (isset($this->post->nest_srl))
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'nests',
-      'where' => 'srl='.(int)$_POST['nest_srl'],
+      'where' => 'srl='.(int)$this->post->nest_srl,
     ]);
     if (!$cnt->data)
     {
@@ -45,13 +44,12 @@ try
   // set output
   try
   {
-    $output = Controller\Main::edit((object)[
-      'model' => $this->model,
+    $output = Controller\Main::edit($this, (object)[
       'table' => 'categories',
       'srl' => $srl,
       'data' => [
-        isset($_POST['nest_srl']) ? 'nest_srl='.(int)$_POST['nest_srl'] : '',
-        isset($_POST['name']) ? "name='$_POST[name]'" : '',
+        isset($this->post->nest_srl) ? 'nest_srl='.(int)$this->post->nest_srl : '',
+        isset($this->post->name) ? "name='{$this->post->name}'" : '',
       ],
     ]);
   }
@@ -67,10 +65,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * update hit or star from article
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -19,7 +19,7 @@ try
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
   // check type
-  $type = $_GET['type'];
+  $type = $this->get->type;
   if (!($type === 'hit' || $type === 'star'))
   {
     throw new Exception(Message::make('error.notFound', 'type'));
@@ -29,8 +29,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'useStrict' => true,
@@ -61,8 +60,7 @@ try
   }
 
   // set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'data' => $data,
@@ -85,10 +83,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

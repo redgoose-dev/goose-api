@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get articles
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -16,66 +16,66 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this->model, true);
+  $token = Controller\Main::checkAccessIndex($this, true);
 
   // set where
   $where = '';
-  if ($app = $_GET['app'])
+  if ($app = $this->get->app)
   {
     $where .= ' and app_srl='.$app;
   }
-  if ($nest = $_GET['nest'])
+  if ($nest = $this->get->nest)
   {
     $where .= ' and nest_srl='.$nest;
   }
-  if ($category = $_GET['category'])
+  if ($category = $this->get->category)
   {
-    $where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
+    $where .= (strtolower($category) === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
   }
-  if ($q = $_GET['q'])
+  if ($q = $this->get->q)
   {
     $where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
   }
-  $where .= Controller\articles\UtilForArticles::getWhereType();
+  $where .= Controller\articles\UtilForArticles::getWhereType($this->get->visible_type);
   // `user_srl`값에 해당되는 값 가져오기
-  if (isset($token->data->user_srl) && !$token->data->admin)
+  if ($token->data->admin && isset($this->get->user))
+  {
+    $where .= ' and user_srl='.(int)$this->get->user;
+  }
+  else if (isset($token->data->user_srl) && !$token->data->admin)
   {
     $where .= ' and user_srl='.(int)$token->data->user_srl;
   }
 
   // set output
-  $output = Controller\Main::index((object)[
-    'model' => $this->model,
+  $output = Controller\Main::index($this, (object)array_merge((array)$this->get, (array)[
     'table' => 'articles',
     'where' => $where,
-    'json_field' => ['json']
-  ]);
+    'json_field' => ['json'],
+    'object' => false,
+    'debug' => __API_DEBUG__,
+  ]));
 
   // get category name
-  if ($output->data && Util::checkKeyInExtField('category_name'))
+  if ($output->data && Util::checkKeyInExtField('category_name', $this->get->ext_field))
   {
     $output->data->index = Controller\articles\UtilForArticles::extendCategoryNameInItems(
-      $this->model,
+      $this,
       $output->data->index
     );
   }
-
   // get nest name
-  if ($output->data && Util::checkKeyInExtField('nest_name'))
+  if ($output->data && Util::checkKeyInExtField('nest_name', $this->get->ext_field))
   {
     $output->data->index = Controller\articles\UtilForArticles::extendNestNameInItems(
-      $this->model,
+      $this,
       $output->data->index
     );
   }
-
   // get next page
-  if ($output->data && Util::checkKeyInExtField('next_page'))
+  if ($output->data && Util::checkKeyInExtField('next_page', $this->get->ext_field))
   {
-    $nextPage = Controller\articles\UtilForArticles::getNextPage(
-      $this->model,
-      $where
-    );
+    $nextPage = Controller\articles\UtilForArticles::getNextPage($this, $where);
     if ($nextPage) $output->data->nextPage = $nextPage;
   }
 
@@ -86,10 +86,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

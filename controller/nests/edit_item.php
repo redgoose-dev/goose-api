@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit nest
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -20,19 +20,19 @@ try
   }
 
   // check post values
-  Util::checkExistValue($_POST, [ 'id', 'name' ]);
+//  Util::checkExistValue($this->post, [ 'id', 'name' ]);
 
   // check `id`
-  if (!Text::allowString($_POST['id']))
+  if (isset($this->post->id) && !Text::allowString($this->post->id))
   {
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
   }
 
   // check and set json
   $json = null;
-  if (isset($_POST['json']))
+  if (isset($this->post->json))
   {
-    $json = json_decode(urldecode($_POST['json']), false);
+    $json = json_decode(urldecode($this->post->json), false);
     if (!$json)
     {
       throw new Exception(Message::make('error.json'));
@@ -44,8 +44,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'nests',
     'srl' => $srl,
   ]);
@@ -53,25 +52,27 @@ try
   // check duplicate nest id
   $cnt = $this->model->getCount((object)[
     'table' => 'nests',
-    'where' => 'id="'.trim($_POST['id']).'" and srl!='.$srl,
+    'where' => 'id="'.trim($this->post->id).'" and srl!='.$srl,
   ]);
   if ($cnt->data)
   {
     throw new Exception(Message::make('error.duplicate', 'id'));
   }
 
+  // set data
+  $data = [];
+  if (isset($this->post->app_srl)) $data[] = "app_srl='{$this->post->app_srl}'";
+  if (isset($this->post->id)) $data[] = "id='".trim($this->post->id)."'";
+  if (isset($this->post->name)) $data[] = "name='".trim($this->post->name)."'";
+  if (isset($this->post->description)) $data[] = "description='".trim($this->post->description)."'";
+  if (isset($this->post->json)) $data[] = "json='$json'";
+  if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
+
   // set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'nests',
     'srl' => $srl,
-    'data' => [
-      isset($_POST['app_srl']) ? "app_srl='$_POST[app_srl]'" : '',
-      isset($_POST['id']) ? "id='".trim($_POST['id'])."'" : '',
-      isset($_POST['name']) ? "name='".trim($_POST['name'])."'" : '',
-      isset($_POST['description']) ? "description='".trim($_POST['description'])."'" : '',
-      isset($_POST['json']) ? "json='$json'" : '',
-    ],
+    'data' => $data,
   ]);
 
   // set token
@@ -81,10 +82,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get article
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -23,24 +23,19 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'useStrict' => true,
   ]);
 
   // set where
-  $where = ($app = $_GET['app']) ? ' and app_srl='.$app : '';
-  if ($nest = $_GET['nest'])
+  $where = ($app = $this->get->app) ? ' and app_srl='.$app : '';
+  if ($nest = $this->get->nest)
   {
     $where .= ' and nest_srl='.$nest;
   }
-  if ($category = $_GET['category'])
-  {
-    $where .= ($category === 'null') ? ' and category_srl IS NULL' : ' and category_srl='.$category;
-  }
-  $where .= Controller\articles\UtilForArticles::getWhereType();
+  $where .= Controller\articles\UtilForArticles::getWhereType($this->get->visible_type);
   // `user_srl`값에 해당되는 값 가져오기
   if (isset($token->data->user_srl) && !$token->data->admin)
   {
@@ -48,16 +43,16 @@ try
   }
 
   // set output
-  $output = Controller\Main::item((object)[
-    'model' => $this->model,
+  $output = Controller\Main::item($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'where' => $where,
+    'field' => $this->get->field,
     'json_field' => ['json'],
   ]);
 
   // get category name
-  if ($output->data && $output->data->category_srl && Util::checkKeyInExtField('category_name'))
+  if (isset($output->data->category_srl) && Util::checkKeyInExtField('category_name', $this->get->ext_field))
   {
     $category = $this->model->getItem((object)[
       'table' => 'categories',
@@ -69,9 +64,8 @@ try
       $output->data->category_name = $category->data->name;
     }
   }
-
   // get nest name
-  if ($output->data && $output->data->nest_srl && Util::checkKeyInExtField('nest_name'))
+  if (isset($output->data->nest_srl) && Util::checkKeyInExtField('nest_name', $this->get->ext_field))
   {
     $nest = $this->model->getItem((object)[
       'table' => 'nests',
@@ -84,14 +78,14 @@ try
   }
 
   // update hit
-  if ($_GET['hit'] && isset($output->data->hit))
+  if ($this->get->hit && isset($output->data->hit))
   {
     $output->data->hit = $output->data->hit + 1;
     $hit = (int)$output->data->hit;
     $this->model->edit((object)[
       'table' => 'articles',
       'where' => 'srl='.$srl,
-      'data' => [ "hit='$hit'" ]
+      'data' => [ "hit='$hit'" ],
     ]);
   }
 
@@ -102,10 +96,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

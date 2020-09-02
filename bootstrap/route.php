@@ -15,13 +15,12 @@ return [
 
   // articles
   [ 'GET', '/articles/', 'articles/get_index', 'getArticles' ],
-  [ 'GET', '/articles/extend/', 'articles/get_index-extend', 'getArticlesExtend' ],
   [ 'GET', '/articles/[i:srl]/', 'articles/get_item', 'getArticle' ],
-  [ 'GET', '/articles/[i:srl]/update/', 'articles/get_update', 'updateArticle' ],
   [ 'POST', '/articles/', 'articles/add_item', 'addArticle' ],
   [ 'POST', '/articles/[i:srl]/edit/', 'articles/edit_item', 'editArticle' ],
   [ 'POST', '/articles/[i:srl]/delete/', 'articles/delete_item', 'deleteArticle' ],
   [ 'POST', '/articles/[i:srl]/change-nest/', 'articles/change_nest', 'changeNest' ],
+  [ 'POST', '/articles/[i:srl]/update/', 'articles/update_item', 'updateArticle' ],
 
   // categories
   [ 'GET', '/categories/', 'categories/get_index', 'getCategories' ],

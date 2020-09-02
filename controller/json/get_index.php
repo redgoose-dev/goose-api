@@ -7,14 +7,14 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get json
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // set where
   $where = '';
-  if ($name = Util::getParameter('name'))
+  if ($name = $this->get->name)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
@@ -23,12 +23,14 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this->model, true);
-  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  $token = Controller\Main::checkAccessIndex($this, true);
+  if (isset($token->data->user_srl) && !$token->data->admin)
+  {
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
+  }
 
   // output
-  $output = Controller\Main::index((object)[
-    'model' => $this->model,
+  $output = Controller\Main::index($this, (object)[
     'table' => 'json',
     'where' => $where,
     'json_field' => ['json'],
@@ -41,10 +43,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

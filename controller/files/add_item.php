@@ -7,14 +7,13 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * add file
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
-  // set and check file
-  if ($_FILES['file']) $_FILES['files'] = $_FILES['file'];
-  if (!($_FILES['files'] && $_FILES['files']['name']))
+  // check file
+  if (!(isset($this->files['files']) && $this->files['files']['name']))
   {
     throw new Exception(Message::make('error.notFound', 'files'));
   }
@@ -26,35 +25,30 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // check target_srl
-  if (isset($_POST['check']) && isset($_POST['target_srl']) && isset($_POST['module']))
+  if (isset($this->post->check) && $this->post->check)
   {
-    Controller\files\UtilForFiles::checkTargetData(
-      $this->model,
-      (int)$_POST['target_srl'],
-      $_POST['module'],
-      $token
-    );
+    if (isset($this->post->target_srl) && isset($this->post->module))
+    {
+      Controller\files\UtilForFiles::checkTargetData(
+        $this,
+        (int)$this->post->target_srl,
+        $this->post->module,
+        $token
+      );
+    }
+    else
+    {
+      throw new Exception(Message::make('error.noItem', 'target_srl and module'));
+    }
   }
 
   // string to array files
-  if (!is_array($_FILES['files']['name']))
-  {
-    $file = [];
-    $file['name'] = [ $_FILES['files']['name'] ];
-    $file['type'] = [ $_FILES['files']['type'] ];
-    $file['tmp_name'] = [ $_FILES['files']['tmp_name'] ];
-    $file['size'] = [ $_FILES['files']['size'] ];
-    $file['error'] = [ $_FILES['files']['error'] ];
-  }
-  else
-  {
-    $file = $_FILES['files'];
-  }
+  $file = File::convertFilesValue($this->files['files']);
 
   // set variable
   $result = [];
   $month = date('Ym');
-  $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
+  $subDir = ($this->post->sub_dir) ? $this->post->sub_dir : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
 
   // set path
   $path = 'data/upload/'.$subDir;
@@ -124,14 +118,14 @@ try
         'table' => 'files',
         'data' => (object)[
           'srl' => null,
-          'target_srl' => $_POST['target_srl'] ? (int)$_POST['target_srl'] : null,
+          'target_srl' => $this->post->target_srl ? (int)$this->post->target_srl : null,
           'user_srl' => (int)$token->data->user_srl,
           'name' => $file['name'][$k],
           'path' => $path.'/'.$month.'/'.$file['name'][$k],
           'type' => $file['type'][$k],
           'size' => (int)$file['size'][$k],
           'regdate' => date('Y-m-d H:i:s'),
-          'module' => $_POST['module'] ? $_POST['module'] : null,
+          'module' => $this->post->module ? $this->post->module : null,
         ],
       ]);
 
@@ -172,10 +166,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

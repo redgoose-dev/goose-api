@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit comment
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -23,50 +23,51 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'comments',
     'srl' => $srl,
   ]);
 
   // check article
-  if ($_POST['article_srl'] && (int)$_POST['article_srl'] > 0)
+  if (isset($this->post->article_srl) && (int)$this->post->article_srl > 0)
   {
     Controller\comments\UtilForComments::checkData(
-      $this->model,
-      $_POST['article_srl'],
+      $this,
+      (int)$this->post->article_srl,
       'articles',
       'article_srl'
     );
   }
 
   // check user
-  if ($_POST['user_srl'] && (int)$_POST['user_srl'] > 0)
+  if (isset($this->post->user_srl) && (int)$this->post->user_srl > 0)
   {
     Controller\comments\UtilForComments::checkData(
-      $this->model,
-      $_POST['user_srl'],
+      $this,
+      (int)$this->post->user_srl,
       'users',
       'user_srl'
     );
   }
 
   // fix content
-  if (isset($_POST['content']))
+  if (isset($this->post->content))
   {
-    $_POST['content'] = addslashes($_POST['content']);
+    $this->post->content = addslashes($this->post->content);
   }
 
+  // set data
+  $data = [];
+  if (isset($this->post->article_srl)) $data[] = "`article_srl`={$this->post->article_srl}";
+  if (isset($this->post->user_srl)) $data[] = "`user_srl`=".$this->post->user_srl;
+  if (isset($this->post->content)) $data[] = "`content`='{$this->post->content}'";
+  if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
+
   // set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'comments',
     'srl' => $srl,
-    'data' => [
-      $_POST['article_srl'] ? "`article_srl`=".$_POST['article_srl'] : '',
-      ($_POST['user_srl']) ? "`user_srl`=".(int)$_POST['user_srl'] : '',
-      $_POST['content'] ? "`content`='$_POST[content]'" : '',
-    ],
+    'data' => $data,
   ]);
 
   // set token
@@ -76,10 +77,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

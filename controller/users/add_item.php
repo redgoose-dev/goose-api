@@ -7,16 +7,16 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * add user
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // check post values
-  Util::checkExistValue($_POST, [ 'name', 'email', 'password' ]);
+  Util::checkExistValue($this->post, [ 'name', 'email', 'password' ]);
 
   // confirm match password
-  if ($_POST['password'] !== $_POST['password2'])
+  if ($this->post->password !== $this->post->password2)
   {
     throw new Exception(Message::make('error.matchPassword'));
   }
@@ -30,7 +30,7 @@ try
   // check email address
   $cnt = $this->model->getCount((object)[
     'table' => 'users',
-    'where' => 'email="'.$_POST['email'].'"',
+    'where' => 'email="'.$this->post->email.'"',
   ]);
   if (isset($cnt->data) && $cnt->data > 0)
   {
@@ -40,15 +40,14 @@ try
   // set output
   try
   {
-    $output = Controller\Main::add((object)[
-      'model' => $this->model,
+    $output = Controller\Main::add($this, (object)[
       'table' => 'users',
       'data' => (object)[
         'srl' => null,
-        'email' => $_POST['email'],
-        'name' => $_POST['name'],
-        'password' => Text::createPassword($_POST['password']),
-        'admin' => !!$_POST['admin'] ? (int)$_POST['admin'] : 1,
+        'email' => $this->post->email,
+        'name' => $this->post->name,
+        'password' => Text::createPassword($this->post->password),
+        'admin' => isset($this->post->admin) ? (int)$this->post->admin : 1,
         'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);
@@ -65,10 +64,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

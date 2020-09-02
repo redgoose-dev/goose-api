@@ -11,36 +11,34 @@ class UtilForCategories {
   /**
    * extend article count
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param string $where
    * @param array $index
    * @return array
    */
-  public static function extendArticleCountInItems($model, $where, $index)
+  public static function extendArticleCountInItems($self, string $where, array $index)
   {
     foreach ($index as $k=>$v)
     {
-      $cnt = $model->getCount((object)[
+      $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where.' and category_srl='.(int)$v->srl,
       ]);
       $index[$k]->count_article = $cnt->data;
     }
-
     return $index;
   }
 
   /**
    * extend all item
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param string $where
    * @param array $index
    * @param int $nest_srl
-   *
    * @return array
    */
-  public static function extendAllArticlesInItems($model, $where, $index, $nest_srl)
+  public static function extendAllArticlesInItems($self, string $where, array $index, int $nest_srl)
   {
     // set item
     $item = (object)[
@@ -50,10 +48,10 @@ class UtilForCategories {
     ];
 
     // get article count
-    if (Core\Util::checkKeyInExtField('count_article'))
+    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
     {
       $where .= $nest_srl ? ' and nest_srl='.$nest_srl : '';
-      $cnt = $model->getCount((object)[
+      $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where,
       ]);
@@ -69,14 +67,13 @@ class UtilForCategories {
   /**
    * extend none item
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param string $where
    * @param array $index
    * @param int $nest_srl
-   *
    * @return array
    */
-  public static function extendNoneArticleInItems($model, $where, $index, $nest_srl)
+  public static function extendNoneArticleInItems($self, string $where, array $index, int $nest_srl)
   {
     // set item
     $item = (object)[
@@ -84,11 +81,11 @@ class UtilForCategories {
       'nest_srl' => $nest_srl,
       'name' => 'none',
     ];
-    if (Core\Util::checkKeyInExtField('count_article'))
+    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
     {
       $where .= $nest_srl ? ' and nest_srl='.$nest_srl : '';
       $where .= ' and category_srl IS NULL';
-      $cnt = $model->getCount((object)[
+      $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where,
       ]);
@@ -104,16 +101,15 @@ class UtilForCategories {
    * extend item
    * 목록에 대한 확장기능
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param object $token
    * @param array $index
    * @param int $nest_srl
-   *
    * @return array
    */
-  public static function extendItems($model, $token, $index, $nest_srl)
+  public static function extendItems($self, object $token, array $index, int $nest_srl)
   {
-    if (!(isset($index) && count($index))) return [];
+    if (!(isset($index) && count($index) > 0)) return [];
 
     // set common where
     $where = '';
@@ -124,19 +120,19 @@ class UtilForCategories {
     $where .= Controller\articles\UtilForArticles::getWhereType('all');
 
     // get article count
-    if (Core\Util::checkKeyInExtField('count_article'))
+    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
     {
-      $index = self::extendArticleCountInItems($model, $where, $index);
+      $index = self::extendArticleCountInItems($self, $where, $index);
     }
     // get all item
-    if (Core\Util::checkKeyInExtField('item_all'))
+    if (Core\Util::checkKeyInExtField('item_all', $self->get->ext_field))
     {
-      $index = self::extendAllArticlesInItems($model, $where, $index, $nest_srl);
+      $index = self::extendAllArticlesInItems($self, $where, $index, $nest_srl);
     }
     // get none category
-    if (Core\Util::checkKeyInExtField('none'))
+    if (Core\Util::checkKeyInExtField('none', $self->get->ext_field))
     {
-      $index = self::extendNoneArticleInItems($model, $where, $index, $nest_srl);
+      $index = self::extendNoneArticleInItems($self, $where, $index, $nest_srl);
     }
 
     return $index;

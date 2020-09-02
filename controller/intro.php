@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * hello word
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try

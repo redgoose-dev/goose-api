@@ -8,13 +8,13 @@ if (!defined('__API_GOOSE__')) exit();
  * post login
  * 이메일과 패스워드로 로그인 검사를 하고, 사용자 정보와 새로 만들어진 유저용 토큰을 출력한다.
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
   // check post values
-  Util::checkExistValue($_POST, [ 'email', 'password', 'host' ]);
+  Util::checkExistValue($this->post, [ 'email', 'password', 'host' ]);
 
   // connect db
   $this->model->connect();
@@ -29,8 +29,8 @@ try
   // get user data
   $user = Auth::login((object)[
     'model' => $this->model,
-    'email' => $_POST['email'],
-    'password' => $_POST['password'],
+    'email' => $this->post->email,
+    'password' => $this->post->password,
   ]);
 
   // make token
@@ -42,7 +42,7 @@ try
       'user_srl' => $user->srl,
       'email' => $user->email,
       'admin' => !!((int)$user->admin === 2),
-      'host' => $_POST['host'],
+      'host' => $this->post->host,
       'regdate' => date('Y-m-d H:i:s'),
     ],
   ]);
@@ -53,7 +53,7 @@ try
   $data->name = $user->name;
   $data->admin = !!((int)$user->admin === 2);
   $data->token = $jwt->token;
-  $data->host = $_POST['host'];
+  $data->host = $this->post->host;
 
   // disconnect db
   $this->model->disconnect();
@@ -63,10 +63,10 @@ try
   $output->data = $data;
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

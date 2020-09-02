@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get app
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -23,19 +23,17 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
     'useStrict' => true,
   ]);
 
   // set output
-  $output = Controller\Main::item((object)[
-    'model' => $this->model,
+  $output = Controller\Main::item($this, (object)array_merge((array)$this->get, (array)[
     'table' => 'apps',
     'srl' => $srl,
-  ]);
+  ]));
 
   // set token
   if ($token) $output->_token = $token->jwt;
@@ -44,10 +42,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

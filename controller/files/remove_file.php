@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * remove file
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -19,13 +19,13 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // check value
-  if (!$_POST['path'])
+  if (!$this->post->path)
   {
     throw new Exception(Message::make('msg.notExist', 'path'));
   }
 
   // set path
-  $path = __API_PATH__.'/'.$_POST['path'];
+  $path = __API_PATH__.'/'.$this->post->path;
 
   // check exist file
   if (!file_exists($path))
@@ -47,10 +47,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

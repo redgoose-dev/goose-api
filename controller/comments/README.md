@@ -57,6 +57,7 @@
 | key | type | example | description |
 |:---:|:----:|---------|-------------|
 | article_srl | number | `1` | article srl 번호 |
+| user_srl | number | `1` | 필요할때 임의로 넣을 수 있는 유저번호 |
 | content | string | `content body text` | 글 본문 |
 | get | number | `0,1` | 코멘트를 추가하고 그 데이터를 출력합니다. |
 

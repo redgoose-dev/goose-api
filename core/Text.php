@@ -11,10 +11,10 @@ class Text {
    * remove special characters
    * 특수문자를 제거한다.("-"와 "_"는 제외) 공백은 "_"로 변환한다.
    *
-   * @param array $str
+   * @param string $str
    * @return string
    */
-  public static function removeSpecialChar($str=null)
+  public static function removeSpecialChar(string $str='')
   {
     if (!$str) return '';
     $str = preg_replace("/\s+/", "_", $str);
@@ -26,20 +26,18 @@ class Text {
    * allow string
    *
    * @param string $value
-   * @param string $type
+   * @param string|null $type
    * @return boolean
    */
-  public static function allowString($value, $type=null)
+  public static function allowString(string $value, string $type='')
   {
     $value = trim($value);
     switch ($type)
     {
       case 'string':
         return !!preg_match("/^[a-zA-Z]+$/", $value);
-
       case 'number':
         return !!preg_match("/^[0-9]+$/", $value);
-
       default:
         return !!preg_match("/^[a-zA-Z0-9_-]+$/", $value);
     }
@@ -51,7 +49,7 @@ class Text {
    * @param string $str
    * @return string
    */
-  public static function createPassword($str)
+  public static function createPassword(string $str='')
   {
     return password_hash($str, PASSWORD_DEFAULT);
   }
@@ -64,13 +62,12 @@ class Text {
    * @param array $args
    * @return string
    */
-  public static function printf($str, ...$args)
+  public static function printf(string $str='', ...$args)
   {
     foreach ($args as $key=>$value)
     {
       $str = preg_replace("/\{{$key}\}/", $value, $str);
     }
-    //$str = preg_replace("/{[0-9]}/", '', $str);
     return $str;
   }
 

@@ -35,7 +35,7 @@ class Install {
    *
    * @param string $dir
    */
-  static private function checkDirectoryPath($dir=null)
+  static private function checkDirectoryPath(string $dir='')
   {
     $dir = $dir ? $dir : __API_PATH__;
     if (!is_dir($dir))
