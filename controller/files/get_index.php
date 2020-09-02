@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get files
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -16,34 +16,33 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this->model, true);
+  $token = Controller\Main::checkAccessIndex($this, true);
 
 	// set where
 	$where = '';
-	if ($target = $_GET['target'])
+	if ($target = $this->get->target)
 	{
 		$where .= ' and target_srl='.$target;
 	}
-	if ($name = $_GET['name'])
+	if ($name = $this->get->name)
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
-	if ($type = $_GET['type'])
+	if ($type = $this->get->type)
 	{
 		$where .= ' and type LIKE \'%'.$type.'%\'';
 	}
-  if ($module = $_GET['module'])
+  if ($module = $this->get->module)
   {
     $where .= ' and module LIKE \''.$module.'\'';
   }
-  if (!$token->data->admin)
+  if (isset($token->data->user_srl) && !$token->data->admin)
   {
-    $where .= isset($token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
   }
 
 	// set output
-	$output = Controller\Main::index((object)[
-		'model' => $this->model,
+	$output = Controller\Main::index($this, (object)[
 		'table' => 'files',
 		'where' => $where,
 	]);
@@ -55,10 +54,10 @@ try
   $this->model->disconnect();
 
 	// output
-	Output::data($output);
+	return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

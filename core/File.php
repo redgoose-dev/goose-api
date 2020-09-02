@@ -14,7 +14,7 @@ class File {
    * @param string $path
    * @param int $permission
    */
-  public static function makeDirectory($path, $permission=0707)
+  public static function makeDirectory(string $path, $permission=0707)
   {
     if (is_dir($path)) return;
     $umask = umask();
@@ -30,7 +30,7 @@ class File {
    * @param boolean $useRandomText
    * @return string
    */
-  public static function checkFilename($name, $useRandomText=false)
+  public static function checkFilename(string $name, $useRandomText=false)
   {
     if (!$name) return null;
 
@@ -71,7 +71,7 @@ class File {
    * @param number|null $n
    * @return string
    */
-  public static function checkExistFile($dir='', $file='', $n=null)
+  public static function checkExistFile(string $dir, string $file, $n=null)
   {
     if (!$file) return null;
 
@@ -99,19 +99,27 @@ class File {
   /**
    * get directories
    *
-   * @param string $path
+   * @param string|null $path
    * @return array
    */
-  public static function getDirectories($path=null)
+  public static function getDirectories(string $path=null)
   {
-    if (!$path) return [];
-    $result = [];
-    $dir_index = array_diff(scandir($path), ['.', '..', '.DS_Store']);
-    foreach($dir_index as $item)
+    try
     {
-      if (is_dir($path.'/'.$item)) $result[] = $item;
+      if (!$path) throw new Exception('not path');
+      if (!is_dir($path)) throw new Exception('No such directory.');
+      $dir_index = array_diff(scandir($path), ['.', '..', '.DS_Store']);
+      $result = [];
+      foreach($dir_index as $item)
+      {
+        if (is_dir($path.'/'.$item)) $result[] = $item;
+      }
+      return $result;
     }
-    return $result;
+    catch(Exception $e)
+    {
+      return [];
+    }
   }
 
   /**
@@ -120,7 +128,7 @@ class File {
    * @param string
    * @return array
    */
-  public static function getFiles($path)
+  public static function getFiles(string $path)
   {
     $result = [];
     $allowFileType = $_ENV['API_FILE_ALLOW_TYPE'];
@@ -133,6 +141,31 @@ class File {
       $result[] = $item;
     }
     return $result;
+  }
+
+  /**
+   * convert files value
+   * `$_FILES`에 들어있는 값을 multiple 형태로 변환시켜서 구조를 통일시킨다.
+   *
+   * @param array|null $files
+   * @return array
+   */
+  public static function convertFilesValue(array $files=null)
+  {
+    if (isset($files['name']) && !is_array($files['name']))
+    {
+      return [
+        'name' => [ $files['name'] ],
+        'type' => [ $files['type'] ],
+        'tmp_name' => [ $files['tmp_name'] ],
+        'size' => [ $files['size'] ],
+        'error' => [ $files['error'] ],
+      ];
+    }
+    else
+    {
+      return $files;
+    }
   }
 
 }

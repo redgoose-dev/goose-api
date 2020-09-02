@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * upload file
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -19,7 +19,7 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // set values
-  $subDir = ($_POST['sub_dir']) ? $_POST['sub_dir'] : 'user';
+  $subDir = ($this->post->sub_dir) ? $this->post->sub_dir : 'user';
   $month = date('Ym');
 
   // set path
@@ -28,57 +28,68 @@ try
   $path_absolute_dest = $path_absolute.'/'.$month;
 
   // multipart upload
-  if ($_FILES['file'])
+  if (isset($this->files['files']) && $this->files['files'])
   {
-    $file = $_FILES['file'];
-
-    // check file error
-    if ($file['error']) throw new Exception('Error file');
-
-    // check file size
-    if ((int)$file['size'] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
+    $file = File::convertFilesValue($this->files['files']);
+    $data = [];
+    foreach ($file['name'] as $k=>$v)
     {
-      throw new Exception(Message::make('error.limitFileSize'));
+      // check file error
+      if ($file['error'][$k])
+      {
+        $data[] = (object)[
+          'name' => $file['name'][$k],
+          'error' => true,
+          'message' => Message::errorUploadFile($file['error'][$k]),
+        ];
+        continue;
+      }
+
+      // check file size
+      if ((int)$file['size'][$k] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
+      {
+        throw new Exception(Message::make('error.limitFileSize'));
+      }
+
+      // check filename
+      $file['name'][$k] = File::checkFilename($file['name'][$k], false);
+      if (!$file['name'][$k])
+      {
+        throw new Exception(Message::make('error.allowFileType'));
+      }
+
+      // check exist file
+      $file['name'][$k] = File::checkExistFile($path_absolute_dest.'/', $file['name'][$k], null);
+
+      // make month directory
+      File::makeDirectory($path_absolute, 0707);
+
+      // make month directory
+      File::makeDirectory($path_absolute_dest, 0707);
+
+      if (!($file['tmp_name'][$k] && is_dir($path_absolute_dest)))
+      {
+        throw new Exception('upload error', 204);
+      }
+
+      // copy file
+      move_uploaded_file($file['tmp_name'][$k], $path_absolute_dest.'/'.$file['name'][$k]);
+
+      // set output
+      $data[] = (object)[
+        'name' => $file['name'][$k],
+        'path' => $path.'/'.$month.'/'.$file['name'][$k],
+        'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'][$k],
+        'type' => $file['type'][$k],
+        'size' => $file['size'][$k],
+      ];
     }
-
-    // check filename
-    $file['name'] = File::checkFilename($file['name'], false);
-    if (!$file['name'])
-    {
-      throw new Exception(Message::make('error.allowFileType'));
-    }
-
-    // check exist file
-    $file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
-
-    // make month directory
-    File::makeDirectory($path_absolute, 0707);
-
-    // make month directory
-    File::makeDirectory($path_absolute_dest, 0707);
-
-    if (!($file['tmp_name'] && is_dir($path_absolute_dest)))
-    {
-      throw new Exception('upload error', 204);
-    }
-
-    // copy file
-    move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
-
-    // set output
-    $data = (object)[
-      'name' => $file['name'],
-      'path' => $path.'/'.$month.'/'.$file['name'],
-      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'],
-      'type' => $file['type'],
-      'size' => $file['size'],
-    ];
   }
   // base64 upload
-  else if ($_POST['base64'])
+  else if ($this->post->base64)
   {
     // make image
-    $imgData = $_POST['base64'];
+    $imgData = $this->post->base64;
     if (preg_match("/^data:image\/jpeg/", $imgData))
     {
       $filename = uniqid().'.jpg';
@@ -154,10 +165,10 @@ try
   // disconnect db
   $this->model->disconnect();
 
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

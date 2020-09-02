@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get comments
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -17,25 +17,24 @@ try
 
   // set where
   $where = '';
-  if ($article_srl = $_GET['article']) $where .= ' and article_srl='.(int)$article_srl;
-  if ($user_srl = $_GET['user']) $where .= ' and user_srl='.(int)$user_srl;
-  if ($q = $_GET['q']) $where .= ' and content LIKE \'%'.$q.'%\'';
+  if ($article_srl = $this->get->article) $where .= ' and article_srl='.(int)$article_srl;
+  if ($user_srl = $this->get->user) $where .= ' and user_srl='.(int)$user_srl;
+  if ($q = $this->get->q) $where .= ' and content LIKE \'%'.$q.'%\'';
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this->model, false);
+  $token = Controller\Main::checkAccessIndex($this, false);
 
   // set output
-  $output = Controller\Main::index((object)[
-    'model' => $this->model,
+  $output = Controller\Main::index($this, (object)[
     'table' => 'comments',
     'where' => $where,
   ]);
 
   // get user name
-  if ($output->data && Util::checkKeyInExtField('user_name'))
+  if ($output->data && Util::checkKeyInExtField('user_name', $this->get->ext_field))
   {
     $output->data->index = Controller\comments\UtilForComments::getUserName(
-      $this->model,
+      $this,
       $output->data->index
     );
   }
@@ -47,10 +46,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  if (isset($model)) $model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

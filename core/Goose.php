@@ -14,6 +14,9 @@ use Exception;
  * @property string target
  * @property array params
  * @property Model model
+ * @property object $get
+ * @property object $post
+ * @property array $files
  */
 
 class Goose {
@@ -27,34 +30,6 @@ class Goose {
   }
 
   /**
-   * routing to controller
-   * 라우팅에 의한 해석된 값으로 컨트롤러로 넘겨주는 과정
-   */
-  private function turningPoint()
-  {
-    try
-    {
-      // check $target
-      if (!$this->target)
-      {
-        throw new Exception(Message::make('error.notFound', 'target'), 404);
-      }
-
-      // search controller
-      if (!file_exists(__API_PATH__.'/controller/'.$this->target.'.php'))
-      {
-        throw new Exception(Message::make('error.notFound', 'controller'), 404);
-      }
-
-      require __API_PATH__.'/controller/'.$this->target.'.php';
-    }
-    catch(Exception $e)
-    {
-      Error::data($e->getMessage(), $e->getCode());
-    }
-  }
-
-  /**
    * Play app trigger
    *
    * @throws Exception
@@ -62,7 +37,8 @@ class Goose {
   public function run()
   {
     // initialize routing
-    $this->router->init();
+    $this->router->init($_ENV['API_PATH_RELATIVE']);
+    $this->router->match();
 
     // check router match
     if (!$this->router->match)
@@ -74,11 +50,23 @@ class Goose {
     $this->target = $this->router->match['target'];
     $this->params = $this->router->match['params'];
 
+    // convert $_GET and $_POST
+    $this->get = (object)$_GET;
+    $this->post = (object)$_POST;
+    $this->files = (array)$_FILES;
+
     // set model
     $this->model = new Model();
 
     // run turning point
-    $this->turningPoint();
+    try
+    {
+      require Util::getControllerPath($this->target);
+    }
+    catch(Exception $e)
+    {
+      Error::data($e->getMessage(), $e->getCode());
+    }
   }
 
 }

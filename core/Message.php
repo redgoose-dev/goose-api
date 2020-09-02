@@ -27,10 +27,10 @@ class Message {
   /**
    * find
    *
-   * @param array $path
+   * @param array|null $path
    * @return string
    */
-  static private function find($path=null)
+  static private function find(array $path=null)
   {
     function block($tree, $path)
     {
@@ -77,7 +77,7 @@ class Message {
    * @param int $code
    * @return string
    */
-  static public function errorUploadFile($code=null)
+  static public function errorUploadFile($code=0)
   {
     switch ($code)
     {

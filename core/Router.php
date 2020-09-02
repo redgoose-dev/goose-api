@@ -11,29 +11,41 @@ use AltoRouter, Exception;
 
 class Router {
 
-  public function __construct()
-  {
-    $this->match = null;
-  }
+  private AltoRouter $core;
+  public ?array $match;
 
+  /**
+   * get route map
+   *
+   * @return array
+   */
   private function map()
   {
     return require __DIR__.'/../bootstrap/route.php';
   }
 
   /**
+   * @param string $basePath
    * @throws Exception
    */
-  public function init()
+  public function init($basePath='')
   {
-    $router = new AltoRouter();
-    $router->setBasePath($_ENV['API_PATH_RELATIVE']);
-    $router->addMatchTypes([ 'aa' => '[0-9A-Za-z_-]++' ]);
-    $router->addRoutes($this->map());
-    $match = $router->match();
+    $this->core = new AltoRouter();
+    $this->core->setBasePath($basePath);
+    $this->core->addMatchTypes([ 'aa' => '[0-9A-Za-z_-]++' ]);
+    $this->core->addRoutes($this->map());
+  }
 
-    // set public router value
-    $this->match = $match;
+  /**
+   * router match
+   *
+   * @param string|null $path
+   * @param string|null $method
+   */
+  public function match($path=null, $method=null)
+  {
+    $match = $this->core->match($path, $method);
+    $this->match = $match ? $match : null;
   }
 
 }

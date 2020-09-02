@@ -47,36 +47,36 @@ else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 // set json header
 header('Content-Type: application/json,text/plane;charset=UTF-8');
 
+// set mode
+define('__API_MODE__', 'api');
+
+// set development
+define('__API_DEBUG__', $_ENV['API_DEBUG'] === 'true');
+
+// set token
+define('__API_TOKEN__', isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : null);
+
+if (__API_DEBUG__)
+{
+  // set start time
+  define('__API_START_TIME__', microtime(true));
+  // set error report
+  error_reporting(E_ALL & ~E_NOTICE);
+}
+else
+{
+  // set error report
+  error_reporting(0);
+}
+
+// set default timezone
+if ($_ENV['API_TIMEZONE'])
+{
+  date_default_timezone_set($_ENV['API_TIMEZONE']);
+}
+
 try
 {
-  // set development
-  define('__API_DEBUG__', $_ENV['API_DEBUG'] === 'true');
-
-  // set error report
-  if (__API_DEBUG__)
-  {
-    error_reporting(E_ALL & ~E_NOTICE);
-  }
-  else
-  {
-    error_reporting(0);
-  }
-
-  // set default timezone
-  if ($_ENV['API_TIMEZONE'])
-  {
-    date_default_timezone_set($_ENV['API_TIMEZONE']);
-  }
-
-  // set start time
-  if (__API_DEBUG__)
-  {
-    define('__API_START_TIME__', microtime(true));
-  }
-
-  // set token
-  define('__API_TOKEN__', $_SERVER['HTTP_AUTHORIZATION']);
-
   // check install
   Install::check();
 

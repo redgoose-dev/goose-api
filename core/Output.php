@@ -6,9 +6,36 @@ class Output {
   /**
    * print data
    *
-   * @param object|array obj
+   * @param object|array $result
+   * @return object|void
    */
   public static function data($result=null)
+  {
+    // set result
+    $result = self::setResult($result);
+
+    // print output
+    switch (__API_MODE__)
+    {
+      case 'library':
+        return $result;
+      case 'api':
+      default:
+        echo json_encode(
+          $result,
+          !isset($_GET['min']) ? JSON_PRETTY_PRINT : null
+        );
+        exit;
+    }
+  }
+
+  /**
+   * set result
+   *
+   * @param object|array $result
+   * @return object
+   */
+  private static function setResult($result)
   {
     if ($result)
     {
@@ -50,7 +77,8 @@ class Output {
       ];
     }
 
-    if (__API_DEBUG__)
+    // set url
+    if (__API_DEBUG__ && __API_MODE__ === 'api')
     {
       $result->url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
@@ -63,12 +91,7 @@ class Output {
       $result->time = number_format($time,6) * 1000 . 'ms';
     }
 
-    // print output
-    echo json_encode(
-      $result,
-      !isset($_GET['min']) ? JSON_PRETTY_PRINT : null
-    );
-    exit;
+    return $result;
   }
 
 }

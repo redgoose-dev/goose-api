@@ -68,11 +68,11 @@ class Auth {
    * check authorization
    *
    * @param Model $getModel
-   * @param String $checkUserType `null|user|admin`
+   * @param string $checkUserType `null|user|admin`
    * @return object 토큰을 재발급 받는다면 리턴으로 나온 토큰주소와 토큰 데이터
    * @throws Exception
    */
-  public static function checkAuthorization($getModel=null, $checkUserType=null)
+  public static function checkAuthorization($getModel=null, string $checkUserType='')
   {
     try
     {
@@ -82,34 +82,36 @@ class Auth {
       }
       $jwt = Token::get(__API_TOKEN__);
 
-      // check url
-      try
+      if (__API_MODE__ === 'api')
       {
-        if (!$jwt->url)
+        // check url
+        try
         {
-          throw new Exception('error');
-        }
-        if (preg_match('/^http/', $jwt->url))
-        {
-          if ($_ENV['API_PATH_URL'] !== $jwt->url)
+          if (!$jwt->url)
+          {
+            throw new Exception('error');
+          }
+          if (preg_match('/^http/', $jwt->url))
+          {
+            if ($_ENV['API_PATH_URL'] !== $jwt->url)
+            {
+              throw new Exception('error');
+            }
+          }
+          else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['API_PATH_URL']))
           {
             throw new Exception('error');
           }
         }
-        else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['API_PATH_URL']))
+        catch(Exception $e)
         {
-          throw new Exception('error');
+          throw new Exception('The tokens "API_PATH_URL" and "API_PATH_URL" are different.');
         }
-      }
-      catch(Exception $e)
-      {
-        throw new Exception('The tokens "API_PATH_URL" and "API_PATH_URL" are different.');
-      }
-
-      // check token id
-      if ($_ENV['API_TOKEN_ID'] !== $jwt->token_id)
-      {
-        throw new Exception('Not found `API_TOKEN_ID`');
+        // check token id
+        if ($_ENV['API_TOKEN_ID'] !== $jwt->token_id)
+        {
+          throw new Exception('Not found `API_TOKEN_ID`');
+        }
       }
 
       // check user type
@@ -132,13 +134,13 @@ class Auth {
       }
 
       // set model
-      $model = ($getModel) ? $getModel : self::getModel();
+      $model = ($getModel && $getModel->db) ? $getModel : self::getModel();
 
       // check blacklist token
       $sign = explode('.', __API_TOKEN__)[2];
       $blacklistToken = $model->getCount((object)[
         'table' => 'tokens',
-        'where' => 'token LIKE \''.$sign.'\''
+        'where' => "token LIKE '{$sign}'",
       ]);
       if (!$getModel) $model->disconnect();
       if ($blacklistToken->data)

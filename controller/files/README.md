@@ -88,7 +88,8 @@
 | key | type | example | description |
 |:---:|:----:|---------|-------------|
 | sub_dir | string | `thumbnail` | 서브 디렉토리 이름 |
-| file | File,string | | 업로드할 파일입니다. `multipart`에서 `File`로 넣거나 base64 문자열로 넣어서 업로드할 수 있습니다. |
+| files | File | | `File`형식의 업로드할 파일입니다. |
+| base64 | string | | `base64`형식의 업로드할 파일입니다. |
 
 
 ## remove file

@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * decode token
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -35,10 +35,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

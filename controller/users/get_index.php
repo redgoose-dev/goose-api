@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get users
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -17,15 +17,15 @@ try
 
   // set where
   $where = '';
-  if ($email = $_GET['email'])
+  if ($email = $this->get->email)
   {
     $where .= ' and email LIKE \''.$email.'\'';
   }
-  if ($name = $_GET['name'])
+  if ($name = $this->get->name)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if ($admin = $_GET['admin'])
+  if ($admin = $this->get->admin)
   {
     $where .= ' and admin='.(int)$admin;
   }
@@ -35,8 +35,7 @@ try
   if (!$token->data->admin) $where .= ' and srl='.$token->data->user_srl;
 
   // output
-  $output = Controller\Main::index((object)[
-    'model' => $this->model,
+  $output = Controller\Main::index($this, (object)[
     'auth' => true,
     'table' => 'users',
     'where' => $where,
@@ -60,10 +59,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

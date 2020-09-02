@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * get nests
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -17,52 +17,52 @@ try
 
   // set where
   $where = '';
-  if ($app = $_GET['app'])
+  if ($app = $this->get->app)
   {
-    $where .= ($app === 'null' || $app === 'NULL') ? ' and app_srl IS NULL' : ' and app_srl='.$app;
+    $where .= (strtolower($app) === 'null') ? ' and app_srl IS NULL' : ' and app_srl='.$app;
   }
-  if ($id = $_GET['id'])
+  if ($id = $this->get->id)
   {
     $where .= ' and id LIKE \''.$id.'\'';
   }
-  if ($name = $_GET['name'])
+  if ($name = $this->get->name)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if ($user_srl = $_GET['user'])
-  {
-    $where .= ' and user_srl='.(int)$user_srl;
-  }
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this->model, true);
-  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  $token = Controller\Main::checkAccessIndex($this, true);
+  if ($token->data->admin && isset($this->get->user))
+  {
+    $where .= ' and user_srl='.(int)$this->get->user;
+  }
+  else if (isset($token->data->user_srl) && !$token->data->admin)
+  {
+    $where .= ' and user_srl='.(int)$token->data->user_srl;
+  }
 
   // output
-  $output = Controller\Main::index((object)[
-    'model' => $this->model,
+  $output = Controller\Main::index($this, (object)[
     'table' => 'nests',
     'where' => $where,
     'json_field' => ['json'],
   ]);
 
   // get articles count
-  if ($output->data && Util::checkKeyInExtField('count_articles'))
+  if ($output->data && Util::checkKeyInExtField('count_articles', $this->get->ext_field))
   {
     $output->data->index = Controller\nests\UtilForNests::getCountArticles(
-      $this->model,
+      $this,
       $output->data->index,
       $token
     );
   }
-
   // get app title
-  if ($output->data && Util::checkKeyInExtField('app_name'))
+  if ($output->data && Util::checkKeyInExtField('app_name', $this->get->ext_field))
   {
     $output->data->index = Controller\nests\UtilForNests::getAppName(
-      $this->model,
-      $output->data->index,
-      $token
+      $this,
+      $output->data->index
     );
   }
 
@@ -73,10 +73,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

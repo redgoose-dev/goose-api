@@ -11,16 +11,18 @@ class UtilForFiles {
   /**
    * remove thumbnail image
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param int $article_srl
    * @throws Exception
    */
-  public static function removeThumbnailImage($model, $article_srl)
+  public static function removeThumbnailImage($self, int $article_srl)
   {
     try
     {
+      if (!$article_srl) throw new Exception();
+
       // remove thumbnail image
-      $article = $model->getItem((object)[
+      $article = $self->model->getItem((object)[
         'table' => 'articles',
         'where' => 'srl='.$article_srl,
         'json_field' => ['json'],
@@ -42,20 +44,22 @@ class UtilForFiles {
   /**
    * Remove attach files
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param int $target_srl
-   * @param int $module
+   * @param string $module
    * @throws Exception
    */
-  public static function removeAttachFiles($model, $target_srl, $module)
+  public static function removeAttachFiles($self, int $target_srl, string $module)
   {
     try
     {
+      if (!($target_srl && $module)) throw new Exception();
+
       // set where
       $where = 'target_srl='.$target_srl.' and module LIKE \''.$module.'\'';
 
       // remove files
-      $files = $model->getItems((object)[
+      $files = $self->model->getItems((object)[
         'table' => 'files',
         'where' => $where,
       ]);
@@ -69,7 +73,7 @@ class UtilForFiles {
           }
         }
         // remove db
-        $model->delete((object)[
+        $self->model->delete((object)[
           'table' => 'files',
           'where' => $where,
         ]);
@@ -84,17 +88,17 @@ class UtilForFiles {
   /**
    * check target data
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param int $target_srl
    * @param string $module
    * @param object $token
    * @throws Exception
    */
-  public static function checkTargetData($model, $target_srl, $module, $token)
+  public static function checkTargetData($self, int $target_srl, string $module, object $token)
   {
     $where = 'srl='.$target_srl;
     $where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
-    $cnt = $model->getCount((object)[
+    $cnt = $self->model->getCount((object)[
       'table' => $module,
       'where' => $where,
     ]);

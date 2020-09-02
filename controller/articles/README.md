@@ -44,7 +44,6 @@
 |:----:|:----:|---------|-------------|
 | app | number | `1` | app srl |
 | nest | number | `1` | nest srl |
-| category | number | `1` | category srl |
 | hit | number | `0,1` | 이 항목을 `1`로 넣어서 사용하면 응답을 받을때 조회수가 올라갑니다. |
 | visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | ext_field | string | `category_name` | 확장 필드 |
@@ -100,8 +99,6 @@
 | key          | type   | value | example | description |
 |:------------:|:------:|-------|---------|-------------|
 | mode         | string | `add,edit` | `add` | 글 작성 방식 |
-| app_srl      | number |  | `1` | app srl 번호 |
-| nest_srl     | number |  | `1` | nest srl 번호 |
 | category_srl | number |  | `1` | category srl 번호 |
 | type         | string | `public,private` | `public` | 글 타입 |
 | title        | string |  | `title name` | 글 제목 |
@@ -137,7 +134,7 @@
 `조회수`, `좋아요` 값을 올려주는 역할을 합니다.
 
 - url: `/articles/[n]/update/` (n:srl)
-- method: GET
+- method: POST
 
 사용하는 파라메터 목록
 

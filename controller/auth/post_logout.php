@@ -9,7 +9,7 @@ if (!defined('__API_GOOSE__')) exit();
  * 주 목적은 만료되지도 않은 토큰 사용을 막기위하여 블랙리스트용 토큰을 추가하기 위함.
  * 유저 로그인이라면 블랙리스트에 시그니쳐값을 추가하고 익명 토큰을 만들어서 결과값으로 출력한다.
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -69,10 +69,10 @@ try
   $this->model->disconnect();
 
   // output
-  Output::data($output);
+  return Output::data($output);
 }
 catch(Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

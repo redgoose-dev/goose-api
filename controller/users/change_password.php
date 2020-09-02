@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * change password
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -20,10 +20,10 @@ try
   }
 
   // check post values
-  Util::checkExistValue($_POST, [ 'password', 'new_password', 'confirm_password' ]);
+  Util::checkExistValue($this->post, [ 'password', 'new_password', 'confirm_password' ]);
 
   // check new_password and confirm_password
-  if ($_POST['new_password'] !== $_POST['confirm_password'])
+  if ($this->post->new_password !== $this->post->confirm_password)
   {
     throw new Exception(Message::make('error.different', 'new_password', 'confirm_password'));
   }
@@ -37,18 +37,17 @@ try
   try
   {
     // check password
-    $user = Auth::login((object)[
+    Auth::login((object)[
       'model' => $this->model,
       'user_srl' => (int)$this->params['srl'],
-      'password' => $_POST['password']
+      'password' => $this->post->password,
     ]);
 
     // set output
-    $output = Controller\Main::edit((object)[
-      'model' => $this->model,
+    $output = Controller\Main::edit($this, (object)[
       'table' => 'users',
       'srl' => (int)$this->params['srl'],
-      'data' => [ "password='".Text::createPassword($_POST['new_password'])."'" ],
+      'data' => [ "password='".Text::createPassword($this->post->new_password)."'" ],
     ]);
   }
   catch(Exception $e)
@@ -63,11 +62,11 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
+  if (isset($this->model)) $this->model->disconnect();
   $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
-  Error::data($message, $e->getCode());
+  return Error::data($message, $e->getCode());
 }

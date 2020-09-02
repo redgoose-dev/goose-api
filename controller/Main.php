@@ -9,16 +9,16 @@ class Main {
   /**
    * get items
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @param callable $callback
    * @return object
    * @throws Exception
    */
-  public static function index($op=null, callable $callback=null)
+  public static function index($self, object $op, callable $callback=null)
   {
     /**
      * $op guide
-     * @param Core\Model $op->model
      * @param string $op->table
      * @param string $op->where
      * @param string $op->field
@@ -38,24 +38,14 @@ class Main {
         500
       );
     }
-    if (!$op->model)
-    {
-      throw new Exception(
-        Core\Message::make('error.notFound', '$op->model'),
-        500
-      );
-    }
 
     // get values
     $output = (object)[];
-    $page = ($_GET['page']) ? (int)$_GET['page'] : 1;
-    $size = ($_GET['size']) ? (int)$_GET['size'] : $_ENV['API_DEFAULT_INDEX_SIZE'];
-
-    // set model
-    $model = $op->model;
+    $page = ($self->get->page) ? (int)$self->get->page : 1;
+    $size = ($self->get->size) ? (int)$self->get->size : $_ENV['API_DEFAULT_INDEX_SIZE'];
 
     // get total
-    $total = $model->getCount((object)[
+    $total = $self->model->getCount((object)[
       'table' => $op->table,
       'where' => $op->where,
       'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
@@ -63,15 +53,15 @@ class Main {
 
     // set limit
     $limit = null;
-    if (isset($_GET['unlimit']))
+    if (isset($self->get->unlimit))
     {
       $limit = '';
     }
-    else if (isset($_GET['limit']))
+    else if (isset($self->get->limit))
     {
-      $limit = explode(',', $_GET['limit']);
+      $limit = explode(',', $self->get->limit);
     }
-    else if (isset($_GET['page']) || isset($_GET['size']))
+    else if (isset($self->get->page) || isset($self->get->size))
     {
       $limit = [ ($page - 1) * $size, $size ];
     }
@@ -83,15 +73,15 @@ class Main {
     // get data
     $opts = (object)[
       'table' => $op->table,
-      'field' => isset($op->field) ? $op->field : $_GET['field'],
-      'json_field' => $op->json_field,
-      'order' => isset($op->order) ? $op->order : $_GET['order'],
-      'sort' => isset($op->sort) ? $op->sort : $_GET['sort'],
+      'field' => isset($op->field) ? $op->field : $self->get->field,
+      'json_field' => isset($op->json_field) ? $op->json_field : $self->get->json_field,
+      'order' => isset($op->order) ? $op->order : $self->get->order,
+      'sort' => isset($op->sort) ? $op->sort : $self->get->sort,
       'limit' => $limit,
       'where' => $op->where,
       'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ];
-    $items = $model->getItems($opts);
+    $items = $self->model->getItems($opts);
 
     // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.
     if (is_callable($callback)) $items = $callback($items);
@@ -122,24 +112,22 @@ class Main {
   /**
    * get item
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @param callable $callback
    * @return object
    * @throws Exception
    */
-  public static function item($op=null, callable $callback=null)
+  public static function item($self, object $op, callable $callback=null)
   {
     /**
      * $op guide
-     * @param Core\Model $op->model
      * @param string $op->table
      * @param int $op->srl
      * @param string $op->id
      * @param array $op->json_field
      * @param string $op->where
-     *
-     * url params guide
-     * @param string field
+     * @param string $op->field
      */
 
     if (!($op->table && ($op->srl || $op->id)))
@@ -149,25 +137,15 @@ class Main {
         500
       );
     }
-    if (!$op->model)
-    {
-      throw new Exception(
-        Core\Message::make('error.notFound', '$op->model'),
-        500
-      );
-    }
 
     // get values
     $output = (object)[];
 
-    // set model
-    $model = $op->model;
-
     // get data
-    $item = $model->getItem((object)[
+    $item = $self->model->getItem((object)[
       'table' => $op->table,
-      'field' => $_GET['field'],
-      'json_field' => $op->json_field,
+      'field' => isset($op->field) ? $op->field : $self->get->field,
+      'json_field' => isset($op->json_field) ? $op->json_field : $self->get->json_field,
       'where' => ($op->srl ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : '')).$op->where,
       'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
     ]);
@@ -186,11 +164,12 @@ class Main {
   /**
    * add item
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @return object
    * @throws Exception
    */
-  public static function add($op=null)
+  public static function add($self, object $op)
   {
     if (!$op->table || !$op->data)
     {
@@ -203,11 +182,8 @@ class Main {
     // get values
     $output = (object)[];
 
-    // set model
-    $model = $op->model;
-
     // add data
-    $result = $model->add((object)[
+    $result = $self->model->add((object)[
       'table' => $op->table,
       'data' => $op->data,
       'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
@@ -216,7 +192,7 @@ class Main {
     // set output
     $output->code = 200;
     $output->query = $result->query;
-    $output->srl = $model->getLastIndex();
+    $output->srl = $self->model->getLastIndex();
 
     return $output;
   }
@@ -224,11 +200,12 @@ class Main {
   /**
    * edit item
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @return object
    * @throws Exception
    */
-  public static function edit($op=null)
+  public static function edit($self, object $op)
   {
     if (!$op->table || !$op->srl || !$op->data)
     {
@@ -241,11 +218,8 @@ class Main {
     // get values
     $output = (object)[];
 
-    // set model
-    $model = $op->model;
-
     // update data
-    $result = $model->edit((object)[
+    $result = $self->model->edit((object)[
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
       'data' => $op->data,
@@ -262,15 +236,15 @@ class Main {
   /**
    * delete item
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @return object
    * @throws Exception
    */
-  public static function delete($op=null)
+  public static function delete($self, object $op)
   {
     /**
      * $op guide
-     * @param Core\Model $op->model
      * @param string $op->table
      * @param int $op->srl
      */
@@ -286,11 +260,8 @@ class Main {
     // get values
     $output = (object)[];
 
-    // set model
-    $model = $op->model;
-
     // delete data
-    $result = $model->delete((object)[
+    $result = $self->model->delete((object)[
       'table' => $op->table,
       'where' => 'srl='.(int)$op->srl,
       'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
@@ -304,57 +275,20 @@ class Main {
   }
 
   /**
-   * count item
-   *
-   * @param object $op
-   * @return object
-   * @throws Exception
-   */
-  public static function count($op=null)
-  {
-    if (!$op->table)
-    {
-      throw new Exception(
-        Core\Message::make('error.noValue', 'object', 'Controller\Main::count()'),
-        500
-      );
-    }
-    if (!$op->model)
-    {
-      throw new Exception(
-        Core\Message::make('error.notFound', '$op->model'),
-        500
-      );
-    }
-
-    // set model
-    $model = $op->model;
-
-    // get total
-    $total = $model->getCount((object)[
-      'table' => $op->table,
-      'where' => $op->where,
-      'debug' => (isset($op->debug)) ? $op->debug : __API_DEBUG__,
-    ]);
-
-    return $total->data;
-  }
-
-  /**
    * check access item
    * 하나의 데이터를 가져오면서 접근할 수 있는지 검사한다.
    * 하는김에 데이터를 가져오고 토큰 검사하면서 토큰 decode값을 가져오면서 리턴해준다.
    *
+   * @param Core\Goose|Core\Connect $self
    * @param object $op
    * @return object token
    * @throws Exception
    */
-  public static function checkAccessItem($op=null)
+  public static function checkAccessItem($self, object $op)
   {
     /**
      * $op guide
      *
-     * @param Core\Model $op->model
      * @param string     $op->table
      * @param int        $op->srl
      * @param string     $op->id
@@ -362,18 +296,18 @@ class Main {
      */
 
     // check parameter
-    if (!($op->model && $op->table && ($op->srl || $op->id)))
+    if (!($op->table && ($op->srl || $op->id)))
     {
       throw new Exception(Core\Message::make('msg.noParams'), 500);
     }
     // strict 검사를 하면서 'strict'값이 없을때..
-    if (!!$op->useStrict && !($_GET['strict'] || $_POST['strict']))
+    if (!!$op->useStrict && !($self->get->strict || $self->post->strict))
     {
-      return Core\Auth::checkAuthorization($op->model);
+      return Core\Auth::checkAuthorization($self->model);
     }
 
     // get data
-    $res = $op->model->getItem((object)[
+    $res = $self->model->getItem((object)[
       'table' => $op->table,
       'field' => $op->field ? $op->field : 'user_srl',
       'where' => ($op->srl) ? 'srl='.(int)$op->srl : ($op->id ? "id='$op->id'" : ''),
@@ -384,7 +318,7 @@ class Main {
     }
 
     // check authorization
-    $token = Core\Auth::checkAuthorization($op->model, 'user');
+    $token = Core\Auth::checkAuthorization($self->model, 'user');
     // check data and user_srl
     if (!$token->data->admin && ((int)$token->data->user_srl !== (int)$res->data->user_srl))
     {
@@ -396,16 +330,16 @@ class Main {
   /**
    * check access index
    *
-   * @param Core\Model $model
+   * @param Core\Goose|Core\Connect $self
    * @param boolean useStrict
    * @return object token
    * @throws Exception
    */
-  public static function checkAccessIndex($model=null, $useStrict=false)
+  public static function checkAccessIndex($self, $useStrict=false)
   {
     // `$op->useStrict`가 있는 상태에서 `strict=false` 이거나 $op->useStrict가 없으면 public
-    $param = (($useStrict && !$_GET['strict']) || !$useStrict) ? '' : 'user';
-    return Core\Auth::checkAuthorization($model, $param);
+    $userType = (($useStrict && !$self->get->strict) || !$useStrict) ? '' : 'user';
+    return Core\Auth::checkAuthorization($self->model, $userType);
   }
 
 }

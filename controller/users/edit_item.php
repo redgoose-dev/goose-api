@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit user
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -40,11 +40,11 @@ try
   }
 
   // check email address
-  if (!!$_POST['email'])
+  if (isset($this->post->email) && $this->post->email)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'users',
-      'where' => 'email="'.$_POST['email'].'" and srl!='.$srl,
+      'where' => 'email="'.$this->post->email.'" and srl!='.$srl,
       'debug' => __API_DEBUG__,
     ]);
     if (!!$cnt->data)
@@ -53,18 +53,20 @@ try
     }
   }
 
+  // set data
+  $data = [];
+  if (isset($this->post->email)) $data[] = "email='{$this->post->email}'";
+  if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
+  if ($this->post->admin && $token->data->admin) $data[] = "admin=".(int)$this->post->admin;
+  if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
+
   try
   {
     // set output
-    $output = Controller\Main::edit((object)[
-      'model' => $this->model,
+    $output = Controller\Main::edit($this, (object)[
       'table' => 'users',
       'srl' => $srl,
-      'data' => [
-        $_POST['email'] ? "email='$_POST[email]'" : '',
-        $_POST['name'] ? "name='$_POST[name]'" : '',
-        ($_POST['admin'] && $token->data->admin) ? "admin=".(int)$_POST['admin'] : '',
-      ],
+      'data' => $data,
     ]);
   }
   catch(Exception $e)
@@ -79,10 +81,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

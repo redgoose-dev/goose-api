@@ -7,7 +7,7 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * edit article
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
@@ -18,9 +18,8 @@ try
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
-
   // check order date
-  if ($_POST['order'] && !preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $_POST['order']))
+  if ($this->post->order && !preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $this->post->order))
   {
     throw new Exception(Message::make('error.date', 'order'));
   }
@@ -29,55 +28,31 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem((object)[
-    'model' => $this->model,
+  $token = Controller\Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
   ]);
 
   // filtering text
-  if (isset($_POST['title']))
+  if (isset($this->post->title) && $this->post->title)
   {
-    $_POST['title'] = addslashes(trim($_POST['title']));
+    $this->post->title = htmlspecialchars(addslashes(trim($this->post->title)));
+    $this->post->title = str_replace('&amp;', '&', $this->post->title);
+    $this->post->title = str_replace('&quot;', '"', $this->post->title);
+    $this->post->title = str_replace('&lt;', '<', $this->post->title);
+    $this->post->title = str_replace('&gt;', '>', $this->post->title);
   }
-  if (isset($_POST['content']) && $_GET['content'] !== 'raw')
+  if (isset($this->post->content) && $this->get->content !== 'raw')
   {
-    $_POST['content'] = addslashes($_POST['content']);
-  }
-
-  // check app_srl
-  if ($_POST['app_srl'] && (int)$_POST['app_srl'] > 0)
-  {
-    $cnt = $this->model->getCount((object)[
-      'table' => 'apps',
-      'where' => 'srl='.(int)$_POST['app_srl'],
-    ]);
-    if (!($cnt->data > 0))
-    {
-      throw new Exception(Message::make('error.noData', 'app_srl'));
-    }
-  }
-
-  // check nest_srl
-  if ($_POST['nest_srl'] && (int)$_POST['nest_srl'] > 0)
-  {
-    // check nest
-    $cnt = $this->model->getCount((object)[
-      'table' => 'nests',
-      'where' => 'srl='.(int)$_POST['nest_srl'],
-    ]);
-    if (!($cnt->data > 0))
-    {
-      throw new Exception(Message::make('error.noData', 'nest_srl'));
-    }
+    $this->post->content = addslashes($this->post->content);
   }
 
   // check category_srl
-  if ($_POST['category_srl'] && (int)$_POST['category_srl'] > 0)
+  if ($this->post->category_srl && (int)$this->post->category_srl > 0)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
-      'where' => 'srl='.(int)$_POST['category_srl'],
+      'where' => 'srl='.(int)$this->post->category_srl,
     ]);
     if (!($cnt->data > 0))
     {
@@ -86,24 +61,20 @@ try
   }
 
   // set output
-  $output = Controller\Main::edit((object)[
-    'model' => $this->model,
+  $output = Controller\Main::edit($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'data' => [
-      $_POST['app_srl'] ? "`app_srl`='$_POST[app_srl]'" : '',
-      $_POST['nest_srl'] ? "`nest_srl`='$_POST[nest_srl]'" : '',
-      $_POST['category_srl'] ? "`category_srl`=$_POST[category_srl]" : '',
-      $_POST['user_srl'] ? "`user_srl`='$_POST[user_srl]'" : '',
-      isset($_POST['type']) ? "`type`=".($_POST['type'] ? "'$_POST[type]'" : 'public') : '',
-      $_POST['title'] ? "`title`='$_POST[title]'" : '',
-      $_POST['content'] ? "`content`='$_POST[content]'" : '',
-      $_POST['hit'] ? "`hit`='$_POST[hit]'" : '',
-      $_POST['star'] ? "`star`='$_POST[star]'" : '',
-      $_POST['json'] ? "`json`='$_POST[json]'" : '',
-      (isset($_POST['mode']) && $_POST['mode'] === 'add') ? "`regdate`='".date("Y-m-d H:i:s")."'" : '',
+      $this->post->category_srl ? "`category_srl`={$this->post->category_srl}" : '',
+      isset($this->post->type) ? "`type`=".($this->post->type ? "'{$this->post->type}'" : 'public') : '',
+      $this->post->title ? "`title`='{$this->post->title}'" : '',
+      $this->post->content ? "`content`='{$this->post->content}'" : '',
+      $this->post->hit ? "`hit`='{$this->post->hit}'" : '',
+      $this->post->star ? "`star`='{$this->post->star}'" : '',
+      $this->post->json ? "`json`='{$this->post->json}'" : '',
+      (isset($this->post->mode) && $this->post->mode === 'add') ? "`regdate`='".date("Y-m-d H:i:s")."'" : '',
       "`modate`='".date("Y-m-d H:i:s")."'",
-      isset($_POST['order']) ? "`order`='".($_POST['order'] ? date('Y-m-d', strtotime($_POST['order'])) : date('Y-m-d'))."'" : '',
+      isset($this->post->order) ? "`order`='".($this->post->order ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'))."'" : '',
     ],
   ]);
 
@@ -114,10 +85,10 @@ try
   $this->model->disconnect();
 
   // output data
-  Output::data($output);
+  return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-  Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+  return Error::data($e->getMessage(), $e->getCode());
 }

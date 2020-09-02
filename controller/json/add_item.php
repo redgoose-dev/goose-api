@@ -7,19 +7,19 @@ if (!defined('__API_GOOSE__')) exit();
 /**
  * add json
  *
- * @var Goose $this
+ * @var Goose|Connect $this
  */
 
 try
 {
 	// check post values
-	Util::checkExistValue($_POST, [ 'name', 'json' ]);
+	Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
 	// set json
 	$json = null;
-	if (isset($_POST['json']))
+	if (isset($this->post->json))
 	{
-		$json = json_decode(urldecode($_POST['json']), false);
+		$json = json_decode(urldecode($this->post->json), false);
 		if (!$json)
 		{
 			throw new Exception(Message::make('error.json'));
@@ -36,17 +36,16 @@ try
 	// set output
 	try
 	{
-		$output = Controller\Main::add((object)[
-			'model' => $this->model,
+		$output = Controller\Main::add($this, (object)[
 			'table' => 'json',
 			'data' => (object)[
 				'srl' => null,
 				'user_srl' => $token->data->user_srl,
-				'name' => $_POST['name'],
-				'description' => $_POST['description'],
+				'name' => $this->post->name,
+				'description' => $this->post->description,
 				'json' => $json,
 				'regdate' => date('Y-m-d H:i:s'),
-			]
+			],
 		]);
 	}
 	catch(Exception $e)
@@ -61,10 +60,10 @@ try
   $this->model->disconnect();
 
 	// output data
-	Output::data($output);
+	return Output::data($output);
 }
 catch (Exception $e)
 {
-  $this->model->disconnect();
-	Error::data($e->getMessage(), $e->getCode());
+  if (isset($this->model)) $this->model->disconnect();
+	return Error::data($e->getMessage(), $e->getCode());
 }
