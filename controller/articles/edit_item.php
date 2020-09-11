@@ -47,8 +47,35 @@ try
     $this->post->content = addslashes($this->post->content);
   }
 
+  // check app_srl
+  if (isset($this->post->app_srl) && (int)$this->post->app_srl > 0)
+  {
+    $cnt = $this->model->getCount((object)[
+      'table' => 'apps',
+      'where' => 'srl='.(int)$this->post->app_srl,
+    ]);
+    if (!($cnt->data > 0))
+    {
+      throw new Exception(Message::make('error.noData', 'app_srl'));
+    }
+  }
+
+  // check nest_srl
+  if (isset($this->post->nest_srl) && (int)$this->post->nest_srl > 0)
+  {
+    // check nest
+    $cnt = $this->model->getCount((object)[
+      'table' => 'nests',
+      'where' => 'srl='.(int)$this->post->nest_srl,
+    ]);
+    if (!($cnt->data > 0))
+    {
+      throw new Exception(Message::make('error.noData', 'nest_srl'));
+    }
+  }
+
   // check category_srl
-  if ($this->post->category_srl && (int)$this->post->category_srl > 0)
+  if (isset($this->post->category_srl) && (int)$this->post->category_srl > 0)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
@@ -65,6 +92,8 @@ try
     'table' => 'articles',
     'srl' => $srl,
     'data' => [
+      isset($this->post->app_srl) ? "`app_srl`={$this->post->app_srl}" : '',
+      isset($this->post->nest_srl) ? "`nest_srl`={$this->post->nest_srl}" : '',
       $this->post->category_srl ? "`category_srl`={$this->post->category_srl}" : '',
       isset($this->post->type) ? "`type`=".($this->post->type ? "'{$this->post->type}'" : 'public') : '',
       $this->post->title ? "`title`='{$this->post->title}'" : '',
