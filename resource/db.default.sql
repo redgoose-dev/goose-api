@@ -8,7 +8,7 @@ CREATE TABLE `goose_apps` (
   `name` varchar(30) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_apps` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
 ALTER TABLE `goose_apps` MODIFY `srl` tinyint(11) NOT NULL AUTO_INCREMENT;
@@ -31,7 +31,7 @@ CREATE TABLE `goose_articles` (
   `regdate` datetime DEFAULT NULL,
   `modate` datetime DEFAULT NULL,
   `order` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_articles` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_articles` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
@@ -45,7 +45,7 @@ CREATE TABLE `goose_categories` (
   `turn` int(11) DEFAULT 0,
   `name` varchar(42) DEFAULT NULL,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_categories` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_categories` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
@@ -62,7 +62,7 @@ CREATE TABLE `goose_files` (
   `size` bigint(11) DEFAULT 0,
   `regdate` datetime DEFAULT NULL,
   `module` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_files` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_files` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
@@ -76,7 +76,7 @@ CREATE TABLE `goose_json` (
   `description` varchar(100) DEFAULT NULL,
   `json` mediumtext,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_json` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_json` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
@@ -92,7 +92,7 @@ CREATE TABLE `goose_nests` (
   `description` varchar(100) DEFAULT NULL,
   `json` text,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_nests` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `id` (`id`);
 ALTER TABLE `goose_nests` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
@@ -106,7 +106,7 @@ CREATE TABLE `goose_users` (
   `password` varchar(100) DEFAULT NULL,
   `admin` tinyint(1) DEFAULT 1 NOT NULL,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_users` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `email` (`email`);
 ALTER TABLE `goose_users` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
@@ -118,7 +118,7 @@ CREATE TABLE `goose_tokens` (
   `token` varchar(100) DEFAULT NULL,
   `expired` int(11) DEFAULT NULL,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_tokens` ADD PRIMARY KEY (`srl`), ADD UNIQUE KEY `token` (`token`);
 ALTER TABLE `goose_tokens` MODIFY `srl` smallint(11) NOT NULL AUTO_INCREMENT;
@@ -131,7 +131,7 @@ CREATE TABLE `goose_comments` (
   `user_srl` smallint(11) DEFAULT NULL,
   `content` text,
   `regdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `goose_comments` ADD PRIMARY KEY (`srl`);
 ALTER TABLE `goose_comments` MODIFY `srl` int(11) NOT NULL AUTO_INCREMENT;
