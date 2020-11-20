@@ -136,8 +136,9 @@ class Install {
     // output
     $output .= "Success!\n";
     $output .= "Please proceed to the next step.\n";
-    $output .= "1) Please edit the `.env` file in a text editor.\n";
-    $output .= "2) Run `cmd.sh install` in the command.";
+    $output .= "1) Add user and database in MYSQL.\n";
+    $output .= "2) Please edit the `.env` file in a text editor.\n";
+    $output .= "3) Run `cmd.sh install` in the command.";
     self::output($output);
   }
 
