@@ -70,6 +70,13 @@ return [
   [ 'POST', '/comments/[i:srl]/edit/', 'comments/edit_item', 'editComment' ],
   [ 'POST', '/comments/[i:srl]/delete/', 'comments/delete_item', 'deleteComment' ],
 
+  // checklist
+  [ 'GET', '/checklist/', 'checklist/get_index', 'getChecklists' ],
+  [ 'GET', '/checklist/[i:srl]/', 'checklist/get_item', 'getChecklist' ],
+  [ 'POST', '/checklist/', 'checklist/add_item', 'addChecklist' ],
+  [ 'POST', '/checklist/[i:srl]/edit/', 'checklist/edit_item', 'editChecklists' ],
+  [ 'POST', '/checklist/[i:srl]/delete/', 'checklist/delete_item', 'deleteChecklists' ],
+
   // auth
   [ 'POST', '/auth/login/', 'auth/post_login', 'postLogin' ],
   [ 'POST', '/auth/logout/', 'auth/post_logout', 'postLogout' ],
