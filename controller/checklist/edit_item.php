@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception, Controller;
+use Controller\checklist\UtilForChecklist;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -22,9 +23,8 @@ try
   // check post values
   Util::checkExistValue($this->post, [ 'content' ]);
 
-  // set percent from content
-  $percent = 0;
-  // TODO: 내용을 수정하면 체크박스 갯수를 알아보고 퍼센테이지 값 도출해내야 한다.
+  // set percent into content
+  $percent = UtilForChecklist::getPercentIntoCheckboxes($this->post->content);
 
   // connect db
   $this->model->connect();

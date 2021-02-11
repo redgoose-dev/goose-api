@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception, Controller;
+use Controller\checklist\UtilForChecklist;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -21,6 +22,9 @@ try
   // check access
   $token = Auth::checkAuthorization($this->model, 'user');
 
+  // set percent into content
+  $percent = UtilForChecklist::getPercentIntoCheckboxes($this->post->content);
+
   // set output
   $output = Controller\Main::add($this, (object)[
     'table' => 'checklist',
@@ -28,7 +32,7 @@ try
       'srl' => null,
       'user_srl' => (int)$token->data->user_srl,
       'content' => $this->post->content,
-      'percent' => 0,
+      'percent' => $percent,
       'regdate' => isset($this->post->regdate) ? $this->post->regdate : date('Y-m-d'),
     ],
   ]);
