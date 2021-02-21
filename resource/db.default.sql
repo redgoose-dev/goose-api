@@ -99,6 +99,7 @@ create table `goose_users` (
   `name` varchar(30) default null,
   `password` varchar(100) default null,
   `admin` tinyint(1) default 1 not null,
+  `json` text,
   `regdate` datetime default null
 ) engine=InnoDB default charset=utf8mb4;
 alter table `goose_users` add primary key (`srl`), add unique key `email` (`email`);
