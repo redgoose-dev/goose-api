@@ -19,9 +19,6 @@ try
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
-  // check post values
-//  Util::checkExistValue($this->post, [ 'id', 'name' ]);
-
   // check `id`
   if (isset($this->post->id) && !Text::allowString($this->post->id))
   {

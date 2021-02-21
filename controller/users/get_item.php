@@ -33,6 +33,7 @@ try
   $output = Controller\Main::item($this, (object)[
     'table' => 'users',
     'srl' => $srl,
+    'json_field' => ['json'],
   ], function($result=null) {
     // delete password field
     if (!isset($result->data)) return $result;
