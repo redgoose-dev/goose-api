@@ -28,6 +28,7 @@ try
   // set output
   $output = Controller\Main::add($this, (object)[
     'table' => 'checklist',
+    'return' => isset($this->get->return),
     'data' => (object)[
       'srl' => null,
       'user_srl' => (int)$token->data->user_srl,
