@@ -135,7 +135,7 @@ create table `goose_checklist` (
   `user_srl` smallint(11) default null,
   `content` text,
   `percent` tinyint(3) unsigned default 0,
-  `regdate` date default null
+  `regdate` datetime default null
 ) engine=InnoDB default charset=utf8mb4;
 alter table `goose_checklist` add primary key (`srl`), add unique key `regdate` (`regdate`);
 alter table `goose_checklist` modify `srl` int(11) not null auto_increment;

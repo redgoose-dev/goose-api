@@ -34,7 +34,7 @@ try
       'user_srl' => (int)$token->data->user_srl,
       'content' => $this->post->content,
       'percent' => $percent,
-      'regdate' => isset($this->post->regdate) ? $this->post->regdate : date('Y-m-d'),
+      'regdate' => isset($this->post->regdate) ? $this->post->regdate : date('Y-m-d H:i:s'),
     ],
   ]);
 
