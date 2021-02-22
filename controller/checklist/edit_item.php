@@ -1,11 +1,12 @@
 <?php
 namespace Core;
 use Exception, Controller;
+use Controller\checklist\UtilForChecklist;
 
 if (!defined('__API_GOOSE__')) exit();
 
 /**
- * get user
+ * edit checklist item
  *
  * @var Goose|Connect $this
  */
@@ -19,30 +20,33 @@ try
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
+  // check post values
+  Util::checkExistValue($this->post, [ 'content' ]);
+
+  // set percent into content
+  $percent = UtilForChecklist::getPercentIntoCheckboxes($this->post->content);
+
   // connect db
   $this->model->connect();
 
-  // check authorization
-  $token = Auth::checkAuthorization($this->model, 'user');
-  if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
-  {
-    throw new Exception(Message::make('error.access'), 401);
-  }
+  // check access
+  $token = Controller\Main::checkAccessItem($this, (object)[
+    'table' => 'checklist',
+    'srl' => $srl,
+  ]);
 
   // set output
-  $output = Controller\Main::item($this, (object)[
-    'table' => 'users',
+  $output = Controller\Main::edit($this, (object)[
+    'table' => 'checklist',
     'srl' => $srl,
-    'json_field' => ['json'],
-  ], function($result=null) {
-    // delete password field
-    if (!isset($result->data)) return $result;
-    if (isset($result->data->password)) unset($result->data->password);
-    return $result;
-  });
+    'data' => [
+      "content='{$this->post->content}'",
+      "percent={$percent}",
+    ],
+  ]);
 
   // set token
-  if ($token->jwt) $output->_token = $token->jwt;
+  if ($token) $output->_token = $token->jwt;
 
   // disconnect db
   $this->model->disconnect();

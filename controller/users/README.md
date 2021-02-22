@@ -39,6 +39,7 @@
 | password | string | `1234` | 비밀번호 |
 | password2 | string | `1234` | 비밀번호 확인 |
 | admin | number | `2` | 관리자 유무 |
+| json | string | `{"foo": "bar"}` | false | json data |
 
 
 ## edit user
@@ -53,6 +54,7 @@
 | email | string | `abc@abc.com` | 이메일 주소 |
 | name | string | `name` | name |
 | admin | number | `2` | 관리자 유무 |
+| json | string | `{"foo": "bar"}` | false | json data |
 
 
 ## delete user

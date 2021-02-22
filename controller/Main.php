@@ -194,6 +194,15 @@ class Main {
     $output->query = $result->query;
     $output->srl = $self->model->getLastIndex();
 
+    // set return
+    if ($op->return)
+    {
+      $output->data = $self->model->getItem((object)[
+        'table' => $op->table,
+        'where' => 'srl='.(int)$output->srl,
+      ])->data;
+    }
+
     return $output;
   }
 

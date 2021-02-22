@@ -21,6 +21,18 @@ try
     throw new Exception(Message::make('error.matchPassword'));
   }
 
+  // check and set json
+  $json = null;
+  if (isset($this->post->json))
+  {
+    $json = json_decode(urldecode($this->post->json), false);
+    if (!$json)
+    {
+      throw new Exception(Message::make('error.json'));
+    }
+    $json = urlencode(json_encode($json, false));
+  }
+
   // connect db
   $this->model->connect();
 
@@ -48,6 +60,7 @@ try
         'name' => $this->post->name,
         'password' => Text::createPassword($this->post->password),
         'admin' => isset($this->post->admin) ? (int)$this->post->admin : 1,
+        'json' => $json,
         'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);

@@ -19,6 +19,18 @@ try
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
+  // check and set json
+  $json = null;
+  if (isset($this->post->json))
+  {
+    $json = json_decode(urldecode($this->post->json), false);
+    if (!$json)
+    {
+      throw new Exception(Message::make('error.json'));
+    }
+    $json = urlencode(json_encode($json, false));
+  }
+
   // connect db
   $this->model->connect();
 
@@ -58,6 +70,7 @@ try
   if (isset($this->post->email)) $data[] = "email='{$this->post->email}'";
   if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
   if ($this->post->admin && $token->data->admin) $data[] = "admin=".(int)$this->post->admin;
+  if (isset($this->post->json)) $data[] = "json='$json'";
   if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
 
   try

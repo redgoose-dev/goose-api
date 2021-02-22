@@ -5,7 +5,7 @@ use Exception, Controller;
 if (!defined('__API_GOOSE__')) exit();
 
 /**
- * get user
+ * get checklist item
  *
  * @var Goose|Connect $this
  */
@@ -22,27 +22,21 @@ try
   // connect db
   $this->model->connect();
 
-  // check authorization
-  $token = Auth::checkAuthorization($this->model, 'user');
-  if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
-  {
-    throw new Exception(Message::make('error.access'), 401);
-  }
+  // check access
+  $token = Controller\Main::checkAccessItem($this, (object)[
+    'table' => 'checklist',
+    'srl' => $srl,
+    'useStrict' => true,
+  ]);
 
   // set output
-  $output = Controller\Main::item($this, (object)[
-    'table' => 'users',
+  $output = Controller\Main::item($this, (object)array_merge((array)$this->get, (array)[
+    'table' => 'checklist',
     'srl' => $srl,
-    'json_field' => ['json'],
-  ], function($result=null) {
-    // delete password field
-    if (!isset($result->data)) return $result;
-    if (isset($result->data->password)) unset($result->data->password);
-    return $result;
-  });
+  ]));
 
   // set token
-  if ($token->jwt) $output->_token = $token->jwt;
+  if ($token) $output->_token = $token->jwt;
 
   // disconnect db
   $this->model->disconnect();

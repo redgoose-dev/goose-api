@@ -39,6 +39,7 @@ try
     'auth' => true,
     'table' => 'users',
     'where' => $where,
+    'json_field' => ['json'],
   ], function($result=null) {
     if (!isset($result->data)) return $result;
     foreach ($result->data as $k=>$o)

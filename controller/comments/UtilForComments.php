@@ -3,7 +3,7 @@ namespace Controller\comments;
 use Exception, Core, Controller;
 
 /**
- * util for articles
+ * util for comments
  */
 
 class UtilForComments {
