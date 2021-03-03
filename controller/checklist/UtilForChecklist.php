@@ -24,4 +24,16 @@ class UtilForChecklist {
     return (int)floor($checked / $total * 100);
   }
 
+  /**
+   * adjust content
+   *
+   * @param string $content
+   * @return string
+   */
+  public static function adjustContent(string $content): string
+  {
+    $content = str_replace("'", "\'", $content);
+    return $content;
+  }
+
 }

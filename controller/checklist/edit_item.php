@@ -35,12 +35,15 @@ try
     'srl' => $srl,
   ]);
 
+  // adjust content
+  $content = UtilForChecklist::adjustContent($this->post->content);
+
   // set output
   $output = Controller\Main::edit($this, (object)[
     'table' => 'checklist',
     'srl' => $srl,
     'data' => [
-      "content='{$this->post->content}'",
+      "content='{$content}'",
       "percent={$percent}",
     ],
   ]);
