@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -19,7 +20,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'nests',
     'srl' => (int)$this->post->nest_srl,
   ]);
@@ -34,6 +35,7 @@ try
       'table' => 'categories',
       'where' => 'nest_srl='.(int)$this->post->nest_srl.' and srl='.$v,
       'data' => [ 'turn='.($k+1) ],
+      'debug' => true,
     ]);
   }
 
@@ -48,10 +50,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

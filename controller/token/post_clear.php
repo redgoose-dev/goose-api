@@ -6,7 +6,7 @@ if (!defined('__API_GOOSE__')) exit();
 
 /**
  * clear tokens
- * 블랙리스트에 등록된 토큰들중에 만료된것만 찾아서 삭제한다.
+ * 블랙리스트에 등록된 토큰들을 삭제한다.
  *
  * @var Goose|Connect $this
  */
@@ -49,10 +49,10 @@ try
   $this->model->disconnect();
 
 	// output data
-	return Output::data($output);
+	return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

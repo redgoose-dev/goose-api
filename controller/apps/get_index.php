@@ -20,32 +20,38 @@ try
 
   // set where
   $where = '';
-  if ($id = $this->get->id)
+  if ($id = ($this->get->id ?? null))
   {
     $where .= ' and id LIKE \''.$id.'\'';
   }
-  if ($name = $this->get->name)
+  if ($name = ($this->get->name ?? null))
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if (!$token->data->admin && $token->data->user_srl)
+  if (!$token->data->admin && $token->data->srl)
   {
-    $where .= ' and user_srl='.(int)$token->data->user_srl;
+    $where .= ' and user_srl='.(int)$token->data->srl;
   }
-  else if ($user_srl = $this->get->user)
+  else if ($user_srl = ($this->get->user ?? null))
   {
     $where .= ' and user_srl='.(int)$user_srl;
   }
 
+  // set merge options
+  $options = (object)array_merge(
+    (array)$this->get,
+    (array)[
+      'table' => 'apps',
+      'where' => $where,
+      'object' => false,
+      'debug' => __API_DEBUG__,
+    ]
+  );
   // set output
-  $output = Controller\Main::index($this, (object)array_merge((array)$this->get, (array)[
-    'table' => 'apps',
-    'where' => $where,
-    'object' => false,
-    'debug' => __API_DEBUG__,
-  ]));
+  $output = Controller\Main::index($this, $options);
 
-  if ($output->data && Util::checkKeyInExtField('count_nests', $this->get->ext_field))
+  // run extend functions
+  if ($output->data && Util::checkKeyInExtField('count_nests', ($this->get->ext_field ?? '')))
   {
     $output->data->index = Controller\apps\UtilForApps::getCountNests(
       $this,
@@ -60,10 +66,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

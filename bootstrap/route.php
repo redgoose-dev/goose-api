@@ -2,6 +2,7 @@
 if (!defined('__API_GOOSE__')) exit();
 
 return [
+
   // intro
   [ 'GET', '', 'intro' ],
   [ 'GET', '/', 'intro' ],
@@ -90,4 +91,5 @@ return [
   [ 'GET', '/external/[aa:name]/[aa:srl]/', 'external', 'getExternalParam' ],
   [ 'POST', '/external/[aa:name]/', 'external', 'postExternal' ],
   [ 'POST', '/external/[aa:name]/[aa:srl]/', 'external', 'postExternalParam' ],
+
 ];

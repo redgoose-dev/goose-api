@@ -6,17 +6,14 @@ class Message {
 
   /**
    * import json
-   *
-   * @param string $code
-   * @return object
    * @throws Exception
    */
-  static private function import($code='en')
+  static private function import(string $code = 'en'): array
   {
     try
     {
       $json = file_get_contents(__API_PATH__.'/resource/message/'.$code.'.json');
-      return json_decode($json, true);
+      return (array)json_decode($json, true);
     }
     catch(Exception $e)
     {
@@ -25,29 +22,29 @@ class Message {
   }
 
   /**
-   * find
-   *
-   * @param array|null $path
-   * @return string
+   * block
    */
-  static private function find(array $path=null)
+  static private function block(array $tree, array $path): string
   {
-    function block($tree, $path)
+    $temp = &$tree;
+    foreach($path as $key)
     {
-      $temp = &$tree;
-      foreach($path as $key)
-      {
-        $temp = &$temp[$key];
-      }
-      return $temp ? $temp : '';
+      $temp = &$temp[$key];
     }
+    return $temp ?? '';
+  }
 
+  /**
+   * find
+   */
+  static private function find(array $path): string
+  {
     try
     {
-      $value = block(self::import($_ENV['API_LANGUAGE']), $path);
+      $value = self::block(self::import($_ENV['API_LANGUAGE']), $path);
       if (!$value && $_ENV['API_LANGUAGE'] !== 'en')
       {
-        $value = block(self::import('en'), $path);
+        $value = self::block(self::import(), $path);
       }
       return $value;
     }
@@ -60,45 +57,30 @@ class Message {
   /**
    * make
    * example) Message::make('error.notFound', 'srl');
-   *
-   * @param string $path
-   * @param array $args
-   * @return string
    */
-  static public function make($path='', ...$args)
+  static public function make(string $path, ...$args): string
   {
-    $value = self::find(explode('.', $path));
+    $paths = explode('.', $path);
+    $value = self::find($paths);
     return Text::printf($value, ...$args);
   }
 
   /**
    * get error upload file message
-   *
-   * @param int $code
-   * @return string
    */
-  static public function errorUploadFile($code=0)
+  static public function errorUploadFile(int $code = 0): string
   {
-    switch ($code)
+    return match ($code)
     {
-      case UPLOAD_ERR_INI_SIZE:
-        return self::make('file.UPLOAD_ERR_INI_SIZE');
-      case UPLOAD_ERR_FORM_SIZE:
-        return self::make('file.UPLOAD_ERR_FORM_SIZE');
-      case UPLOAD_ERR_PARTIAL:
-        return self::make('file.UPLOAD_ERR_PARTIAL');
-      case UPLOAD_ERR_NO_FILE:
-        return self::make('file.UPLOAD_ERR_NO_FILE');
-      case UPLOAD_ERR_NO_TMP_DIR:
-        return self::make('file.UPLOAD_ERR_NO_TMP_DIR');
-      case UPLOAD_ERR_CANT_WRITE:
-        return self::make('file.UPLOAD_ERR_CANT_WRITE');
-      case UPLOAD_ERR_EXTENSION:
-        return self::make('file.UPLOAD_ERR_EXTENSION');
-      case UPLOAD_ERR_OK:
-      default:
-        return self::make('file.UPLOAD_ERR_OK');
-    }
+      UPLOAD_ERR_INI_SIZE => self::make('file.UPLOAD_ERR_INI_SIZE'),
+      UPLOAD_ERR_FORM_SIZE => self::make('file.UPLOAD_ERR_FORM_SIZE'),
+      UPLOAD_ERR_PARTIAL => self::make('file.UPLOAD_ERR_PARTIAL'),
+      UPLOAD_ERR_NO_FILE => self::make('file.UPLOAD_ERR_NO_FILE'),
+      UPLOAD_ERR_NO_TMP_DIR => self::make('file.UPLOAD_ERR_NO_TMP_DIR'),
+      UPLOAD_ERR_CANT_WRITE => self::make('file.UPLOAD_ERR_CANT_WRITE'),
+      UPLOAD_ERR_EXTENSION => self::make('file.UPLOAD_ERR_EXTENSION'),
+      default => self::make('file.UPLOAD_ERR_OK'),
+    };
   }
 
 }

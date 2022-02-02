@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -15,8 +16,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -31,7 +31,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
   ]);
@@ -45,14 +45,10 @@ try
   $nest = $this->model->getItem((object)[
     'table' => 'nests',
     'where' => 'srl='.$nest_srl,
-  ]);
-  if (!isset($nest->data))
+  ])->data;
+  if (!isset($nest))
   {
     throw new Exception(Message::make('error.noItem', 'nest data'));
-  }
-  else
-  {
-    $nest = $nest->data;
   }
 
   /**
@@ -60,7 +56,7 @@ try
    *
    * 바뀐 `nest`값에서 `app_srl`값을 가져와서 적용한다.
    */
-  $app_srl = (isset($nest->app_srl) && $nest->app_srl) ? (int)$nest->app_srl : null;
+  $app_srl = ($nest->app_srl ?? null) ? (int)$nest->app_srl : null;
 
   /**
    * set category_srl
@@ -68,23 +64,23 @@ try
    * `$this->post->category_srl`값이 있으면 변경하기 위하여 실제로 데이터가 존재하는지 조회해본다.
    * 데이터가 없거나 `$this->post->category_srl`값이 없으면 `null`로 정의한다.
    */
-  $category_srl = isset($this->post->category_srl) ? (int)$this->post->category_srl : null;
+  $category_srl = $this->post->category_srl ?? null;
   if ($category_srl)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
       'where' => 'nest_srl='.$nest_srl.' and srl='.$category_srl,
-    ]);
-    $category_srl = ($cnt->data > 0) ? $category_srl : null;
+    ])->data;
+    $category_srl = ($cnt > 0) ? $category_srl : null;
   }
 
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'data' => [
-      '`app_srl`='.($app_srl ? $app_srl : 'null'),
-      '`category_srl`='.($category_srl ? $category_srl : 'null'),
+      '`app_srl`='.($app_srl ?? 'null'),
+      '`category_srl`='.($category_srl ?? 'null'),
       '`nest_srl`='.$nest_srl,
       "`modate`='".date("Y-m-d H:i:s")."'",
     ],
@@ -97,10 +93,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

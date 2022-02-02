@@ -32,10 +32,11 @@
 
 체크리스트를 추가합니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| content | string | `- [ ] check item` | 글 본문 |
-| regdate | date | `0000-00-00` | 등록날짜이며 중복된 날짜의 아이템은 등록할 수 없습니다. 이 필드는 사용을 권장하지 않습니다. |
+|   key   | method |    type | example | description |
+|:-------:|:------:|--------:|---------|-------------|
+| content | POST | string | `- [ ] check item` | 글 본문 |
+| regdate | POST | date | `0000-00-00` | 등록날짜이며 중복된 날짜의 아이템은 등록할 수 없습니다. 이 필드는 사용을 권장하지 않습니다. |
+| return | GET | boolean | 1 | 추가한 데이터를 되돌려 받는다. |
 
 
 ## edit checklist

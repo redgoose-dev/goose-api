@@ -34,7 +34,7 @@ try
 
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'admin');
-  if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
+  if (!$token->data->admin && ((int)$token->data->srl !== $srl))
   {
     throw new Exception(Message::make('error.access'), 401);
   }
@@ -52,10 +52,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

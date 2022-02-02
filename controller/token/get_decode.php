@@ -19,7 +19,7 @@ try
   $this->model->connect();
 
   // check authorization
-  $token = Auth::checkAuthorization($this->model);
+  $token = Auth::checkAuthorization($this->model, '');
 
   // get decode token
   $jwt = Token::get(__API_TOKEN__);
@@ -35,10 +35,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

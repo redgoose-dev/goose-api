@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use PDO, Exception, PDOException;
+use PDO, Exception, PDOException, DateTimeZone, DateTime;
 
 
 /**
@@ -12,24 +12,20 @@ use PDO, Exception, PDOException;
 
 class Model {
 
+  public object|null $db;
+  public string $prefix = 'goose_';
+
   public function __construct()
-  {
-    $this->db = null;
-    $this->prefix = 'goose_';
-  }
+  {}
 
   /**
    * convert json to object
-   *
-   * @param array $item
-   * @param array $fields
-   * @return object|array
    */
-  private static function convertJsonToObject($item, $fields)
+  private static function convertJsonToObject(array|object $item, array $fields): object|array
   {
     foreach ($fields as $k=>$v)
     {
-      if ($item->{$v})
+      if (isset($item->{$v}))
       {
         $item->{$v} = json_decode(urldecode($item->{$v}), false);
       }
@@ -50,9 +46,9 @@ class Model {
    * @param array $op->limit
    * @return string
    */
-  private function query($op=null)
+  private function query(object $op): string
   {
-    if (!(isset($op->act) && isset($op->table))) return null;
+    if (!(isset($op->act) && isset($op->table))) return '';
 
     // filtering where
     if (isset($op->where))
@@ -91,7 +87,7 @@ class Model {
    *
    * @throws Exception
    */
-  public function connect()
+  public function connect(): void
   {
     try
     {
@@ -100,10 +96,15 @@ class Model {
         $_ENV['API_DB_USERNAME'],
         $_ENV['API_DB_PASSWORD']
       );
-      $this->action('set names utf8');
+      $this->action('set names utf8mb4');
+      if (isset($_ENV['API_TIMEZONE_OFFSET']))
+      {
+        $this->action("set session time_zone='$_ENV[API_TIMEZONE_OFFSET]'");
+      }
     }
     catch(PDOException $e)
     {
+      var_dump($e->getMessage());
       $message = (__API_DEBUG__) ? $e->getMessage() : 'Failed connect database';
       $code = (__API_DEBUG__) ? $e->getCode() : 500;
       throw new Exception($message, $code);
@@ -113,18 +114,15 @@ class Model {
   /**
    * disconnect database
    */
-  public function disconnect()
+  public function disconnect(): void
   {
     $this->db = null;
   }
 
   /**
    * get table name
-   *
-   * @param string $tableName
-   * @return string
    */
-  public function getTableName($tableName=null)
+  public function getTableName(string $tableName): string
   {
     return $this->prefix.$tableName;
   }
@@ -132,10 +130,9 @@ class Model {
   /**
    * run query
    *
-   * @param string $query
    * @throws Exception
    */
-  public function action($query)
+  public function action(string $query): void
   {
     if (!$this->db->query($query))
     {
@@ -148,7 +145,7 @@ class Model {
    *
    * @return int
    */
-  public function getLastIndex()
+  public function getLastIndex(): int
   {
     return (int)$this->db->lastInsertId();
   }
@@ -159,51 +156,41 @@ class Model {
    * @param object $op
    * @return string
    */
-  public function getQuery($op=null)
+  public function getQuery(object $op): string
   {
     return $this->query($op);
   }
 
   /**
    * get count
-   *
-   * @param object $op
-   * @return object
    */
-  public function getCount($op=null)
+  public function getCount(object $op): object
   {
     $output = (object)[];
-
     $op->act = 'select';
     $op->field = 'count(*)';
-
     // make query
     $query = $this->query($op);
-
     // result
     $result = $this->db->prepare($query);
     $result->execute();
     $result = (int)$result->fetchColumn();
-
     // set output
-    $output->data = $result ? $result : 0;
-    if ($op->debug === true) $output->query = $query;
-
+    $output->data = $result;
+    if ($op->debug ?? false) $output->query = $query;
+    // result
     return $output;
   }
 
   /**
    * get items
-   *
-   * @param object $op
-   * @return object
    */
-  public function getItems($op=null)
+  public function getItems(object $op): object
   {
     $output = (object)[];
 
     $op->act = 'select';
-    $op->field = ($op->field) ? Util::convertFields($op->field) : '*';
+    $op->field = isset($op->field) ? Util::convertFields($op->field) : '*';
 
     // make query
     $query = $this->query($op);
@@ -213,7 +200,7 @@ class Model {
     if ($qry)
     {
       $result = $qry->fetchAll(PDO::FETCH_CLASS);
-      if ($result && $op->json_field && count($op->json_field))
+      if ($result && count($op->json_field ?? []) > 0)
       {
         foreach ($result as $k=>$v)
         {
@@ -227,23 +214,20 @@ class Model {
 
     // set output
     $output->data = isset($result) ? $result : [];
-    if ($op->debug === true) $output->query = $query;
+    if ($op->debug ?? false) $output->query = $query;
 
     return $output;
   }
 
   /**
    * get item
-   *
-   * @param object $op
-   * @return object
    */
-  public function getItem($op=null)
+  public function getItem(object $op): object
   {
     $output = (object)[];
 
     $op->act = 'select';
-    $op->field = ($op->field) ? Util::convertFields($op->field) : '*';
+    $op->field = (isset($op->field)) ? Util::convertFields($op->field) : '*';
 
     // make query
     $query = $this->query($op);
@@ -254,7 +238,7 @@ class Model {
     {
       $result = (object)$qry->fetch(PDO::FETCH_ASSOC);
       if ($result && isset($result->scalar) && !$result->scalar) $result = null;
-      if ($result && $op->json_field && count($op->json_field))
+      if ($result && isset($op->json_field) && count($op->json_field))
       {
         $result = self::convertJsonToObject($result, $op->json_field);
       }
@@ -262,7 +246,7 @@ class Model {
 
     // set output
     $output->data = $result ? (object)$result : null;
-    if ($op->debug === true) $output->query = $query;
+    if ($op->debug ?? false) $output->query = $query;
 
     return $output;
   }
@@ -274,7 +258,7 @@ class Model {
    * @return object
    * @throws Exception
    */
-  public function add($op=null)
+  public function add(object $op): object
   {
     // check $op
     if (!isset($op->table)) throw new Exception('Not found $op->table');
@@ -310,7 +294,7 @@ class Model {
 
     // set output
     $output = (object)[];
-    if ($op->debug === true) $output->query = $query;
+    if ($op->debug ?? false) $output->query = $query;
     $output->success = true;
 
     return $output;
@@ -323,7 +307,7 @@ class Model {
    * @return object
    * @throws Exception
    */
-  public function edit($op=null)
+  public function edit(object $op): object
   {
     // check $op
     if (!isset($op->data)) throw new Exception('Not found $op->data');
@@ -353,7 +337,7 @@ class Model {
 
     // set output
     $output = (object)[];
-    if ($op->debug === true) $output->query = $query;
+    if ($op->debug ?? false) $output->query = $query;
     $output->success = true;
 
     return $output;
@@ -366,7 +350,7 @@ class Model {
    * @return object
    * @throws Exception
    */
-  public function delete($op)
+  public function delete(object $op): object
   {
     $output = (object)[];
     try
@@ -398,19 +382,15 @@ class Model {
     finally
     {
       // set output
-      if ($op->debug === true) $output->query = $query;
+      if ($op->debug ?? false) $output->query = $query;
       return $output;
     }
   }
 
   /**
    * get max in field
-   *
-   * @param object $op
-   * @return int
-   * @throws Exception
    */
-  public function getMax($op=null)
+  public function getMax(object $op): object
   {
     $output = (object)[];
     try
@@ -419,10 +399,10 @@ class Model {
       if (!isset($op->field)) throw new Exception('no value `field`');
       // set value
       $tableName = $this->getTableName($op->table);
-      $field = isset($op->field) ? $op->field : 'srl';
+      $field = $op->field ?? 'srl';
       // set query
       $query = 'select max('.$op->field.') as maximum from '.$tableName;
-      if (isset($op->where)) $query .= ' where '.$op->where;
+      $query .= isset($op->where) ? ' where '.$op->where : '';
       // action
       $max = $this->db->prepare($query);
       $max->execute();
@@ -439,7 +419,7 @@ class Model {
     finally
     {
       // set output
-      if ($op->debug === true) $output->query = $query;
+      if ($op->debug ?? false) $output->query = $query;
       return $output;
     }
   }

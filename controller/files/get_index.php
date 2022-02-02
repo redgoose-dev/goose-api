@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -16,33 +17,33 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this, true);
+  $token = Main::checkAccessIndex($this, true);
 
 	// set where
 	$where = '';
-	if ($target = $this->get->target)
+	if ($target = ($this->get->target ?? null))
 	{
 		$where .= ' and target_srl='.$target;
 	}
-	if ($name = $this->get->name)
+	if ($name = ($this->get->name ?? null))
 	{
 		$where .= ' and name LIKE \'%'.$name.'%\'';
 	}
-	if ($type = $this->get->type)
+	if ($type = ($this->get->type ?? null))
 	{
 		$where .= ' and type LIKE \'%'.$type.'%\'';
 	}
-  if ($module = $this->get->module)
+  if ($module = ($this->get->module ?? null))
   {
     $where .= ' and module LIKE \''.$module.'\'';
   }
-  if (isset($token->data->user_srl) && !$token->data->admin)
+  if (isset($token->data->srl) && !$token->data->admin)
   {
-    $where .= ' and user_srl='.(int)$token->data->user_srl;
+    $where .= ' and user_srl='.(int)$token->data->srl;
   }
 
 	// set output
-	$output = Controller\Main::index($this, (object)[
+	$output = Main::index($this, (object)[
 		'table' => 'files',
 		'where' => $where,
 	]);
@@ -54,10 +55,10 @@ try
   $this->model->disconnect();
 
 	// output
-	return Output::data($output);
+	return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

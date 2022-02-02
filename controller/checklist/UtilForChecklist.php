@@ -1,6 +1,5 @@
 <?php
 namespace Controller\checklist;
-use Exception, Core, Controller;
 
 /**
  * util for checklist
@@ -11,9 +10,6 @@ class UtilForChecklist {
   /**
    * get percent into checkboxes
    * 내용에 체크박스 갯수를 검사하여 퍼센테이지를 구한다.
-   *
-   * @param string $body
-   * @return int
    */
   public static function getPercentIntoCheckboxes(string $body): int
   {
@@ -26,14 +22,10 @@ class UtilForChecklist {
 
   /**
    * adjust content
-   *
-   * @param string $content
-   * @return string
    */
   public static function adjustContent(string $content): string
   {
-    $content = str_replace("'", "\'", $content);
-    return $content;
+    return str_replace("'", "\'", $content);
   }
 
 }

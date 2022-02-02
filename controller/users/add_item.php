@@ -39,12 +39,15 @@ try
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'admin');
 
+  // test email address
+  Text::checkEmail($this->post->email);
+
   // check email address
   $cnt = $this->model->getCount((object)[
     'table' => 'users',
     'where' => 'email="'.$this->post->email.'"',
   ]);
-  if (isset($cnt->data) && $cnt->data > 0)
+  if (($cnt->data ?? 0) > 0)
   {
     throw new Exception(Message::make('error.existsValue', 'email address'));
   }
@@ -59,7 +62,7 @@ try
         'email' => $this->post->email,
         'name' => $this->post->name,
         'password' => Text::createPassword($this->post->password),
-        'admin' => isset($this->post->admin) ? (int)$this->post->admin : 1,
+        'admin' => (int)($this->post->admin ?? 1),
         'json' => $json,
         'regdate' => date('Y-m-d H:i:s'),
       ],
@@ -77,10 +80,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

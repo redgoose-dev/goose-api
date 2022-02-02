@@ -20,7 +20,7 @@ try
   $this->model->connect();
 
   // check authorization
-  Auth::checkAuthorization($this->model);
+  Auth::checkAuthorization($this->model, '');
 
   // set values
   $output = (object)[];
@@ -38,12 +38,8 @@ try
     'exp' => true,
     'time' => true,
     'data' => (object)[
-      'type' => 'user',
-      'user_srl' => $user->srl,
-      'email' => $user->email,
-      'admin' => !!((int)$user->admin === 2),
-      'host' => $this->post->host,
-      'regdate' => date('Y-m-d H:i:s'),
+      'srl' => $user->srl,
+      'admin' => !!((int)$user->admin === 1),
     ],
   ]);
 
@@ -51,7 +47,7 @@ try
   $data->srl = (int)$user->srl;
   $data->email = $user->email;
   $data->name = $user->name;
-  $data->admin = !!((int)$user->admin === 2);
+  $data->admin = !!((int)$user->admin === 1);
   $data->token = $jwt->token;
   $data->host = $this->post->host;
 
@@ -63,10 +59,10 @@ try
   $output->data = $data;
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  Error::result($e->getMessage(), $e->getCode());
 }

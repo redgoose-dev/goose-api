@@ -24,7 +24,7 @@ try
 }
 catch(Exception $e)
 {
-  Error::data($e->getMessage(), $e->getCode());
+  Error::result($e->getMessage(), $e->getCode());
 }
 
 

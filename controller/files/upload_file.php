@@ -12,6 +12,9 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check upload directories
+  Util::checkDirectories();
+
   // connect db
   $this->model->connect();
 
@@ -19,7 +22,7 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // set values
-  $subDir = ($this->post->sub_dir) ? $this->post->sub_dir : 'user';
+  $subDir = $this->post->sub_dir ?? 'user';
   $month = date('Ym');
 
   // set path
@@ -28,65 +31,57 @@ try
   $path_absolute_dest = $path_absolute.'/'.$month;
 
   // multipart upload
-  if (isset($this->files['files']) && $this->files['files'])
+  if ($this->files['file'] ?? false)
   {
-    $file = File::convertFilesValue($this->files['files']);
-    $data = [];
-    foreach ($file['name'] as $k=>$v)
+    $file = File::convertFilesValue($this->files['file']);
+
+    // check file error
+    if ($file['error'])
     {
-      // check file error
-      if ($file['error'][$k])
-      {
-        $data[] = (object)[
-          'name' => $file['name'][$k],
-          'error' => true,
-          'message' => Message::errorUploadFile($file['error'][$k]),
-        ];
-        continue;
-      }
-
-      // check file size
-      if ((int)$file['size'][$k] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
-      {
-        throw new Exception(Message::make('error.limitFileSize'));
-      }
-
-      // check filename
-      $file['name'][$k] = File::checkFilename($file['name'][$k], false);
-      if (!$file['name'][$k])
-      {
-        throw new Exception(Message::make('error.allowFileType'));
-      }
-
-      // check exist file
-      $file['name'][$k] = File::checkExistFile($path_absolute_dest.'/', $file['name'][$k], null);
-
-      // make month directory
-      File::makeDirectory($path_absolute, 0707);
-
-      // make month directory
-      File::makeDirectory($path_absolute_dest, 0707);
-
-      if (!($file['tmp_name'][$k] && is_dir($path_absolute_dest)))
-      {
-        throw new Exception('upload error', 204);
-      }
-
-      // copy file
-      move_uploaded_file($file['tmp_name'][$k], $path_absolute_dest.'/'.$file['name'][$k]);
-
-      // set output
-      $data[] = (object)[
-        'name' => $file['name'][$k],
-        'path' => $path.'/'.$month.'/'.$file['name'][$k],
-        'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'][$k],
-        'type' => $file['type'][$k],
-        'size' => $file['size'][$k],
-      ];
+      throw new Exception(Message::errorUploadFile($file['error']));
     }
+
+    // check file size
+    if ((int)($file['size'] ?? 0) > (int)$_ENV['API_FILE_LIMIT_SIZE'])
+    {
+      throw new Exception(Message::make('error.limitFileSize'));
+    }
+
+    // check filename
+    if (!($file['name'] = File::checkFilename($file['name'], false)))
+    {
+      throw new Exception(Message::make('error.allowFileType'));
+    }
+    // check exist file
+    $file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
+
+    // make month directory
+    File::makeDirectory($path_absolute, 0707);
+
+    // make month directory
+    File::makeDirectory($path_absolute_dest, 0707);
+
+    // copy file to target
+    if ($file['tmp_name'] && is_dir($path_absolute_dest))
+    {
+      move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
+    }
+    else
+    {
+      throw new Exception(Message::make('error.upload'));
+    }
+
+    // set output
+    $data = (object)[
+      'name' => $file['name'],
+      'path' => $path.'/'.$month.'/'.$file['name'],
+      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'],
+      'type' => $file['type'],
+      'size' => $file['size'],
+    ];
   }
   // base64 upload
-  else if ($this->post->base64)
+  else if ($this->post->base64 ?? false)
   {
     // make image
     $imgData = $this->post->base64;
@@ -102,6 +97,12 @@ try
       $imgData = str_replace('data:image/png;base64,', '', $imgData);
       $imgType = 'image/png';
     }
+    else if (preg_match("/^data:image\/webp/", $imgData))
+    {
+      $filename = uniqid().'.webp';
+      $imgData = str_replace('data:image/webp;base64,', '', $imgData);
+      $imgType = 'image/webp';
+    }
     else
     {
       throw new Exception(Message::make('msg.onlyImage'));
@@ -110,7 +111,7 @@ try
     $imgSource = base64_decode($imgData);
 
     // check file size
-    if ((int)strlen($imgSource) > (int)$_ENV['API_FILE_LIMIT_SIZE'])
+    if (strlen($imgSource) > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       throw new Exception(Message::make('error.limitFileSize'));
     }
@@ -165,10 +166,10 @@ try
   // disconnect db
   $this->model->disconnect();
 
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

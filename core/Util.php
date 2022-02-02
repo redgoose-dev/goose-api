@@ -4,44 +4,22 @@ use Exception;
 
 /**
  * Util
+ * 유틸리티 메서드 모음
  */
-
 class Util {
-
-  /**
-   * get url parameter
-   *
-   * @param string $str
-   * @return string
-   */
-  public static function getParameter($str='')
-  {
-    if (isset($_POST[$str]))
-    {
-      return $_POST[$str];
-    }
-    else if (isset($_GET[$str]))
-    {
-      return $_GET[$str];
-    }
-    else
-    {
-      return null;
-    }
-  }
 
   /**
    * check exist value
    * 배열속에 필수값이 들어있는지 확인
    *
-   * @param array|object|null $target 확인할 배열
-   * @param array|null $required 키값이 들어있는 배열
+   * @param array|object $target 확인할 배열
+   * @param array $required 키값이 들어있는 배열
    * @throws Exception
    */
-  public static function checkExistValue($target=null, $required=null)
+  public static function checkExistValue(array|object $target, array $required = []): void
   {
-    if (!isset($target)) throw new Exception('No value `$target`');
-    if ($required)
+    if (!$target) throw new Exception('No value `$target`');
+    if ($required && count($required) > 0)
     {
       $target = (array)$target;
       foreach ($required as $k=>$v)
@@ -57,11 +35,9 @@ class Util {
   /**
    * create directory
    *
-   * @param string|null $path
-   * @param int $permission
    * @throws Exception
    */
-  public static function createDirectory($path=null, $permission=0707)
+  public static function createDirectory(?string $path=null, int $permission = 0707): void
   {
     if (is_dir($path))
     {
@@ -78,46 +54,37 @@ class Util {
 
   /**
    * check key in the extra field
-   *
-   * @param string|null $keyword
-   * @param string|null $field
-   * @return boolean
    */
-  public static function checkKeyInExtField($keyword=null, $field=null)
+  public static function checkKeyInExtField(string $keyword, ?string $field): bool
   {
     if (!($field && $keyword)) return false;
     $arr = explode(',', $field);
-    return !(array_search($keyword, $arr) === false);
+    return in_array($keyword, $arr);
   }
 
   /**
    * convert fields
-   *
-   * @param string|null $fields
-   * @return string
    */
-  public static function convertFields($fields=null)
+  public static function convertFields(string $fields): string
   {
     if (!$fields || $fields === '*') return '*';
-
     $arr = explode(',', $fields);
-    for ($i=0; $i<count($arr); $i++)
+    for ($i = 0; $i < count($arr); $i++)
     {
       $arr[$i] = "`".$arr[$i]."`";
     }
     $result = implode(',', $arr);
-    $result = preg_replace("/\`\`/i", "`", $result);
-    return $result;
+    return preg_replace("/\`\`/i", "`", $result);
   }
 
   /**
-   * get controller path
+   * controller router
    *
    * @param string $target
-   * @return string|null
+   * @return string
    * @throws Exception
    */
-  public static function getControllerPath($target='')
+  public static function controllerRouter(string $target = ''): string
   {
     // check $target
     if (!$target)
@@ -131,4 +98,66 @@ class Util {
     }
     return __API_PATH__.'/controller/'.$target.'.php';
   }
+
+  /**
+   * string to json
+   */
+  public static function stringToJson(?string $str): mixed
+  {
+    return json_decode(urldecode($str ?? ''), false);
+  }
+
+  /**
+   * json to string
+   */
+  public static function jsonToString(mixed $json): string
+  {
+    return urlencode(json_encode($json, false));
+  }
+
+  /**
+   * test json data
+   *
+   * @throws Exception
+   */
+  public static function testJsonData(string $json): string
+  {
+    try
+    {
+      $json = self::stringToJson($json);
+      if (!$json) throw new Exception('error');
+      return self::jsonToString($json);
+    }
+    catch(Exception $e)
+    {
+      throw new Exception(Message::make('error.json'));
+    }
+  }
+
+  /**
+   * Check directories
+   * @throws Exception
+   */
+  public static function checkDirectories()
+  {
+    // check `/data`
+    if (!is_dir(__API_PATH__.'/data'))
+    {
+      throw new Exception('The directory `/data` does not exist.');
+    }
+    if (!is_writable(__API_PATH__.'/data'))
+    {
+      throw new Exception('The `/data` directory permission is invalid.');
+    }
+    // check `/data/upload`
+    if (!is_dir(__API_PATH__.'/data/upload'))
+    {
+      throw new Exception('The directory `/data/upload` does not exist.');
+    }
+    if (!is_writable(__API_PATH__.'/data/upload'))
+    {
+      throw new Exception('The `/data/upload` directory permission is invalid.');
+    }
+  }
+
 }

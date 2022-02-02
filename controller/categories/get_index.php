@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main, Controller\categories\UtilForCategories;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -17,21 +18,21 @@ try
 
   // set where
   $where = '';
-  if ($nest = (int)$this->get->nest)
+  if ($nest = (int)($this->get->nest ?? 0))
   {
     $where .= ' and nest_srl='.$nest;
   }
-  if ($name = $this->get->name)
+  if ($name = ($this->get->name ?? null))
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this, true);
-  $where .= (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+  $token = Main::checkAccessIndex($this, true);
+  $where .= (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
 
   // set output
-  $output = Controller\Main::index($this, (object)[
+  $output = Main::index($this, (object)[
     'table' => 'categories',
     'where' => $where,
   ]);
@@ -39,7 +40,7 @@ try
   // extend fields (count_article,item_all,none)
   if ($output->data && isset($this->get->ext_field))
   {
-    $output->data->index = Controller\categories\UtilForCategories::extendItems(
+    $output->data->index = UtilForCategories::extendItems(
       $this,
       $token,
       $output->data->index,
@@ -54,10 +55,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

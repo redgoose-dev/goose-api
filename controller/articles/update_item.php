@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,13 +14,12 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
   // check type
-  $type = $this->get->type;
+  $type = $this->post->type ?? '';
   if (!($type === 'hit' || $type === 'star'))
   {
     throw new Exception(Message::make('error.notFound', 'type'));
@@ -29,7 +29,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'useStrict' => true,
@@ -40,9 +40,8 @@ try
     'table' => 'articles',
     'field' => 'srl,hit,star',
     'where' => 'srl='.$srl,
-    'debug' => __API_DEBUG__,
-  ]);
-  if (!$article->data)
+  ])->data;
+  if (!$article)
   {
     throw new Exception(Message::make('error.noData', 'article'), 404);
   }
@@ -52,15 +51,15 @@ try
   switch ($type)
   {
     case 'hit':
-      $data[] = 'hit='.((int)$article->data->hit + 1);
-      break;
     case 'star':
-      $data[] = 'star='.((int)$article->data->star + 1);
+      $data[] = "$type=".((int)$article->{$type} + 1);
+      break;
+    default:
       break;
   }
 
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'data' => $data,
@@ -69,10 +68,10 @@ try
   switch ($type)
   {
     case 'hit':
-      $output->data = (object)[ 'hit' => (int)$article->data->hit + 1 ];
-      break;
     case 'star':
-      $output->data = (object)[ 'star' => (int)$article->data->star + 1 ];
+      $output->data = (object)[ $type => (int)$article->{$type} + 1 ];
+      break;
+    default:
       break;
   }
 
@@ -83,10 +82,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

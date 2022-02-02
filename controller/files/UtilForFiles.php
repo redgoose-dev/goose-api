@@ -1,6 +1,7 @@
 <?php
 namespace Controller\files;
-use Exception, Core;
+use Exception;
+use Core, Core\Goose, Core\Connect;
 
 /**
  * util for files
@@ -11,27 +12,26 @@ class UtilForFiles {
   /**
    * remove thumbnail image
    *
-   * @param Core\Goose|Core\Connect $self
+   * @param Goose|Connect $self
    * @param int $article_srl
    * @throws Exception
    */
-  public static function removeThumbnailImage($self, int $article_srl)
+  public static function removeThumbnailImage(Goose|Connect $self, int $article_srl): void
   {
     try
     {
       if (!$article_srl) throw new Exception();
-
       // remove thumbnail image
       $article = $self->model->getItem((object)[
         'table' => 'articles',
         'where' => 'srl='.$article_srl,
         'json_field' => ['json'],
-      ]);
-      if ($article->data->json->thumbnail && $article->data->json->thumbnail->path)
+      ])->data;
+      if ($path = $article->json->thumbnail->path ?? false)
       {
-        if (file_exists($article->data->json->thumbnail->path))
+        if (file_exists($path))
         {
-          unlink(__API_PATH__.'/'.$article->data->json->thumbnail->path);
+          unlink(__API_PATH__.'/'.$path);
         }
       }
     }
@@ -44,12 +44,12 @@ class UtilForFiles {
   /**
    * Remove attach files
    *
-   * @param Core\Goose|Core\Connect $self
+   * @param Goose|Connect $self
    * @param int $target_srl
    * @param string $module
    * @throws Exception
    */
-  public static function removeAttachFiles($self, int $target_srl, string $module)
+  public static function removeAttachFiles(Goose|Connect $self, int $target_srl, string $module): void
   {
     try
     {
@@ -63,7 +63,7 @@ class UtilForFiles {
         'table' => 'files',
         'where' => $where,
       ]);
-      if ($files->data && count($files->data))
+      if (count($files->data ?? 0) > 0)
       {
         foreach ($files->data as $k=>$v)
         {
@@ -81,28 +81,24 @@ class UtilForFiles {
     }
     catch(Exception $e)
     {
-      throw new Exception($e->getMessage());
+      throw new Exception($e->getMessage(), $e->getCode());
     }
   }
 
   /**
    * check target data
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param int $target_srl
-   * @param string $module
-   * @param object $token
    * @throws Exception
    */
-  public static function checkTargetData($self, int $target_srl, string $module, object $token)
+  public static function checkTargetData(Goose|Connect $self, int $target_srl, string $module, object $token): void
   {
     $where = 'srl='.$target_srl;
-    $where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->user_srl : '';
+    $where .= (!$token->data->admin) ? ' and user_srl='.(int)$token->data->srl : '';
     $cnt = $self->model->getCount((object)[
       'table' => $module,
       'where' => $where,
-    ]);
-    if ($cnt->data <= 0)
+      'debug' => true,
+    ])->data;
+    if ($cnt <= 0)
     {
       throw new Exception(Core\Message::make('error.notInData', 'target_srl', $module));
     }

@@ -45,8 +45,7 @@
 |:---:|:----:|---------|-------------|
 | target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
 | module | string | `articles` | module name |
-| check | string | `1` | `target_srl`의 실제값이 존재하는지 검사합니다. |
-| files | File |  | 업로드 파일 |
+| file | File |  | 업로드 파일 |
 
 
 ## edit file
@@ -61,7 +60,7 @@
 |:---:|:----:|---------|-------------|
 | target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
 | module | string | `articles` | module name |
-| files | File |  | 업로드 파일 |
+| file | File |  | 업로드 파일 |
 
 
 ## get files in directory
@@ -88,7 +87,7 @@
 | key | type | example | description |
 |:---:|:----:|---------|-------------|
 | sub_dir | string | `thumbnail` | 서브 디렉토리 이름 |
-| files | File | | `File`형식의 업로드할 파일입니다. |
+| file | File | | `File`형식의 업로드할 파일입니다. |
 | base64 | string | | `base64`형식의 업로드할 파일입니다. |
 
 

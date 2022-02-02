@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Exception;
 use Dotenv\Dotenv;
+use Exception;
 
 // check environment
 if (php_sapi_name() !== 'cli')
@@ -20,7 +20,6 @@ define('__API_PATH__', realpath(__DIR__.'/../'));
 
 /**
  * load env
- *
  * @throws Exception
  */
 function loadEnv()
@@ -39,33 +38,38 @@ function loadEnv()
 /**
  * get password
  * https://dasprids.de/blog/2008/08/22/getting-a-password-hidden-from-stdin-with-php-cli/
- *
- * @param boolean
- * @return string
  */
-function getPassword($stars = false)
+function getPassword(bool $stars = false): string
 {
   // Get current style
   $oldStyle = shell_exec('stty -g');
 
-  if ($stars === false) {
+  if ($stars === false)
+  {
     shell_exec('stty -echo');
     $password = rtrim(fgets(STDIN), "\n");
-  } else {
+  }
+  else
+  {
     shell_exec('stty -icanon -echo min 1 time 0');
-
     $password = '';
-    while (true) {
+    while (true)
+    {
       $char = fgetc(STDIN);
-
-      if ($char === "\n") {
+      if ($char === "\n")
+      {
         break;
-      } else if (ord($char) === 127) {
-        if (strlen($password) > 0) {
+      }
+      else if (ord($char) === 127)
+      {
+        if (strlen($password) > 0)
+        {
           fwrite(STDOUT, "\x08 \x08");
           $password = substr($password, 0, -1);
         }
-      } else {
+      }
+      else
+      {
         fwrite(STDOUT, "*");
         $password .= $char;
       }
@@ -81,12 +85,8 @@ function getPassword($stars = false)
 
 /**
  * quiz (cli prompt)
- *
- * @param string
- * @param boolean
- * @return string
  */
-function quiz($prompt='', $password=false)
+function quiz(string $prompt = '', bool $password = false): string
 {
   if ($password)
   {
@@ -105,24 +105,20 @@ function quiz($prompt='', $password=false)
 
 /**
  * make token
- *
- * @return string
  */
-function makeToken()
+function makeToken(): string
 {
   try
   {
+    // load env
     loadEnv();
-
     // check install
-    Install::check();
-
+    Util::checkDirectories();
     // make public token
     $jwt = Token::make((object)[
       'time' => true,
       'exp' => false,
     ]);
-
     // print token
     return $jwt->token;
   }
@@ -135,7 +131,7 @@ function makeToken()
 /**
  * reset password
  */
-function resetPassword()
+function resetPassword(): void
 {
   try
   {
@@ -160,8 +156,8 @@ function resetPassword()
       'table' => 'users',
       'where' => "email='$answer_email'",
       'debug' => false
-    ]);
-    if (!$user->data) throw new Exception('No users found.');
+    ])->data;
+    if ($user <= 0) throw new Exception('No users found.');
 
     // quiz - new password
     $answer_new_password = quiz('New password', true);
@@ -176,8 +172,9 @@ function resetPassword()
     $update = $model->edit((object)[
       'table' => 'users',
       'where' => "email='$answer_email'",
-      'data' => [ "password='".Text::createPassword($answer_new_password)."'" ],
-      'debug' => false,
+      'data' => [
+        "password='".Text::createPassword($answer_new_password)."'"
+      ],
     ]);
     if (!$update->success)
     {

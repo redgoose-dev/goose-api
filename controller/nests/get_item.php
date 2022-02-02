@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -12,15 +13,11 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
-  if ($this->params['srl'] && (int)$this->params['srl'] > 0)
-  {
-    $srl = (int)$this->params['srl'];
-  }
-  else if ($this->params['id'])
-  {
-    $id = $this->params['id'];
-  }
-  else
+  $srl = $this->params['srl'] ?? null;
+  $id = $this->params['id'] ?? null;
+
+  // check params
+  if (!($srl || $id))
   {
     throw new Exception(Message::make('noItems_or', 'srl', 'id'));
   }
@@ -29,18 +26,18 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'nests',
-    'srl' => isset($srl) ? $srl : null,
-    'id' => isset($id) ? $id : null,
+    'srl' => $srl,
+    'id' => $id,
     'useStrict' => true,
   ]);
 
   // set output
-  $output = Controller\Main::item($this, (object)[
+  $output = Main::item($this, (object)[
     'table' => 'nests',
-    'srl' => isset($srl) ? $srl : null,
-    'id' => isset($id) ? $id : null,
+    'srl' => $srl,
+    'id' => $id,
     'json_field' => ['json'],
   ]);
 
@@ -51,10 +48,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

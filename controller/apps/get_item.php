@@ -29,11 +29,14 @@ try
     'useStrict' => true,
   ]);
 
+  // set options
+  $options = (object)array_merge(
+    (array)$this->get,
+    [ 'table' => 'apps', 'srl' => $srl ]
+  );
+
   // set output
-  $output = Controller\Main::item($this, (object)array_merge((array)$this->get, (array)[
-    'table' => 'apps',
-    'srl' => $srl,
-  ]));
+  $output = Controller\Main::item($this, $options);
 
   // set token
   if ($token) $output->_token = $token->jwt;
@@ -42,10 +45,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

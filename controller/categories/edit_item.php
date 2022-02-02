@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,8 +14,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -23,7 +23,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'categories',
     'srl' => $srl,
   ]);
@@ -34,29 +34,28 @@ try
     $cnt = $this->model->getCount((object)[
       'table' => 'nests',
       'where' => 'srl='.(int)$this->post->nest_srl,
-    ]);
-    if (!$cnt->data)
+    ])->data;
+    if ($cnt <= 0)
     {
       throw new Exception(Message::make('error.noData', 'nest'));
     }
   }
 
-  // set output
-  try
+  // set data
+  $data = [];
+  if (isset($this->post->nest_srl)) $data[] = 'nest_srl='.(int)$this->post->nest_srl;
+  if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
+  if (count($data) <= 0)
   {
-    $output = Controller\Main::edit($this, (object)[
-      'table' => 'categories',
-      'srl' => $srl,
-      'data' => [
-        isset($this->post->nest_srl) ? 'nest_srl='.(int)$this->post->nest_srl : '',
-        isset($this->post->name) ? "name='{$this->post->name}'" : '',
-      ],
-    ]);
+    throw new Exception(Message::make('error.noEditData'));
   }
-  catch(Exception $e)
-  {
-    throw new Exception(Message::make('error.failedEdit', 'category'));
-  }
+
+  // edit data
+  $output = Main::edit($this, (object)[
+    'table' => 'categories',
+    'srl' => $srl,
+    'data' => $data,
+  ]);
 
   // set token
   if ($token) $output->_token = $token->jwt;
@@ -65,10 +64,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

@@ -12,17 +12,17 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check upload directories
+  Util::checkDirectories();
+
+  // check post values
+  Util::checkExistValue($this->post, [ 'path' ]);
+
   // connect db
   $this->model->connect();
 
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'user');
-
-  // check value
-  if (!$this->post->path)
-  {
-    throw new Exception(Message::make('msg.notExist', 'path'));
-  }
 
   // set path
   $path = __API_PATH__.'/'.$this->post->path;
@@ -47,10 +47,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

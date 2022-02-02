@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main, Controller\files\UtilForFiles;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -12,89 +13,103 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check upload directories
+  Util::checkDirectories();
+
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
+  }
+
+  // `module`, `target_srl` 둘중 하나가 있다면 둘다 존재하는지 검사하기
+  if ($this->post->target_srl ?? $this->post->module ?? false)
+  {
+    if (!(isset($this->post->target_srl) && isset($this->post->module)))
+    {
+      throw new Exception(Message::make('error.noItems_and', 'module', 'target_srl'));
+    }
   }
 
   // connect db
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'files',
     'srl' => $srl,
   ]);
 
-  // check target_srl
-  if (isset($this->post->check) && $this->post->check)
+  // `target_srl`값이 실제로 존재하는지 검사한다.
+  if (isset($this->post->target_srl) && isset($this->post->module))
   {
-    if (isset($this->post->target_srl) && isset($this->post->module))
-    {
-      Controller\files\UtilForFiles::checkTargetData(
-        $this,
-        (int)$this->post->target_srl,
-        $this->post->module,
-        $token
-      );
-    }
-    else
-    {
-      throw new Exception(Message::make('error.noItem', 'target_srl and module'));
-    }
+    UtilForFiles::checkTargetData(
+      $this,
+      (int)$this->post->target_srl,
+      $this->post->module,
+      $token
+    );
   }
 
+  // $_FILES to array
+  $file = File::convertFilesValue($this->files['file'] ?? []);
+
   // remove and upload file
-  $file = File::convertFilesValue($this->files['files']);
-  if (isset($file['name'][0]))
+  if (isset($file['name']))
   {
     /**
-     * upload file
+     * upload new file
      */
-    // set values
     $month = date('Ym');
-    $subDir = ($this->post->sub_dir) ? $this->post->sub_dir : $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
+    $subDir = $this->post->sub_dir ?? $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
+
     // set path
     $path = 'data/upload/'.$subDir;
     $path_absolute = __API_PATH__.'/'.$path;
     $path_absolute_dest = $path_absolute.'/'.$month;
-    // make sub directory
+
+    // make subdirectory
     File::makeDirectory($path_absolute, 0707);
+
     // make month directory
     File::makeDirectory($path_absolute_dest, 0777);
+
     // check file
-    if ($file['error'][0])
+    if (!!$file['error'])
     {
-      throw new Exception($file['error'][0]);
+      throw new Exception(Message::errorUploadFile($file['error']));
     }
+
     // check file size
-    if ((int)$file['size'][0] > (int)$_ENV['API_FILE_LIMIT_SIZE'])
+    if ((int)($file['size'] ?? 0) > (int)$_ENV['API_FILE_LIMIT_SIZE'])
     {
       throw new Exception(Message::make('error.limitFileSize'));
     }
+
     // check filename
-    $file['name'][0] = File::checkFilename($file['name'][0], false);
-    if (!$file['name'][0])
+    if (!($file['name'] = File::checkFilename($file['name'], false)))
     {
       throw new Exception(Message::make('error.allowFileType'));
     }
+
     // check exist filename
-    $file['name'][0] = File::checkExistFile($path_absolute_dest.'/', $file['name'][0], null);
+    $file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
+
     // check path and tmp_name
-    if (!($file['tmp_name'][0] && is_dir($path_absolute_dest)))
+    if (!($file['tmp_name'] && is_dir($path_absolute_dest)))
     {
       throw new Exception('upload error');
     }
+
     // copy file to target
-    move_uploaded_file($file['tmp_name'][0], $path_absolute_dest.'/'.$file['name'][0]);
+    move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
+
     // set new file
     $newFile = (object)[
-      'name' => $file['name'][0],
-      'path' => $path.'/'.$month.'/'.$file['name'][0],
-      'type' => $file['type'][0],
-      'size' => $file['size'][0],
+      'name' => $file['name'],
+      'path' => $path.'/'.$month.'/'.$file['name'],
+      'type' => $file['type'],
+      'size' => $file['size'],
     ];
 
     /**
@@ -105,11 +120,12 @@ try
       'table' => 'files',
       'field' => 'path',
       'where' => 'srl='.$srl,
-    ]);
+    ])->data;
+
     // check exist file
-    if (isset($file->data->path) && $file->data->path && file_exists(__API_PATH__.'/'.$file->data->path))
+    if (($file->path ?? false) && file_exists(__API_PATH__.'/'.$file->path))
     {
-      @unlink(__API_PATH__.'/'.$file->data->path);
+      @unlink(__API_PATH__.'/'.$file->path);
     }
   }
   else
@@ -117,10 +133,10 @@ try
     $newFile = null;
   }
 
-  // update data
+  // set data
   $data = [];
-  if ($this->post->target_srl) $data[] = "target_srl='{$this->post->target_srl}'";
-  if ($this->post->module) $data[] = "module='{$this->post->module}'";
+  if ($this->post->target_srl ?? false) $data[] = "target_srl={$this->post->target_srl}";
+  if ($this->post->module ?? false) $data[] = "module='{$this->post->module}'";
   if ($newFile)
   {
     $data[] = "name='$newFile->name'";
@@ -134,7 +150,7 @@ try
   }
 
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'files',
     'srl' => $srl,
     'data' => $data,
@@ -147,10 +163,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

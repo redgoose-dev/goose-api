@@ -9,24 +9,20 @@ use Exception;
  * - 토큰 검사
  * - 라우터 초기화
  * - url 라우트에 의한 컨트롤러 실행
- *
- * @property Router router
- * @property string target
- * @property array params
- * @property Model model
- * @property object $get
- * @property object $post
- * @property array $files
  */
-
 class Goose {
+
+  public Router $router;
+  public string $target;
+  public array $params;
+  public Model $model;
+  public object $get;
+  public object $post;
+  public array $files;
 
   public function __construct()
   {
     $this->router = new Router();
-    $this->target = null;
-    $this->params = null;
-    $this->model = null;
   }
 
   /**
@@ -34,16 +30,16 @@ class Goose {
    *
    * @throws Exception
    */
-  public function run()
+  public function run(): void
   {
     // initialize routing
-    $this->router->init($_ENV['API_PATH_RELATIVE']);
+    $this->router->init($_ENV['API_PATH_RELATIVE'] ?? null);
     $this->router->match();
 
     // check router match
     if (!$this->router->match)
     {
-      return Error::data(Message::make('msg.notFoundMatch'), 404);
+      Error::result(Message::make('msg.notFoundMatch'), 404);
     }
 
     // set router values
@@ -58,14 +54,14 @@ class Goose {
     // set model
     $this->model = new Model();
 
-    // run turning point
     try
     {
-      require Util::getControllerPath($this->target);
+      // run controller
+      require_once Util::controllerRouter($this->target);
     }
     catch(Exception $e)
     {
-      Error::data($e->getMessage(), $e->getCode());
+      Error::result($e->getMessage(), $e->getCode());
     }
   }
 

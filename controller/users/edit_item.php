@@ -36,7 +36,7 @@ try
 
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'user');
-  if (!$token->data->admin && ((int)$token->data->user_srl !== $srl))
+  if (!$token->data->admin && ((int)$token->data->srl !== $srl))
   {
     throw new Exception(Message::make('error.access'), 401);
   }
@@ -52,7 +52,7 @@ try
   }
 
   // check email address
-  if (isset($this->post->email) && $this->post->email)
+  if (isset($this->post->email))
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'users',
@@ -61,17 +61,22 @@ try
     ]);
     if (!!$cnt->data)
     {
-      throw new Exception(Message::make('error.existsValue'));
+      throw new Exception(Message::make('error.existsValue', $this->post->email));
     }
+    // test email address
+    Text::checkEmail($this->post->email);
   }
 
   // set data
   $data = [];
   if (isset($this->post->email)) $data[] = "email='{$this->post->email}'";
   if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
-  if ($this->post->admin && $token->data->admin) $data[] = "admin=".(int)$this->post->admin;
+  if (isset($this->post->admin) && $token->data->admin) $data[] = "admin=".(int)$this->post->admin;
   if (isset($this->post->json)) $data[] = "json='$json'";
-  if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
+  if (count($data) <= 0)
+  {
+    throw new Exception(Message::make('error.notFound', 'data'));
+  }
 
   try
   {
@@ -94,10 +99,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

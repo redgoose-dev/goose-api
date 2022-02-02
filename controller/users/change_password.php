@@ -37,7 +37,7 @@ try
   try
   {
     // check password
-    Auth::login((object)[
+    $user = Auth::login((object)[
       'model' => $this->model,
       'user_srl' => (int)$this->params['srl'],
       'password' => $this->post->password,
@@ -46,8 +46,10 @@ try
     // set output
     $output = Controller\Main::edit($this, (object)[
       'table' => 'users',
-      'srl' => (int)$this->params['srl'],
-      'data' => [ "password='".Text::createPassword($this->post->new_password)."'" ],
+      'srl' => $user->srl,
+      'data' => [
+        "password='".Text::createPassword($this->post->new_password)."'",
+      ],
     ]);
   }
   catch(Exception $e)
@@ -62,11 +64,11 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
   $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
-  return Error::data($message, $e->getCode());
+  return Error::result($message, $e->getCode());
 }

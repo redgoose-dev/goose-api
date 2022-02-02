@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
-use Controller\checklist\UtilForChecklist;
+use Controller\Main, Controller\checklist\UtilForChecklist;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -14,8 +14,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -23,14 +22,11 @@ try
   // check post values
   Util::checkExistValue($this->post, [ 'content' ]);
 
-  // set percent into content
-  $percent = UtilForChecklist::getPercentIntoCheckboxes($this->post->content);
-
   // connect db
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'checklist',
     'srl' => $srl,
   ]);
@@ -38,8 +34,11 @@ try
   // adjust content
   $content = UtilForChecklist::adjustContent($this->post->content);
 
+  // set percent into content
+  $percent = UtilForChecklist::getPercentIntoCheckboxes($content);
+
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'checklist',
     'srl' => $srl,
     'data' => [
@@ -55,10 +54,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

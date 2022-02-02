@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -12,15 +13,20 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check upload directories
+  Util::checkDirectories();
+
   // check and set dir
-  $dir = $this->params['dir'];
-  if (!$dir)
+  if (!($dir = $this->params['dir'] ?? false))
   {
     throw new Exception(Message::make('error.notFound', 'dir'));
   }
 
+  // connect db
+  $this->model->connect();
+
   // check access
-  $token = Controller\Main::checkAccessIndex($this, true);
+  $token = Main::checkAccessIndex($this, true);
 
   // set path
   $path = 'data/upload/'.$dir;
@@ -49,14 +55,15 @@ try
   }
   if (count($tree) > 0)
   {
-    switch ($this->get->order)
+    switch ($this->get->order ?? '')
     {
       case 'name':
         usort($tree, function($a, $b) {
           return strcmp($a->name, $b->name);
         });
-        usort($tree,function($a,$b) {
-          return ($this->get->sort && $this->get->sort === 'desc') ? $a->name < $b->name : $a->name > $b->name;
+        usort($tree, function($a,$b) {
+          $diff = (($this->get->sort ?? '') === 'desc') ? $a->name < $b->name : $a->name > $b->name;
+          return $diff ? 1 : -1;
         });
         break;
       case 'date':
@@ -64,8 +71,9 @@ try
         usort($tree, function($a, $b) {
           return strcmp($a->date, $b->date);
         });
-        usort($tree,function($a,$b) {
-          return ($this->get->sort && $this->get->sort === 'desc') ? $a->date < $b->date : $a->date > $b->date;
+        usort($tree, function($a,$b) {
+          $diff = (($this->get->sort ?? '') === 'desc') ? $a->date < $b->date : $a->date > $b->date;
+          return $diff ? 1 : -1;
         });
         break;
     }
@@ -87,9 +95,9 @@ try
   if ($token) $output->_token = $token->jwt;
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

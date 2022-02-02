@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main, Controller\articles\UtilForArticles;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,8 +14,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -23,65 +23,62 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'useStrict' => true,
   ]);
 
   // set where
-  $where = ($app = $this->get->app) ? ' and app_srl='.$app : '';
-  if ($nest = $this->get->nest)
-  {
-    $where .= ' and nest_srl='.$nest;
-  }
-  $where .= Controller\articles\UtilForArticles::getWhereType($this->get->visible_type);
+  $where = UtilForArticles::getWhereType($this->get->visible_type ?? '');
   // `user_srl`값에 해당되는 값 가져오기
-  if (isset($token->data->user_srl) && !$token->data->admin)
+  if (isset($token->data->srl) && !$token->data->admin)
   {
-    $where .= ' and user_srl='.(int)$token->data->user_srl;
+    $where .= ' and user_srl='.(int)$token->data->srl;
   }
 
   // set output
-  $output = Controller\Main::item($this, (object)[
+  $output = Main::item($this, (object)[
     'table' => 'articles',
     'srl' => $srl,
     'where' => $where,
-    'field' => $this->get->field,
+    'field' => $this->get->field ?? '',
     'json_field' => ['json'],
   ]);
 
+  $ext_field = $this->get->ext_field ?? null;
+
   // get category name
-  if (isset($output->data->category_srl) && Util::checkKeyInExtField('category_name', $this->get->ext_field))
+  if (($output->data->category_srl ?? false) && Util::checkKeyInExtField('category_name', $ext_field))
   {
     $category = $this->model->getItem((object)[
       'table' => 'categories',
       'field' => 'name',
       'where' => 'srl='.(int)$output->data->category_srl,
-    ]);
-    if ($category->data && $category->data->name)
+    ])->data;
+    if ($category->name ?? false)
     {
-      $output->data->category_name = $category->data->name;
+      $output->data->category_name = $category->name;
     }
   }
   // get nest name
-  if (isset($output->data->nest_srl) && Util::checkKeyInExtField('nest_name', $this->get->ext_field))
+  if (($output->data->nest_srl ?? false) && Util::checkKeyInExtField('nest_name', $ext_field))
   {
     $nest = $this->model->getItem((object)[
       'table' => 'nests',
       'where' => 'srl='.(int)$output->data->nest_srl,
-    ]);
-    if (isset($nest->data->name))
+    ])->data;
+    if ($nest->name ?? false)
     {
-      $output->data->nest_name = $nest->data->name;
+      $output->data->nest_name = $nest->name;
     }
   }
 
   // update hit
-  if ($this->get->hit && isset($output->data->hit))
+  if (isset($output->data->hit) && isset($this->get->hit))
   {
-    $output->data->hit = $output->data->hit + 1;
-    $hit = (int)$output->data->hit;
+    $output->data->hit += 1;
+    $hit = $output->data->hit;
     $this->model->edit((object)[
       'table' => 'articles',
       'where' => 'srl='.$srl,
@@ -96,10 +93,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }
