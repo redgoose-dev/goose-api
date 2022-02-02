@@ -112,6 +112,7 @@ class UtilForArticles {
   public static function getPostType(string $type = 'public'): string
   {
     return match ($type) {
+      'ready' => 'ready',
       'private' => 'private',
       default => 'public',
     };

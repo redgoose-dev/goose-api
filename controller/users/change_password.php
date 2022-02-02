@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -44,7 +45,7 @@ try
     ]);
 
     // set output
-    $output = Controller\Main::edit($this, (object)[
+    $output = Main::edit($this, (object)[
       'table' => 'users',
       'srl' => $user->srl,
       'data' => [
@@ -70,5 +71,5 @@ catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
   $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
-  return Error::result($message, $e->getCode());
+  return Error::result($message, 500);
 }

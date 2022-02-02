@@ -96,7 +96,7 @@ try
       'ip' => ($_SERVER['REMOTE_ADDR'] !== '::1') ? $_SERVER['REMOTE_ADDR'] : 'localhost',
       'regdate' => date('Y-m-d H:i:s'),
       'modate' => date('Y-m-d H:i:s'),
-      'order' => $this->post->order ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'),
+      'order' => isset($this->post->order) ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'),
     ],
   ]);
 

@@ -40,7 +40,6 @@ try
   );
 
   // set variable
-  $result = [];
   $month = date('Ym');
   $subDir = $this->post->sub_dir ?? $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
 
@@ -106,7 +105,7 @@ try
       ],
     ]);
     // set result
-    $result[] = (object)[
+    $result = (object)[
       'status' => 'success',
       'path' => $path.'/'.$month.'/'.$file['name'],
       'name' => $file['name'],
@@ -128,7 +127,7 @@ try
   // set output
   $output = (object)[];
   $output->code = 200;
-  $output->data = $result;
+  $output->data = $result ?? null;
 
   // set token
   if ($token) $output->_token = $token->jwt;

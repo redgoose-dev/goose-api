@@ -90,12 +90,18 @@ try
   // check json
   if ($json = $this->post->json ?? null) $json = Util::testJsonData($json);
 
+  // set type
+  if ($type = $this->post->type ?? '')
+  {
+    $type = UtilForArticles::getPostType($this->post->type ?? '');
+  }
+
   // set data
   $data = [];
   if (isset($this->post->app_srl)) $data[] = "`app_srl`={$this->post->app_srl}";
   if (isset($this->post->nest_srl)) $data[] = "`nest_srl`={$this->post->nest_srl}";
-  if (isset($this->post->category_srl)) $data[] = "`category_srl`={$this->post->category_srl}";
-  if (isset($this->post->type)) $data[] = "`type`=".($this->post->type ? "'{$this->post->type}'" : 'public');
+  if ((int)($this->post->category_srl ?? 0) > 0) $data[] = "`category_srl`={$this->post->category_srl}";
+  if (isset($this->post->type)) $data[] = "`type`='$type'";
   if (isset($this->post->title)) $data[] = "`title`='{$this->post->title}'";
   if (isset($this->post->content)) $data[] = "`content`='{$this->post->content}'";
   if (isset($this->post->hit)) $data[] = "`hit`='{$this->post->hit}'";
