@@ -22,11 +22,11 @@ try
   $jwt = Token::get(__API_TOKEN__);
 
   // if user token
-  if ($jwt->data->type !== 'user')
+  if (!(isset($jwt->data->srl) && is_int($jwt->data->srl)))
   {
     throw new Exception(Message::make('msg.notUserToken'));
   }
-  if (!$jwt->exp)
+  if (!isset($jwt->exp))
   {
     throw new Exception(Message::make('msg.tokenExpired'));
   }
@@ -41,7 +41,7 @@ try
   ]);
   if ($blacklistToken->data)
   {
-    throw new Exception(Message::make('msg.blacklistTokens'));
+    throw new Exception(Message::make('msg.blacklistTokens'), 403);
   }
 
   // add token to blacklist
@@ -69,10 +69,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

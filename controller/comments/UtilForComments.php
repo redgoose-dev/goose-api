@@ -1,6 +1,8 @@
 <?php
 namespace Controller\comments;
-use Exception, Core, Controller;
+use Core\Message, Core\Goose, Core\Connect;
+use Controller;
+use Exception;
 
 /**
  * util for comments
@@ -10,39 +12,30 @@ class UtilForComments {
 
   /**
    * check data
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param int $srl
-   * @param string $table
-   * @param string $label
    * @throws Exception
    */
-  public static function checkData($self, int $srl, string $table, string $label)
+  public static function checkData(Goose|Connect $self, int $srl, string $table, string $label): void
   {
-    if ($srl && (int)$srl > 0)
+    if (($srl ?? 0) > 0)
     {
       $cnt = $self->model->getCount((object)[
         'table' => $table,
-        'where' => 'srl='.(int)$srl,
+        'where' => 'srl='.$srl,
       ])->data;
       if ($cnt <= 0)
       {
-        throw new Exception(Core\Message::make('error.noDataValue', $label));
+        throw new Exception(Message::make('error.noDataValue', $label));
       }
     }
   }
 
   /**
-   * get user name
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param array $index
-   * @return array
+   * get username
    * @throws Exception
    */
-  public static function getUserName($self, array $index)
+  public static function getUserName(Goose|Connect $self, array $index): array
   {
-    if (!(isset($index) && count($index))) return [];
+    if (count($index ?? []) <= 0) return [];
     foreach ($index as $k=>$v)
     {
       $user = $self->model->getItem((object)[
@@ -50,7 +43,7 @@ class UtilForComments {
         'field' => 'name',
         'where' => 'srl='.(int)$v->user_srl,
       ]);
-      $index[$k]->user_name = isset($user->data->name) ? $user->data->name : Core\Message::make('word.anonymous');
+      $v->user_name = $user->data->name ?? Message::make('word.anonymous');
     }
     return $index;
   }

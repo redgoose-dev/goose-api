@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,45 +14,41 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
   // check post values
-  Util::checkExistValue($this->post, ['name', 'json']);
+  Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
   // set value
-  $json = null;
-  if (isset($this->post->json))
-  {
-    $json = json_decode(urldecode($this->post->json), false);
-    if (!$json)
-    {
-      throw new Exception(Message::make('error.json'));
-    }
-    $json = urlencode(json_encode($json, false));
-  }
+  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'json',
     'srl' => $srl,
   ]);
 
+  // set data
+  $data = [];
+  if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
+  if (isset($this->post->description)) $data[] = "description='{$this->post->description}'";
+  if ($json) $data[] = "json='$json'";
+  if (count($data) <= 0)
+  {
+    throw new Exception(Message::make('error.noEditData'));
+  }
+
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'json',
     'srl' => $srl,
-    'data' => [
-      $this->post->name ? "name='{$this->post->name}'" : '',
-      $this->post->description ? "description='{$this->post->description}'" : '',
-      $this->post->json ? "json='$json'" : '',
-    ],
+    'data' => $data,
   ]);
 
   // set token
@@ -61,10 +58,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

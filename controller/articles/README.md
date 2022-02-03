@@ -42,8 +42,6 @@
 
 | name | type | example | description |
 |:----:|:----:|---------|-------------|
-| app | number | `1` | app srl |
-| nest | number | `1` | nest srl |
 | hit | number | `0,1` | 이 항목을 `1`로 넣어서 사용하면 응답을 받을때 조회수가 올라갑니다. |
 | visible_type | string | `all` | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | ext_field | string | `category_name` | 확장 필드 |
@@ -63,12 +61,12 @@
 
 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
+| key | type | example | description           |
+|:---:|:----:|---------|-----------------------|
 | app_srl | number | `1` | (required) app srl 번호 |
 | nest_srl | number | `1` | (required) nest srl 번호 |
 | category_srl | number | `1` | category srl 번호 |
-| type | string | `public` | 글 타입 ('public','private') |
+| type | string | `public` | 글 타입 (public,private) |
 | title | string | `title name` | 글 제목 |
 | content | string | `content body text` | 글 본문 |
 | json | string | `{"foo", "bar"}` | json 데이터 |

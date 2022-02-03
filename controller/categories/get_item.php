@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -9,12 +10,10 @@ if (!defined('__API_GOOSE__')) exit();
  *
  * @var Goose|Connect $this
  */
-
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -23,28 +22,29 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'categories',
     'srl' => $srl,
     'useStrict' => true,
   ]);
 
   // set output
-  $output = Controller\Main::item($this, (object)[
+  $output = Main::item($this, (object)[
     'table' => 'categories',
     'srl' => $srl,
   ]);
 
   // get article count (count_article)
-  if ($output->data && Util::checkKeyInExtField('count_article', $this->get->ext_field))
+  $ext_field = $this->get->ext_field ?? null;
+  if ($output->data && Util::checkKeyInExtField('count_article', $ext_field))
   {
-    $where = (!$token->data->admin && $token->data->user_srl) ? ' and user_srl='.(int)$token->data->user_srl : '';
+    $where = (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
     $where .= ' and (NOT type LIKE \'ready\' or type=\'public\')';
     $cnt = $this->model->getCount((object)[
       'table' => 'articles',
       'where' => $where.' and category_srl='.(int)$output->data->srl,
-    ]);
-    $output->data->count_article = $cnt->data;
+    ])->data;
+    $output->data->count_article = $cnt;
   }
 
   // set token
@@ -54,10 +54,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

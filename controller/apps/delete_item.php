@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller, Controller\files\UtilForFiles, Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -23,7 +24,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
   ]);
@@ -33,10 +34,10 @@ try
     'table' => 'articles',
     'field' => 'srl',
     'where' => 'app_srl='.$srl,
-  ]);
-  if ($articles->data && count($articles->data) > 0)
+  ])->data;
+  if (count($articles ?? []) > 0)
   {
-    foreach($articles->data as $k=>$v)
+    foreach ($articles->data as $k=>$v)
     {
       // remove comments
       $this->model->delete((object)[
@@ -44,9 +45,9 @@ try
         'where' => 'article_srl='.$v->srl,
       ]);
       // remove thumbnail image
-      Controller\files\UtilForFiles::removeThumbnailImage($this, $v->srl);
+      UtilForFiles::removeThumbnailImage($this, $v->srl);
       // remove files
-      Controller\files\UtilForFiles::removeAttachFiles($this, $v->srl, 'articles');
+      UtilForFiles::removeAttachFiles($this, $v->srl, 'articles');
     }
     // remove articles
     $this->model->delete((object)[
@@ -79,7 +80,7 @@ try
   }
 
   // remove app
-  $output = Controller\Main::delete($this, (object)[
+  $output = Main::delete($this, (object)[
     'table' => 'apps',
     'srl' => $srl,
   ]);
@@ -91,10 +92,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

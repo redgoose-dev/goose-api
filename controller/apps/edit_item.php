@@ -20,7 +20,7 @@ try
 	}
 
 	// id check
-	if ($this->post->id && !Text::allowString($this->post->id))
+	if (isset($this->post->id) && !Text::allowString($this->post->id ?? '', null))
 	{
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
 	}
@@ -40,8 +40,8 @@ try
     $check_id = $this->model->getCount((object)[
       'table' => 'apps',
       'where' => "id LIKE '{$this->post->id}' and srl!=".$srl,
-    ]);
-    if (!!$check_id->data)
+    ])->data;
+    if (($check_id ?? 0) > 0)
     {
       throw new Exception(Message::make('error.checkSame', 'id'));
     }
@@ -52,9 +52,9 @@ try
     'table' => 'apps',
     'srl' => $srl,
     'data' => [
-      $this->post->id ? "id='{$this->post->id}'" : '',
-      $this->post->name ? "name='{$this->post->name}'" : '',
-      $this->post->description ? "description='{$this->post->description}'" : '',
+      isset($this->post->id) ? "id='{$this->post->id}'" : '',
+      isset($this->post->name) ? "name='{$this->post->name}'" : '',
+      isset($this->post->description) ? "description='{$this->post->description}'" : '',
     ],
   ]);
 
@@ -65,10 +65,10 @@ try
   $this->model->disconnect();
 
 	// output data
-	return Output::data($output);
+	return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-	return Error::data($e->getMessage(), $e->getCode());
+	return Error::result($e->getMessage(), $e->getCode());
 }

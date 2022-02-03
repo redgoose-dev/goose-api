@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,35 +14,25 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
   // check `id`
-  if (isset($this->post->id) && !Text::allowString($this->post->id))
+  if (!Text::allowString($this->post->id ?? '', null))
   {
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
   }
 
-  // check and set json
-  $json = null;
-  if (isset($this->post->json))
-  {
-    $json = json_decode(urldecode($this->post->json), false);
-    if (!$json)
-    {
-      throw new Exception(Message::make('error.json'));
-    }
-    $json = urlencode(json_encode($json, false));
-  }
+  // set json
+  if ($json = $this->post->json ?? null) $json = Util::testJsonData($json);
 
   // connect db
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'nests',
     'srl' => $srl,
   ]);
@@ -49,9 +40,9 @@ try
   // check duplicate nest id
   $cnt = $this->model->getCount((object)[
     'table' => 'nests',
-    'where' => 'id="'.trim($this->post->id).'" and srl!='.$srl,
-  ]);
-  if ($cnt->data)
+    'where' => 'id="'.trim($this->post->id ?? '').'" and srl!='.$srl,
+  ])->data;
+  if ($cnt > 0)
   {
     throw new Exception(Message::make('error.duplicate', 'id'));
   }
@@ -66,7 +57,7 @@ try
   if (count($data) <= 0) throw new Exception(Message::make('error.notFound', 'data'));
 
   // set output
-  $output = Controller\Main::edit($this, (object)[
+  $output = Main::edit($this, (object)[
     'table' => 'nests',
     'srl' => $srl,
     'data' => $data,
@@ -79,10 +70,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

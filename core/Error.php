@@ -5,15 +5,15 @@ namespace Core;
 class Error {
 
   /**
-   * data type error
+   * result
    *
    * @param string $message
    * @param int $code
    * @return object
    */
-  public static function data($message='Unknown error', $code=500)
+  public static function result(string $message = 'Unknown error', int $code = 500): object
   {
-    return Output::data((object)[
+    return Output::result((object)[
       'code' => $code,
       'message' => $message,
     ]);

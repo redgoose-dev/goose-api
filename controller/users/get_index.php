@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Exception, Controller, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -17,25 +17,26 @@ try
 
   // set where
   $where = '';
-  if ($email = $this->get->email)
+  if ($email = $this->get->email ?? false)
   {
     $where .= ' and email LIKE \''.$email.'\'';
   }
-  if ($name = $this->get->name)
+  if ($name = $this->get->name ?? false)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if ($admin = $this->get->admin)
+  if (isset($this->get->admin))
   {
-    $where .= ' and admin='.(int)$admin;
+    $admin = (int)$this->get->admin;
+    $where .= ' and admin='.$admin;
   }
 
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'user');
-  if (!$token->data->admin) $where .= ' and srl='.$token->data->user_srl;
+  if (!$token->data->admin) $where .= ' and srl='.$token->data->srl;
 
   // output
-  $output = Controller\Main::index($this, (object)[
+  $output = Main::index($this, (object)[
     'auth' => true,
     'table' => 'users',
     'where' => $where,
@@ -45,10 +46,7 @@ try
     foreach ($result->data as $k=>$o)
     {
       // remove password field
-      if (isset($result->data[$k]->password))
-      {
-        unset($result->data[$k]->password);
-      }
+      if (isset($result->data[$k]->password)) unset($result->data[$k]->password);
     }
     return $result;
   });
@@ -60,10 +58,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

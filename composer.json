@@ -1,16 +1,17 @@
 {
-    "name": "redgoose/goose-api",
-    "authors": [
-        {
-            "name": "redgoose",
-            "email": "scripter@me.com"
-        }
-    ],
-    "require": {
-        "altorouter/altorouter": "^2.0.1",
-        "vlucas/phpdotenv": "^5.2.0",
-        "firebase/php-jwt": "^5.2.0"
-    },
+  "name": "redgoose/goose-api",
+  "authors": [
+    {
+      "name": "redgoose",
+      "email": "scripter@me.com"
+    }
+  ],
+  "require": {
+    "ext-fileinfo": "*",
+    "altorouter/altorouter": "^2.0.2",
+    "vlucas/phpdotenv": "^5.4.1",
+    "firebase/php-jwt": "^5.5.1"
+  },
   "autoload": {
     "psr-4": {
       "Core\\": "core/",

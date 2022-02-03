@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -16,16 +17,7 @@ try
 	Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
 	// set json
-	$json = null;
-	if (isset($this->post->json))
-	{
-		$json = json_decode(urldecode($this->post->json), false);
-		if (!$json)
-		{
-			throw new Exception(Message::make('error.json'));
-		}
-		$json = urlencode(json_encode($json, false));
-	}
+  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
@@ -36,13 +28,13 @@ try
 	// set output
 	try
 	{
-		$output = Controller\Main::add($this, (object)[
+		$output = Main::add($this, (object)[
 			'table' => 'json',
 			'data' => (object)[
 				'srl' => null,
-				'user_srl' => $token->data->user_srl,
-				'name' => $this->post->name,
-				'description' => $this->post->description,
+				'user_srl' => $token->data->srl,
+				'name' => $this->post->name ?? null,
+				'description' => $this->post->description ?? null,
 				'json' => $json,
 				'regdate' => date('Y-m-d H:i:s'),
 			],
@@ -60,10 +52,10 @@ try
   $this->model->disconnect();
 
 	// output data
-	return Output::data($output);
+	return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-	return Error::data($e->getMessage(), $e->getCode());
+	return Error::result($e->getMessage(), $e->getCode());
 }

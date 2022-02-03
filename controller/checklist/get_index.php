@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -24,19 +25,25 @@ try
   {
     $where .= ' and regdate between \''.$this->get->start.'\' and \''.$this->get->end.'\'';
   }
-  if ($q = $this->get->q)
+  if ($q = $this->get->q ?? null)
   {
     $where .= ' and content LIKE \'%'.$q.'%\'';
   }
-  $where .= ' and user_srl='.(int)$token->data->user_srl;
+  $where .= ' and user_srl='.(int)$token->data->srl;
 
   // set output
-  $output = Controller\Main::index($this, (object)array_merge((array)$this->get, (array)[
-    'table' => 'checklist',
-    'where' => $where,
-    'object' => false,
-    'debug' => __API_DEBUG__,
-  ]));
+  $output = Main::index(
+    $this,
+    (object)array_merge(
+      (array)$this->get,
+      [
+        'table' => 'checklist',
+        'where' => $where,
+        'object' => false,
+        'debug' => __API_DEBUG__,
+      ]
+    )
+  );
 
   // set token
   if ($token) $output->_token = $token->jwt;
@@ -45,10 +52,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

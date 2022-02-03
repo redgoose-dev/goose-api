@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -14,7 +15,7 @@ try
 {
   // set where
   $where = '';
-  if ($name = $this->get->name)
+  if ($name = $this->get->name ?? null)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
@@ -23,14 +24,14 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessIndex($this, true);
-  if (isset($token->data->user_srl) && !$token->data->admin)
+  $token = Main::checkAccessIndex($this, true);
+  if ($token->data->srl ?? 0 && !$token->data->admin)
   {
-    $where .= ' and user_srl='.(int)$token->data->user_srl;
+    $where .= ' and user_srl='.(int)$token->data->srl;
   }
 
   // output
-  $output = Controller\Main::index($this, (object)[
+  $output = Main::index($this, (object)[
     'table' => 'json',
     'where' => $where,
     'json_field' => ['json'],
@@ -43,10 +44,10 @@ try
   $this->model->disconnect();
 
   // output
-  return Output::data($output);
+  return Output::result($output);
 }
 catch(Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

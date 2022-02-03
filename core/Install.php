@@ -10,7 +10,7 @@ class Install {
    *
    * @param string $message
    */
-  static private function error($message)
+  static private function error(string $message): void
   {
     echo "ERROR: $message\n";
     exit;
@@ -21,7 +21,7 @@ class Install {
    *
    * @param string
    */
-  static private function output($str)
+  static private function output(string $str): void
   {
     $out = "=====================================================\n";
     $out .= "$str\n";
@@ -61,34 +61,6 @@ class Install {
     if (!$_ENV['API_TOKEN_KEY']) throw new Exception('The value `API_TOKEN_KEY` does not exist.');
     if (!$_ENV['API_TOKEN_ID']) throw new Exception('The value `API_TOKEN_ID` does not exist.');
     if (!$_ENV['API_PATH_URL']) throw new Exception('The value `API_PATH_URL` does not exist.');
-  }
-
-  /**
-   * Check installed
-   *
-   * @throws Exception
-   */
-  static public function check()
-  {
-    // check `/data`
-    if (!is_dir(__API_PATH__.'/data'))
-    {
-      throw new Exception('The directory `/data` does not exist.');
-    }
-    if (!is_writable(__API_PATH__.'/data'))
-    {
-      throw new Exception('The `/data` directory permission is invalid.');
-    }
-
-    // check `/data/upload`
-    if (!is_dir(__API_PATH__.'/data/upload'))
-    {
-      throw new Exception('The directory `/data/upload` does not exist.');
-    }
-    if (!is_writable(__API_PATH__.'/data/upload'))
-    {
-      throw new Exception('The `/data/upload` directory permission is invalid.');
-    }
   }
 
   /**
@@ -210,7 +182,7 @@ class Install {
             'email' => $defaultEmail,
             'name' => $defaultName,
             'password' => Text::createPassword($defaultPassword),
-            'admin' => 2,
+            'admin' => 1,
             'regdate' => date('Y-m-d H:i:s')
           ],
           'debug' => true

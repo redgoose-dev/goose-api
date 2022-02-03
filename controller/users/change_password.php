@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -37,17 +38,19 @@ try
   try
   {
     // check password
-    Auth::login((object)[
+    $user = Auth::login((object)[
       'model' => $this->model,
       'user_srl' => (int)$this->params['srl'],
       'password' => $this->post->password,
     ]);
 
     // set output
-    $output = Controller\Main::edit($this, (object)[
+    $output = Main::edit($this, (object)[
       'table' => 'users',
-      'srl' => (int)$this->params['srl'],
-      'data' => [ "password='".Text::createPassword($this->post->new_password)."'" ],
+      'srl' => $user->srl,
+      'data' => [
+        "password='".Text::createPassword($this->post->new_password)."'",
+      ],
     ]);
   }
   catch(Exception $e)
@@ -62,11 +65,11 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
   $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
-  return Error::data($message, $e->getCode());
+  return Error::result($message, 500);
 }

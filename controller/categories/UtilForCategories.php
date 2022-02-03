@@ -1,6 +1,7 @@
 <?php
 namespace Controller\categories;
-use Core, Controller;
+use Core\Util, Core\Goose, Core\Connect;
+use Controller\articles\UtilForArticles;
 
 /**
  * util for categories
@@ -10,127 +11,97 @@ class UtilForCategories {
 
   /**
    * extend article count
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param string $where
-   * @param array $index
-   * @return array
    */
-  public static function extendArticleCountInItems($self, string $where, array $index)
+  public static function extendArticleCountInItems(Goose|Connect $self, string $where, array $index): array
   {
-    foreach ($index as $k=>$v)
+    foreach ($index as $k => $v)
     {
       $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where.' and category_srl='.(int)$v->srl,
-      ]);
-      $index[$k]->count_article = $cnt->data;
+      ])->data;
+      $v->count_article = $cnt;
     }
     return $index;
   }
 
   /**
    * extend all item
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param string $where
-   * @param array $index
-   * @param int $nest_srl
-   * @return array
    */
-  public static function extendAllArticlesInItems($self, string $where, array $index, int $nest_srl)
+  public static function extendAllArticlesInItems(Goose|Connect $self, string $where, array $index, int $nest_srl): array
   {
+    $ext_field = $self->get->ext_field ?? null;
     // set item
-    $item = (object)[
-      'srl' => '',
-      'nest_srl' => $nest_srl,
-      'name' => 'All',
-    ];
-
+    $item = (object)[ 'srl' => '', 'nest_srl' => $nest_srl, 'name' => 'All' ];
     // get article count
-    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
+    if (Util::checkKeyInExtField('count_article', $ext_field))
     {
       $where .= $nest_srl ? ' and nest_srl='.$nest_srl : '';
       $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where,
-      ]);
-      $item->count_article = $cnt->data;
+      ])->data;
+      $item->count_article = $cnt;
     }
-
     // add item
     array_unshift($index, $item);
-
+    // return
     return $index;
   }
 
   /**
    * extend none item
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param string $where
-   * @param array $index
-   * @param int $nest_srl
-   * @return array
    */
-  public static function extendNoneArticleInItems($self, string $where, array $index, int $nest_srl)
+  public static function extendNoneArticleInItems(Goose|Connect $self, string $where, array $index, int $nest_srl): array
   {
     // set item
-    $item = (object)[
-      'srl' => 'null',
-      'nest_srl' => $nest_srl,
-      'name' => 'none',
-    ];
-    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
+    $item = (object)[ 'srl' => 'null', 'nest_srl' => $nest_srl, 'name' => 'none' ];
+    // get article count
+    if (Util::checkKeyInExtField('count_article', $self->get->ext_field))
     {
       $where .= $nest_srl ? ' and nest_srl='.$nest_srl : '';
       $where .= ' and category_srl IS NULL';
       $cnt = $self->model->getCount((object)[
         'table' => 'articles',
         'where' => $where,
-      ]);
-      $item->count_article = $cnt->data;
+      ])->data;
+      $item->count_article = $cnt;
     }
     // add item
-    array_push($index, $item);
-
+    $index[] = $item;
+    // return
     return $index;
   }
 
   /**
    * extend item
    * 목록에 대한 확장기능
-   *
-   * @param Core\Goose|Core\Connect $self
-   * @param object $token
-   * @param array $index
-   * @param int $nest_srl
-   * @return array
    */
-  public static function extendItems($self, object $token, array $index, int $nest_srl)
+  public static function extendItems(Goose|Connect $self, object $token, array $index, int $nest_srl): array
   {
-    if (!(isset($index) && count($index) > 0)) return [];
+    if (count($index ?? []) <= 0) return [];
 
     // set common where
+    $ext_field = $self->get->ext_field ?? null;
     $where = '';
-    if (isset($token->data->user_srl) && !$token->data->admin)
+    if (isset($token->data->srl) && !$token->data->admin)
     {
-      $where .= ' and user_srl='.$token->data->user_srl;
+      $where .= ' and user_srl='.$token->data->srl;
     }
-    $where .= Controller\articles\UtilForArticles::getWhereType('all');
+    $where .= UtilForArticles::getWhereType('all');
 
     // get article count
-    if (Core\Util::checkKeyInExtField('count_article', $self->get->ext_field))
+    if (Util::checkKeyInExtField('count_article', $ext_field))
     {
       $index = self::extendArticleCountInItems($self, $where, $index);
     }
     // get all item
-    if (Core\Util::checkKeyInExtField('item_all', $self->get->ext_field))
+    if (Util::checkKeyInExtField('item_all', $ext_field))
     {
       $index = self::extendAllArticlesInItems($self, $where, $index, $nest_srl);
     }
     // get none category
-    if (Core\Util::checkKeyInExtField('none', $self->get->ext_field))
+    if (Util::checkKeyInExtField('none', $ext_field))
     {
       $index = self::extendNoneArticleInItems($self, $where, $index, $nest_srl);
     }

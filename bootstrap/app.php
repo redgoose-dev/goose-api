@@ -26,7 +26,6 @@ if ($_ENV['API_USE_CHECK_OPTIONS_METHOD'] === 'true')
   header('Access-Control-Allow-Headers: origin, content-type, accept, Authorization');
   header('Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS, DELETE');
   header('Access-Control-Max-Age: 3600');
-
   if (
     $_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&
     isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
@@ -45,7 +44,8 @@ else if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 }
 
 // set json header
-header('Content-Type: application/json,text/plane;charset=UTF-8');
+header('Content-Type: application/json,text/plane;charset=utf-8');
+//header('Content-Type: text/plane;charset=utf-8');
 
 // set mode
 define('__API_MODE__', 'api');
@@ -77,9 +77,6 @@ if ($_ENV['API_TIMEZONE'])
 
 try
 {
-  // check install
-  Install::check();
-
   // get form data for json
   if (!$_POST && $formData = file_get_contents('php://input'))
   {
@@ -92,5 +89,5 @@ try
 }
 catch(Exception $e)
 {
-  Error::data($e->getMessage());
+  Error::result($e->getMessage());
 }

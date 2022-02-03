@@ -1,6 +1,7 @@
 <?php
 namespace Core;
-use Exception, Controller;
+use Controller\Main;
+use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -12,9 +13,11 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check upload directories
+  Util::checkDirectories();
+
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
@@ -23,7 +26,7 @@ try
   $this->model->connect();
 
   // check access
-  $token = Controller\Main::checkAccessItem($this, (object)[
+  $token = Main::checkAccessItem($this, (object)[
     'table' => 'files',
     'srl' => $srl,
   ]);
@@ -39,13 +42,13 @@ try
   ]);
 
   // check exist file
-  if (isset($file->data->path) && $file->data->path && file_exists(__API_PATH__.'/'.$file->data->path))
+  if (($file->data->path ?? false) && file_exists(__API_PATH__.'/'.$file->data->path))
   {
     unlink(__API_PATH__.'/'.$file->data->path);
   }
 
-  // remove item
-  $output = Controller\Main::delete($this, (object)[
+  // remove data
+  $output = Main::delete($this, (object)[
     'table' => 'files',
     'srl' => $srl,
   ]);
@@ -57,10 +60,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

@@ -5,9 +5,6 @@ use Dotenv\Dotenv, Exception;
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
 
-// TODO: 테스트용
-//header('Content-Type:text/plain');
-
 // set dotenv
 try
 {

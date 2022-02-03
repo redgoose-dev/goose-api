@@ -5,21 +5,22 @@ use AltoRouter, Exception;
 
 /**
  * Router
+ * 라우터 인터페이스 클래스
  *
- * @property array match
+ * @property array|bool match
  */
 
 class Router {
 
   private AltoRouter $core;
-  public ?array $match;
+  public array|bool $match;
 
   /**
    * get route map
    *
    * @return array
    */
-  private function map()
+  private function map(): array
   {
     return require __DIR__.'/../bootstrap/route.php';
   }
@@ -28,7 +29,7 @@ class Router {
    * @param string $basePath
    * @throws Exception
    */
-  public function init($basePath='')
+  public function init(string $basePath = ''): void
   {
     $this->core = new AltoRouter();
     $this->core->setBasePath($basePath);
@@ -42,10 +43,9 @@ class Router {
    * @param string|null $path
    * @param string|null $method
    */
-  public function match($path=null, $method=null)
+  public function match(string|null $path = null, string|null $method = null): void
   {
-    $match = $this->core->match($path, $method);
-    $this->match = $match ? $match : null;
+    $this->match = $this->core->match($path, $method);
   }
 
 }

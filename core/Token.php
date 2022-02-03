@@ -4,7 +4,6 @@ use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 
-
 /**
  * Token
  */
@@ -15,21 +14,18 @@ class Token {
 
   /**
    * get time
-   *
-   * @param string
-   * @return int
    */
-  private static function getTime($type='access')
+  private static function getTime(string $type = 'access'): int
   {
     switch ($type)
     {
       case 'access':
         return self::base_time * (int)$_ENV['API_TOKEN_ACCESS_DAY'];
-
       case 'refresh':
         return self::base_time * (int)$_ENV['API_TOKEN_REFRESH_DAY'];
+      default:
+        return 0;
     }
-    return 0;
   }
 
   /**
@@ -38,7 +34,7 @@ class Token {
    * @param object $op (time,exp,data)
    * @return object
    */
-  public static function make($op=null)
+  public static function make(object $op): ?object
   {
     if (!$op) return null;
 
@@ -50,7 +46,7 @@ class Token {
     $token->jti = $_ENV['API_TOKEN_ID'];
     if ($op->time) $token->iat = $now;
     if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');
-    $token->data = (isset($op->data)) ? $op->data : (object)[ 'type' => 'anonymous' ];
+    $token->data = (isset($op->data)) ? $op->data : (object)[];
 
     // make encode
     $jwt = JWT::encode($token, $_ENV['API_TOKEN_KEY']);
@@ -64,11 +60,9 @@ class Token {
   /**
    * get token
    *
-   * @param string $token
-   * @return object
    * @throws Exception
    */
-  public static function get($token)
+  public static function get(string $token): object
   {
     $output = (object)[];
     $decoded = null;
@@ -77,28 +71,29 @@ class Token {
     try
     {
       if (!$token) throw new Exception('No token');
+      $token = preg_replace('/^Bearer /', '', $token);
       $decoded = JWT::decode($token, $key, ['HS256']);
       $output->url = $decoded->iss;
-      if ($decoded->iat) $output->time = $decoded->iat;
-      if ($decoded->exp) $output->exp = $decoded->exp;
-      if ($decoded->jti) $output->token_id = $decoded->jti;
+      if (isset($decoded->iat)) $output->time = $decoded->iat;
+      if (isset($decoded->exp)) $output->exp = $decoded->exp;
+      if (isset($decoded->jti)) $output->id = $decoded->jti;
       $output->data = $decoded->data;
       return $output;
     }
     catch (ExpiredException $e)
     {
       JWT::$leeway = self::getTime('refresh');
+      // set decoded
       $decoded = JWT::decode($token, $key, ['HS256']);
-
       $now = time();
       $expire = $now + self::getTime('access');
       $decoded->iat = $now;
       $decoded->exp = $expire;
-
+      // set output
       $output->url = $decoded->iss;
-      if ($decoded->iat) $output->time = $decoded->iat;
-      if ($decoded->exp) $output->exp = $decoded->exp;
-      if ($decoded->jti) $output->token_id = $decoded->jti;
+      if (isset($decoded->iat)) $output->time = $decoded->iat;
+      if (isset($decoded->exp)) $output->exp = $decoded->exp;
+      if (isset($decoded->jti)) $output->id = $decoded->jti;
       $output->data = $decoded->data;
       $output->token = JWT::encode($decoded, $key);
       return $output;

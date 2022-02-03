@@ -16,7 +16,7 @@ try
   Util::checkExistValue($this->post, [ 'id', 'name' ]);
 
   // check `id`
-  if (!Text::allowString($this->post->id))
+  if (!Text::allowString($this->post->id, null))
   {
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
   }
@@ -31,8 +31,8 @@ try
   $cnt = $this->model->getCount((object)[
     'table' => 'apps',
     'where' => "id LIKE '{$this->post->id}'",
-  ]);
-  if (!!$cnt->data)
+  ])->data;
+  if ($cnt > 0)
   {
     throw new Exception(Message::make('error.checkSame', 'id'));
   }
@@ -42,10 +42,10 @@ try
     'table' => 'apps',
     'data' => (object)[
       'srl' => null,
-      'user_srl' => (int)$token->data->user_srl,
-      'id' => $this->post->id,
-      'name' => $this->post->name,
-      'description' => $this->post->description,
+      'user_srl' => (int)$token->data->srl,
+      'id' => $this->post->id ?? null,
+      'name' => $this->post->name ?? null,
+      'description' => $this->post->description ?? null,
       'regdate' => date('Y-m-d H:i:s'),
     ],
   ]);
@@ -57,10 +57,10 @@ try
   $this->model->disconnect();
 
   // output data
-  return Output::data($output);
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-  return Error::data($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

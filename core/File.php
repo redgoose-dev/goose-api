@@ -10,11 +10,8 @@ class File {
 
   /**
    * make directory
-   *
-   * @param string $path
-   * @param int $permission
    */
-  public static function makeDirectory(string $path, $permission=0707)
+  public static function makeDirectory(string $path, int $permission = 0707): void
   {
     if (is_dir($path)) return;
     $umask = umask();
@@ -25,39 +22,30 @@ class File {
 
   /**
    * check filename
-   *
-   * @param string $name
-   * @param boolean $useRandomText
-   * @return string
    */
-  public static function checkFilename(string $name, $useRandomText=false)
+  public static function checkFilename(string $name, bool $useRandomText): string
   {
-    if (!$name) return null;
-
+    if (!$name) return '';
     // set allow file type
     $allowFileType = $_ENV['API_FILE_ALLOW_TYPE'];
     $allowFileType = explode(',', $allowFileType);
-
     // set source
     $src = [
       basename($name, strrchr($name, '.')),
       strtolower(substr(strrchr($name, '.'), 1))
     ];
-
     // check file type
-    if (!in_array($src[1], $allowFileType)) return null;
-
+    if (!in_array($src[1], $allowFileType)) return '';
     // only eng or number
     $src[0] = preg_replace("/[^A-Za-z0-9-_]+/", '-', $src[0]);
     // remove special characters
     $src[0] = Text::removeSpecialChar($src[0]);
-
     // make random name
     if (!$src[0] || $useRandomText)
     {
       $src[0] = md5(date('YmdHis') . '-' . rand());
     }
-
+    // return
     return $src[0] . '.' . $src[1];
   }
 
@@ -65,16 +53,11 @@ class File {
    * check exist file
    * 파일이름이 같은것이 있다면 이름뒤에 "-{x}"키워드를 붙인다.
    * 중복되는 이름이 있다면 x값을 올려서 붙인다.
-   *
-   * @param string $dir
-   * @param string $file
-   * @param number|null $n
-   * @return string
    */
-  public static function checkExistFile(string $dir, string $file, $n=null)
+  public static function checkExistFile(string $dir, string $file, int|null $n): string
   {
-    if (!$file) return null;
-
+    if (!$file) return '';
+    // set values
     if (is_null($n))
     {
       $n = 0;
@@ -83,26 +66,16 @@ class File {
     else
     {
       $n = $n + 1;
-      $new = basename($file, strrchr($file, '.')) . '-' . $n . '.' . substr(strrchr($file, '.'), 1);
+      $new = basename($file, strrchr($file, '.'))."-$n.".substr(strrchr($file, '.'), 1);
     }
-
-    if (file_exists($dir . $new))
-    {
-      return self::checkExistFile($dir, $file, $n);
-    }
-    else
-    {
-      return $new;
-    }
+    // check exist
+    return (file_exists($dir . $new)) ? self::checkExistFile($dir, $file, $n) : $new;
   }
 
   /**
    * get directories
-   *
-   * @param string|null $path
-   * @return array
    */
-  public static function getDirectories(string $path=null)
+  public static function getDirectories(string $path): array
   {
     try
     {
@@ -124,11 +97,8 @@ class File {
 
   /**
    * get files in directory
-   *
-   * @param string
-   * @return array
    */
-  public static function getFiles(string $path)
+  public static function getFiles(string $path): array
   {
     $result = [];
     $allowFileType = $_ENV['API_FILE_ALLOW_TYPE'];
@@ -145,27 +115,17 @@ class File {
 
   /**
    * convert files value
-   * `$_FILES`에 들어있는 값을 multiple 형태로 변환시켜서 구조를 통일시킨다.
-   *
-   * @param array|null $files
-   * @return array
+   * `$_FILES`에 들어있는 값을 multiple 형태로 변환시켜서 구조를 통일화시킨다.
    */
-  public static function convertFilesValue(array $files=null)
+  public static function convertFilesValue(array $files): array
   {
-    if (isset($files['name']) && !is_array($files['name']))
-    {
-      return [
-        'name' => [ $files['name'] ],
-        'type' => [ $files['type'] ],
-        'tmp_name' => [ $files['tmp_name'] ],
-        'size' => [ $files['size'] ],
-        'error' => [ $files['error'] ],
-      ];
-    }
-    else
-    {
-      return $files;
-    }
+    return (isset($files['name']) && is_array($files['name'])) ? [
+      'name' => $files['name'][0],
+      'type' => $files['type'][0],
+      'tmp_name' => $files['tmp_name'][0],
+      'size' => $files['size'][0],
+      'error' => $files['error'][0],
+    ] : $files;
   }
 
 }
