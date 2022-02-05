@@ -71,7 +71,7 @@ class Auth {
    * @return object 토큰을 재발급 받는다면 리턴으로 나온 토큰주소와 토큰 데이터
    * @throws Exception
    */
-  public static function checkAuthorization(Model $getModel, ?string $checkUserType): object
+  public static function checkAuthorization(Model $getModel, ?string $checkUserType, ?bool $checkHost = true): object
   {
     try
     {
@@ -82,30 +82,21 @@ class Auth {
       $jwt = Token::get(__API_TOKEN__);
 
       // API 모드에서 올바른 URL인지 검사한다.
-      if (__API_MODE__ === 'api')
+      if ($checkHost && __API_MODE__ === 'api')
       {
         // check url
         try
         {
-          if (!$jwt->url)
+          $requestHost = apache_request_headers()['Host'];
+          $tokenHost = $jwt->url;
+          if ($requestHost !== $tokenHost)
           {
-            throw new Exception('no url in jwt');
-          }
-          if (preg_match('/^http/', $jwt->url))
-          {
-            if ($_ENV['API_PATH_URL'] !== $jwt->url)
-            {
-              throw new Exception('url error');
-            }
-          }
-          else if (!preg_match('/'.preg_quote($jwt->url, '/').'$/', $_ENV['API_PATH_URL']))
-          {
-            throw new Exception('url error');
+            throw new Exception('error host');
           }
         }
         catch(Exception $e)
         {
-          throw new Exception('The tokens "API_PATH_URL" and "API_PATH_URL" are different.');
+          throw new Exception('The tokens host and request host are different.');
         }
       }
 

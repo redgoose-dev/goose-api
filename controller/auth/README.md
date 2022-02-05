@@ -17,7 +17,6 @@
 |:---:|:----:|---------|-------------|
 | email | string | `address@domain.com` | 이메일 주소 |
 | password | string | `password` | 패스워드 |
-| host | string | `localhost:3000` | 클라이언트 호스트 주소 |
 
 
 ## logout

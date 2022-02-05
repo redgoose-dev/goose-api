@@ -59,6 +59,7 @@ try
   $newToken = Token::make((object)[
     'time' => true,
     'exp' => false,
+    'host' => Util::getHost($_ENV['API_PATH_URL']),
   ]);
 
   // set output

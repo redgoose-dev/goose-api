@@ -160,4 +160,18 @@ class Util {
     }
   }
 
+  /**
+   * get host
+   */
+  public static function getHost(string $url): string
+  {
+    $url = $url . '/hoo/asd';
+    $host = preg_replace("/^http(?s):\/\//", '', $url);
+    if (strpos($host, '/'))
+    {
+      $host = substr($host, 0, strpos($host, '/'));
+    }
+    return $host;
+  }
+
 }

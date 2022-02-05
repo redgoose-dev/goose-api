@@ -14,13 +14,13 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check post values
-  Util::checkExistValue($this->post, [ 'email', 'password', 'host' ]);
+  Util::checkExistValue($this->post, [ 'email', 'password' ]);
 
   // connect db
   $this->model->connect();
 
   // check authorization
-  Auth::checkAuthorization($this->model, '');
+  Auth::checkAuthorization($this->model, '', false);
 
   // set values
   $output = (object)[];
@@ -37,6 +37,7 @@ try
   $jwt = Token::make((object)[
     'exp' => true,
     'time' => true,
+    'host' => apache_request_headers()['Host'],
     'data' => (object)[
       'srl' => $user->srl,
       'admin' => !!((int)$user->admin === 1),
@@ -49,7 +50,6 @@ try
   $data->name = $user->name;
   $data->admin = !!((int)$user->admin === 1);
   $data->token = $jwt->token;
-  $data->host = $this->post->host;
 
   // disconnect db
   $this->model->disconnect();

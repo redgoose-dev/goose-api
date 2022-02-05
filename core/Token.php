@@ -42,7 +42,7 @@ class Token {
 
     // set token
     $token = (object)[];
-    $token->iss = $_ENV['API_PATH_URL'];
+    $token->iss = $op->host;
     $token->jti = $_ENV['API_TOKEN_ID'];
     if ($op->time) $token->iat = $now;
     if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');

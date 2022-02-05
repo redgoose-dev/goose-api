@@ -119,7 +119,7 @@ class Install {
    */
   static public function install()
   {
-    $defaultEmail = 'root@goose';
+    $defaultEmail = 'root@goo.se';
     $defaultName = 'root';
     $defaultPassword = '1234';
     try
@@ -197,6 +197,7 @@ class Install {
       $jwt = Token::make((object)[
         'time' => true,
         'exp' => false,
+        'host' => Util::getHost($_ENV['API_PATH_URL']),
       ]);
 
       // destination
