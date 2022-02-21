@@ -20,7 +20,7 @@ try
   }
 
   // check `id`
-  if (!Text::allowString($this->post->id ?? '', null))
+  if (isset($this->post->id) && !Text::allowString($this->post->id, null))
   {
     throw new Exception(Message::make('error.onlyKeywordType', 'id'));
   }
