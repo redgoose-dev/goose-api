@@ -34,6 +34,15 @@ try
     'srl' => $srl,
   ]);
 
+  // update article items
+  $this->model->edit((object)[
+    'table' => 'articles',
+    'data' => [ 'category_srl=NULL' ],
+    'where' => 'category_srl='.$srl,
+    'continue' => true,
+    'debug' => true,
+  ]);
+
   // set output
   if ($token) $output->_token = $token->jwt;
 

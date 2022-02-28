@@ -304,10 +304,10 @@ class Model {
    * edit item
    *
    * @param object $op
-   * @return object
+   * @return object|null
    * @throws Exception
    */
-  public function edit(object $op): object
+  public function edit(object $op): object|null
   {
     // check $op
     if (!isset($op->data)) throw new Exception('Not found $op->data');
@@ -318,7 +318,11 @@ class Model {
       'where' => $op->where,
       'debug' => true,
     ]);
-    if (!$cnt->data) throw new Exception('Not found data');
+    if (!$cnt->data)
+    {
+      if ($op->continue ?? false) return null;
+      throw new Exception('Not found data');
+    }
 
     // make query
     $query = '';
