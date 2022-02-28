@@ -102,7 +102,6 @@ function quiz(string $prompt = '', bool $password = false): string
   }
 }
 
-
 /**
  * make token
  */
@@ -113,14 +112,14 @@ function makeToken(): string
     // load env
     loadEnv();
     // set host
-    Util::getHost($_ENV['API_PATH_URL']);
+    $host = Util::getHost($_ENV['API_PATH_URL']);
     // check install
     Util::checkDirectories();
     // make public token
     $jwt = Token::make((object)[
       'time' => true,
       'exp' => false,
-      'host' => Util::getHost($_ENV['API_PATH_URL']),
+      'host' => $host,
     ]);
     // print token
     return $jwt->token;
