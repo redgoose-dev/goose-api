@@ -88,7 +88,14 @@ class UtilForCategories {
     {
       $where .= ' and user_srl='.$token->data->srl;
     }
-    $where .= UtilForArticles::getWhereType('all');
+    if ($type = ($self->get->visible_type ?? null))
+    {
+      $where .= UtilForArticles::getWhereType($type);
+    }
+    if ($q = ($self->get->q ?? null))
+    {
+      $where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
+    }
 
     // get article count
     if (Util::checkKeyInExtField('count_article', $ext_field))

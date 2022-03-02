@@ -30,7 +30,7 @@ try
   ]);
 
   // set where
-  $where = UtilForArticles::getWhereType($this->get->visible_type ?? '');
+  $where = UtilForArticles::getWhereType($this->get->visible_type ?? ($token->data->admin ? 'all' : ''));
   // `user_srl`값에 해당되는 값 가져오기
   if (isset($token->data->srl) && !$token->data->admin)
   {
