@@ -67,9 +67,13 @@ class UtilForArticles {
       if (!($v->nest_srl ?? false)) continue;
       $nest = $self->model->getItem((object)[
         'table' => 'nests',
-        'field' => 'name',
+        'field' => 'name,id',
         'where' => 'srl='.(int)$v->nest_srl,
       ]);
+      if ($nest->data->id ?? false)
+      {
+        $v->nest_id = $nest->data->id;
+      }
       if ($nest->data->name ?? false)
       {
         $v->nest_name = $nest->data->name;

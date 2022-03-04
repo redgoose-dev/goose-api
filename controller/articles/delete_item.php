@@ -40,7 +40,13 @@ try
 		'srl' => $srl,
 	]);
 
-	// set output
+  // remove comments
+  $this->model->delete((object)[
+    'table' => 'comments',
+    'where' => 'article_srl='.$srl,
+  ]);
+
+  // set output
 	if ($token) $output->_token = $token->jwt;
 
   // disconnect db
