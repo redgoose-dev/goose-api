@@ -47,6 +47,7 @@ try
       $tree[] = (object)[
         'name' => $file,
         'path' => $path.'/'.$dir.'/'.$file,
+        'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$dir.'/'.$file,
         'size' => filesize($filePath),
         'date' => filemtime($filePath),
         'type' => mime_content_type($filePath),
@@ -77,10 +78,6 @@ try
         });
         break;
     }
-  }
-  else
-  {
-    throw new Exception('Not found files', 404);
   }
 
   // set output
