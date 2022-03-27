@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
+use Controller\Main, Controller\files\UtilForFiles;
 use Exception;
 
 if (!defined('__API_GOOSE__')) exit();
@@ -27,6 +27,9 @@ try
     'table' => 'checklist',
     'srl' => $srl,
   ]);
+
+  // remove files
+  UtilForFiles::removeAttachFiles($this, $srl, 'checklist');
 
   // remove data
   $output = Main::delete($this, (object)[
