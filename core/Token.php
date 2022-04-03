@@ -2,6 +2,7 @@
 namespace Core;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
 
 /**
@@ -11,6 +12,7 @@ use Firebase\JWT\ExpiredException;
 class Token {
 
   const base_time = 60 * 60 * 24; // (s * m * h)
+  const algo = 'HS256';
 
   /**
    * get time
@@ -37,9 +39,7 @@ class Token {
   public static function make(object $op): ?object
   {
     if (!$op) return null;
-
     $now = time();
-
     // set token
     $token = (object)[];
     $token->iss = $op->host;
@@ -47,10 +47,8 @@ class Token {
     if ($op->time) $token->iat = $now;
     if ($op->time && $op->exp) $token->exp = $now + self::getTime('access');
     $token->data = (isset($op->data)) ? $op->data : (object)[];
-
     // make encode
-    $jwt = JWT::encode($token, $_ENV['API_TOKEN_KEY']);
-
+    $jwt = JWT::encode((array)$token, $_ENV['API_TOKEN_KEY'], self::algo);
     return (object)[
       'token' => $jwt,
       'option' => $token,
@@ -72,7 +70,7 @@ class Token {
     {
       if (!$token) throw new Exception('No token');
       $token = preg_replace('/^Bearer /', '', $token);
-      $decoded = JWT::decode($token, $key, ['HS256']);
+      $decoded = JWT::decode($token, new Key($key, self::algo));
       $output->url = $decoded->iss;
       if (isset($decoded->iat)) $output->time = $decoded->iat;
       if (isset($decoded->exp)) $output->exp = $decoded->exp;
@@ -84,7 +82,7 @@ class Token {
     {
       JWT::$leeway = self::getTime('refresh');
       // set decoded
-      $decoded = JWT::decode($token, $key, ['HS256']);
+      $decoded = JWT::decode($token, new Key($key, self::algo));
       $now = time();
       $expire = $now + self::getTime('access');
       $decoded->iat = $now;
@@ -95,7 +93,7 @@ class Token {
       if (isset($decoded->exp)) $output->exp = $decoded->exp;
       if (isset($decoded->jti)) $output->id = $decoded->jti;
       $output->data = $decoded->data;
-      $output->token = JWT::encode($decoded, $key);
+      $output->token = JWT::encode((array)$decoded, $key, self::algo);
       return $output;
     }
     catch (Exception $e)

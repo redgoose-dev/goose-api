@@ -118,7 +118,7 @@ class Auth {
           }
           break;
         case 'admin':
-          if (!(isset($jwt->data->admin) && (int)$jwt->data->admin > 0))
+          if (!($jwt->data->admin ?? false))
           {
             throw new Exception('You can not access.');
           }

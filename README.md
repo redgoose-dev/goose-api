@@ -13,7 +13,7 @@
 다음과 같은 환경을 구성하기 위하여 필요한 패키지들을 설치할 필요가 있습니다.
 
 - apache or nginx
-- php 7.x or higher version
+- php 8.x or higher version
 - mysql
 - composer
 
