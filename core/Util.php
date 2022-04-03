@@ -167,7 +167,7 @@ class Util {
    */
   public static function getHost(string $url): string
   {
-    $host = preg_replace("/^http(?s):\/\//", '', $url);
+    $host = preg_replace("/^http(s?):\/\//", '', $url);
     if (strpos($host, '/'))
     {
       $host = substr($host, 0, strpos($host, '/'));
