@@ -275,7 +275,7 @@ class Main {
    * 하는김에 데이터를 가져오고 토큰 검사하면서 토큰 decode값을 가져오면서 리턴해준다.
    * @throws Exception
    */
-  public static function checkAccessItem(Goose|Connect $self, object $op): object|null
+  public static function checkAccessItem(Goose|Connect $self, object $op): object
   {
     /**
      * $op guide
@@ -285,9 +285,6 @@ class Main {
      * @param string $op->id
      * @param boolean $op->useStrict  getItem 상황이라면 꼭 사용한다.
      */
-
-    // 라이브러리 모드라면 인증은 사용하지 않는다.
-    if (__API_MODE__ === 'library') return null;
 
     // check parameter
     if (!($op->table && ($op->srl || $op->id)))
