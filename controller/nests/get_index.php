@@ -33,11 +33,11 @@ try
 
   // check access
   $token = Main::checkAccessIndex($this, true);
-  if ($token->data->admin && isset($this->get->user))
+  if (($token->data->admin ?? false) && isset($this->get->user))
   {
     $where .= ' and user_srl='.(int)$this->get->user;
   }
-  else if (!$token->data->admin && isset($token->data->srl))
+  else if (!($token->data->admin ?? false) && isset($token->data->srl))
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }

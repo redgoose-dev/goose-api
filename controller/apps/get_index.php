@@ -28,7 +28,7 @@ try
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if (!$token->data->admin && $token->data->srl)
+  if (!($token->data->admin ?? false) && ($token->data->srl ?? false))
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }

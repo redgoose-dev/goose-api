@@ -1,6 +1,6 @@
-ARG ALPINE_VERSION=3.16
+ARG ALPINE_VERSION=3.16.2
 FROM alpine:${ALPINE_VERSION}
-MAINTAINER redgoose <scripter@me.com>, base: https://github.com/TrafeX/docker-php-nginx
+MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/docker-php-nginx>
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ COPY resource/docker/fpm-pool.conf /etc/php81/php-fpm.d/www.conf
 COPY resource/docker/php.ini /etc/php81/conf.d/custom.ini
 
 # Configure supervisord
-COPY resource/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY resource/docker/supervisord.conf /etc/supervisord.conf
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
 RUN chown -R nobody.nobody /app /run /var/lib/nginx /var/log/nginx
@@ -43,7 +43,7 @@ RUN ./cmd.sh ready
 EXPOSE 8080
 
 # Let supervisord start nginx & php-fpm
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
