@@ -1,5 +1,13 @@
 .idea/
 .AppleDouble/
 controller/external/
+data/
+.git/
+vendor/
 
 .DS_Store
+.env
+.gitignore
+LICENSE
+README.md
+.htaccess

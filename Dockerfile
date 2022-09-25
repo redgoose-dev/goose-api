@@ -1,33 +1,49 @@
-FROM ubuntu:18.04
-MAINTAINER redgoose <scripter@me.com>
+ARG ALPINE_VERSION=3.16
+FROM alpine:${ALPINE_VERSION}
+MAINTAINER redgoose <scripter@me.com>, base: https://github.com/TrafeX/docker-php-nginx
 
-WORKDIR /goose-api
+WORKDIR /app
 
-RUN apt-get -qq update
-RUN apt-get -y -qq install curl git zip software-properties-common
+# Install packages and remove default server definition
+RUN apk add --no-cache \
+  curl nginx supervisor \
+  php81 php81-ctype php81-curl php81-dom php81-fpm \
+  php81-pdo php81-pdo_mysql php81-gd php81-intl php81-mbstring \
+  php81-opcache php81-openssl php81-phar php81-session php81-xml php81-xmlreader
 
-# ser timezone
-ENV TZ=UTC
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# Create symlink so programs depending on `php` still function
+RUN ln -s /usr/bin/php81 /usr/bin/php
 
-# install php
-RUN add-apt-repository ppa:ondrej/php -y
-RUN apt-get -y -qq install php7.4-cli php7.4-fpm php7.4-curl php7.4-mysql php7.4-mbstring
-RUN php --version
+# Configure nginx
+COPY resource/docker/nginx.conf /etc/nginx/nginx.conf
 
-## install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
+# Configure PHP-FPM
+COPY resource/docker/fpm-pool.conf /etc/php81/php-fpm.d/www.conf
+COPY resource/docker/php.ini /etc/php81/conf.d/custom.ini
 
-# copy project files
-COPY ./ .
+# Configure supervisord
+COPY resource/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# setting in project
-RUN composer install
+# Make sure files/folders needed by the processes are accessable when they run under the nobody user
+RUN chown -R nobody.nobody /app /run /var/lib/nginx /var/log/nginx
+
+# Switch to use a non-root user from here on
+USER nobody
+
+# Add application
+COPY --chown=nobody ./ /app
+
+## composer install
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
+
 RUN ./cmd.sh ready
 
-# play command
-CMD service php7.4-fpm start && php -S 0.0.0.0:8000 server.php
+# Expose the port nginx is reachable on
+EXPOSE 8080
 
-# expose port
-EXPOSE 8000
+# Let supervisord start nginx & php-fpm
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# Configure a healthcheck to validate that everything is up&running
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping

@@ -6,7 +6,6 @@
  * @author redgoose <https://redgoose.me>
  */
 
-
 // set keyword `__API_GOOSE__`
 const __API_GOOSE__ = true;
 

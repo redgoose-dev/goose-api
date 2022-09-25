@@ -87,22 +87,13 @@ class Install {
       }
     }
 
-    // check exist `.env`
-    if (file_exists(__API_PATH__.'/.env'))
-    {
-      echo "The `.env` file exists. Do you want to proceed? (y/N) ";
-      $ask = fgets(STDIN);
-      if (trim(strtolower($ask)) !== 'y')
-      {
-        echo "Canceled install\n";
-        exit;
-      }
-    }
-
     // copy .env file
-    if (!copy(__API_PATH__.'/resource/.env.example', __API_PATH__.'/.env'))
+    if (!file_exists(__API_PATH__.'/.env'))
     {
-      self::error('Can not copy the `.env` file.');
+      if (!copy(__API_PATH__.'/resource/.env.example', __API_PATH__.'/.env'))
+      {
+        self::error('Can not copy the `.env` file.');
+      }
     }
 
     // output

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # set port
 [[ -z "$2" ]] && port=8000 || port=$2
