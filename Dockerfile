@@ -1,5 +1,4 @@
 ARG ALPINE_VERSION=3.16.2
-ARG USER=nobody
 FROM alpine:${ALPINE_VERSION}
 MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/docker-php-nginx>
 
@@ -26,13 +25,13 @@ COPY resource/docker/php.ini /etc/php81/conf.d/custom.ini
 COPY resource/docker/supervisord.conf /etc/supervisord.conf
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R ${USER}.${USER} /app /run /var/lib/nginx /var/log/nginx
+RUN chown -R nobody.nobody /app /run /var/lib/nginx /var/log/nginx
 
 # Switch to use a non-root user from here on
-USER ${USER}
+USER nobody
 
 # Add application
-COPY --chown=${USER} ./ /app
+COPY --chown=nobody ./ /app
 
 ## composer install
 COPY --from=composer /usr/bin/composer /usr/bin/composer
