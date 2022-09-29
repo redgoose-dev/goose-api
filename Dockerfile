@@ -37,8 +37,6 @@ COPY --chown=nobody ./ /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
 
-RUN ./cmd.sh ready
-
 # Expose the port nginx is reachable on
 EXPOSE 4040
 

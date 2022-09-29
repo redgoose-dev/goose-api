@@ -20,3 +20,20 @@
 ## Documentation
 
 goose-api 설치에 관란 자세한 내용은 [wiki](https://github.com/redgoose-dev/goose-api/wiki)에서 확인할 수 있습니다.
+
+## docker
+
+### build
+
+```shell
+# mac / intel
+docker build -t redgoose/goose-api:latest .
+# mac / m1 / linux
+docker buildx build --platform=linux/amd64 -t redgoose/goose-api:latest .
+# mac / m1 / local
+docker buildx build --platform=linux/arm64/v8 -t redgoose/goose-api:latest .
+```
+
+### composer
+
+coming soon
