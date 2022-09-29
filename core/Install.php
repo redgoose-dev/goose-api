@@ -35,7 +35,7 @@ class Install {
    */
   static private function checkDirectoryPath(string $dir = ''): void
   {
-    $dir = $dir ?? __API_PATH__;
+    $dir = $dir ? $dir : __API_PATH__;
     if (!is_dir($dir))
     {
       self::error("Directory does not exist. path: `$dir`");
