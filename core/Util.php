@@ -37,11 +37,14 @@ class Util {
    *
    * @throws Exception
    */
-  public static function createDirectory(?string $path=null, int $permission = 0707): void
+  public static function createDirectory(?string $path = null, int $permission = 0707, bool $skip = false): void
   {
     if (is_dir($path))
     {
-      throw new Exception('Directory already exists.');
+      if (!$skip)
+      {
+        throw new Exception('Directory already exists.');
+      }
     }
     else
     {

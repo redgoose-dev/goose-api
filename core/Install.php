@@ -18,8 +18,6 @@ class Install {
 
   /**
    * output
-   *
-   * @param string
    */
   static private function output(string $str): void
   {
@@ -35,9 +33,9 @@ class Install {
    *
    * @param string $dir
    */
-  static private function checkDirectoryPath(string $dir='')
+  static private function checkDirectoryPath(string $dir = ''): void
   {
-    $dir = $dir ? $dir : __API_PATH__;
+    $dir = $dir ?? __API_PATH__;
     if (!is_dir($dir))
     {
       self::error("Directory does not exist. path: `$dir`");
@@ -55,7 +53,7 @@ class Install {
    *
    * @throws Exception
    */
-  static private function checkEnvValues()
+  static private function checkEnvValues(): void
   {
     if (!$_ENV['API_SERVICE_NAME']) throw new Exception('The value `API_SERVICE_NAME` does not exist.');
     if (!$_ENV['API_TOKEN_KEY']) throw new Exception('The value `API_TOKEN_KEY` does not exist.');
@@ -78,8 +76,8 @@ class Install {
     {
       try
       {
-        Util::createDirectory(__API_PATH__.'/data', 0707);
-        Util::createDirectory(__API_PATH__.'/data/upload', 0707);
+        Util::createDirectory(__API_PATH__.'/data', 0707, true);
+        Util::createDirectory(__API_PATH__.'/data/upload', 0707, false);
       }
       catch(Exception $e)
       {
