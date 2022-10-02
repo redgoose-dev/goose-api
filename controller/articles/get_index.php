@@ -47,6 +47,26 @@ try
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }
+  if ($duration = ($this->get->duration ?? null))
+  {
+    $duration = explode(',', $duration);
+    switch ($duration[0])
+    {
+      case 'new':
+        $where .= ' and `'.$duration[1].'` > date_add(now(), interval -'.$duration[2].')';
+        break;
+      case 'old':
+        $where .= ' and `'.$duration[1].'` < date_sub(now(), interval '.$duration[2].')';
+        break;
+    }
+  }
+
+  // set order
+  $order = '';
+  if ($random = ($this->get->random ?? null))
+  {
+    $order = 'rand('.date($random).')';
+  }
 
   // set options
   $options = (object)array_merge(
@@ -56,6 +76,7 @@ try
       'where' => $where,
       'json_field' => ['json'],
       'object' => false,
+      'order' => $order,
       'debug' => __API_DEBUG__,
     ]
   );
