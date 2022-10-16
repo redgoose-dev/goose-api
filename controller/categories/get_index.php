@@ -29,7 +29,7 @@ try
 
   // check access
   $token = Main::checkAccessIndex($this, true);
-  $where .= (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
+  $where .= (!($token->data->admin ?? false) && ($token->data->srl ?? false)) ? ' and user_srl='.(int)$token->data->srl : '';
 
   // set output
   $output = Main::index($this, (object)[
@@ -38,7 +38,7 @@ try
   ]);
 
   // extend fields (count_article,item_all,none)
-  if ($output->data && isset($this->get->ext_field))
+  if ($output->data && ($this->get->ext_field ?? false))
   {
     $output->data->index = UtilForCategories::extendItems(
       $this,

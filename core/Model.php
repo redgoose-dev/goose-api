@@ -25,7 +25,7 @@ class Model {
   {
     foreach ($fields as $k=>$v)
     {
-      if (isset($item->{$v}))
+      if ($item->{$v} ?? false)
       {
         $item->{$v} = json_decode(urldecode($item->{$v}), false);
       }
@@ -48,23 +48,21 @@ class Model {
    */
   private function query(object $op): string
   {
-    if (!(isset($op->act) && isset($op->table))) return '';
-
+    if (!(($op->act ?? false) && ($op->table ?? false))) return '';
     // filtering where
-    if (isset($op->where))
+    if ($op->where ?? false)
     {
       $op->where = preg_replace("/^ and/", "", $op->where);
       $op->where = trim($op->where);
     }
-
+    // set keyword
     $str = $op->act;
-    $str .= (isset($op->field)) ? ' '.$op->field : ' *';
+    $str .= ($op->field ?? false) ? ' '.$op->field : ' *';
     $str .= ' from '.$this->getTableName($op->table);
-    $str .= (isset($op->where) && $op->where) ? ' where '.$op->where : '';
-    $str .= (isset($op->order) && $op->order) ? ' order by '.$op->order : '';
-    $str .= (isset($op->order) && isset($op->sort) && $op->order && $op->sort) ? ' ' . ((isset($op->sort) && $op->sort && $op->sort === 'asc') ? 'asc' : 'desc') : '';
-
-    if (isset($op->limit) && $op->limit)
+    $str .= ($op->where ?? false) ? ' where '.$op->where : '';
+    $str .= ($op->order ?? false) ? ' order by '.$op->order : '';
+    $str .= (($op->order ?? false) && ($op->sort ?? false) && $op->order && $op->sort) ? ' ' . ((($op->sort ?? false) && $op->sort === 'asc') ? 'asc' : 'desc') : '';
+    if ($op->limit ?? false)
     {
       if (is_array($op->limit))
       {
@@ -78,7 +76,6 @@ class Model {
         $str .= ' limit ' . $op->limit;
       }
     }
-
     return $str;
   }
 
@@ -97,7 +94,7 @@ class Model {
         $_ENV['API_DB_PASSWORD']
       );
       $this->action('set names utf8mb4');
-      if (isset($_ENV['API_TIMEZONE_OFFSET']))
+      if ($_ENV['API_TIMEZONE_OFFSET'] ?? false)
       {
         $this->action("set session time_zone='$_ENV[API_TIMEZONE_OFFSET]'");
       }
@@ -190,7 +187,7 @@ class Model {
     $output = (object)[];
 
     $op->act = 'select';
-    $op->field = isset($op->field) ? Util::convertFields($op->field) : '*';
+    $op->field = ($op->field ?? false) ? Util::convertFields($op->field) : '*';
 
     // make query
     $query = $this->query($op);
@@ -213,7 +210,7 @@ class Model {
     }
 
     // set output
-    $output->data = isset($result) ? $result : [];
+    $output->data = $result ?? [];
     if ($op->debug ?? false) $output->query = $query;
 
     return $output;
@@ -227,7 +224,7 @@ class Model {
     $output = (object)[];
 
     $op->act = 'select';
-    $op->field = (isset($op->field)) ? Util::convertFields($op->field) : '*';
+    $op->field = ($op->field ?? false) ? Util::convertFields($op->field) : '*';
 
     // make query
     $query = $this->query($op);
@@ -237,8 +234,8 @@ class Model {
     if ($qry)
     {
       $result = (object)$qry->fetch(PDO::FETCH_ASSOC);
-      if ($result && isset($result->scalar) && !$result->scalar) $result = null;
-      if ($result && isset($op->json_field) && count($op->json_field))
+      if (isset($result->scalar) && $result->scalar === false) $result = null;
+      if ($result && ($op->json_field ?? null) && count($op->json_field))
       {
         $result = self::convertJsonToObject($result, $op->json_field);
       }
@@ -261,8 +258,8 @@ class Model {
   public function add(object $op): object
   {
     // check $op
-    if (!isset($op->table)) throw new Exception('Not found $op->table');
-    if (!isset($op->data)) throw new Exception('Not found $op->data');
+    if (!($op->table ?? false)) throw new Exception('Not found $op->table');
+    if (!($op->data ?? false)) throw new Exception('Not found $op->data');
 
     // set query
     $query = '';
@@ -310,7 +307,7 @@ class Model {
   public function edit(object $op): object|null
   {
     // check $op
-    if (!isset($op->data)) throw new Exception('Not found $op->data');
+    if (!($op->data ?? false)) throw new Exception('Not found $op->data');
 
     // check exist data
     $cnt = $this->getCount((object)[
@@ -359,8 +356,8 @@ class Model {
     $output = (object)[];
     try
     {
-      if (!isset($op->table)) throw new Exception('no value `table`');
-      if (!isset($op->where)) throw new Exception('no value `where`');
+      if (!($op->table ?? false)) throw new Exception('no value `table`');
+      if (!($op->where ?? false)) throw new Exception('no value `where`');
       // check exist data
       $cnt = $this->getCount((object)[
         'table' => $op->table,
@@ -399,14 +396,14 @@ class Model {
     $output = (object)[];
     try
     {
-      if (!isset($op->table)) throw new Exception('no value `table`');
-      if (!isset($op->field)) throw new Exception('no value `field`');
+      if (!($op->table ?? false)) throw new Exception('no value `table`');
+      if (!($op->field ?? false)) throw new Exception('no value `field`');
       // set value
       $tableName = $this->getTableName($op->table);
       $field = $op->field ?? 'srl';
       // set query
       $query = 'select max('.$op->field.') as maximum from '.$tableName;
-      $query .= isset($op->where) ? ' where '.$op->where : '';
+      $query .= ($op->where ?? false) ? ' where '.$op->where : '';
       // action
       $max = $this->db->prepare($query);
       $max->execute();

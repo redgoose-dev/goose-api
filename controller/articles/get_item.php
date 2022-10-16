@@ -30,9 +30,9 @@ try
   ]);
 
   // set where
-  $where = UtilForArticles::getWhereType($this->get->visible_type ?? ($token->data->admin ? 'all' : ''));
+  $where = UtilForArticles::getWhereType($this->get->visible_type ?? (($token->data->admin ?? false) ? 'all' : ''));
   // `user_srl`값에 해당되는 값 가져오기
-  if (isset($token->data->srl) && !$token->data->admin)
+  if (($token->data->srl ?? false) && !($token->data->admin ?? false))
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }
@@ -75,7 +75,7 @@ try
   }
 
   // update hit
-  if (isset($output->data->hit) && isset($this->get->hit))
+  if ((int)($this->get->hit ?? 0) === 1)
   {
     $output->data->hit += 1;
     $hit = $output->data->hit;

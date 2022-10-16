@@ -39,11 +39,11 @@ try
   }
   $where .= UtilForArticles::getWhereType($this->get->visible_type ?? null);
   // `user_srl`값에 해당되는 값 가져오기
-  if ($token->data->admin && isset($this->get->user))
+  if (($token->data->admin ?? false) && ($this->get->user ?? false))
   {
     $where .= ' and user_srl='.(int)$this->get->user;
   }
-  else if (isset($token->data->srl) && !$token->data->admin)
+  else if (($token->data->srl ?? false) && !($token->data->admin ?? false))
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }
@@ -62,7 +62,6 @@ try
   }
 
   // set order
-  $order = '';
   if ($random = ($this->get->random ?? null))
   {
     $order = 'rand('.date($random).')';
@@ -76,7 +75,7 @@ try
       'where' => $where,
       'json_field' => ['json'],
       'object' => false,
-      'order' => $order,
+      'order' => $order ?? null,
       'debug' => __API_DEBUG__,
     ]
   );
@@ -117,6 +116,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }
