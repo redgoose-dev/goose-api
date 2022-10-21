@@ -14,18 +14,18 @@
 
 사용하는 파라메터 목록
 
-| name         |  type  | example  | description                               |
-|:-------------|:------:|:---------|:------------------------------------------|
-| app          | number | `1`      | app srl                                   |
-| nest         | number | `1`      | nest srl                                  |
-| category     | number | `1`      | category srl                              |
-| user         | number | `1`      | user srl                                  |
-| visible_type | string | `all`    | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
-| q            | string | `toy`    | 제목과 본문내용 검색어                              |
-| duration     | string |          | range of data                             |
-| random       | string | `YmdHis` | 무작위로 데이터를 가져올 경우의 시드날짜 포맷                 |
-| ext_field    | string |          | 확장 필드                                     |
-| strict       | number | `0,1`    | 일반 유저라면 자신만의 데이터를 가져옵니다.                  |
+| name         |  type  | example    | description                               |
+|:-------------|:------:|:-----------|:------------------------------------------|
+| app          | number | `1`        | app srl                                   |
+| nest         | number | `1`        | nest srl                                  |
+| category     | number | `1`        | category srl                              |
+| user         | number | `1`        | user srl                                  |
+| visible_type | string | `all`      | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
+| q            | string | `toy`      | 제목과 본문내용 검색어                              |
+| duration     | string |            | range of data                             |
+| random       | number | `20221212` | 무작위로 데이터를 가져올 경우의 시드날짜 포맷                 |
+| ext_field    | string |            | 확장 필드                                     |
+| strict       | number | `0,1`      | 일반 유저라면 자신만의 데이터를 가져옵니다.                  |
 
 ### ext_field
 - `category_name`: 분류 이름을 가져옵니다.

@@ -64,7 +64,7 @@ try
   // set order
   if ($random = ($this->get->random ?? null))
   {
-    $order = 'rand('.date($random).')';
+    $order = 'rand('.$random.')';
   }
 
   // set options
