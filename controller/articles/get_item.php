@@ -77,6 +77,7 @@ try
   // update hit
   if ((int)($this->get->hit ?? 0) === 1)
   {
+    $output->data->hit = $output->data->hit ?? 0
     $output->data->hit += 1;
     $hit = $output->data->hit;
     $this->model->edit((object)[
