@@ -34,6 +34,25 @@ docker buildx build --platform=linux/amd64 -t redgoose/goose-api:latest .
 docker buildx build --platform=linux/arm64/v8 -t redgoose/goose-api:latest .
 ```
 
-### composer
+### docker-composer
 
-coming soon
+다음 코드를 참고해주세요.
+
+```shell
+version: "3.9"
+
+services:
+  goose:
+    image: redgoose/goose-api:latest
+    container_name: goose
+    restart: unless-stopped
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/fpm-pool.conf:/etc/php81/php-fpm.d/www.conf
+      - ./config/php.ini:/etc/php81/conf.d/custom.ini
+      - ./config/supervisord.conf:/etc/supervisord.conf
+      - ./.env:/app/.env
+      - ./data:/app/data
+    environment:
+      - TZ=Asia/Seoul
+```

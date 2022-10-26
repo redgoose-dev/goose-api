@@ -45,49 +45,47 @@ try
     'field' => $this->get->field ?? '',
     'json_field' => ['json'],
   ]);
-  
-  // TODO: 데이터 존재여부를 확인하고 데이터가 없으면 분기처리 해야겠다.
-  // TODO: 현재 데이터가 없어도 그대로 통과되고 있다보니 일부 오류가 발생한다.
 
-  $ext_field = $this->get->ext_field ?? null;
-
-  // get category name
-  if (($output->data->category_srl ?? false) && Util::checkKeyInExtField('category_name', $ext_field))
+  if ($output->data ?? false)
   {
-    $category = $this->model->getItem((object)[
-      'table' => 'categories',
-      'field' => 'name',
-      'where' => 'srl='.(int)$output->data->category_srl,
-    ])->data;
-    if ($category->name ?? false)
+    $ext_field = $this->get->ext_field ?? null;
+
+    // get category name
+    if (($output->data->category_srl ?? false) && Util::checkKeyInExtField('category_name', $ext_field))
     {
-      $output->data->category_name = $category->name;
+      $category = $this->model->getItem((object)[
+        'table' => 'categories',
+        'field' => 'name',
+        'where' => 'srl='.(int)$output->data->category_srl,
+      ])->data;
+      if ($category->name ?? false)
+      {
+        $output->data->category_name = $category->name;
+      }
     }
-  }
-  // get nest name
-  if (($output->data->nest_srl ?? false) && Util::checkKeyInExtField('nest_name', $ext_field))
-  {
-    $nest = $this->model->getItem((object)[
-      'table' => 'nests',
-      'where' => 'srl='.(int)$output->data->nest_srl,
-    ])->data;
-    if ($nest->name ?? false)
+    // get nest name
+    if (($output->data->nest_srl ?? false) && Util::checkKeyInExtField('nest_name', $ext_field))
     {
-      $output->data->nest_name = $nest->name;
+      $nest = $this->model->getItem((object)[
+        'table' => 'nests',
+        'where' => 'srl='.(int)$output->data->nest_srl,
+      ])->data;
+      if ($nest->name ?? false)
+      {
+        $output->data->nest_name = $nest->name;
+      }
     }
-  }
-
-  // update hit
-  if ((int)($this->get->hit ?? 0) === 1)
-  {
-    $output->data->hit = $output->data->hit ?? 0
-    $output->data->hit += 1;
-    $hit = $output->data->hit;
-    $this->model->edit((object)[
-      'table' => 'articles',
-      'where' => 'srl='.$srl,
-      'data' => [ "hit='$hit'" ],
-    ]);
+    // update hit
+    if ((int)($this->get->hit ?? 0) === 1 && ($output->data->hit ?? false))
+    {
+      $output->data->hit += 1;
+      $hit = $output->data->hit;
+      $this->model->edit((object)[
+        'table' => 'articles',
+        'where' => 'srl='.$srl,
+        'data' => [ "hit='$hit'" ],
+      ]);
+    }
   }
 
   // set token

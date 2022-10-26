@@ -35,17 +35,20 @@ try
     'srl' => $srl,
   ]);
 
-  $ext_field = $this->get->ext_field ?? null;
-
-  // get username
-  if ($output->data && Util::checkKeyInExtField('user_name', $ext_field))
+  if ($output->data ?? false)
   {
-    $user = $this->model->getItem((object)[
-      'table' => 'users',
-      'field' => 'name',
-      'where' => 'srl='.(int)$output->data->user_srl,
-    ]);
-    $output->data->user_name = $user->data->name;
+    $ext_field = $this->get->ext_field ?? null;
+
+    // get username
+    if (Util::checkKeyInExtField('user_name', $ext_field))
+    {
+      $user = $this->model->getItem((object)[
+        'table' => 'users',
+        'field' => 'name',
+        'where' => 'srl='.(int)$output->data->user_srl,
+      ]);
+      $output->data->user_name = $user->data->name;
+    }
   }
 
   // set token

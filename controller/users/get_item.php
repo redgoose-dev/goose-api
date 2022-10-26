@@ -36,8 +36,8 @@ try
     'json_field' => ['json'],
   ], function(object $result) {
     // delete password field
-    if (!isset($result->data)) return $result;
-    if (isset($result->data->password)) unset($result->data->password);
+    if (!($result->data ?? false)) return $result;
+    if ($result->data->password ?? false) unset($result->data->password);
     return $result;
   });
 

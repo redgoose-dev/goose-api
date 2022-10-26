@@ -34,17 +34,21 @@ try
     'srl' => $srl,
   ]);
 
-  // get article count (count_article)
-  $ext_field = $this->get->ext_field ?? null;
-  if ($output->data && Util::checkKeyInExtField('count_article', $ext_field))
+  if ($output->data ?? false)
   {
-    $where = (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
-    $where .= ' and (NOT type LIKE \'ready\' or type=\'public\')';
-    $cnt = $this->model->getCount((object)[
-      'table' => 'articles',
-      'where' => $where.' and category_srl='.(int)$output->data->srl,
-    ])->data;
-    $output->data->count_article = $cnt;
+    $ext_field = $this->get->ext_field ?? null;
+
+    // get article count (count_article)
+    if (Util::checkKeyInExtField('count_article', $ext_field))
+    {
+      $where = (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
+      $where .= ' and (NOT type LIKE \'ready\' or type=\'public\')';
+      $cnt = $this->model->getCount((object)[
+        'table' => 'articles',
+        'where' => $where.' and category_srl='.(int)$output->data->srl,
+      ])->data;
+      $output->data->count_article = $cnt;
+    }
   }
 
   // set token
