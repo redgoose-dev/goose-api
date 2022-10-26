@@ -45,6 +45,9 @@ try
     'field' => $this->get->field ?? '',
     'json_field' => ['json'],
   ]);
+  
+  // TODO: 데이터 존재여부를 확인하고 데이터가 없으면 분기처리 해야겠다.
+  // TODO: 현재 데이터가 없어도 그대로 통과되고 있다보니 일부 오류가 발생한다.
 
   $ext_field = $this->get->ext_field ?? null;
 
