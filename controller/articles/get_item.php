@@ -76,10 +76,21 @@ try
       }
     }
     // update hit
-    if ((int)($this->get->hit ?? 0) === 1 && ($output->data->hit ?? false))
+    if ((int)($this->get->hit ?? 0) === 1)
     {
-      $output->data->hit += 1;
-      $hit = $output->data->hit;
+      if (($output->data->hit ?? false) !== false)
+      {
+        $hit = $output->data->hit + 1;
+      }
+      else
+      {
+        $itemForHit = $this->model->getItem((object)[
+          'table' => 'articles',
+          'where' => 'srl='.$srl,
+          'field' => 'hit',
+        ]);
+        $hit = $itemForHit->data->hit + 1;
+      }
       $this->model->edit((object)[
         'table' => 'articles',
         'where' => 'srl='.$srl,
