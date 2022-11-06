@@ -4,6 +4,8 @@ MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/do
 
 WORKDIR /app
 
+ENV PORT=5050
+
 # Install packages and remove default server definition
 RUN apk add --no-cache \
   curl nginx supervisor \
@@ -38,10 +40,10 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
 
 # Expose the port nginx is reachable on
-EXPOSE 4040
+EXPOSE $PORT
 
 # Let supervisord start nginx & php-fpm
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:4040/fpm-ping
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:$PORT/fpm-ping
