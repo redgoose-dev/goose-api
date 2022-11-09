@@ -24,7 +24,7 @@ create table `goose_articles` (
   `content` longtext,
   `hit` int(11) default 0,
   `star` int(11) default 0,
-  `json` text,
+  `json` longtext,
   `ip` varchar(15) default null,
   `type` varchar(20) default null,
   `regdate` datetime default null,
