@@ -36,8 +36,8 @@ try
 
   // set data
   $data = [];
-  if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
-  if (isset($this->post->description)) $data[] = "description='{$this->post->description}'";
+  if ($this->post->name ?? false) $data[] = "name='{$this->post->name}'";
+  if ($this->post->description ?? false) $data[] = "description='{$this->post->description}'";
   if ($json) $data[] = "json='$json'";
   if (count($data) <= 0)
   {

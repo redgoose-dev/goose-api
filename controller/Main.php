@@ -72,10 +72,10 @@ class Main {
     // get data
     $opts = (object)[
       'table' => $op->table,
-      'field' => isset($op->field) ? $op->field : ($self->get->field ?? ''),
-      'json_field' => isset($op->json_field) ? $op->json_field : ($self->get->json_field ?? []),
-      'order' => isset($op->order) ? $op->order : ($self->get->order ?? ''),
-      'sort' => isset($op->sort) ? $op->sort : ($self->get->sort ?? ''),
+      'field' => $op->field ?? ($self->get->field ?? ''),
+      'json_field' => $op->json_field ?? ($self->get->json_field ?? []),
+      'order' => $op->order ?? ($self->get->order ?? ''),
+      'sort' => $op->sort ?? ($self->get->sort ?? ''),
       'limit' => $limit,
       'where' => $op->where,
       'debug' => $op->debug ?? __API_DEBUG__,
@@ -291,7 +291,7 @@ class Main {
     {
       throw new Exception(Message::make('msg.noParams'), 500);
     }
-    // strict 검사를 하면서 'strict'값이 없을때..
+    // strict 검사를 하면서 `strict`값이 없을때..
     if (($op->useStrict ?? false) && !($self->get->strict ?? $self->post->strict ?? null))
     {
       return Auth::checkAuthorization($self->model, '');
@@ -323,8 +323,8 @@ class Main {
    * check access index
    *
    * @param Goose|Connect $self
-   * @param boolean useStrict
-   * @return object token
+   * @param bool $useStrict useStrict
+   * @return object
    * @throws Exception
    */
   public static function checkAccessIndex(Goose|Connect $self, bool $useStrict = false): object

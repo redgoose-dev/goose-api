@@ -20,16 +20,7 @@ try
   }
 
   // check and set json
-  $json = null;
-  if (isset($this->post->json))
-  {
-    $json = json_decode(urldecode($this->post->json), false);
-    if (!$json)
-    {
-      throw new Exception(Message::make('error.json'));
-    }
-    $json = urlencode(json_encode($json, false));
-  }
+  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();

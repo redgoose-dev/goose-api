@@ -27,7 +27,7 @@ class Model {
     {
       if ($item->{$v} ?? false)
       {
-        $item->{$v} = json_decode(urldecode($item->{$v}), false);
+        $item->{$v} = json_decode($item->{$v}, false);
       }
     }
     return $item;
@@ -322,7 +322,6 @@ class Model {
     }
 
     // make query
-    $query = '';
     $query = 'update '.$this->getTableName($op->table).' set ';
     $query_data = '';
     foreach ($op->data as $k=>$v)

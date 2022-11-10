@@ -23,7 +23,7 @@ try
 	}
 
   // set json
-  if ($json = $this->post->json ?? null) $json = Util::testJsonData($json);
+  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();

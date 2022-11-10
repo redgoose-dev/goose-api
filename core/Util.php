@@ -107,7 +107,7 @@ class Util {
    */
   public static function stringToJson(?string $str): mixed
   {
-    return json_decode(urldecode($str ?? ''), false);
+    return json_decode($str ?? '', false);
   }
 
   /**
@@ -115,7 +115,7 @@ class Util {
    */
   public static function jsonToString(mixed $json): string
   {
-    return urlencode(json_encode($json, false));
+    return json_encode($json, false);
   }
 
   /**
@@ -129,7 +129,8 @@ class Util {
     {
       $json = self::stringToJson($json);
       if (!$json) throw new Exception('error');
-      return self::jsonToString($json);
+      $json = self::jsonToString($json);
+      return str_replace('\\', '\\\\', $json);
     }
     catch(Exception $e)
     {
@@ -141,7 +142,7 @@ class Util {
    * Check directories
    * @throws Exception
    */
-  public static function checkDirectories()
+  public static function checkDirectories(): void
   {
     // check `/data`
     if (!is_dir(__API_PATH__.'/data'))
