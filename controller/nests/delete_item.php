@@ -53,13 +53,13 @@ try
   // remove categories
   $categoriesCount = $this->model->getCount((object)[
     'table' => 'categories',
-    'where' => 'nest_srl='.$srl,
+    'where' => 'module="article" and target_srl='.$srl,
   ])->data;
   if ($categoriesCount > 0)
   {
     $this->model->delete((object)[
       'table' => 'categories',
-      'where' => 'nest_srl='.$srl,
+      'where' => 'target_srl='.$srl,
     ]);
   }
 

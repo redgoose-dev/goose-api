@@ -16,11 +16,11 @@ try
   $srl = (int)$this->params['srl'];
   if (!($srl && $srl > 0))
   {
-    throw new Exception(Message::make('error.notFound', 'srl'));
+    throw new Exception(Message::make('error.notFound', 'srl'), 404);
   }
 
   // check and set json
-  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
+  $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
@@ -36,21 +36,21 @@ try
   $cnt = $this->model->getCount((object)[
     'table' => 'users',
     'where' => 'srl='.$srl,
-  ]);
-  if (!$cnt->data)
+  ])->data;
+  if ($cnt <= 0)
   {
-    throw new Exception(Message::make('error.noData', 'user'));
+    throw new Exception(Message::make('error.noData', 'user'), 204);
   }
 
   // check email address
-  if (isset($this->post->email))
+  if ($this->post->email ?? false)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'users',
       'where' => 'email="'.$this->post->email.'" and srl!='.$srl,
       'debug' => __API_DEBUG__,
-    ]);
-    if (!!$cnt->data)
+    ])->data;
+    if ($cnt > 0)
     {
       throw new Exception(Message::make('error.existsValue', $this->post->email));
     }
@@ -94,6 +94,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -1,7 +1,9 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\categories\UtilForCategories;
-use Exception;
+use Controller\Main, Exception;
+use Controller\categories\UtilArticlesForCategories;
+use Controller\categories\UtilJsonForCategories;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -16,11 +18,18 @@ try
   // connect db
   $this->model->connect();
 
+  // set base values
+  $module = UtilForCategories::$module[$this->get->module ?? null] ?? null;
+
   // set where
   $where = '';
-  if ($nest = (int)($this->get->nest ?? 0))
+  if ($module)
   {
-    $where .= ' and nest_srl='.$nest;
+    $where .= ' and module="'.$module.'"';
+  }
+  if ($target = (int)($this->get->target ?? 0))
+  {
+    $where .= ' and target_srl='.$target;
   }
   if ($name = ($this->get->name ?? null))
   {
@@ -37,15 +46,18 @@ try
     'where' => $where,
   ]);
 
-  // extend fields (count_article,item_all,none)
+  // extend fields (count,all,none)
   if ($output->data && ($this->get->ext_field ?? false))
   {
-    $output->data->index = UtilForCategories::extendItems(
-      $this,
-      $token,
-      $output->data->index,
-      $nest
-    );
+    switch ($module)
+    {
+      case UtilForCategories::$module['article']:
+        $output->data->index = UtilArticlesForCategories::extendItems($this, $token, $output->data->index, $target);
+        break;
+      case UtilForCategories::$module['json']:
+        $output->data->index = UtilJsonForCategories::extendItems($this, $token, $output->data->index);
+        break;
+    }
   }
 
   // set token

@@ -305,7 +305,7 @@ class Main {
     ]);
     if (!$res->data)
     {
-      throw new Exception(Message::make('error.noFrom', 'data', $op->table), 404);
+      throw new Exception(Message::make('error.noFrom', 'data', $op->table), 204);
     }
 
     // check authorization

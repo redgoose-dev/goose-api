@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\articles\UtilForArticles;
-use Exception;
+use Exception, Controller\Main;
+use Controller\articles\UtilForArticles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -73,7 +73,7 @@ try
     [
       'table' => 'articles',
       'where' => $where,
-      'json_field' => ['json'],
+      'json_field' => [ 'json' ],
       'object' => false,
       'order' => $order ?? null,
       'debug' => __API_DEBUG__,
@@ -83,7 +83,6 @@ try
   // set output
   $output = Main::index($this, $options);
 
-  // set external items
   if ($output->data)
   {
     $ext_field = $this->get->ext_field ?? null;

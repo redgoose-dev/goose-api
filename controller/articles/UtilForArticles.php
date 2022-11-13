@@ -1,8 +1,7 @@
 <?php
 namespace Controller\articles;
-use Core\Goose, Core\Connect;
+use Exception, Core\Goose, Core\Connect;
 use Controller, Controller\Main;
-use Exception;
 
 /**
  * util for articles

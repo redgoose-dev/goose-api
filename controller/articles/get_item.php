@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\articles\UtilForArticles;
-use Exception;
+use Exception, Controller\Main;
+use Controller\articles\UtilForArticles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -43,7 +43,7 @@ try
     'srl' => $srl,
     'where' => $where,
     'field' => $this->get->field ?? '',
-    'json_field' => ['json'],
+    'json_field' => [ 'json' ],
   ]);
 
   if ($output->data ?? false)
@@ -110,6 +110,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

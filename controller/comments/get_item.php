@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -38,7 +37,6 @@ try
   if ($output->data ?? false)
   {
     $ext_field = $this->get->ext_field ?? null;
-
     // get username
     if (Util::checkKeyInExtField('user_name', $ext_field))
     {
@@ -62,6 +60,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

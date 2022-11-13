@@ -69,7 +69,7 @@ try
     {
       $this->model->delete((object)[
         'table' => 'categories',
-        'where' => 'nest_srl='.(int)$v->srl,
+        'where' => 'module="article" and target_srl='.(int)$v->srl,
       ]);
     }
     // remove nests

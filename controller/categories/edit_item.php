@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -28,23 +28,28 @@ try
     'srl' => $srl,
   ]);
 
-  // check exist nest
-  if (isset($this->post->nest_srl))
+  // set
+  $module = $this->post->module ?? null;
+  $target_srl = $this->post->target_srl ?? null;
+
+  // check exist for article
+  if ($module === UtilForCategories::$module['article'] && $target_srl)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'nests',
-      'where' => 'srl='.(int)$this->post->nest_srl,
+      'where' => 'srl='.(int)$target_srl,
     ])->data;
-    if ($cnt <= 0)
+    if (($cnt ?? 0) <= 0)
     {
-      throw new Exception(Message::make('error.noData', 'nest'));
+      throw new Exception(Message::make('error.noData', 'module'), 204);
     }
   }
 
   // set data
   $data = [];
-  if (isset($this->post->nest_srl)) $data[] = 'nest_srl='.(int)$this->post->nest_srl;
-  if (isset($this->post->name)) $data[] = "name='{$this->post->name}'";
+  if ($target_srl) $data[] = '`target_srl`='.(int)$target_srl;
+  if ($this->post->name ?? false) $data[] = "`name`='{$this->post->name}'";
+  if ($module) $data[] = "`module`='{$module}'";
   if (count($data) <= 0)
   {
     throw new Exception(Message::make('error.noEditData'));
@@ -68,6 +73,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -13,10 +13,10 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  $srl = (int)($this->params['srl'] ?? 0);
+  if ($srl <= 0)
   {
-    throw new Exception(Message::make('error.notFound', 'srl'));
+    throw new Exception(Message::make('error.notFound', 'srl'), 404);
   }
 
   // connect db
@@ -26,10 +26,10 @@ try
   $cnt = $this->model->getCount((object)[
     'table' => 'users',
     'where' => 'srl='.$srl,
-  ]);
-  if (!$cnt->data)
+  ])->data;
+  if ($cnt <= 0)
   {
-    throw new Exception(Message::make('error.noData', 'user'));
+    throw new Exception(Message::make('error.noData', 'user'), 204);
   }
 
   // check authorization
@@ -45,6 +45,8 @@ try
     'srl' => $srl,
   ]);
 
+  // TODO: 사용자를 지우면 컨텐츠들을 지워야 할거 같은데 이건 좀 고려해보자..
+
   // set output
   if ($token) $output->_token = $token->jwt;
 
@@ -56,6 +58,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

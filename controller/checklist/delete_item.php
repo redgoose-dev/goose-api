@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\files\UtilForFiles;
-use Exception;
+use Exception, Controller\Main;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -48,6 +48,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

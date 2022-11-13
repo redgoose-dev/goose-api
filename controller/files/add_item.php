@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\files\UtilForFiles;
 use Exception;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -49,10 +49,10 @@ try
   $path_absolute_dest = $path_absolute.'/'.$month;
 
   // make subdirectory
-  File::makeDirectory($path_absolute, 0707);
+  File::makeDirectory($path_absolute);
 
   // make month directory
-  File::makeDirectory($path_absolute_dest, 0707);
+  File::makeDirectory($path_absolute_dest);
 
   // $_FILES to array
   $file = File::convertFilesValue($this->files['file'] ?? []);
@@ -100,8 +100,8 @@ try
         'path' => $path.'/'.$month.'/'.$file['name'],
         'type' => $file['type'],
         'size' => (int)$file['size'],
-        'regdate' => date('Y-m-d H:i:s'),
         'module' => $this->post->module ?? null,
+        'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);
     // set result
@@ -140,6 +140,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -42,6 +42,25 @@ class UtilForFiles {
   }
 
   /**
+   * remove file by path
+   *
+   * @param string $path
+   * @throws Exception
+   */
+  public static function removeFileByPath(string $path): void
+  {
+    if (!($path ?? false)) return;
+    try
+    {
+      if (file_exists($path)) unlink(__API_PATH__.'/'.$path);
+    }
+    catch (Exception $e)
+    {
+      throw new Exception($e->getMessage());
+    }
+  }
+
+  /**
    * Remove attach files
    *
    * @param Goose|Connect $self

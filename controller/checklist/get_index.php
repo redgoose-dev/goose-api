@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -40,7 +39,6 @@ try
         'table' => 'checklist',
         'where' => $where,
         'object' => false,
-        'debug' => __API_DEBUG__,
       ]
     )
   );
@@ -56,6 +54,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

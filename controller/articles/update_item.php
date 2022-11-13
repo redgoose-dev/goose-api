@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -22,7 +21,7 @@ try
   $type = $this->post->type ?? '';
   if (!($type === 'hit' || $type === 'star'))
   {
-    throw new Exception(Message::make('error.notFound', 'type'));
+    throw new Exception(Message::make('error.notFound', 'type'), 204);
   }
 
   // connect db
@@ -86,6 +85,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

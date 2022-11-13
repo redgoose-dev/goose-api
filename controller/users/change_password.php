@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -14,10 +13,10 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check and set srl
-  $srl = (int)$this->params['srl'];
-  if (!($srl && $srl > 0))
+  $srl = (int)($this->params['srl'] ?? 0);
+  if ($srl <= 0)
   {
-    throw new Exception(Message::make('error.notFound', 'srl'));
+    throw new Exception(Message::make('error.notFound', 'srl'), 404);
   }
 
   // check post values
@@ -43,7 +42,6 @@ try
       'user_srl' => (int)$this->params['srl'],
       'password' => $this->post->password,
     ]);
-
     // set output
     $output = Main::edit($this, (object)[
       'table' => 'users',
@@ -69,7 +67,7 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   $message = __API_DEBUG__ ? $e->getMessage() : Message::make('error.failedChange', 'password');
-  return Error::result($message, 500);
+  return Error::result($message);
 }

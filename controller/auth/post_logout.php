@@ -24,24 +24,24 @@ try
   // if user token
   if (!(isset($jwt->data->srl) && is_int($jwt->data->srl)))
   {
-    throw new Exception(Message::make('msg.notUserToken'));
+    throw new Exception(Message::make('msg.notUserToken'), 401);
   }
   if (!isset($jwt->exp))
   {
-    throw new Exception(Message::make('msg.tokenExpired'));
+    throw new Exception(Message::make('msg.tokenExpired'), 401);
   }
 
   // connect db
   $this->model->connect();
 
   // check blacklist token
-  $blacklistToken = $this->model->getCount((object)[
+  $countBlacklistToken = $this->model->getCount((object)[
     'table' => 'tokens',
     'where' => 'token LIKE \''.$sign.'\'',
-  ]);
-  if ($blacklistToken->data)
+  ])->data;
+  if ($countBlacklistToken > 0)
   {
-    throw new Exception(Message::make('msg.blacklistTokens'), 403);
+    throw new Exception(Message::make('msg.blacklistTokens'), 401);
   }
 
   // add token to blacklist
@@ -74,6 +74,6 @@ try
 }
 catch(Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

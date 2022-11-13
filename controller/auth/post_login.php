@@ -37,7 +37,7 @@ try
   $jwt = Token::make((object)[
     'exp' => true,
     'time' => true,
-    'host' => apache_request_headers()['Host'],
+    'host' => apache_request_headers()['Host'] ?? $_SERVER['HTTP_HOST'],
     'data' => (object)[
       'srl' => $user->srl,
       'admin' => !!((int)$user->admin === 1),

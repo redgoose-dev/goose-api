@@ -25,6 +25,20 @@ class Auth {
   }
 
   /**
+   * check hostname
+   * 로컬호스트에서는 이름은 다르지만 같은 역할로 사용하는 주소가 존재해서 검증이 조금 더 복잡하게 된다.
+   */
+  private static function checkHost(string $host): bool
+  {
+    $localhostNames = [ 'localhost', '0.0.0.0', '127.0.0.1' ];
+    $requestHost = explode(':', apache_request_headers()['Host'] ?? $_SERVER['HTTP_HOST']);
+    $requestHostname = (in_array($requestHost[0], $localhostNames)) ? 'localhost' : $requestHost[0];
+    $host = explode(':', $host);
+    $hostname = (in_array($host[0], $localhostNames)) ? 'localhost' : $host[0];
+    return $hostname.':'.$host[1] === $requestHostname.':'.$requestHost[1];
+  }
+
+  /**
    * login
    *
    * @param object $op
@@ -55,7 +69,7 @@ class Auth {
       'where' => $where,
       'debug' => __API_DEBUG__,
     ]);
-    if (!$user->data) throw new Exception('No user in database', 401);
+    if (!$user->data) throw new Exception('no user', 401);
 
     // check password
     if (!password_verify($op->password, $user->data->password)) throw new Exception('Error verify password', 401);
@@ -87,9 +101,9 @@ class Auth {
         // check url
         try
         {
-          $requestHost = apache_request_headers()['Host'];
+          $requestHost = apache_request_headers()['Host'] ?? $_SERVER['HTTP_HOST'];
           $tokenHost = $jwt->url;
-          if ($requestHost !== $tokenHost)
+          if (!self::checkHost($tokenHost))
           {
             throw new Exception('error host');
           }

@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -22,7 +22,7 @@ try
   }
 
   // check post values
-  Util::checkExistValue($this->post, ['nest_srl']);
+  Util::checkExistValue($this->post, [ 'nest_srl' ]);
 
   // set srl
   $nest_srl = (int)$this->post->nest_srl;
@@ -48,7 +48,7 @@ try
   ])->data;
   if (!isset($nest))
   {
-    throw new Exception(Message::make('error.noItem', 'nest data'));
+    throw new Exception(Message::make('error.noItem', 'nest data'), 204);
   }
 
   /**
@@ -67,9 +67,10 @@ try
   $category_srl = $this->post->category_srl ?? null;
   if ($category_srl)
   {
+    $where = '`module`="'.UtilForCategories::$module['article'].'" and target_srl='.$nest_srl.' and srl='.$category_srl;
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
-      'where' => 'nest_srl='.$nest_srl.' and srl='.$category_srl,
+      'where' => $where,
     ])->data;
     $category_srl = ($cnt > 0) ? $category_srl : null;
   }
@@ -97,6 +98,6 @@ try
 }
 catch(Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

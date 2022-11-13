@@ -17,18 +17,17 @@ try
 
   // set where
   $where = '';
-  if ($email = $this->get->email ?? false)
+  if ($email = $this->get->email ?? null)
   {
     $where .= ' and email LIKE \''.$email.'\'';
   }
-  if ($name = $this->get->name ?? false)
+  if ($name = $this->get->name ?? null)
   {
     $where .= ' and name LIKE \'%'.$name.'%\'';
   }
-  if (isset($this->get->admin))
+  if ((int)($this->get->admin ?? 0) > 0)
   {
-    $admin = (int)$this->get->admin;
-    $where .= ' and admin='.$admin;
+    $where .= ' and admin='.(int)$this->get->admin;
   }
 
   // check authorization
@@ -41,7 +40,7 @@ try
     'table' => 'users',
     'where' => $where,
     'json_field' => ['json'],
-  ], function($result=null) {
+  ], function($result = null) {
     if (!isset($result->data)) return $result;
     foreach ($result->data as $k=>$o)
     {
@@ -62,6 +61,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\articles\UtilForArticles;
-use Exception;
+use Exception, Controller\Main;
+use Controller\articles\UtilForArticles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -14,7 +14,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check post values
-  Util::checkExistValue($this->post, ['app_srl', 'nest_srl']);
+  Util::checkExistValue($this->post, [ 'app_srl', 'nest_srl' ]);
 
   // check order date
   if (isset($this->post->order) && !UtilForArticles::checkOrderDate($this->post->order))
@@ -35,7 +35,7 @@ try
   ])->data;
   if ($cnt <= 0)
   {
-    throw new Exception(Message::make('error.noData', 'apps'));
+    throw new Exception(Message::make('error.noData', 'apps'), 204);
   }
 
   // check nest
@@ -45,7 +45,7 @@ try
   ])->data;
   if ($cnt <= 0)
   {
-    throw new Exception(Message::make('error.noData', 'nests'));
+    throw new Exception(Message::make('error.noData', 'nests'), 204);
   }
 
   // check category
@@ -57,12 +57,12 @@ try
     ])->data;
     if ($cnt <= 0)
     {
-      throw new Exception(Message::make('error.noData', 'categories'));
+      throw new Exception(Message::make('error.noData', 'categories'), 204);
     }
   }
 
   // filtering text
-  if (isset($this->post->title))
+  if ($this->post->title ?? false)
   {
     $this->post->title = htmlspecialchars(addslashes(trim($this->post->title)));
     $this->post->title = str_replace('&amp;', '&', $this->post->title);
@@ -96,7 +96,7 @@ try
       'ip' => ($_SERVER['REMOTE_ADDR'] !== '::1') ? $_SERVER['REMOTE_ADDR'] : 'localhost',
       'regdate' => date('Y-m-d H:i:s'),
       'modate' => date('Y-m-d H:i:s'),
-      'order' => isset($this->post->order) ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'),
+      'order' => ($this->post->order ?? false) ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'),
     ],
   ]);
 
@@ -111,6 +111,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

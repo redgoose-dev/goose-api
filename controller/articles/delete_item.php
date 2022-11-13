@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\files\UtilForFiles;
-use Exception;
+use Exception, Controller\Main;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -28,8 +28,15 @@ try
 		'srl' => $srl,
 	]);
 
+  // get item
+  $article = $this->model->getItem((object)[
+    'table' => 'articles',
+    'where' => 'srl='.$srl,
+    'json_field' => [ 'json' ],
+  ])->data;
+
 	// remove thumbnail image
-  UtilForFiles::removeThumbnailImage($this, $srl);
+  UtilForFiles::removeFileByPath($article->json->thumbnail->path ?? '');
 
 	// remove files
   UtilForFiles::removeAttachFiles($this, $srl, 'articles');
@@ -57,6 +64,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

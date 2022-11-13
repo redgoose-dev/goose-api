@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\comments\UtilForComments;
-use Exception;
+use Exception, Controller\Main;
+use Controller\comments\UtilForComments;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -15,7 +15,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check post values
-  Util::checkExistValue($this->post, ['article_srl', 'content']);
+  Util::checkExistValue($this->post, [ 'article_srl', 'content' ]);
 
   // connect db
   $this->model->connect();
@@ -65,6 +65,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

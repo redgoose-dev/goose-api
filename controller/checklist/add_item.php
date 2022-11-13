@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main, Controller\checklist\UtilForChecklist;
-use Exception;
+use Exception, Controller\Main;
+use Controller\checklist\UtilForChecklist;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -52,6 +52,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

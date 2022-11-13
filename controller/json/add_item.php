@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -17,13 +17,27 @@ try
 	Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
 	// set json
-  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
+  $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
 
 	// check authorization
 	$token = Auth::checkAuthorization($this->model, 'user');
+
+  // check category
+  if ((int)($this->post->category_srl ?? 0) > 0)
+  {
+    $cnt = $this->model->getCount((object)[
+      'table' => 'categories',
+      'where' => 'module="'.UtilForCategories::$module['json'].'" and srl='.(int)$this->post->category_srl,
+      'debug' => __API_DEBUG__,
+    ])->data;
+    if ($cnt <= 0)
+    {
+      throw new Exception(Message::make('error.noData', 'categories'));
+    }
+  }
 
 	// set output
 	try
@@ -33,6 +47,7 @@ try
 			'data' => (object)[
 				'srl' => null,
 				'user_srl' => $token->data->srl,
+        'category_srl' => $this->post->category_srl ?? null,
 				'name' => $this->post->name ?? null,
 				'description' => $this->post->description ?? null,
 				'json' => $json,

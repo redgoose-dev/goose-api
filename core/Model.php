@@ -313,7 +313,7 @@ class Model {
     $cnt = $this->getCount((object)[
       'table' => $op->table,
       'where' => $op->where,
-      'debug' => true,
+      'debug' => __API_DEBUG__,
     ]);
     if (!$cnt->data)
     {

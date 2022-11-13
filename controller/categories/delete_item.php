@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -28,19 +28,33 @@ try
     'srl' => $srl,
   ]);
 
+  // get item
+  $category = $this->model->getItem((object)[
+    'table' => 'categories',
+    'where' => 'srl='.$srl,
+  ])->data;
+
+  // update article items
+  $tableName = match ($category->module)
+  {
+    UtilForCategories::$module['article'] => 'articles',
+    UtilForCategories::$module['json'] => 'json',
+  };
+  if ($tableName ?? false)
+  {
+    $this->model->edit((object)[
+      'table' => $tableName,
+      'data' => [ 'category_srl=NULL' ],
+      'where' => 'category_srl='.$srl,
+      'continue' => true,
+      'debug' => __API_DEBUG__,
+    ]);
+  }
+
   // remove data
   $output = Main::delete($this, (object)[
     'table' => 'categories',
     'srl' => $srl,
-  ]);
-
-  // update article items
-  $this->model->edit((object)[
-    'table' => 'articles',
-    'data' => [ 'category_srl=NULL' ],
-    'where' => 'category_srl='.$srl,
-    'continue' => true,
-    'debug' => true,
   ]);
 
   // set output

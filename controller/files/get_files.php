@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -95,5 +94,6 @@ try
 }
 catch (Exception $e)
 {
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

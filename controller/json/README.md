@@ -12,10 +12,15 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| name | string | `foo` | filename |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name      | type   | example | description              |
+|:----------|:-------|---------|--------------------------|
+| name      | string | `foo`   | filename                 |
+| category  | int    | `1`     | category srl             |
+| ext_field | string | ``      | 확장 필드                    |
+| strict    | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
+### ext_field
+- `category_name`: 분류 이름을 가져옵니다.
 
 
 ## get json
@@ -25,10 +30,13 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| name | string | `foo` | filename |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name      | type   | example | description              |
+|:----------|:-------|---------|--------------------------|
+| ext_field | string | ``      | 확장 필드                    |
+| strict    | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+
+### ext_field
+- `category_name`: 분류 이름을 가져옵니다.
 
 
 ## add json
@@ -38,11 +46,12 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| name | string | `name` | json의 이름 |
-| description | string | `message` | comment |
-| json | string | `{"foo": "bar"}` | json 데이터 |
+| key          | type   | example          | description  |
+|:-------------|:-------|------------------|--------------|
+| category_srl | int    | `1`              | category srl |
+| name         | string | `name`           | json의 이름     |
+| description  | string | `message`        | comment      |
+| json         | string | `{"foo": "bar"}` | json 데이터     |
 
 
 ## edit json
@@ -52,11 +61,12 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| name | string | `name` | json 이름 |
-| description | string | `message` | comment |
-| json | string | `{"foo": "bar"}` | json 데이터 |
+| key          | type   | example          | description  |
+|:-------------|:-------|------------------|--------------|
+| category_srl | int    | `1`              | category srl |
+| name         | string | `name`           | json 이름      |
+| description  | string | `message`        | comment      |
+| json         | string | `{"foo": "bar"}` | json 데이터     |
 
 
 ## delete json

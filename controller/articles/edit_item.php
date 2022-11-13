@@ -1,7 +1,8 @@
 <?php
 namespace Core;
-use Controller\articles\UtilForArticles, Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\articles\UtilForArticles;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -16,7 +17,7 @@ try
   // check and set srl
   if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {
-    throw new Exception(Message::make('error.notFound', 'srl'));
+    throw new Exception(Message::make('error.notFound', 'srl'), 204);
   }
   // check order date
   if (isset($this->post->order) && !UtilForArticles::checkOrderDate($this->post->order))
@@ -79,11 +80,11 @@ try
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
-      'where' => 'srl='.(int)$this->post->category_srl,
+      'where' => 'module="'.UtilForCategories::$module['article'].'" and srl='.(int)$this->post->category_srl,
     ])->data;
     if ($cnt <= 0)
     {
-      throw new Exception(Message::make('error.noData', 'category_srl'));
+      throw new Exception(Message::make('error.noData', 'category_srl'), 204);
     }
   }
 
@@ -98,9 +99,7 @@ try
 
   // set data
   $data = [];
-  if (isset($this->post->app_srl)) $data[] = "`app_srl`={$this->post->app_srl}";
-  if (isset($this->post->nest_srl)) $data[] = "`nest_srl`={$this->post->nest_srl}";
-  if ((int)($this->post->category_srl ?? 0) > 0) $data[] = "`category_srl`={$this->post->category_srl}";
+  if (isset($this->post->category_srl)) $data[] = '`category_srl`='.($this->post->category_srl ?: 'null');
   if (isset($this->post->type)) $data[] = "`type`='$type'";
   if (isset($this->post->title)) $data[] = "`title`='{$this->post->title}'";
   if (isset($this->post->content)) $data[] = "`content`='{$this->post->content}'";
@@ -108,7 +107,10 @@ try
   if (isset($this->post->star)) $data[] = "`star`='{$this->post->star}'";
   if (isset($this->post->json)) $data[] = "`json`='$json'";
   if (($this->post->mode ?? '') === 'add') $data[] = "`regdate`='".date("Y-m-d H:i:s")."'";
-  if (isset($this->post->order)) $data[] = "`order`='".($this->post->order ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'))."'";
+  if (isset($this->post->order))
+  {
+    $data[] = "`order`='".($this->post->order ? date('Y-m-d', strtotime($this->post->order)) : date('Y-m-d'))."'";
+  }
   if (count($data) <= 0)
   {
     throw new Exception(Message::make('error.noEditData'));
@@ -133,6 +135,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -22,7 +22,7 @@ try
   }
 
   // check and set json
-  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
+  $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
@@ -37,8 +37,8 @@ try
   $cnt = $this->model->getCount((object)[
     'table' => 'users',
     'where' => 'email="'.$this->post->email.'"',
-  ]);
-  if (($cnt->data ?? 0) > 0)
+  ])->data;
+  if ($cnt > 0)
   {
     throw new Exception(Message::make('error.existsValue', 'email address'));
   }
@@ -75,6 +75,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

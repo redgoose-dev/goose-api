@@ -1,7 +1,9 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilArticlesForCategories;
+use Controller\categories\UtilJsonForCategories;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -34,20 +36,21 @@ try
     'srl' => $srl,
   ]);
 
-  if ($output->data ?? false)
+  if (($output->data ?? false) && ($ext_field = $this->get->ext_field ?? null))
   {
-    $ext_field = $this->get->ext_field ?? null;
-
-    // get article count (count_article)
-    if (Util::checkKeyInExtField('count_article', $ext_field))
+    // get article count (count)
+    if (Util::checkKeyInExtField('count', $ext_field))
     {
-      $where = (!$token->data->admin && $token->data->srl) ? ' and user_srl='.(int)$token->data->srl : '';
-      $where .= ' and (NOT type LIKE \'ready\' or type=\'public\')';
-      $cnt = $this->model->getCount((object)[
-        'table' => 'articles',
-        'where' => $where.' and category_srl='.(int)$output->data->srl,
-      ])->data;
-      $output->data->count_article = $cnt;
+      switch ($output->data->module ?? null)
+      {
+        case UtilForCategories::$module['article']:
+          $output->data->count_article = UtilArticlesForCategories::extendCountInItem($this, $token, $output->data->srl);
+          break;
+        case UtilForCategories::$module['json']:
+          // TODO: 확장작업
+          // $output->data->count_json = UtilJsonForCategories::
+          break;
+      }
     }
   }
 
@@ -62,6 +65,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -35,8 +35,8 @@ try
     'srl' => $srl,
     'json_field' => ['json'],
   ], function(object $result) {
-    // delete password field
     if (!($result->data ?? false)) return $result;
+    // delete password field
     if ($result->data->password ?? false) unset($result->data->password);
     return $result;
   });
@@ -52,6 +52,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

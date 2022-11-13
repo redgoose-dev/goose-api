@@ -31,6 +31,7 @@ try
 
 	foreach ($get_tokens->data as $k=>$v)
 	{
+    // TODO: 현재는 단순히 모두 삭제하고 있지만 만료시간을 검사하여 삭제하는것이 좋을거 같다.
 		$v = (object)$v;
     $this->model->delete((object)[
 			'table' => 'tokens',
@@ -53,6 +54,6 @@ try
 }
 catch(Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -23,7 +23,7 @@ try
   Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
   // set value
-  $json = isset($this->post->json) ? Util::testJsonData($this->post->json) : null;
+  $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
@@ -34,11 +34,25 @@ try
     'srl' => $srl,
   ]);
 
+  if ($this->post->category_srl ?? false)
+  {
+    $cnt = $this->model->getCount((object)[
+      'table' => 'categories',
+      'where' => '`module`="'.UtilForCategories::$module['json'].'" and `srl`='.(int)$this->post->category_srl,
+      'debug' => __API_DEBUG__,
+    ]);
+    if ($cnt <= 0)
+    {
+      throw new Exception(Message::make('error.noData', 'categories'));
+    }
+  }
+
   // set data
   $data = [];
-  if ($this->post->name ?? false) $data[] = "name='{$this->post->name}'";
-  if ($this->post->description ?? false) $data[] = "description='{$this->post->description}'";
-  if ($json) $data[] = "json='$json'";
+  if ($this->post->name ?? false) $data[] = "`name`='{$this->post->name}'";
+  if ($this->post->description ?? false) $data[] = "`description`='{$this->post->description}'";
+  if (isset($this->post->category_srl)) $data[] = "`category_srl`=".($this->post->category_srl ?: 'null');
+  if ($json) $data[] = "`json`='$json'";
   if (count($data) <= 0)
   {
     throw new Exception(Message::make('error.noEditData'));
@@ -62,6 +76,6 @@ try
 }
 catch (Exception $e)
 {
-  if (isset($this->model)) $this->model->disconnect();
+  if ($this->model ?? false) $this->model->disconnect();
   return Error::result($e->getMessage(), $e->getCode());
 }

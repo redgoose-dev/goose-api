@@ -1,7 +1,7 @@
 <?php
 namespace Core;
-use Controller\Main;
-use Exception;
+use Exception, Controller\Main;
+use Controller\categories\UtilForCategories;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -13,8 +13,16 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // set module
+  $module = $this->post->module ?? null;
+  if (!in_array($module, UtilForCategories::$module)) throw new Exception('Invalid module');
+
   // check post values
-  Util::checkExistValue($this->post, [ 'nest_srl', 'name' ]);
+  Util::checkExistValue($this->post, array_filter([
+    'module',
+    'name',
+    $module === UtilForCategories::$module['article'] ? 'target_srl' : false,
+  ]));
 
   // connect db
   $this->model->connect();
@@ -22,21 +30,29 @@ try
   // check authorization
   $token = Auth::checkAuthorization($this->model, 'user');
 
-  // check exist nest
-  $cnt = $this->model->getCount((object)[
-    'table' => 'nests',
-    'where' => 'srl='.(int)$this->post->nest_srl,
-  ])->data;
-  if ($cnt <= 0)
+  // check exist module data for article
+  if ($module === UtilForCategories::$module['article'])
   {
-    throw new Exception(Message::make('error.noData', 'nest'));
+    $cnt = $this->model->getCount((object)[
+      'table' => 'nests',
+      'where' => 'srl='.(int)$this->post->target_srl,
+    ])->data;
+    if ($cnt <= 0)
+    {
+      throw new Exception(Message::make('error.noData', 'module'));
+    }
   }
 
   // get max turn
+  $where = match ($module)
+  {
+    UtilForCategories::$module['article'] => 'target_srl='.(int)$this->post->target_srl,
+    UtilForCategories::$module['json'] => 'module="'.UtilForCategories::$module['json'].'"',
+  };
   $max = $this->model->getMax((object)[
     'table' => 'categories',
     'field' => 'turn',
-    'where' => 'nest_srl='.(int)$this->post->nest_srl,
+    'where' => $where,
   ])->data;
 
   // set output
@@ -46,10 +62,11 @@ try
       'table' => 'categories',
       'data' => (object)[
         'srl' => null,
-        'nest_srl' => (int)$this->post->nest_srl,
+        'target_srl' => $this->post->target_srl ?? null,
         'user_srl' => (int)$token->data->srl,
         'turn' => $max + 1,
         'name' => trim($this->post->name ?? ''),
+        'module' => $this->post->module,
         'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);
