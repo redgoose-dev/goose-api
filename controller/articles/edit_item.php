@@ -99,6 +99,8 @@ try
 
   // set data
   $data = [];
+  if (isset($this->post->app_srl)) $data[] = "`app_srl`={$this->post->app_srl}";
+  if (isset($this->post->nest_srl)) $data[] = "`nest_srl`={$this->post->nest_srl}";
   if (isset($this->post->category_srl)) $data[] = '`category_srl`='.($this->post->category_srl ?: 'null');
   if (isset($this->post->type)) $data[] = "`type`='$type'";
   if (isset($this->post->title)) $data[] = "`title`='{$this->post->title}'";
