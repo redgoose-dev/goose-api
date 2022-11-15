@@ -29,7 +29,7 @@ try
 
   // check access
   $token = Main::checkAccessIndex($this, true);
-  if ($token->data->srl ?? 0 && !$token->data->admin)
+  if (($token->data->srl ?? false) && !($token->data->admin ?? false))
   {
     $where .= ' and user_srl='.(int)$token->data->srl;
   }
