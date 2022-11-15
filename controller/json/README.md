@@ -46,12 +46,13 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-| key          | type   | example          | description  |
-|:-------------|:-------|------------------|--------------|
-| category_srl | int    | `1`              | category srl |
-| name         | string | `name`           | json의 이름     |
-| description  | string | `message`        | comment      |
-| json         | string | `{"foo": "bar"}` | json 데이터     |
+| key          | type   | example              | description  |
+|:-------------|:-------|----------------------|--------------|
+| category_srl | int    | `1`                  | category srl |
+| name         | string | `name`               | json의 이름     |
+| description  | string | `message`            | comment      |
+| json         | string | `{"foo": "bar"}`     | json 데이터     |
+| path         | string | `/path/filename.txt` | path         |
 
 
 ## edit json
@@ -61,12 +62,13 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-| key          | type   | example          | description  |
-|:-------------|:-------|------------------|--------------|
-| category_srl | int    | `1`              | category srl |
-| name         | string | `name`           | json 이름      |
-| description  | string | `message`        | comment      |
-| json         | string | `{"foo": "bar"}` | json 데이터     |
+| key          | type   | example              | description  |
+|:-------------|:-------|----------------------|--------------|
+| category_srl | int    | `1`                  | category srl |
+| name         | string | `name`               | json 이름      |
+| description  | string | `message`            | comment      |
+| json         | string | `{"foo": "bar"}`     | json 데이터     |
+| path         | string | `/path/filename.txt` | path         |
 
 
 ## delete json

@@ -13,17 +13,17 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
-	// check post values
-	Util::checkExistValue($this->post, [ 'name', 'json' ]);
+  // check post values
+  Util::checkExistValue($this->post, [ 'name', 'json' ]);
 
-	// set json
+  // set json
   $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
 
   // connect db
   $this->model->connect();
 
-	// check authorization
-	$token = Auth::checkAuthorization($this->model, 'user');
+  // check authorization
+  $token = Auth::checkAuthorization($this->model, 'user');
 
   // check category
   if ((int)($this->post->category_srl ?? 0) > 0)
@@ -39,38 +39,40 @@ try
     }
   }
 
-	// set output
-	try
-	{
-		$output = Main::add($this, (object)[
-			'table' => 'json',
-			'data' => (object)[
-				'srl' => null,
-				'user_srl' => $token->data->srl,
-        'category_srl' => $this->post->category_srl ?? null,
-				'name' => $this->post->name ?? null,
-				'description' => $this->post->description ?? null,
-				'json' => $json,
-				'regdate' => date('Y-m-d H:i:s'),
-			],
-		]);
-	}
-	catch(Exception $e)
-	{
+  // set output
+  try
+  {
+    $output = Main::add($this, (object)[
+      'table' => 'json',
+      'data' => (object)[
+        'srl' => null,
+        'user_srl' => $token->data->srl,
+        'category_srl' => (int)($this->post->category_srl ?: 0) > 0 ? (int)$this->post->category_srl : null,
+        'name' => $this->post->name ?? null,
+        'description' => $this->post->description ?? null,
+        'json' => $json,
+        'path' => $this->post->path ?? null,
+        'regdate' => date('Y-m-d H:i:s'),
+      ],
+    ]);
+  }
+  catch(Exception $e)
+  {
+    var_dump($e->getMessage());
     throw new Exception(Message::make('error.failedAdd', 'json'));
-	}
+  }
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
   // disconnect db
   $this->model->disconnect();
 
-	// output data
-	return Output::result($output);
+  // output data
+  return Output::result($output);
 }
 catch (Exception $e)
 {
   if (isset($this->model)) $this->model->disconnect();
-	return Error::result($e->getMessage(), $e->getCode());
+  return Error::result($e->getMessage(), $e->getCode());
 }

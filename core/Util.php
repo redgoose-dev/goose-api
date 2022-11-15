@@ -130,7 +130,8 @@ class Util {
       $json = self::stringToJson($json);
       if (!$json) throw new Exception('error');
       $json = self::jsonToString($json);
-      return str_replace('\\', '\\\\', $json);
+      $json = str_replace('\\', '\\\\', $json);
+      return addcslashes($json, "'");
     }
     catch(Exception $e)
     {

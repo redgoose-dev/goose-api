@@ -104,6 +104,7 @@ create table `goose_json` (
   `name` varchar(50) not null,
   `description` varchar(100) default null,
   `json` longtext not null,
+  `path` varchar(255) default null,
   `regdate` datetime default null,
   primary key (`srl`),
   key `json_side_srl` (`user_srl`,`category_srl`)
