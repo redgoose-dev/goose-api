@@ -51,7 +51,7 @@ try
   $data = [];
   if ($this->post->name ?? false) $data[] = "`name`='{$this->post->name}'";
   if ($this->post->description ?? false) $data[] = "`description`='{$this->post->description}'";
-  if (isset($this->post->category_srl)) $data[] = "`category_srl`=".($this->post->category_srl ?: 'null');
+  if ($this->post->category_srl ?? false) $data[] = "`category_srl`=".($this->post->category_srl ?: 'null');
   if ($json) $data[] = "`json`='$json'";
   if ($this->post->path ?? false) $data[] = "`path`='".($this->post->path ?? '')."'";
   if (count($data) <= 0)
