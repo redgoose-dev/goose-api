@@ -40,7 +40,7 @@ try
       'table' => 'categories',
       'where' => '`module`="'.UtilForCategories::$module['json'].'" and `srl`='.(int)$this->post->category_srl,
       'debug' => __API_DEBUG__,
-    ]);
+    ])->data;
     if ($cnt <= 0)
     {
       throw new Exception(Message::make('error.noData', 'categories'));
