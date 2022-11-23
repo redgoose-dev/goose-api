@@ -35,7 +35,9 @@ class Auth {
     $requestHostname = (in_array($requestHost[0], $localhostNames)) ? 'localhost' : $requestHost[0];
     $host = explode(':', $host);
     $hostname = (in_array($host[0], $localhostNames)) ? 'localhost' : $host[0];
-    return $hostname.':'.$host[1] === $requestHostname.':'.$requestHost[1];
+    $hostname = ($host[1] ?? false) ? $hostname.':'.$host[1] : $hostname;
+    $requestHostname = ($requestHost[1] ?? false) ? $requestHostname.':'.$requestHost[1] : $requestHostname;
+    return $hostname === $requestHostname;
   }
 
   /**
