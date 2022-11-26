@@ -19,11 +19,12 @@ try
     throw new Exception(Message::make('error.notFound', 'srl'));
   }
 
-  // check post values
-  Util::checkExistValue($this->post, [ 'name', 'json' ]);
-
   // set value
-  $json = ($this->post->json ?? false) ? Util::testJsonData($this->post->json) : null;
+  $json = null;
+  if (isset($this->post->json))
+  {
+    $json = $this->post->json ? Util::testJsonData($this->post->json) : null;
+  }
 
   // connect db
   $this->model->connect();
