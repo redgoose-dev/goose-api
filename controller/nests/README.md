@@ -13,14 +13,14 @@ article 들을 그루핑하는 역할을 합니다.
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| app | number | `1` | app srl |
-| id | string | `hello` | 고유 id값 |
-| name | string | `Hello` | name |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
-| ext_field | string | `count_articles` | 확장 필드 |
-| visible_type | string | `all` | `articles` 출력 타입을 정합니다. `ext_field=count_articles`값을 사용할때 이용됩니다. |
+| name         | type   | example          | description                                                      |
+|:-------------|:-------|:-----------------|:-----------------------------------------------------------------|
+| app          | number | `1`              | app srl                                                          |
+| id           | string | `hello`          | 고유 id값                                                           |
+| name         | string | `Hello`          | name                                                             |
+| strict       | number | `0,1`            | 일반 유저라면 자신만의 데이터를 가져옵니다.                                         |
+| ext_field    | string | `count_articles` | 확장 필드                                                            |
+| visible_type | string | `all`            | `articles` 출력 타입을 정합니다. `ext_field=count_articles`값을 사용할때 이용됩니다. |
 
 ### ext_field
 - `count_articles`: 하위 `articles`갯수를 가져옵니다.
@@ -35,9 +35,9 @@ article 들을 그루핑하는 역할을 합니다.
 사용하는 파라메터 목록.  
 `srl`번호로 사용할 수 있지만 `id` 이름으로 사용할 수 있다는것을 참고해주세요.
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name   | type   | example | description              |
+|:-------|:-------|:--------|:-------------------------|
+| strict | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
 ## add nest
@@ -47,13 +47,13 @@ article 들을 그루핑하는 역할을 합니다.
 
 사용하는 body 항목
 
-| key | type | example | required | description |
-|:---:|:----:|---------|:--------:|-------------|
-| app_srl | number | `1` | true | app srl |
-| id | string | `hello` | true | nest id |
-| name | string | `hello app` | true | name |
-| description | string | `memo` | false | description |
-| json | string | `{"foo": "bar"}` | false | json data |
+| key         | type   | example          | required | description |
+|:------------|:-------|:-----------------|:---------|:------------|
+| app_srl     | number | `1`              | true     | app srl     |
+| id          | string | `hello`          | true     | nest id     |
+| name        | string | `hello app`      | true     | name        |
+| description | string | `memo`           | false    | description |
+| json        | string | `{"foo": "bar"}` | false    | json data   |
 
 
 ## edit nest
@@ -63,13 +63,13 @@ article 들을 그루핑하는 역할을 합니다.
 
 사용하는 body 항목
 
-| key | type | example | required | description |
-|:---:|:----:|---------|:--------:|-------------|
-| app_srl | number | `1` | true | app srl |
-| id | string | `hello` | true | nest id |
-| name | string | `hello app` | true | name |
-| description | string | `memo` | false | description |
-| json | string | `{"foo": "bar"}` | false | json data |
+| key         | type   | example          | required | description |
+|:------------|:-------|:-----------------|:---------|:------------|
+| app_srl     | number | `1`              | true     | app srl     |
+| id          | string | `hello`          | true     | nest id     |
+| name        | string | `hello app`      | true     | name        |
+| description | string | `memo`           | false    | description |
+| json        | string | `{"foo": "bar"}` | false    | json data   |
 
 
 ## delete nest

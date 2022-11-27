@@ -12,13 +12,13 @@
 
 사용하는 파라메터 목록
 
-|     name     |  type  | example         | description                                  |
-|:------------:|:------:|-----------------|----------------------------------------------|
-|    module    | string | `article,json`  | module                                       |
-|    target    | number | `1`             | target srl                                   |
-|     name     | string | `name`          | 카테고리 이름                                      |
-|  ext_field   | string | `count_article` | 확장 필드                                        |
-|    strict    | number | `0,1`           | 일반 유저라면 자신만의 데이터를 가져옵니다.                     |
+| name         | type   | example         | description                                  |
+|:-------------|:-------|:----------------|:---------------------------------------------|
+| module       | string | `article,json`  | module                                       |
+| target       | number | `1`             | target srl                                   |
+| name         | string | `name`          | 카테고리 이름                                      |
+| ext_field    | string | `count_article` | 확장 필드                                        |
+| strict       | number | `0,1`           | 일반 유저라면 자신만의 데이터를 가져옵니다.                     |
 | visible_type | string | `all`           | 출력 타입을 정합니다. `ext_field=count`값을 사용할때 이용됩니다. |
 
 `order=turn`를 활용하여 직접 변경한 순서대로 출력할 수 있습니다.
@@ -36,10 +36,10 @@
 
 사용하는 파라메터 목록
 
-|     name     |  type  | example | description                                  |
-|:------------:|:------:|---------|----------------------------------------------|
-|  ext_field   | string | `count` | 확장 필드                                        |
-|    strict    | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다.                     |
+| name         | type   | example | description                                  |
+|:-------------|:-------|:--------|:---------------------------------------------|
+| ext_field    | string | `count` | 확장 필드                                        |
+| strict       | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다.                     |
 | visible_type | string | `all`   | 출력 타입을 정합니다. `ext_field=count`값을 사용할때 이용됩니다. |
 
 ### ext_field
@@ -53,11 +53,11 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-|    key     |  type  | example        | description   |
-|:----------:|:------:|----------------|---------------|
-|   module   | string | `article,json` | module        |
+| key        | type   | example        | description   |
+|:-----------|:-------|:---------------|:--------------|
+| module     | string | `article,json` | module        |
 | target_srl | number | `1`            | target srl 번호 |
-|    name    | string | `title name`   | 분류 이름         |
+| name       | string | `title name`   | 분류 이름         |
 
 
 ## edit category
@@ -67,11 +67,11 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-|    key     |  type  | example        | description   |
-|:----------:|:------:|----------------|---------------|
-|   module   | string | `article,json` | module        |
+| key        | type   | example        | description   |
+|:-----------|:-------|:---------------|:--------------|
+| module     | string | `article,json` | module        |
 | target_srl | number | `1`            | target srl 번호 |
-|    name    | string | `title name`   | 분류 이름         |
+| name       | string | `title name`   | 분류 이름         |
 
 
 ## delete category
@@ -90,7 +90,7 @@
 분류를 새로 정렬할때 사용합니다. 정렬할때 사용하는 body 항목입니다.  
 turn 번호의 시작은 `1`입니다.
 
-|    key     |  type  | example | description    |
-|:----------:|:------:|---------|----------------|
+| key        | type   | example | description    |
+|:-----------|:-------|:--------|:---------------|
 | target_srl | number | `1`     | target srl 번호  |
-|    srls    | string | `3,1,2` | 새로 정렬할 srl 번호들 |
+| srls       | string | `3,1,2` | 새로 정렬할 srl 번호들 |

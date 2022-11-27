@@ -14,8 +14,8 @@
 
 사용하는 파라메터 목록
 
-| name         |  type  | example    | description                               |
-|:-------------|:------:|:-----------|:------------------------------------------|
+| name         | type   | example    | description                               |
+|:-------------|:-------|:-----------|:------------------------------------------|
 | app          | number | `1`        | app srl                                   |
 | nest         | number | `1`        | nest srl                                  |
 | category     | number | `1`        | category srl                              |
@@ -50,8 +50,8 @@
 
 사용하는 파라메터 목록
 
-| name         |  type  | example | description                               |
-|:-------------|:------:|:--------|:------------------------------------------|
+| name         | type   | example | description                               |
+|:-------------|:-------|:--------|:------------------------------------------|
 | hit          | number | `0,1`   | 이 항목을 `1`로 넣어서 사용하면 응답을 받을때 조회수가 올라갑니다.   |
 | visible_type | string | `all`   | 출력할 타입을 지정합니다. 값이 없으면 `public` 타입만 가져옵니다. |
 | ext_field    | string | ``      | 확장 필드                                     |
@@ -71,8 +71,8 @@
 
 사용하는 body 항목
 
-| key          |  type  | example         | description           |
-|:-------------|:------:|:----------------|:----------------------|
+| key          | type   | example         | description           |
+|:-------------|:-------|:----------------|:----------------------|
 | app_srl      | number | `1`             | (required) app srl    |
 | nest_srl     | number | `1`             | (required) nest srl   |
 | category_srl | number | `1`             | category srl          |
@@ -85,8 +85,8 @@
 
 사용하는 params 항목
 
-| key     |  type  | default | description  |
-|:--------|:------:|:--------|:-------------|
+| key     | type   | default | description  |
+|:--------|:-------|:--------|:-------------|
 | content | string | ``      | content type |
 
 ### (GET) content
@@ -103,8 +103,8 @@
 
 사용하는 body 항목
 
-| key          |  type  | value            | example             | description     |
-|:-------------|:------:|:-----------------|:--------------------|:----------------|
+| key          | type   | value            | example             | description     |
+|:-------------|:-------|:-----------------|:--------------------|:----------------|
 | mode         | string | `add,edit`       | `add`               | 글 작성 방식         |
 | category_srl | number |                  | `1`                 | category srl 번호 |
 | type         | string | `public,private` | `public`            | 글 타입            |
@@ -118,8 +118,8 @@
 
 사용하는 params 항목
 
-| key     |  type  | default | description  |
-|:--------|:------:|:--------|:-------------|
+| key     | type   | default | description  |
+|:--------|:-------|:--------|:-------------|
 | content | string | ``      | content type |
 
 ### (GET) content
@@ -144,8 +144,8 @@
 
 사용하는 파라메터 목록
 
-| name   |  type  | example    | description                   |
-|:-------|:------:|:-----------|:------------------------------|
+| name   | type   | example    | description                   |
+|:-------|:-------|:-----------|:------------------------------|
 | type   | string | `hit,star` | 조회수를 올릴건지 좋아요 카운트를 올릴건지 정합니다. |
 | strict | number | `0,1`      | 일반 유저라면 자신만의 데이터를 가져옵니다.      |
 
@@ -160,7 +160,7 @@
 - url: `/articles/[n]/change-nest/` (n:srl)
 - method: POST
 
-| name         |  type  | example | description                  |
-|:-------------|:------:|:--------|:-----------------------------|
+| name         | type   | example | description                  |
+|:-------------|:-------|:--------|:-----------------------------|
 | nest_srl     | number | 1       | (required) 바꿀 `nest`의 번호입니다. |
 | category_srl | number | 1       | 바꿀 `category_srl`의 값         |

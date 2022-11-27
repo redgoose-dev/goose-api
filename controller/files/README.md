@@ -12,13 +12,13 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| target | number | `1` | 모듈(articles,comments)의 srl |
-| name | string | `filename` | filename |
-| type | string | `png` | file type |
-| module | string | `articles` | module name |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name   | type   | example    | description                |
+|:-------|:-------|:-----------|:---------------------------|
+| target | number | `1`        | 모듈(articles,comments)의 srl |
+| name   | string | `filename` | filename                   |
+| type   | string | `png`      | file type                  |
+| module | string | `articles` | module name                |
+| strict | number | `0,1`      | 일반 유저라면 자신만의 데이터를 가져옵니다.   |
 
 
 ## get file
@@ -28,9 +28,9 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name   | type   | example | description              |
+|:-------|:-------|:--------|:-------------------------|
+| strict | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
 ## add file
@@ -41,11 +41,11 @@
 서버에 파일을 업로드하고 데이터베이스에 등록합니다.  
 전송할때 `multipart`형식으로 전송합니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
-| module | string | `articles` | module name |
-| file | File |  | 업로드 파일 |
+| key        | type   | example    | description      |
+|:-----------|:-------|:-----------|:-----------------|
+| target_srl | number | `1`        | 모듈들의 `srl` 값입니다. |
+| module     | string | `articles` | module name      |
+| file       | File   |            | 업로드 파일           |
 
 
 ## edit file
@@ -56,11 +56,11 @@
 서버에 파일을 삭제하고 다시 업로드하고나서 데이터베이스에서 수정합니다.  
 전송할때 `multipart`형식으로 전송합니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| target_srl | number | `1` | 모듈들의 `srl` 값입니다. |
-| module | string | `articles` | module name |
-| file | File |  | 업로드 파일 |
+| key        | type   | example    | description      |
+|:-----------|:-------|:-----------|:-----------------|
+| target_srl | number | `1`        | 모듈들의 `srl` 값입니다. |
+| module     | string | `articles` | module name      |
+| file       | File   |            | 업로드 파일           |
 
 
 ## get files in directory
@@ -84,11 +84,11 @@
 
 데이터베이스에 등록하지 않고 서버에 파일을 업로드할 수 있습니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| sub_dir | string | `thumbnail` | 서브 디렉토리 이름 |
-| file | File | | `File`형식의 업로드할 파일입니다. |
-| base64 | string | | `base64`형식의 업로드할 파일입니다. |
+| key     | type   | example     | description             |
+|:--------|:-------|:------------|:------------------------|
+| sub_dir | string | `thumbnail` | 서브 디렉토리 이름              |
+| file    | File   |             | `File`형식의 업로드할 파일입니다.   |
+| base64  | string |             | `base64`형식의 업로드할 파일입니다. |
 
 
 ## remove file
@@ -98,6 +98,6 @@
 
 데이터베이스에 등록하지 않고 서버에 파일을 삭제합니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
+| key  | type   | example        | description                              |
+|:-----|:-------|:---------------|:-----------------------------------------|
 | path | string | `filename.jpg` | 삭제할 파일 경로를 입력해줍니다. 프로젝트 루트경로 기준으로 입력합니다. |

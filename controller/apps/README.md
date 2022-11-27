@@ -13,13 +13,13 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| id   | string | `goose_app` | id |
-| name | string | `Goose` | name |
-| description | string | `app description` | description |
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
-| ext_field | string | `count_nests` | 확장 필드 |
+| name        | type   | example           | description              |
+|:------------|:-------|:------------------|:-------------------------|
+| id          | string | `goose_app`       | id                       |
+| name        | string | `Goose`           | name                     |
+| description | string | `app description` | description              |
+| strict      | number | `0,1`             | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| ext_field   | string | `count_nests`     | 확장 필드                    |
 
 ### ext_field
 - `count_nests`: 하위 `nests`갯수를 가져옵니다.
@@ -32,9 +32,9 @@
 
 사용하는 파라메터 목록
 
-| name | type | example | description |
-|:----:|:----:|---------|-------------|
-| strict | number | `0,1` | 일반 유저라면 자신만의 데이터를 가져옵니다. |
+| name   | type   | example | description              |
+|:-------|:-------|:--------|:-------------------------|
+| strict | number | `0,1`   | 일반 유저라면 자신만의 데이터를 가져옵니다. |
 
 
 ## add app
@@ -44,11 +44,11 @@
 
 데이터를 추가할때 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| id | string | `goose_app` | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
-| name | string | `Goose's app` | app 이름 |
-| description | string | `app description` | app description |
+| key         | type   | example           | description                   |
+|:------------|:-------|:------------------|:------------------------------|
+| id          | string | `goose_app`       | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
+| name        | string | `Goose's app`     | app 이름                        |
+| description | string | `app description` | app description               |
 
 
 ## edit app
@@ -58,11 +58,11 @@
 
 데이터를 수정할때 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| id | string | `goose_app` | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
-| name | string | `Goose's app` | app 이름 |
-| description | string | `app description` | app description |
+| key         | type   | example           | description                   |
+|:------------|:-------|:------------------|:------------------------------|
+| id          | string | `goose_app`       | app 아이디. 중복복된 아이디를 넣을 수 없습니다. |
+| name        | string | `Goose's app`     | app 이름                        |
+| description | string | `app description` | app description               |
 
 
 ## delete app
@@ -72,6 +72,6 @@
 
 데이터를 수정할때 사용하는 body 항목
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| remove_children | number | `0,1` | 하위 데이터들(nests,articles,categories,files)을 삭제할지에 대한 여부 |
+| key             | type   | example | description                                           |
+|:----------------|:-------|:--------|:------------------------------------------------------|
+| remove_children | number | `0,1`   | 하위 데이터들(nests,articles,categories,files)을 삭제할지에 대한 여부 |

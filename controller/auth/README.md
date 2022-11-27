@@ -13,10 +13,10 @@
 사용자 로그인을 합니다.  
 로그인을 성공하면 사용자 정보와 함께 유저용 토큰값을 가져올 수 있습니다.
 
-| key | type | example | description |
-|:---:|:----:|---------|-------------|
-| email | string | `address@domain.com` | 이메일 주소 |
-| password | string | `password` | 패스워드 |
+| key      | type   | example              | description |
+|:---------|:-------|:---------------------|:------------|
+| email    | string | `address@domain.com` | 이메일 주소      |
+| password | string | `password`           | 패스워드        |
 
 
 ## logout
