@@ -16,5 +16,4 @@ composer.lock
 usr/
 
 ## custom controller
-controller/external/*
-!controller/external/.keep
+controller/external
