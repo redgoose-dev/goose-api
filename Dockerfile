@@ -11,7 +11,8 @@ RUN apk add --no-cache \
   curl nginx supervisor \
   php81 php81-ctype php81-curl php81-dom php81-fpm \
   php81-pdo php81-pdo_mysql php81-gd php81-intl php81-mbstring \
-  php81-opcache php81-openssl php81-phar php81-session php81-xml php81-xmlreader
+  php81-opcache php81-openssl php81-phar php81-session php81-xml php81-xmlreader \
+  php81-fileinfo
 
 # Create symlink so programs depending on `php` still function
 RUN ln -s /usr/bin/php81 /usr/bin/php

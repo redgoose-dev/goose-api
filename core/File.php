@@ -128,4 +128,27 @@ class File {
     ] : $files;
   }
 
+  /**
+   * get mime type
+   */
+  public static function getMimeType(string $path): string
+  {
+    if (!is_file($path)) return '';
+    $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($fileInfo)
+    {
+      $type = finfo_file($fileInfo, $path);
+      finfo_close($fileInfo);
+    }
+    else if (function_exists('mime_content_type'))
+    {
+      $type = mime_content_type($path);
+    }
+    else
+    {
+      return '';
+    }
+    return $type;
+  }
+
 }

@@ -16,7 +16,7 @@ try
   Util::checkDirectories();
 
   // check and set dir
-  if (!($dir = $this->params['dir'] ?? false))
+  if (!($dir = $this->params['dir']))
   {
     throw new Exception(Message::make('error.notFound', 'dir'));
   }
@@ -48,7 +48,7 @@ try
         'path' => $path.'/'.$dir.'/'.$file,
         'size' => filesize($filePath),
         'date' => filemtime($filePath),
-        'type' => mime_content_type($filePath),
+        'type' => File::getMimeType($filePath),
       ];
     }
   }
