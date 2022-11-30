@@ -8,7 +8,6 @@
     }
   ],
   "require": {
-    "ext-fileinfo": "*",
     "altorouter/altorouter": "^2.0.2",
     "vlucas/phpdotenv": "^5.4.1",
     "firebase/php-jwt": "^6.3.0"
