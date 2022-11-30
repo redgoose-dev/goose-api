@@ -1,6 +1,6 @@
 {
   "name": "redgoose/goose-api",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "authors": [
     {
       "name": "redgoose",
@@ -9,8 +9,8 @@
   ],
   "require": {
     "altorouter/altorouter": "^2.0.2",
-    "vlucas/phpdotenv": "^5.4.1",
-    "firebase/php-jwt": "^6.3.0"
+    "vlucas/phpdotenv": "^v5.5.0",
+    "firebase/php-jwt": "^v6.3.1"
   },
   "autoload": {
     "psr-4": {
