@@ -36,7 +36,7 @@ USER nobody
 # Add application
 COPY --chown=nobody ./ /app
 
-## composer install
+# composer install
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
 
