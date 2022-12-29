@@ -34,11 +34,12 @@ class Token {
    * make token
    *
    * @param object $op (time,exp,data)
-   * @return object
+   * @return object|null
    */
   public static function make(object $op): ?object
   {
     if (!$op) return null;
+    if (!$_ENV['API_TOKEN_KEY']) return null;
     $now = time();
     // set token
     $token = (object)[];
