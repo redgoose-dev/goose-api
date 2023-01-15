@@ -37,11 +37,7 @@ try
   // filtering text
   if ($this->post->title ?? false)
   {
-    $this->post->title = htmlspecialchars(addslashes(trim($this->post->title)));
-    $this->post->title = str_replace('&amp;', '&', $this->post->title);
-    $this->post->title = str_replace('&quot;', '"', $this->post->title);
-    $this->post->title = str_replace('&lt;', '<', $this->post->title);
-    $this->post->title = str_replace('&gt;', '>', $this->post->title);
+    $this->post->title = addslashes(trim($this->post->title));
   }
   if (isset($this->post->content) && ($this->get->content ?? '') !== 'raw')
   {
