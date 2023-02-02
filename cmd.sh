@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# get .env
+export $(grep -v '^#' .env | xargs)
+
 # set port
 [[ -z "$2" ]] && port=8000 || port=$2
 
