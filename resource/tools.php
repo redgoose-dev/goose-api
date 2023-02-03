@@ -1,7 +1,6 @@
 <?php
 namespace Core;
-use Dotenv\Dotenv;
-use Exception;
+use Dotenv\Dotenv, Exception;
 
 // check environment
 if (php_sapi_name() !== 'cli')
@@ -22,7 +21,7 @@ define('__API_PATH__', realpath(__DIR__.'/../'));
  * load env
  * @throws Exception
  */
-function loadEnv()
+function loadEnv(): void
 {
   try
   {
