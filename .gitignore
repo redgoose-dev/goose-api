@@ -9,11 +9,8 @@ data/
 ._.DS_Store
 .env
 composer.lock
-
+action.sh
 
 # ETC
-## user resource
 usr/
-
-## custom controller
 controller/external

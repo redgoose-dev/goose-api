@@ -11,3 +11,5 @@ vendor/
 LICENSE
 README.md
 .htaccess
+cmd.sh
+action.sh
