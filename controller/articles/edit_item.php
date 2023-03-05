@@ -14,6 +14,9 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  // check post values
+  Util::checkExistValue($this->post, [ 'title' ]);
+
   // check and set srl
   if (($srl = (int)($this->params['srl'] ?? 0)) <= 0)
   {

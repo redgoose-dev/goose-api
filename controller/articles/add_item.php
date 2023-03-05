@@ -14,7 +14,7 @@ if (!defined('__API_GOOSE__')) exit();
 try
 {
   // check post values
-  Util::checkExistValue($this->post, [ 'app_srl', 'nest_srl' ]);
+  Util::checkExistValue($this->post, [ 'app_srl', 'nest_srl', 'title' ]);
 
   // check order date
   if (isset($this->post->order) && !UtilForArticles::checkOrderDate($this->post->order))
