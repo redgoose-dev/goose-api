@@ -13,8 +13,11 @@ if (!defined('__API_GOOSE__')) exit();
 
 try
 {
+  $type = UtilForArticles::getPostType($this->post->type ?? '');
+  $checkParams = $type === 'ready' ? [ 'app_srl', 'nest_srl' ] : [ 'app_srl', 'nest_srl', 'title' ];
+
   // check post values
-  Util::checkExistValue($this->post, [ 'app_srl', 'nest_srl', 'title' ]);
+  Util::checkExistValue($this->post, [ 'app_srl', 'nest_srl' ]);
 
   // check order date
   if (isset($this->post->order) && !UtilForArticles::checkOrderDate($this->post->order))
