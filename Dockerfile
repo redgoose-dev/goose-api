@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.17.3
+ARG ALPINE_VERSION=3.16.5
 FROM alpine:${ALPINE_VERSION}
 MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/docker-php-nginx>
 
