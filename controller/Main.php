@@ -69,7 +69,7 @@ class Main {
       $limit = (int)$_ENV['API_DEFAULT_INDEX_SIZE'];
     }
 
-    // get data
+    // set op
     $opts = (object)[
       'table' => $op->table,
       'field' => $op->field ?? ($self->get->field ?? ''),
@@ -80,6 +80,8 @@ class Main {
       'where' => $op->where,
       'debug' => $op->debug ?? __API_DEBUG__,
     ];
+
+    // get items
     $items = $self->model->getItems($opts);
 
     // 필요하면 산출된 데이터를 조정하기 위하여 콜백으로 한번 보낸다.

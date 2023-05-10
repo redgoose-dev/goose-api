@@ -36,6 +36,14 @@ try
   if ($q = ($this->get->q ?? null))
   {
     $where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
+    $tableName = $this->model->getTableName('comments');
+    $comments = $this->model->fetch('fetchAll', 'select article_srl from '.$tableName.' where (content LIKE \'%'.$q.'%\')');
+    if (count($comments) > 0)
+    {
+      $comments = array_map(function($o) { return $o->article_srl; }, $comments);
+      $comments = implode(',', array_unique($comments));
+      $where .= ' or srl in ('.$comments.')';
+    }
   }
   $where .= UtilForArticles::getWhereType($this->get->visible_type ?? null);
   // `user_srl`값에 해당되는 값 가져오기

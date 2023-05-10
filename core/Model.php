@@ -126,15 +126,17 @@ class Model {
 
   /**
    * run query
-   *
+   * @return array|object|null
    * @throws Exception
    */
-  public function action(string $query): void
+  public function action(string $query): array|object|null
   {
-    if (!$this->db->query($query))
+    $res = $this->db->query($query);
+    if (!$res)
     {
       throw new Exception('Failed db action `'.$query.'`');
     }
+    return $res ?? null;
   }
 
   /**
@@ -421,6 +423,31 @@ class Model {
       // set output
       if ($op->debug ?? false) $output->query = $query;
       return $output;
+    }
+  }
+
+  /**
+   * fetch
+   */
+  public function fetch(string $method, string $query): object|array|int|null
+  {
+    switch ($method)
+    {
+      case 'fetch':
+        $query = $this->action($query);
+        return (object)$query->fetch(PDO::FETCH_ASSOC);
+        break;
+      case 'fetchAll':
+        $query = $this->action($query);
+        return (array)$query->fetchAll(PDO::FETCH_CLASS);
+        break;
+      case 'count':
+        $result = $this->db->prepare($query);
+        $result->execute();
+        return (int)$result->fetchColumn();
+        break;
+      default:
+        return null;
     }
   }
 
