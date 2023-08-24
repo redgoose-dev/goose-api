@@ -15,7 +15,7 @@
 | name         | type   | example         | description                                  |
 |:-------------|:-------|:----------------|:---------------------------------------------|
 | module       | string | `article,json`  | module                                       |
-| target       | number | `1`             | target srl                                   |
+| target       | number | `1`             | `module=article`일때 nest_srl                  |
 | name         | string | `name`          | 카테고리 이름                                      |
 | ext_field    | string | `count_article` | 확장 필드                                        |
 | strict       | number | `0,1`           | 일반 유저라면 자신만의 데이터를 가져옵니다.                     |
