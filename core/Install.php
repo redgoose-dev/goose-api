@@ -118,16 +118,8 @@ class Install {
       // check main dir
       self::checkDirectoryPath();
 
-      // set dotenv
-      try
-      {
-        $dotenv = Dotenv::createImmutable(__API_PATH__);
-        $dotenv->load();
-      }
-      catch(Exception $e)
-      {
-        throw new Exception('.env error');
-      }
+      // setup dotenv
+      Util::setupEnv(__API_PATH__);
 
       // check env values
       self::checkEnvValues();

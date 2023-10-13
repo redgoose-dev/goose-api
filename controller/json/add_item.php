@@ -26,7 +26,7 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // check category
-  if (isset($this->post->category_srl))
+  if ((int)($this->post->category_srl ?? 0) > 0)
   {
     $cnt = $this->model->getCount((object)[
       'table' => 'categories',
@@ -37,6 +37,10 @@ try
     {
       throw new Exception(Message::make('error.noData', 'categories'));
     }
+  }
+  else
+  {
+    $this->post->category_srl = null;
   }
 
   // set output

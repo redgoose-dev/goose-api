@@ -1,19 +1,14 @@
 <?php
 namespace Core;
-use Dotenv\Dotenv, Exception;
 
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
 
-// set dotenv
-try
-{
-  $dotenv = Dotenv::createImmutable(__API_PATH__);
-  $dotenv->load();
-}
-catch(Exception $e)
-{
-  echo '.env error';
+// setup dotenv
+try {
+  Util::setupEnv(__API_PATH__);
+} catch (\Exception $e) {
+  return null;
 }
 
 // set mode

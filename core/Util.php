@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-use Exception;
+use Exception, Dotenv\Dotenv;
 
 /**
  * Util
@@ -178,6 +178,29 @@ class Util {
       $host = substr($host, 0, strpos($host, '/'));
     }
     return $host;
+  }
+
+  /**
+   * setup env
+   * @param string $path
+   * @throws Exception
+   */
+  public static function setupEnv(string $path): void
+  {
+    try
+    {
+      $dotenv = Dotenv::createImmutable($path);
+      $dotenv->load();
+      if (count($_ENV) <= 0)
+      {
+        $dotenv = Dotenv::createMutable(__API_PATH__);
+        $dotenv->load();
+      }
+    }
+    catch(Exception $e)
+    {
+      throw new Exception('.env error');
+    }
   }
 
 }

@@ -27,6 +27,11 @@ function loadEnv(): void
   {
     $dotenv = Dotenv::createImmutable(__API_PATH__);
     $dotenv->load();
+    if (count($_ENV) <= 0)
+    {
+      $dotenv = Dotenv::createMutable(__API_PATH__);
+      $dotenv->load();
+    }
   }
   catch(Exception $e)
   {

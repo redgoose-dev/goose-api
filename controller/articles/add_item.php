@@ -63,6 +63,10 @@ try
       throw new Exception(Message::make('error.noData', 'categories'), 204);
     }
   }
+  else
+  {
+    $this->post->category_srl = null;
+  }
 
   // filtering text
   if ($this->post->title ?? false)

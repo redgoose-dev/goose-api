@@ -1,21 +1,16 @@
 <?php
 namespace Core;
-use Dotenv\Dotenv, Exception;
 
 if (!defined('__API_GOOSE__')) exit();
 
 // load autoload
 require __DIR__.'/../vendor/autoload.php';
 
-// set dotenv
-try
-{
-  $dotenv = Dotenv::createImmutable(__API_PATH__);
-  $dotenv->load();
-}
-catch(Exception $e)
-{
-  throw new Exception('.env error');
+// setup dotenv
+try {
+  Util::setupEnv(__API_PATH__);
+} catch (\Exception $e) {
+  Error::result($e->getMessage());
 }
 
 // set header
@@ -82,8 +77,7 @@ try
   {
     $_POST = (array)json_decode($formData);
   }
-
-  // set app
+  // set goose
   $goose = new Goose();
   $goose->run();
 }
