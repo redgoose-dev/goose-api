@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.16.5
+ARG ALPINE_VERSION=3.18.4
 FROM alpine:${ALPINE_VERSION}
 MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/docker-php-nginx>
 
@@ -8,14 +8,30 @@ ENV PORT=5050
 
 # Install packages and remove default server definition
 RUN apk add --no-cache \
-  curl nginx supervisor \
-  php81 php81-ctype php81-curl php81-dom php81-fpm \
-  php81-pdo php81-pdo_mysql php81-gd php81-intl php81-mbstring \
-  php81-opcache php81-openssl php81-phar php81-session php81-xml php81-xmlreader \
-  php81-fileinfo
+  curl \
+  nginx \
+  php81 \
+  php81-ctype \
+  php81-curl \
+  php81-dom \
+  php81-fpm \
+  php81-pdo \
+  php81-pdo_mysql \
+  php81-gd \
+  php81-intl \
+  php81-mbstring \
+  php81-opcache \
+  php81-openssl \
+  php81-phar \
+  php81-session \
+  php81-xml \
+  php81-xmlreader \
+  php81-xmlwriter \
+  php81-fileinfo \
+  supervisor
 
 # Create symlink so programs depending on `php` still function
-RUN ln -s /usr/bin/php81 /usr/bin/php
+#RUN ln -s /usr/bin/php82 /usr/bin/php
 
 # Configure nginx
 COPY resource/docker/nginx.conf /etc/nginx/nginx.conf
@@ -37,7 +53,7 @@ USER nobody
 COPY --chown=nobody ./ /app
 
 # composer install
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
 
 # Expose the port nginx is reachable on
