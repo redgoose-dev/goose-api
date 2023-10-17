@@ -89,6 +89,7 @@ create table `goose_files` (
   `type` varchar(40) default null,
   `size` bigint(11) unsigned default 0,
   `module` varchar(16) not null,
+  `json` longtext default null,
   `regdate` datetime default null,
   primary key (`srl`),
   key `files_module` (`module`),

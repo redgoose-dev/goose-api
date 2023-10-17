@@ -42,6 +42,7 @@ try
   // set variable
   $month = date('Ym');
   $subDir = $this->post->sub_dir ?? $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
+  $json = (object)[];
 
   // set path
   $path = 'data/upload/'.$subDir;
@@ -80,7 +81,14 @@ try
   // copy file to target
   if ($file['tmp_name'] && is_dir($path_absolute_dest))
   {
-    move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
+    $pathDest = $path_absolute_dest.'/'.$file['name'];
+    move_uploaded_file($file['tmp_name'], $pathDest);
+    if (str_starts_with($file['type'], 'image'))
+    {
+      $size = getimagesize($pathDest);
+      $json->width = $size[0];
+      $json->height = $size[1];
+    }
   }
   else
   {
@@ -101,6 +109,7 @@ try
         'type' => $file['type'],
         'size' => (int)$file['size'],
         'module' => $this->post->module ?? null,
+        'json' => json_encode($json),
         'regdate' => date('Y-m-d H:i:s'),
       ],
     ]);

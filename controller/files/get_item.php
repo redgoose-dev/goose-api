@@ -32,6 +32,7 @@ try
   $output = Main::item($this, (object)[
     'table' => 'files',
     'srl' => $srl,
+    'json_field' => [ 'json' ],
   ]);
 
   // set token

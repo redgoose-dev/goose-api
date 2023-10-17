@@ -18,20 +18,20 @@ try
   // check access
   $token = Main::checkAccessIndex($this, true);
 
-	// set where
-	$where = '';
-	if ($target = ($this->get->target ?? null))
-	{
-		$where .= ' and target_srl='.$target;
-	}
-	if ($name = ($this->get->name ?? null))
-	{
-		$where .= ' and name LIKE \'%'.$name.'%\'';
-	}
-	if ($type = ($this->get->type ?? null))
-	{
-		$where .= ' and type LIKE \'%'.$type.'%\'';
-	}
+  // set where
+  $where = '';
+  if ($target = ($this->get->target ?? null))
+  {
+    $where .= ' and target_srl='.$target;
+  }
+  if ($name = ($this->get->name ?? null))
+  {
+    $where .= ' and name LIKE \'%'.$name.'%\'';
+  }
+  if ($type = ($this->get->type ?? null))
+  {
+    $where .= ' and type LIKE \'%'.$type.'%\'';
+  }
   if ($module = ($this->get->module ?? null))
   {
     $where .= ' and module LIKE \''.$module.'\'';
@@ -41,20 +41,21 @@ try
     $where .= ' and user_srl='.(int)$token->data->srl;
   }
 
-	// set output
-	$output = Main::index($this, (object)[
-		'table' => 'files',
-		'where' => $where,
-	]);
+  // set output
+  $output = Main::index($this, (object)[
+    'table' => 'files',
+    'where' => $where,
+    'json_field' => [ 'json' ],
+  ]);
 
-	// set token
-	if ($token) $output->_token = $token->jwt;
+  // set token
+  if ($token) $output->_token = $token->jwt;
 
   // disconnect db
   $this->model->disconnect();
 
-	// output
-	return Output::result($output);
+  // output
+  return Output::result($output);
 }
 catch (Exception $e)
 {

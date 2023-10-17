@@ -62,6 +62,7 @@ try
      */
     $month = date('Ym');
     $subDir = $this->post->sub_dir ?? $_ENV['API_DEFAULT_UPLOAD_DIR_NAME'];
+    $json = (object)[];
 
     // set path
     $path = 'data/upload/'.$subDir;
@@ -102,7 +103,16 @@ try
     }
 
     // copy file to target
-    move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
+    $pathDest = $path_absolute_dest.'/'.$file['name'];
+    move_uploaded_file($file['tmp_name'], $pathDest);
+
+    // set image size
+    if (str_starts_with($file['type'], 'image'))
+    {
+      $size = getimagesize($pathDest);
+      $json->width = $size[0];
+      $json->height = $size[1];
+    }
 
     // set new file
     $newFile = (object)[
@@ -110,6 +120,7 @@ try
       'path' => $path.'/'.$month.'/'.$file['name'],
       'type' => $file['type'],
       'size' => $file['size'],
+      'json' => json_encode($json),
     ];
 
     /**
@@ -143,6 +154,7 @@ try
     $data[] = "path='$newFile->path'";
     $data[] = "type='$newFile->type'";
     $data[] = "size='$newFile->size'";
+    $data[] = "json='$newFile->json'";
   }
   if (count($data) <= 0)
   {
