@@ -101,3 +101,21 @@
 | key  | type   | example        | description                              |
 |:-----|:-------|:---------------|:-----------------------------------------|
 | path | string | `filename.jpg` | 삭제할 파일 경로를 입력해줍니다. 프로젝트 루트경로 기준으로 입력합니다. |
+
+
+## resize image
+
+- url: `/files/resize/`
+- method: GET
+
+서비스에 업로드된 첨부 이미지를 리사이즈된 형태로 불러옵니다.
+처음 요청하면 리사이즈후에 캐시영역에 저장하고 그 이후에 호출하면 리사이즈된 이미지로 불러옵니다.
+
+| key     | type   | example         | description                          |
+|:--------|:-------|:----------------|:-------------------------------------|
+| path    | string | `filename.jpg`  | 리사이즈 경로. `/data/upload` 이후부터 사용      |
+| type    | string | `cover`         | 리사이즈 방식 (cover: 크롭, null: 비율대로 리사이즈) |
+| width   | int    | `640`           | 가로사이즈                                |
+| height  | int    | `480`           | 세로사이즈                                |
+| quality | int    | `90`            | 이미지 퀄리티                              |
+

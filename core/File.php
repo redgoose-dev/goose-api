@@ -11,12 +11,12 @@ class File {
   /**
    * make directory
    */
-  public static function makeDirectory(string $path, int $permission = 0707): void
+  public static function makeDirectory(string $path, int $permission = 0707, bool $recursion = false): void
   {
     if (is_dir($path)) return;
     $umask = umask();
     umask(000);
-    mkdir($path, $permission);
+    mkdir($path, $permission, $recursion);
     umask($umask);
   }
 

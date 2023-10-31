@@ -52,6 +52,8 @@
     "UPLOAD_ERR_NO_TMP_DIR": "Missing a temporary folder",
     "UPLOAD_ERR_CANT_WRITE": "Failed to write file to disk",
     "UPLOAD_ERR_EXTENSION": "File upload stopped by extension",
-    "UPLOAD_ERR_OK": "Unknown upload error"
+    "UPLOAD_ERR_OK": "Unknown upload error",
+    "NOT_IMAGE": "This file is not an image.",
+    "INVALID_FILE": "This file is invalid."
   }
 }

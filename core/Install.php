@@ -64,7 +64,7 @@ class Install {
   /**
    * ready for install
    */
-  static public function ready()
+  static public function ready(): void
   {
     $output = '';
 
@@ -76,8 +76,8 @@ class Install {
     {
       try
       {
-        Util::createDirectory(__API_PATH__.'/data', 0707, true);
-        Util::createDirectory(__API_PATH__.'/data/upload', 0707, false);
+        File::makeDirectory(__API_PATH__.'/data/upload', 0070, true);
+        File::makeDirectory(__API_PATH__.'/data/cache', 0070, true);
       }
       catch(Exception $e)
       {

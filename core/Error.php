@@ -6,7 +6,6 @@ class Error {
 
   /**
    * result
-   *
    * @param string $message
    * @param int $code
    * @return object
@@ -17,6 +16,19 @@ class Error {
       'code' => $code,
       'message' => $message,
     ]);
+  }
+
+  public static function raw(int $code): void
+  {
+    switch ($code)
+    {
+      case 404:
+        header('HTTP/1.0 404 Not Found');
+        break;
+      default:
+        header('HTTP/1.1 500 Internal Server Error');
+        break;
+    }
   }
 
 }

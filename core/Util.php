@@ -33,29 +33,6 @@ class Util {
   }
 
   /**
-   * create directory
-   *
-   * @throws Exception
-   */
-  public static function createDirectory(?string $path = null, int $permission = 0707, bool $skip = false): void
-  {
-    if (is_dir($path))
-    {
-      if (!$skip)
-      {
-        throw new Exception('Directory already exists.');
-      }
-    }
-    else
-    {
-      $umask = umask();
-      umask(000);
-      mkdir($path, $permission);
-      umask($umask);
-    }
-  }
-
-  /**
    * check key in the extra field
    */
   public static function checkKeyInExtField(string $keyword, ?string $field): bool
@@ -162,6 +139,15 @@ class Util {
     if (!is_writable(__API_PATH__.'/data/upload'))
     {
       throw new Exception('The `/data/upload` directory permission is invalid.');
+    }
+    // check `/data/cache`
+    if (!is_dir(__API_PATH__.'/data/cache'))
+    {
+      throw new Exception('The directory `/data/cache` does not exist.');
+    }
+    if (!is_writable(__API_PATH__.'/data/cache'))
+    {
+      throw new Exception('The `/data/cache` directory permission is invalid.');
     }
   }
 

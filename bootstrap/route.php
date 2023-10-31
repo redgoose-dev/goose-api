@@ -40,6 +40,7 @@ return [
   [ 'GET', '/files/get-files/[aa:dir]/', 'files/get_files', 'getFilesInDir' ],
   [ 'POST', '/files/upload-file/', 'files/upload_file', 'uploadFile' ],
   [ 'POST', '/files/remove-file/', 'files/remove_file', 'removeFile' ],
+  [ 'GET', '/files/resize/', 'files/get_resize', 'getResizeFile' ],
 
   // json
   [ 'GET', '/json/', 'json/get_index', 'getJsonIndex' ],

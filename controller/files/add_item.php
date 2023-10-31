@@ -49,11 +49,8 @@ try
   $path_absolute = __API_PATH__.'/'.$path;
   $path_absolute_dest = $path_absolute.'/'.$month;
 
-  // make subdirectory
-  File::makeDirectory($path_absolute);
-
   // make month directory
-  File::makeDirectory($path_absolute_dest);
+  File::makeDirectory($path_absolute_dest, 0707, true);
 
   // $_FILES to array
   $file = File::convertFilesValue($this->files['file'] ?? []);

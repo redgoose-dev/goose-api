@@ -56,10 +56,7 @@ try
     $file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
 
     // make month directory
-    File::makeDirectory($path_absolute, 0707);
-
-    // make month directory
-    File::makeDirectory($path_absolute_dest, 0707);
+    File::makeDirectory($path_absolute_dest, 0707, true);
 
     // copy file to target
     if ($file['tmp_name'] && is_dir($path_absolute_dest))
@@ -127,10 +124,7 @@ try
     $filename = File::checkExistFile($path_absolute_dest.'/', $filename, null);
 
     // make month directory
-    File::makeDirectory($path_absolute, 0707);
-
-    // make month directory
-    File::makeDirectory($path_absolute_dest, 0707);
+    File::makeDirectory($path_absolute_dest, 0707, true);
 
     // check dest dir
     if (!is_dir($path_absolute_dest))

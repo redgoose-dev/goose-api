@@ -69,11 +69,8 @@ try
     $path_absolute = __API_PATH__.'/'.$path;
     $path_absolute_dest = $path_absolute.'/'.$month;
 
-    // make subdirectory
-    File::makeDirectory($path_absolute, 0707);
-
     // make month directory
-    File::makeDirectory($path_absolute_dest, 0777);
+    File::makeDirectory($path_absolute_dest, 0707, true);
 
     // check file
     if (!!$file['error'])
