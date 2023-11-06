@@ -170,7 +170,7 @@ try
   // set output
   $output = (object)[];
   $output->code = 200;
-  $output->data = $data;
+  $output->data = (object)array_merge((array)$data, [ 'path' => $localPath ]);
 
   // set token
   if ($token) $output->_token = $token->jwt;
