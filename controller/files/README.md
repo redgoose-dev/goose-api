@@ -84,11 +84,11 @@
 
 데이터베이스에 등록하지 않고 서버에 파일을 업로드할 수 있습니다.
 
-| key     | type   | example     | description             |
-|:--------|:-------|:------------|:------------------------|
-| sub_dir | string | `thumbnail` | 서브 디렉토리 이름              |
-| file    | File   |             | `File`형식의 업로드할 파일입니다.   |
-| base64  | string |             | `base64`형식의 업로드할 파일입니다. |
+| key    | type   | example  | description             |
+|:-------|:-------|:---------|:------------------------|
+| dir    | string | `assets` | 서브 디렉토리 이름              |
+| file   | File   |          | `File`형식의 업로드할 파일입니다.   |
+| base64 | string |          | `base64`형식의 업로드할 파일입니다. |
 
 
 ## remove file
@@ -100,6 +100,7 @@
 
 | key  | type   | example        | description                              |
 |:-----|:-------|:---------------|:-----------------------------------------|
+| dir  | string | `assets`       | 서브 디렉토리 이름                               |
 | path | string | `filename.jpg` | 삭제할 파일 경로를 입력해줍니다. 프로젝트 루트경로 기준으로 입력합니다. |
 
 

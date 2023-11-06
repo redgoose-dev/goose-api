@@ -2,7 +2,6 @@
 namespace Core;
 use Dotenv\Dotenv, Exception;
 
-
 class Install {
 
   /**
@@ -30,12 +29,10 @@ class Install {
 
   /**
    * check writabled path
-   *
    * @param string $dir
    */
-  static private function checkDirectoryPath(string $dir = ''): void
+  static private function checkDirectoryPath(string $dir): void
   {
-    $dir = $dir ? $dir : __API_PATH__;
     if (!is_dir($dir))
     {
       self::error("Directory does not exist. path: `$dir`");
@@ -67,12 +64,11 @@ class Install {
   static public function ready(): void
   {
     $output = '';
-
     // check main dir
-    self::checkDirectoryPath();
-
+    self::checkDirectoryPath(__API_PATH__);
     // make data directory
-    if (!(is_dir(__API_PATH__.'/data/upload') && is_writable(__API_PATH__.'/data/upload')))
+    $pathUpload = __API_PATH__.'/data/upload';
+    if (!(is_dir($pathUpload) && is_writable($pathUpload)))
     {
       try
       {
@@ -84,7 +80,6 @@ class Install {
         $output .= "ERROR: ".$e->getMessage()."\n";
       }
     }
-
     // copy .env file
     if (!file_exists(__API_PATH__.'/.env'))
     {
@@ -93,7 +88,6 @@ class Install {
         self::error('Can not copy the `.env` file.');
       }
     }
-
     // output
     $output .= "Success!\n";
     $output .= "Please proceed to the next step.\n";
@@ -106,7 +100,7 @@ class Install {
   /**
    * install
    */
-  static public function install()
+  static public function install(): void
   {
     $defaultEmail = 'root@goo.se';
     $defaultName = 'root';
@@ -116,7 +110,7 @@ class Install {
       $out = '';
 
       // check main dir
-      self::checkDirectoryPath();
+      self::checkDirectoryPath(__API_PATH__);
 
       // setup dotenv
       Util::setupEnv(__API_PATH__);

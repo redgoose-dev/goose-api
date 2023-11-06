@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception, Controller\Main;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -29,29 +30,20 @@ try
 
   // set path
   $path = 'data/upload/'.$dir;
-  $path_absolute = __API_PATH__.'/'.$path;
 
-  // get directories (`YYYYMM`형식으로된 이름)
-  $directories = File::getDirectories($path_absolute);
+  // create assets map file
+  $files = UtilForFiles::createAssetsMapFile($dir);
+  if (!$files) $files = UtilForFiles::getAssetsMapFiles($dir);
+  if (!$files) throw new Exception(Message::make('error.notFound', 'file'), 404);
 
   // set tree
   $tree = [];
-  foreach ($directories as $dir)
+  foreach ($files as $key => $file)
   {
-    $files = File::getFiles($path_absolute.'/'.$dir);
-    if (!count($files)) continue;
-    foreach ($files as $file)
-    {
-      $filePath = $path_absolute.'/'.$dir.'/'.$file;
-      $tree[] = (object)[
-        'name' => $file,
-        'path' => $path.'/'.$dir.'/'.$file,
-        'size' => filesize($filePath),
-        'date' => filemtime($filePath),
-        'type' => File::getMimeType($filePath),
-      ];
-    }
+    $tree[] = (object)array_merge((array)$file, [ 'path' => $key ]);
   }
+
+  // sort tree
   if (count($tree) > 0)
   {
     switch ($this->get->order ?? '')

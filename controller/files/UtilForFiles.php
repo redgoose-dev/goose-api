@@ -1,13 +1,16 @@
 <?php
 namespace Controller\files;
 use Exception;
-use Core, Core\Goose, Core\Connect;
+use Core, Core\Goose, Core\Connect, Core\File;
 
 /**
  * util for files
  */
 
 class UtilForFiles {
+
+  public static string $upload = '/data/upload/';
+  public static string $uploadFull = __API_PATH__.'/data/upload/';
 
   /**
    * remove thumbnail image
@@ -121,6 +124,87 @@ class UtilForFiles {
     {
       throw new Exception(Core\Message::make('error.notInData', 'target_srl', $module));
     }
+  }
+
+  /**
+   * create assets files map
+   * /data/upload/{ASSETS}/map.json 파일을 만든다.
+   */
+  public static function createAssetsMapFile(string $dir): object|null
+  {
+    $pathMap = self::$uploadFull.$dir.'/map.json';
+    // check map.json file
+    if (file_exists($pathMap)) return null;
+    // get files
+    $tree = self::getAssetFiles($dir);
+    // write file
+    if ($tree) self::writeAssetsMapFile($tree, $dir);
+    // return
+    return $tree;
+  }
+
+  /**
+   * get assets map files
+   */
+  public static function getAssetsMapFiles(string $dir): object|null
+  {
+    $pathMap = self::$uploadFull.$dir.'/map.json';
+    try
+    {
+      if (!file_exists($pathMap)) return null;
+      $json = file_get_contents($pathMap);
+      return json_decode($json);
+    }
+    catch (Exception $e)
+    {
+      return null;
+    }
+  }
+
+  /**
+   * write assets map file
+   */
+  public static function writeAssetsMapFile(object $data, string $dir): void
+  {
+    $json = json_encode($data, true);
+    $file = fopen(self::$uploadFull.$dir.'/map.json', 'w');
+    fwrite($file, $json);
+    fclose($file);
+  }
+
+  /**
+   * get asset files
+   */
+  private static function getAssetFiles(string $dirName): object|null
+  {
+    $pathBase = self::$uploadFull.$dirName;
+    if (!file_exists($pathBase)) return null;
+    // get directories (`YYYYMM`형식으로된 이름)
+    $directories = File::getDirectories($pathBase);
+    // set files tree
+    $tree = (object)[];
+    foreach ($directories as $dir)
+    {
+      $files = File::getFiles($pathBase.'/'.$dir);
+      if (!count($files)) continue;
+      foreach ($files as $file)
+      {
+        $filePath = $pathBase.'/'.$dir.'/'.$file;
+        $obj = (object)[
+          'name' => $file,
+          'size' => filesize($filePath),
+          'date' => filemtime($filePath),
+          'type' => File::getMimeType($filePath),
+        ];
+        if (str_starts_with($obj->type, 'image'))
+        {
+          list( $width, $height ) = getimagesize($filePath);
+          $obj->image = (object)[ 'width' => $width, 'height' => $height ];
+        }
+        $tree->{$dir.'/'.$file} = $obj;
+      }
+    }
+    return $tree;
   }
 
 }

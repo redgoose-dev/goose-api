@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -22,13 +23,12 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // set values
-  $subDir = $this->post->sub_dir ?? 'user';
+  $dir = $this->post->dir ?? 'user';
   $month = date('Ym');
+  $localPath = null;
 
   // set path
-  $path = 'data/upload/'.$subDir;
-  $path_absolute = __API_PATH__.'/'.$path;
-  $path_absolute_dest = $path_absolute.'/'.$month;
+  $pathAbsoluteDest = UtilForFiles::$uploadFull.$dir.'/'.$month;
 
   // multipart upload
   if ($this->files['file'] ?? false)
@@ -53,29 +53,34 @@ try
       throw new Exception(Message::make('error.allowFileType'));
     }
     // check exist file
-    $file['name'] = File::checkExistFile($path_absolute_dest.'/', $file['name'], null);
+    $file['name'] = File::checkExistFile($pathAbsoluteDest.'/', $file['name'], null);
 
     // make month directory
-    File::makeDirectory($path_absolute_dest, 0707, true);
+    File::makeDirectory($pathAbsoluteDest, 0707, true);
 
     // copy file to target
-    if ($file['tmp_name'] && is_dir($path_absolute_dest))
+    if ($file['tmp_name'] && is_dir($pathAbsoluteDest))
     {
-      move_uploaded_file($file['tmp_name'], $path_absolute_dest.'/'.$file['name']);
+      move_uploaded_file($file['tmp_name'], $pathAbsoluteDest.'/'.$file['name']);
     }
     else
     {
       throw new Exception(Message::make('error.upload'));
     }
 
-    // set output
+    // set data
+    $localPath = $month.'/'.$file['name'];
     $data = (object)[
       'name' => $file['name'],
-      'path' => $path.'/'.$month.'/'.$file['name'],
-      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$file['name'],
-      'type' => $file['type'],
       'size' => $file['size'],
+      'date' => filemtime($pathAbsoluteDest.'/'.$file['name']),
+      'type' => $file['type'],
     ];
+    if (str_starts_with($data->type, 'image'))
+    {
+      list( $width, $height ) = getimagesize($pathAbsoluteDest.'/'.$file['name']);
+      $data->image = (object)[ 'width' => $width, 'height' => $height ];
+    }
   }
   // base64 upload
   else if ($this->post->base64 ?? false)
@@ -121,32 +126,45 @@ try
     }
 
     // check exist file
-    $filename = File::checkExistFile($path_absolute_dest.'/', $filename, null);
+    $filename = File::checkExistFile($pathAbsoluteDest.'/', $filename, null);
 
     // make month directory
-    File::makeDirectory($path_absolute_dest, 0707, true);
+    File::makeDirectory($pathAbsoluteDest, 0707, true);
 
     // check dest dir
-    if (!is_dir($path_absolute_dest))
+    if (!is_dir($pathAbsoluteDest))
     {
       throw new Exception(Message::make('error.upload'));
     }
 
     // upload file
-    $uploadedFileSize = file_put_contents($path_absolute_dest.'/'.$filename, $imgSource);
+    $uploadedFileSize = file_put_contents($pathAbsoluteDest.'/'.$filename, $imgSource);
 
     // set data
+    $localPath = $month.'/'.$filename;
     $data = (object)[
       'name' => $filename,
-      'path' => $path.'/'.$month.'/'.$filename,
-      'pathFull' => $_ENV['API_PATH_URL'].'/'.$path.'/'.$month.'/'.$filename,
-      'type' => $imgType,
       'size' => $uploadedFileSize,
+      'date' => filemtime($pathAbsoluteDest.'/'.$filename),
+      'type' => $imgType,
     ];
+    list( $width, $height ) = getimagesize($pathAbsoluteDest.'/'.$filename);
+    $data->image = (object)[ 'width' => $width, 'height' => $height ];
   }
   else
   {
     throw new Exception(Message::make('error.noValueTo', 'value', 'upload'));
+  }
+
+  // get map.json file
+  $json = UtilForFiles::getAssetsMapFiles($dir);
+  if (!$json) $json = UtilForFiles::createAssetsMapFile($dir);
+
+  // update map
+  if ($localPath)
+  {
+    $json->{$localPath} = $data;
+    UtilForFiles::writeAssetsMapFile($json, $dir);
   }
 
   // set output

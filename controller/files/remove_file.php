@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -16,7 +17,7 @@ try
   Util::checkDirectories();
 
   // check post values
-  Util::checkExistValue($this->post, [ 'path' ]);
+  Util::checkExistValue($this->post, [ 'dir', 'path' ]);
 
   // connect db
   $this->model->connect();
@@ -25,16 +26,27 @@ try
   $token = Auth::checkAuthorization($this->model, 'user');
 
   // set path
-  $path = __API_PATH__.'/'.$this->post->path;
+  $dir = $this->post->dir ?? 'user';
+  $path = $this->post->path;
+  $absolutePath = UtilForFiles::$uploadFull.$dir.'/'.$path;
 
   // check exist file
-  if (!file_exists($path))
+  if (!file_exists($absolutePath))
   {
-    throw new Exception(Message::make('msg.noFiles'));
+    throw new Exception(Message::make('msg.noFiles'), 204);
   }
 
   // delete file
-  unlink($path);
+  unlink($absolutePath);
+
+  // update map file
+  $json = UtilForFiles::getAssetsMapFiles($dir);
+  if (!$json) $json = UtilForFiles::createAssetsMapFile($dir);
+  if ($json->{$path} ?? false)
+  {
+    unset($json->{$path});
+    UtilForFiles::writeAssetsMapFile($json, $dir);
+  }
 
   // set output
   $output = (object)[];
