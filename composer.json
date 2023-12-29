@@ -9,8 +9,8 @@
   ],
   "require": {
     "altorouter/altorouter": "^2.0.2",
-    "vlucas/phpdotenv": "^v5.5.0",
-    "firebase/php-jwt": "^v6.9.0"
+    "vlucas/phpdotenv": "^v5.6.0",
+    "firebase/php-jwt": "^v6.10.0"
   },
   "autoload": {
     "psr-4": {
