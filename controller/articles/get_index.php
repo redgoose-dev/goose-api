@@ -37,12 +37,15 @@ try
   {
     $where .= ' and (title LIKE \'%'.$q.'%\' or content LIKE \'%'.$q.'%\')';
     $tableName = $this->model->getTableName('comments');
-    $comments = $this->model->fetch('fetchAll', 'select article_srl from '.$tableName.' where (content LIKE \'%'.$q.'%\')');
+    $query = 'select article_srl from '.$tableName.' where (content LIKE \'%'.$q.'%\')';
+    $comments = $this->model->fetch('fetchAll', $query);
     if (count($comments) > 0)
     {
       $comments = array_map(function($o) { return $o->article_srl; }, $comments);
       $comments = implode(',', array_unique($comments));
-      $where .= ' or srl in ('.$comments.')';
+      $queryApp = $app ? 'app_srl='.$app.' and ' : '';
+      $queryNest = $nest ? 'nest_srl='.$nest.' and ' : '';
+      $where .= ' or ('.$queryApp.$queryNest.'srl in ('.$comments.'))';
     }
   }
   $where .= UtilForArticles::getWhereType($this->get->visible_type ?? null);
