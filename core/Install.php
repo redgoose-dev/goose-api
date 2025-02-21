@@ -72,8 +72,8 @@ class Install {
     {
       try
       {
-        File::makeDirectory(__API_PATH__.'/data/upload', 0070, true);
-        File::makeDirectory(__API_PATH__.'/data/cache', 0070, true);
+        File::makeDirectory(__API_PATH__.'/data/upload', 0707, true);
+        File::makeDirectory(__API_PATH__.'/data/cache', 0707, true);
       }
       catch(Exception $e)
       {

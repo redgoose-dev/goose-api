@@ -79,7 +79,7 @@ class Output {
    * @param object|array $result
    * @return object
    */
-  public static function result(object|array $result = null): ?object
+  public static function result(object|array|null $result = null): ?object
   {
     // set result
     $result = self::getResultData($result);

@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 use Exception, Controller\Main;
+use Controller\files\UtilForFiles;
 
 if (!defined('__API_GOOSE__')) exit();
 
@@ -32,6 +33,9 @@ try
     'table' => 'json',
     'srl' => $srl,
   ]);
+
+  // remove files
+  UtilForFiles::removeAttachFiles($this, $srl, 'json');
 
   // set output
   if ($token) $output->_token = $token->jwt;
