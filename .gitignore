@@ -1,16 +1,10 @@
-# DIRECTORY
+# directories
 .idea/
-vendor/
+.venv/
 data/
 .AppleDouble/
 
-# FILES
+# files
 .DS_Store
 ._.DS_Store
 .env
-composer.lock
-action.sh
-
-# ETC
-usr/
-controller/external
