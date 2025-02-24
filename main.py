@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from api.main import router
+from src.api import router
 
 # setup env
 load_dotenv('.env')
