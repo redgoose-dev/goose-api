@@ -1,6 +1,7 @@
 import time
 from fastapi import FastAPI, Request
 from fastapi.responses import Response, JSONResponse
+from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from .output import error
 from .endpoints.options_any import preflight
@@ -65,3 +66,13 @@ async def custom_http_exception_handler(req: Request, exc: StarletteHTTPExceptio
         message = 'Invalid Error'
         options['message'] = exc.detail
     return error(message, options)
+
+
+@api.exception_handler(RequestValidationError)
+async def validation_exception_handler(req: Request, exc: RequestValidationError):
+    return error('Validation Error', {
+        'code': 422,
+        'method': req.method,
+        'path': req.url.path,
+        'error': exc.errors(),
+    })

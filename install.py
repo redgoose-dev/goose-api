@@ -83,21 +83,21 @@ if check_install == 'NOT':
     if answer.lower() != 'n':
         install_resource()
         install_db()
-        installed = True # set flag
+        installed = True
 elif check_install == 'ERROR':
     answer = input('⭐ Broken resource. Do you want to reinstall? (Y/n): ')
     if answer.lower() != 'n':
         destroy_resource()
         install_resource()
         install_db()
-        installed = True # set flag
+        installed = True
 elif check_install == 'OK':
     answer = input('⭐ It\'s currently installed. Do you want to reinstall? (y/N): ')
     if answer.lower() == 'y':
         destroy_resource()
         install_resource()
         install_db()
-        installed = True # set flag
+        installed = True
 
 # print result
 print_result(installed)

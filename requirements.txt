@@ -5,3 +5,5 @@ uvicorn
 httpx
 pytest
 httpx
+pydantic
+python-multipart
