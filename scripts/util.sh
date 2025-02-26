@@ -3,23 +3,24 @@
 # get .env
 export $(grep -v '^#' .env | xargs)
 
+# set working directory
+cd "$(dirname "$0")/.."
+
+# activate virtual environment
 source .venv/bin/activate
 
 case "$1" in
 
   install)
-    pip install "$2"
-    ;;
-
-  setup)
-    python src/setup.py
+    python install.py
     ;;
 
   *)
-    echo "Usage: ${script} {install|setup}" >&2
+    echo "Usage: ${script} {install}" >&2
     exit 0
     ;;
 
 esac
 
+# deactivate virtual environment
 deactivate

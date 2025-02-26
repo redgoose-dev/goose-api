@@ -1,6 +1,6 @@
 -- table `app`
 CREATE TABLE `goose_app` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- app srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- app srl
     `id` TEXT NOT NULL UNIQUE, -- app id
     `name` TEXT NULL, -- app name
     `description` TEXT NULL, -- app description
@@ -9,94 +9,94 @@ CREATE TABLE `goose_app` (
 
 -- table `article`
 CREATE TABLE `goose_article` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- article srl
-    `app_srl` INT NOT NULL, -- app srl
-    `nest_srl` INT NOT NULL, -- nest srl
-    `category_srl` INT NULL, -- category srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- article srl
+    `app_srl` INTEGER NOT NULL, -- app srl
+    `nest_srl` INTEGER NOT NULL, -- nest srl
+    `category_srl` INTEGER NULL, -- category srl
     `title` TEXT NOT NULL, -- title
     `content` TEXT NULL, -- markdown content
-    `hit` INT NOT NULL DEFAULT 0, -- hit count
-    `star` INT NOT NULL DEFAULT 0, -- star count
+    `hit` INTEGER NOT NULL DEFAULT 0, -- hit count
+    `star` INTEGER NOT NULL DEFAULT 0, -- star count
     `json` TEXT NULL DEFAULT '{}', -- json data
     `type` TEXT NOT NULL DEFAULT 'public', -- public,private
     `regdate` TEXT NULL, -- custom created date
     `created_at` TEXT NOT NULL, -- created date
     `updated_at` TEXT NOT NULL, -- updated date
     FOREIGN KEY (`app_srl`) REFERENCES `goose_app`(`srl`)
-)
+);
 
 -- table `category`
 CREATE TABLE `goose_category` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- category srl
-    `target_srl` INT NOT NULL, -- target srl
-    `turn` INT NOT NULL DEFAULT 0, -- category name
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- category srl
+    `target_srl` INTEGER NOT NULL, -- target srl
+    `turn` INTEGER NOT NULL DEFAULT 0, -- category name
     `name` TEXT NOT NULL, -- category description
     `module` TEXT NOT NULL, -- nest,json
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`target_srl`, `module`) REFERENCES `goose_nest`(`srl`, `nest`)
-)
+);
 
 -- table `checklist`
 CREATE TABLE `goose_checklist` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- checklist srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- checklist srl
     `content` TEXT NULL, -- markdown content
-    `percent` INT NOT NULL DEFAULT 0, -- progress
+    `percent` INTEGER NOT NULL DEFAULT 0, -- progress
     `created_at` TEXT NOT NULL -- created date
-)
+);
 
 -- table `comment`
 CREATE TABLE `goose_comment` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- comment srl
-    `target_srl` INT NOT NULL, -- target srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- comment srl
+    `target_srl` INTEGER NOT NULL, -- target srl
     `content` TEXT NOT NULL, -- markdown content
     `module` TEXT NOT NULL DEFAULT 'article', -- article
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`target_srl`, `module`) REFERENCES `goose_article`(`srl`, `article`)
-)
+);
 
 -- table `file`
 CREATE TABLE `goose_file` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- file srl
-    `target_srl` INT NOT NULL, -- target srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- file srl
+    `target_srl` INTEGER NOT NULL, -- target srl
     `name` TEXT NOT NULL, -- file name
     `path` TEXT NOT NULL, -- file path
     `type` TEXT NOT NULL, -- file mime type
-    `size` INT NOT NULL DEFAULT 0, -- file size
+    `size` INTEGER NOT NULL DEFAULT 0, -- file size
     `json` TEXT NULL DEFAULT '{}', -- file json data
     `module` TEXT NOT NULL DEFAULT 'article', -- article,json,checklist
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`target_srl`, `module`) REFERENCES `goose_article`(`srl`, `article`),
     FOREIGN KEY (`target_srl`, `module`) REFERENCES `goose_json`(`srl`, `json`),
     FOREIGN KEY (`target_srl`, `module`) REFERENCES `goose_checklist`(`srl`, `checklist`)
-)
+);
 
 -- table `json`
 CREATE TABLE `goose_json` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- json srl
-    `category_srl` INT NULL, -- category srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- json srl
+    `category_srl` INTEGER NULL, -- category srl
     `name` TEXT NOT NULL, -- json name
     `description` TEXT NULL, -- json description
     `json` TEXT NOT NULL DEFAULT '{}', -- json data
     `path` TEXT NULL, -- json path
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`category_srl`) REFERENCES `goose_category`(`srl`)
-)
+);
 
 -- table `nest`
 CREATE TABLE `goose_nest` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- nest srl
-    `app_srl` INT NULL, -- app srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- nest srl
+    `app_srl` INTEGER NULL, -- app srl
     `code` TEXT NOT NULL UNIQUE, -- unique nest code
     `name` TEXT NULL, -- name
     `description` TEXT NULL, -- description
     `json` TEXT NULL DEFAULT '{}', -- json data
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`app_srl`) REFERENCES `goose_app`(`srl`)
-)
+);
 
 -- table `provider`
 CREATE TABLE `goose_provider` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- provider srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- provider srl
     `code` TEXT NOT NULL UNIQUE, -- unique provider code
     `name` TEXT NOT NULL UNIQUE, -- provider name
     `user_id` TEXT NOT NULL,
@@ -104,14 +104,14 @@ CREATE TABLE `goose_provider` (
     `user_avatar` TEXT NULL,
     `user_email` TEXT NULL,
     `created_at` TEXT NOT NULL -- created date
-)
+);
 
 -- table `token`
 CREATE TABLE `goose_token` (
-    `srl` INT PRIMARY KEY AUTOINCREMENT, -- token srl
-    `provider_srl` INT NOT NULL, -- provider srl
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- token srl
+    `provider_srl` INTEGER NOT NULL, -- provider srl
     `access` TEXT NOT NULL UNIQUE, -- access token
     `expired` INTEGER NOT NULL, -- expired timestamp
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`provider_srl`) REFERENCES `goose_provider`(`srl`)
-)
+);
