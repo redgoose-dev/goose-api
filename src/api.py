@@ -7,6 +7,8 @@ from .output import error
 from .endpoints.options_any import preflight
 from .endpoints.get_home import home
 from .endpoints.app import router as app
+from .endpoints.json import router as json
+from .endpoints.category import router as category
 
 # set router
 api = FastAPI()
@@ -41,12 +43,14 @@ api.include_router(app, prefix='/app')
 # category
 
 # checklist
+api.include_router(category, prefix='/category')
 
 # comment
 
 # file
 
 # json
+api.include_router(json, prefix='/json')
 
 # nest
 
@@ -75,4 +79,14 @@ async def validation_exception_handler(req: Request, exc: RequestValidationError
         'method': req.method,
         'path': req.url.path,
         'error': exc.errors(),
+    })
+
+# 예외 처리 핸들러 추가
+@api.exception_handler(Exception)
+async def global_exception_handler(req: Request, exc: Exception):
+    return error('Exception Error', {
+        'code': 500,
+        'method': req.method,
+        'path': req.url.path,
+        'error': exc.errors() if hasattr(exc, 'errors') else None,
     })

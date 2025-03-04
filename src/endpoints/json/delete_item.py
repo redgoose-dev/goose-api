@@ -1,9 +1,9 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB
-from src.libs.string import convert_date
 
-async def get_item(params: types.GetItem):
+async def delete_item(params: types.DeleteItem):
+
     # set values
     result = None
 
@@ -16,18 +16,22 @@ async def get_item(params: types.GetItem):
         where = []
         if params.srl: where.append(f'and srl="{params.srl}"')
 
-        # get item
-        data = db.get_item(
-            table_name = 'app',
+        # check item
+        count = db.get_count(
+            table_name = 'json',
             where = where,
         )
-        if not data: raise Exception('Item not found', 204)
-        data['created_at'] = convert_date(data['created_at'])
+        if count == 0: raise Exception('Item not found.', 204)
+
+        # delete item
+        db.delete_item(
+            table_name = 'json',
+            where = where,
+        )
 
         # set result
         result = output.success({
-            'message': 'Success get App item.',
-            'data': data,
+            'message': 'Success delete JSON.',
         })
     except Exception as e:
         match e.args[1] if len(e.args) > 1 else 500:

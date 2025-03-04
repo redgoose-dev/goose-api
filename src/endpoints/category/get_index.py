@@ -18,14 +18,16 @@ async def get_index(params: types.GetIndex):
 
         # set where
         where = []
-        if params.id:
-            where.append(f'and id="{params.id}"')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
+        if params.module:
+            where.append(f'and module="{params.module}"')
+        if params.target_srl is not None:
+            where.append(f'and target_srl={params.target_srl}')
 
         # get total
         total = db.get_count(
-            table_name = 'app',
+            table_name = 'category',
             where = where,
         )
         if total == 0: raise Exception('No data', 204)
@@ -35,7 +37,7 @@ async def get_index(params: types.GetIndex):
 
         # get index
         index = db.get_items(
-            table_name = 'app',
+            table_name = 'category',
             fields = fields,
             where = where,
             values = values,
@@ -49,17 +51,14 @@ async def get_index(params: types.GetIndex):
             },
         )
         def transform_item(item: dict) -> dict:
-            return {
-                **item,
-                'created_at': convert_date(item['created_at']),
-            }
-        index = [ transform_item(item) for item in index ]
-
-        # TODO: 전 버전에서는 nest 데이터 갯수도 포함하는 옵션도 존재한다.
+            if 'created_at' in item:
+                item['created_at'] = convert_date(item['created_at'])
+            return item
+        index = [transform_item(item) for item in index]
 
         # set result
         result = output.success({
-            'message': 'Success get items index.',
+            'message': 'Success get category index.',
             'data': {
                 'total': total,
                 'index': index,

@@ -1,4 +1,5 @@
-import secrets, string
+import os, secrets, string, pytz
+from datetime import datetime
 
 def create_random_string(length: int) -> str:
     letters = string.ascii_letters + string.digits
@@ -17,3 +18,41 @@ def color_text(text: str, color: str = 'reset') -> str:
     }
     return f'{colors[color]}{text}{colors['reset']}'
 
+def convert_date(date: str = None) -> str:
+    if not date: return ''
+    try:
+        timezone = os.getenv('TIMEZONE')
+        date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        date_utc = date.replace(tzinfo=pytz.UTC)
+        local_timezone = pytz.timezone(timezone)
+        local_date = date_utc.astimezone(local_timezone)
+        return local_date.strftime('%Y-%m-%d %H:%M:%S')
+    except:
+        return ''
+
+def get_status_message(code: int) -> str:
+    match code:
+        case 200:
+            return 'OK'
+        case 201:
+            return 'Created'
+        case 202:
+            return 'Accepted'
+        case 204:
+            return 'No Content'
+        case 400:
+            return 'Bad Request'
+        case 401:
+            return 'Unauthorized'
+        case 403:
+            return 'Forbidden'
+        case 404:
+            return 'Not Found'
+        case 405:
+            return 'Method Not Allowed'
+        case 422:
+            return 'Unprocessable Entity'
+        case 455:
+            return 'Invalid Data'
+        case _:
+            return 'Service Error'

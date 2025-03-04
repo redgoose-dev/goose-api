@@ -1,8 +1,10 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB
+from src.libs.check import parse_json, check_url
+from src.libs.object import json_stringify
 
-async def add_item(params: types.AddItem):
+async def put_item(params: types.PutItem):
 
     # set values
     result = None
@@ -12,38 +14,44 @@ async def add_item(params: types.AddItem):
     db.connect()
 
     try:
-        # check id already exists
+
+        # get max turn
+        where = [
+            f'and module="{params.module}"',
+            f'and target_srl={params.target_srl or 0}'
+        ]
         count = db.get_count(
-            table_name = 'app',
-            where = [ f' and id="{params.id}"' ],
+            table_name = 'category',
+            where = where,
         )
-        if count > 0: raise Exception('id already exists')
 
         # set values
         values = {
-            'id': params.id,
-            'name': params.name or '',
-            'description': params.description or '',
+            'target_srl': params.target_srl or 0,
+            'name': params.name,
+            'module': params.module,
+            'turn': count + 1,
         }
 
-        # set keys
+        # set placeholders
         placeholders = [
-            { 'key': 'id', 'value': ':id' },
+            { 'key': 'target_srl', 'value': ':target_srl' },
+            { 'key': 'turn', 'value': ':turn' },
             { 'key': 'name', 'value': ':name' },
-            { 'key': 'description', 'value': ':description' },
+            { 'key': 'module', 'value': ':module' },
             { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
         ]
 
         # add item
         data = db.add_item(
-            table_name = 'app',
+            table_name = 'category',
             placeholders = placeholders,
             values = values,
         )
 
         # set result
         result = output.success({
-            'message': 'Success add item.',
+            'message': 'Success add Category.',
             'data': data,
         })
     except Exception as e:

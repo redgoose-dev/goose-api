@@ -28,7 +28,7 @@ CREATE TABLE `goose_article` (
 -- table `category`
 CREATE TABLE `goose_category` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- category srl
-    `target_srl` INTEGER NOT NULL, -- target srl
+    `target_srl` INTEGER NOT NULL DEFAULT 0, -- target srl (nest or json)
     `turn` INTEGER NOT NULL DEFAULT 0, -- category name
     `name` TEXT NOT NULL, -- category description
     `module` TEXT NOT NULL, -- nest,json
