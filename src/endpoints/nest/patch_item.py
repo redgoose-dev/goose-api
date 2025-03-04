@@ -14,40 +14,48 @@ async def patch_item(params: types.PatchItem):
     db.connect()
 
     try:
+        # check parse json
+        json_data = None
+        if params.json_data: json_data = parse_json(params.json_data)
+
         # set where
-        where = [
-            f'and srl="{params.srl}"',
-        ]
+        where = [ f'srl={params.srl}' ]
 
         # check item
         count = db.get_count(
-            table_name = 'json',
+            table_name = 'nest',
             where = where,
         )
         if count <= 0: raise Exception('Item not found.', 204)
 
-        # check category_srl
-        if params.category_srl:
+        # check app_srl
+        if params.app_srl:
             count = db.get_count(
-                table_name = 'category',
-                where = [ f'srl={params.category_srl}' ]
+                table_name = 'app',
+                where = [ f'srl={params.app_srl}' ],
             )
-            if count <= 0: raise Exception('Category not found.', 455)
+            if count <= 0: raise Exception('Not found App', 409)
+
+        # check code
+        if params.code:
+            count = db.get_count(
+                table_name = 'nest',
+                where = [ f'code="{params.code}"' ],
+            )
+            if count > 0: raise Exception('Exist code in Nest.', 409)
 
         # set values
         values = {}
-        if params.category_srl:
-            values['category_srl'] = params.category_srl
+        if params.app_srl:
+            values['app_srl'] = params.app_srl
+        if params.code:
+            values['code'] = params.code
         if params.name:
             values['name'] = params.name
         if params.description:
             values['description'] = params.description
-        if params.json_data:
-            json_data = parse_json(params.json_data)
+        if json_data:
             values['json'] = json_stringify(json_data, None) or '{}'
-        if params.path:
-            check_url(params.path)
-            values['path'] = params.path
 
         # check values
         if not bool(values):
@@ -55,20 +63,20 @@ async def patch_item(params: types.PatchItem):
 
         # set placeholder
         placeholders = []
-        if 'category_srl' in values and values['category_srl']:
-            placeholders.append('category_srl = :category_srl')
+        if 'app_srl' in values and values['app_srl']:
+            placeholders.append('app_srl = :app_srl')
+        if 'code' in values and values['code']:
+            placeholders.append('code = :code')
         if 'name' in values and values['name']:
             placeholders.append('name = :name')
         if 'description' in values and values['description']:
             placeholders.append('description = :description')
         if 'json' in values and values['json']:
             placeholders.append('json = :json')
-        if 'path' in values and values['path']:
-            placeholders.append('path = :path')
 
         # update item
         db.edit_item(
-            table_name = 'json',
+            table_name = 'nest',
             where = where,
             placeholders = placeholders,
             values = values,
@@ -76,7 +84,7 @@ async def patch_item(params: types.PatchItem):
 
         # set result
         result = output.success({
-            'message': 'Success update JSON.',
+            'message': 'Success update Nest.',
         })
     except Exception as e:
         result = output.exc(e)

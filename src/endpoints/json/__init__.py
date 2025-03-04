@@ -11,7 +11,7 @@ router = APIRouter()
 
 # get json index
 @router.get('/')
-async def _index(
+async def _get_index(
     name: str = Query(None),
     category_srl: int = Query(None, alias='category'),
     fields: str = Query(None),
@@ -32,7 +32,7 @@ async def _index(
 
 # get json
 @router.get('/{srl:int}/')
-async def _item(
+async def _get_item(
     srl: int,
     fields: str = Query(None),
 ):
@@ -80,6 +80,4 @@ async def _patch_item(
 # delete json
 @router.delete('/{srl:int}/')
 async def _delete_item(srl: int):
-    return await delete_item(types.DeleteItem(
-        srl=srl,
-    ))
+    return await delete_item(types.DeleteItem(srl = srl))

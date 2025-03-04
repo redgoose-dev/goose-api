@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Form, Query
 from . import __types__ as types
 from .get_index import get_index
-from .get_item import get_item
 from .put_item import put_item
 from .patch_item import patch_item
 from .patch_change_order import patch_change_order
@@ -32,17 +31,6 @@ async def _get_index(
         size = size,
         order = order,
         sort = sort,
-    ))
-
-# get category item
-@router.get('/{srl:int}/')
-async def _get_item(
-    srl: int,
-    fields: str = Query(None),
-):
-    return await get_item(types.GetItem(
-        srl = srl,
-        fields = fields,
     ))
 
 # add category

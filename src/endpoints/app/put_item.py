@@ -12,23 +12,23 @@ async def add_item(params: types.AddItem):
     db.connect()
 
     try:
-        # check id already exists
+        # check code already exists
         count = db.get_count(
             table_name = 'app',
-            where = [ f' and id="{params.id}"' ],
+            where = [ f' and code LIKE "{params.code}"' ],
         )
-        if count > 0: raise Exception('id already exists')
+        if count > 0: raise Exception('code already exists')
 
         # set values
         values = {
-            'id': params.id,
+            'code': params.code,
             'name': params.name or '',
             'description': params.description or '',
         }
 
         # set keys
         placeholders = [
-            { 'key': 'id', 'value': ':id' },
+            { 'key': 'code', 'value': ':code' },
             { 'key': 'name', 'value': ':name' },
             { 'key': 'description', 'value': ':description' },
             { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },

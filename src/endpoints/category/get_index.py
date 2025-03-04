@@ -4,7 +4,6 @@ from src.libs.db import DB
 from src.libs.string import convert_date
 
 async def get_index(params: types.GetIndex):
-
     # set values
     result = None
 
@@ -32,15 +31,11 @@ async def get_index(params: types.GetIndex):
         )
         if total == 0: raise Exception('No data', 204)
 
-        # set values
-        values = {}
-
         # get index
         index = db.get_items(
             table_name = 'category',
             fields = fields,
             where = where,
-            values = values,
             limit = {
                 'size': params.size,
                 'page': params.page,
@@ -56,6 +51,10 @@ async def get_index(params: types.GetIndex):
             return item
         index = [transform_item(item) for item in index]
 
+        # TODO: 이전 버전에 있는 기능
+        # TODO: - article,json 갯수 가져오기
+        # TODO: - 카테고리 타입 (all,none) 값 가져오기
+
         # set result
         result = output.success({
             'message': 'Success get category index.',
@@ -65,15 +64,7 @@ async def get_index(params: types.GetIndex):
             },
         })
     except Exception as e:
-        match e.args[1] if len(e.args) > 1 else 500:
-            case 204:
-                result = output.empty({
-                    'message': e.args[0],
-                })
-            case _:
-                result = output.error(None, {
-                    'error': e,
-                })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

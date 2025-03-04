@@ -1,5 +1,6 @@
 import re, sqlite3
 from typing import Dict, List, Any
+from src.libs.string import color_text
 
 class DB:
 
@@ -31,10 +32,11 @@ class DB:
 
     @staticmethod
     def __get_field__(fields: list) -> str:
-        return ', '.join(fields) if fields else '*'
+        return ','.join(fields) if fields else '*'
 
     @staticmethod
-    def __get_limit__(src: dict = {}) -> str:
+    def __get_limit__(src: dict = None) -> str:
+        if not src: return ''
         _size = src['size'] if isinstance(src.get('size'), int) else 24
         _page = src['page'] if isinstance(src.get('page'), int) else 1
         _limit = _size if _size > 0 else 24
@@ -43,6 +45,7 @@ class DB:
 
     @staticmethod
     def __get_order__(src: dict = None) -> str:
+        if not src: return ''
         _order = src['order'] if isinstance(src.get('order'), str) else 'srl'
         _sort = src['sort'] if isinstance(src.get('sort'), str) else 'desc'
         return f'ORDER BY {_order} {_sort}'
@@ -63,9 +66,10 @@ class DB:
         table_name: str = None,
         fields: list = None,
         where: list = None,
-        values: dict = None,
+        values: dict = {},
         limit: dict = None,
         order: dict = None,
+        debug: bool = False,
     ) -> list:
         table_name = self.get_table_name(table_name)
         if not table_name: return []
@@ -79,6 +83,9 @@ class DB:
         _limit = self.__get_limit__(limit)
         _order = self.__get_order__(order)
         sql = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
+        if debug:
+            print(color_text(f'[DB_SQL] {sql}', 'yellow'))
+            print(color_text(f'[DB_VALUES] {values}', 'yellow'))
         # execute query
         cursor.execute(sql, values)
         rows = cursor.fetchall()

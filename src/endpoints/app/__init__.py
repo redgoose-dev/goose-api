@@ -12,7 +12,7 @@ router = APIRouter()
 # get apps index
 @router.get('/')
 async def _index(
-    id: str = Query(None),
+    code: str = Query(None),
     name: str = Query(None),
     fields: str = Query(None),
     page: int = Query(1, gt=0),
@@ -21,7 +21,7 @@ async def _index(
     sort: str = Query('desc'),
 ):
     return await get_index(types.GetIndex(
-        id = id,
+        code = code,
         name = name,
         fields = fields,
         page = page,
@@ -31,9 +31,9 @@ async def _index(
     ))
 
 # get app
-@router.get('/{srl:int}/')
+@router.get('/{srl}/')
 async def _item(
-    srl: int,
+    srl: int|str,
     fields: str = Query(None),
 ):
     return await get_item(types.GetItem(
@@ -44,12 +44,12 @@ async def _item(
 # add app
 @router.put('/')
 async def _add_item(
-    id: str = Form(...),
+    code: str = Form(...),
     name: str = Form(...),
     description: str = Form(None),
 ):
     return await add_item(types.AddItem(
-        id = id,
+        code = code,
         name = name,
         description = description,
     ))
@@ -58,22 +58,18 @@ async def _add_item(
 @router.patch('/{srl:int}/')
 async def _patch_item(
     srl: int,
-    id: str = Form(None),
+    code: str = Form(None),
     name: str = Form(None),
     description: str = Form(None),
 ):
     return await patch_item(types.PatchItem(
         srl = srl,
-        id = id,
+        code = code,
         name = name,
         description = description,
     ))
 
 # delete app
 @router.delete('/{srl:int}/')
-async def _delete_item(
-    srl: int,
-):
-    return await delete_item(types.DeleteItem(
-        srl=srl,
-    ))
+async def _delete_item(srl: int):
+    return await delete_item(types.DeleteItem(srl = srl))

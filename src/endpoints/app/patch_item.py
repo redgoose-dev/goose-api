@@ -13,9 +13,7 @@ async def patch_item(params: types.PatchItem):
 
     try:
         # set where
-        where = [
-            f'and srl="{params.srl}"',
-        ]
+        where = [ f'and srl="{params.srl}"' ]
 
         # check item
         count = db.get_count(
@@ -26,8 +24,8 @@ async def patch_item(params: types.PatchItem):
 
         # set values
         values = {}
-        if params.id:
-            values['id'] = params.id
+        if params.code:
+            values['code'] = params.code
         if params.name:
             values['name'] = params.name
         if params.description:
@@ -39,20 +37,20 @@ async def patch_item(params: types.PatchItem):
 
         # set sets
         placeholders = []
-        if 'id' in values and values['id']:
-            placeholders.append('id = :id')
+        if 'code' in values and values['code']:
+            placeholders.append('code = :code')
         if 'name' in values and values['name']:
             placeholders.append('name = :name')
         if 'description' in values and values['description']:
             placeholders.append('description = :description')
 
-        # check exist id
-        if 'id' in values and values['id']:
+        # check exist code
+        if 'code' in values and values['code']:
             count = db.get_count(
-                table_name='app',
-                where=[ f'and id="{values['id']}"' ],
+                table_name = 'app',
+                where = [ f'and code LIKE "{values['code']}"' ],
             )
-            if count > 0: raise Exception('"id" already exists.')
+            if count > 0: raise Exception('"code" already exists.')
 
         # update item
         db.edit_item(

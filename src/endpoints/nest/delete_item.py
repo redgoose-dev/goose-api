@@ -3,7 +3,6 @@ from src import output
 from src.libs.db import DB
 
 async def delete_item(params: types.DeleteItem):
-
     # set values
     result = None
 
@@ -18,24 +17,22 @@ async def delete_item(params: types.DeleteItem):
 
         # check item
         count = db.get_count(
-            table_name = 'app',
+            table_name = 'nest',
             where = where,
         )
         if count == 0: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = 'app',
+            table_name = 'nest',
             where = where,
         )
 
-        # TODO: article, nest 데이터를 어떻게 업데이트할지 고민 필요함.
-        # TODO: 자식 데이터는 삭제하는건 옳지 않다고 본다.
-        # TODO: app_srl 값만 업데이트 하는것으로 처리하는게 최선이지 않을까..
+        # TODO: 연결 되어있는 아티클,카테고리,파일,댓글 데이터 삭제하기
 
         # set result
         result = output.success({
-            'message': 'Success delete App.',
+            'message': 'Success delete Nest.',
         })
     except Exception as e:
         result = output.exc(e)

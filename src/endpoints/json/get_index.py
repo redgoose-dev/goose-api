@@ -33,15 +33,11 @@ async def get_index(params: types.GetIndex):
         )
         if total == 0: raise Exception('No data', 204)
 
-        # set values
-        values = {}
-
         # get index
         index = db.get_items(
             table_name = 'json',
             fields = fields,
             where = where,
-            values = values,
             limit = {
                 'size': params.size,
                 'page': params.page,
@@ -59,7 +55,8 @@ async def get_index(params: types.GetIndex):
             return item
         index = [ transform_item(item) for item in index ]
 
-        # TODO: 전 버전에서는 분류 데이터 이름을 가져오는 기능도 들어있다.
+        # TODO: 전 버전에서는 다음과 같이 추가기능이 있다.
+        # TODO: - 카테고리 목록 가져오기
         # TODO: 전 버전은 ext_field 로 추가 기능을 사용해는데 이번에는 mod 로 해도 좋을거 같다. 좀 짧게..
 
         # set result

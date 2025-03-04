@@ -11,10 +11,6 @@ class GetIndex(BaseModel):
     order: Optional[str] = Field(default='srl')
     sort: Optional[str] = Field(default='desc', pattern=r'^(asc|desc)$')
 
-class GetItem(BaseModel):
-    srl: int
-    fields: Optional[str] = Field(default=None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$')
-
 class PutItem(BaseModel):
     target_srl: Optional[int] = Field(default=0) # nest_srl,None
     name: str

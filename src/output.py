@@ -14,8 +14,18 @@ baseHeaders = {
 ### PRIVATE FUNCTIONS ###
 
 # get header
-def _get_header(src: Dict[str, str]) -> Dict[str, str]:
+def __get_header__(src: Dict[str, str]) -> Dict[str, str]:
     return {**baseHeaders, **src}
+
+# get code
+def __get_code__(options: dict) -> int:
+    if options is None: return 500
+    code = options.get('code', None)
+    if isinstance(code, int): return code
+    if not options.get('error'): return 500
+    if isinstance(options['error'], Exception):
+        return options['error'].args[1] if len(options['error'].args) > 1 else 500
+    return 500
 
 ### PUBLIC FUNCTIONS ###
 
@@ -27,7 +37,7 @@ class ResponseModel(BaseModel):
 # success
 def success(data: Dict|None, options: Dict[str, any] = None) -> LocalJSONResponse:
     status_code = options.get('code', 200) if options else 200
-    headers = _get_header(options.get('headers', {}) if options else {})
+    headers = __get_header__(options.get('headers', {}) if options else {})
     content = {
         **data,
     }
@@ -41,7 +51,7 @@ def success(data: Dict|None, options: Dict[str, any] = None) -> LocalJSONRespons
 # no content
 def empty(options: Dict[str, any] = None) -> Response:
     status_code = options.get('code', 204) if options else 204
-    headers = _get_header(options.get('headers', {}) if options else {})
+    headers = __get_header__(options.get('headers', {}) if options else {})
     return Response(
         status_code = status_code,
         headers = headers,
@@ -50,13 +60,7 @@ def empty(options: Dict[str, any] = None) -> Response:
 # error
 def error(content: str|None, options: Dict[str, any] = None) -> Response:
     # set code
-    code = options.get('code', None) if options else None
-    if code is not None and options.get('error'):
-        if isinstance(options['error'], list) and len(options['error']) > 1:
-            code = options['error'].args[1]
-        elif isinstance(options['error'], dict):
-            code = options['error'].args[1] if len(options['error'].args) > 1 else 500
-    if not code or not isinstance(code, int): code = 500
+    code = __get_code__(options)
     # set headers
     headers = options.get('headers', {}) if options else {}
     # set content
@@ -72,3 +76,15 @@ def error(content: str|None, options: Dict[str, any] = None) -> Response:
         headers = headers,
         content = content or 'Service Error',
     )
+
+# exception
+def exc(e: Exception) -> Response:
+    match e.args[1] if len(e.args) > 1 else 500:
+        case 204:
+            return empty({
+                'message': e.args[0],
+            })
+        case _:
+            return error(None, {
+                'error': e,
+            })

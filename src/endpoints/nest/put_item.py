@@ -15,49 +15,63 @@ async def put_item(params: types.PutItem):
 
     try:
         # check parse json
-        json_data = parse_json(params.json_data)
+        json_data = parse_json(params.json_data) if params.json_data else {}
 
-        # check category_srl
-        # TODO: check exist category data
+        # check app_srl
+        count = db.get_count(
+            table_name = 'app',
+            where = [ f'srl={params.app_srl}' ],
+        )
+        if count <= 0: raise Exception('Not found App', 409)
 
-        # check path
-        if params.path: check_url(params.path)
+        # check code
+        count = db.get_count(
+            table_name = 'nest',
+            where = [ f'code="{params.code}"' ],
+        )
+        if count > 0: raise Exception('Exist code in Nest.', 409)
 
         # set values
         values = {
-            'category_srl': params.category_srl or None,
-            'name': params.name or None,
+            'app_srl': params.app_srl,
+            'code': params.code,
+            'name': params.name,
             'description': params.description or None,
             'json': json_stringify(json_data, None) or '{}',
-            'path': params.path or None,
         }
 
         # set placeholders
         placeholders = [
-            { 'key': 'category_srl', 'value': ':category_srl' },
+            { 'key': 'app_srl', 'value': ':app_srl' },
+            { 'key': 'code', 'value': ':code' },
             { 'key': 'name', 'value': ':name' },
             { 'key': 'description', 'value': ':description' },
             { 'key': 'json', 'value': ':json' },
-            { 'key': 'path', 'value': ':path' },
             { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
         ]
 
         # add item
         data = db.add_item(
-            table_name = 'json',
+            table_name = 'nest',
             placeholders = placeholders,
             values = values,
         )
 
         # set result
         result = output.success({
-            'message': 'Success add JSON.',
+            'message': 'Success add Nest.',
             'data': data,
         })
     except Exception as e:
-        result = output.error(None, {
-            'error': e,
-        })
+        match e.args[1] if len(e.args) > 1 else 500:
+            case 204:
+                result = output.empty({
+                    'message': e.args[0],
+                })
+            case _:
+                result = output.error(None, {
+                    'error': e,
+                })
     finally:
         db.disconnect()
         return result
