@@ -1,7 +1,7 @@
 -- table `app`
 CREATE TABLE `goose_app` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- app srl
-    `id` TEXT NOT NULL UNIQUE, -- app id
+    `code` TEXT NOT NULL UNIQUE, -- app code
     `name` TEXT NULL, -- app name
     `description` TEXT NULL, -- app description
     `created_at` TEXT NOT NULL -- created date
