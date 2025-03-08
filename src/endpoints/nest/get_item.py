@@ -14,6 +14,8 @@ async def get_item(params: types.GetItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set srl
         srl: Optional[int] = None
         code: Optional[str] = None

@@ -12,10 +12,11 @@ async def put_item(params: types.PutItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
 
         # get max turn
         where = [
-            f'and module="{params.module}"',
+            f'and module LIKE "{params.module}"',
             f'and target_srl={params.target_srl or 0}'
         ]
         count = db.get_count(
@@ -53,9 +54,7 @@ async def put_item(params: types.PutItem):
             'data': data,
         })
     except Exception as e:
-        result = output.error(None, {
-            'error': e,
-        })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

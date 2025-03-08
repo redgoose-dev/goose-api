@@ -14,6 +14,8 @@ async def get_index(params: types.GetIndex):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set fields
         fields = params.fields.split(',') if params.fields else None
 

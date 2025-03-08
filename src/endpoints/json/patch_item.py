@@ -14,6 +14,8 @@ async def patch_item(params: types.PatchItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set where
         where = [ f'and srl="{params.srl}"' ]
 

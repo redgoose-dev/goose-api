@@ -12,8 +12,10 @@ async def patch_item(params: types.PatchItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set where
-        where = [ f'and srl="{params.srl}"' ]
+        where = [ f'and srl={params.srl}' ]
 
         # check item
         count = db.get_count(
@@ -65,15 +67,7 @@ async def patch_item(params: types.PatchItem):
             'message': 'Success update App.',
         })
     except Exception as e:
-        match e.args[1] if len(e.args) > 1 else 500:
-            case 204:
-                result = output.empty({
-                    'message': e.args[0],
-                })
-            case _:
-                result = output.error(None, {
-                    'error': e,
-                })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

@@ -12,6 +12,8 @@ async def add_item(params: types.AddItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # check code already exists
         count = db.get_count(
             table_name = Table.APP.value,
@@ -47,9 +49,7 @@ async def add_item(params: types.AddItem):
             'data': data,
         })
     except Exception as e:
-        result = output.error(None, {
-            'error': e,
-        })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

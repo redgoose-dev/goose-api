@@ -13,9 +13,10 @@ async def get_item(params: types.GetItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set where
-        where = []
-        if params.srl: where.append(f'and srl="{params.srl}"')
+        where = [ f'and srl="{params.srl}"' ]
 
         # get data
         data = db.get_item(

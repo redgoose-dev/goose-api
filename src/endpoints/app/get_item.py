@@ -5,6 +5,7 @@ from src.libs.db import DB, Table
 from src.libs.string import convert_date
 
 async def get_item(params: types.GetItem):
+
     # set values
     result = None
 
@@ -13,6 +14,8 @@ async def get_item(params: types.GetItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set srl
         srl: Optional[int] = None
         code: Optional[str] = None
@@ -38,15 +41,7 @@ async def get_item(params: types.GetItem):
             'data': data,
         })
     except Exception as e:
-        match e.args[1] if len(e.args) > 1 else 500:
-            case 204:
-                result = output.empty({
-                    'message': e.args[0],
-                })
-            case _:
-                result = output.error(None, {
-                    'error': e,
-                })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

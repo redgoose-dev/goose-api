@@ -19,6 +19,8 @@ async def put_item(params: types.PutItem):
     path_file = ''
 
     try:
+        # TODO: 인증 검사하기
+
         # check parse json
         json_data = parse_json(params.json_data) if params.json_data else {}
 

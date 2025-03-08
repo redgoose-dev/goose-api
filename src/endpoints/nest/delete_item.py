@@ -11,9 +11,10 @@ async def delete_item(params: types.DeleteItem):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set where
-        where = []
-        if params.srl: where.append(f'and srl={params.srl}')
+        where = [ f'and srl={params.srl}' ]
 
         # check item
         count = db.get_count(

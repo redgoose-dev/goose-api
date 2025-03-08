@@ -14,11 +14,13 @@ async def patch_change_order(params: types.PatchChangeOrder):
     db.connect()
 
     try:
+        # TODO: 인증 검사하기
+
         # set where
         where = []
         # if params.srl: where.append(f'and srl="{params.srl}"')
 
-        #
+        # TODO: 작업하기
 
         # set result
         result = output.success({
@@ -26,15 +28,7 @@ async def patch_change_order(params: types.PatchChangeOrder):
         })
 
     except Exception as e:
-        match e.args[1] if len(e.args) > 1 else 500:
-            case 204:
-                result = output.empty({
-                    'message': e.args[0],
-                })
-            case _:
-                result = output.error(None, {
-                    'error': e,
-                })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result
