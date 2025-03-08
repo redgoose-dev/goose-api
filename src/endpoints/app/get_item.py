@@ -1,7 +1,7 @@
 from typing import Optional
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 from src.libs.string import convert_date
 
 async def get_item(params: types.GetItem):
@@ -26,7 +26,7 @@ async def get_item(params: types.GetItem):
 
         # get item
         data = db.get_item(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = where,
         )
         if not data: raise Exception('Item not found', 204)

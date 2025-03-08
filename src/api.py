@@ -12,6 +12,7 @@ from .endpoints.app import router as app
 from .endpoints.json import router as json
 from .endpoints.category import router as category
 from .endpoints.nest import router as nest
+from .endpoints.file import router as file
 
 # set router
 api = FastAPI()
@@ -60,6 +61,7 @@ api.include_router(category, prefix='/category')
 # comment
 
 # file
+api.include_router(file, prefix='/file')
 
 # json
 api.include_router(json, prefix='/json')

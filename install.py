@@ -6,8 +6,9 @@ from src.libs import string
 installed = False
 resource_path = {
     'data': './data',
-    'data/original': './data/original',
-    'data/cover': './data/cover',
+    'data/upload': './data/upload',
+    'data/upload/origin': './data/upload/origin',
+    'data/upload/cover': './data/upload/cover',
     'data/cache': './data/cache',
     'data/log': './data/log',
     'resource/seed.sql': './resource/seed.sql',
@@ -23,8 +24,9 @@ def checking_install() -> str|None:
     if not is_data_dir: return 'NOT'
     try:
         file.exist_dir(resource_path['data'], True)
-        file.exist_dir(resource_path['data/original'], True)
-        file.exist_dir(resource_path['data/cover'], True)
+        file.exist_dir(resource_path['data/upload'], True)
+        file.exist_dir(resource_path['data/upload/origin'], True)
+        file.exist_dir(resource_path['data/upload/cover'], True)
         file.exist_dir(resource_path['data/cache'], True)
         file.exist_dir(resource_path['data/log'], True)
         file.exist_file(resource_path['data/db.sqlite'], True)
@@ -40,8 +42,9 @@ def checking_install() -> str|None:
 def install_resource():
     print('⏳ Setup resource start.')
     file.create_dir(resource_path['data'])
-    file.create_dir(resource_path['data/original'])
-    file.create_dir(resource_path['data/cover'])
+    file.create_dir(resource_path['data/upload'])
+    file.create_dir(resource_path['data/upload/origin'])
+    file.create_dir(resource_path['data/upload/cover'])
     file.create_dir(resource_path['data/cache'])
     file.create_dir(resource_path['data/log'])
     file.copy_file(resource_path['resource/setting.json'], resource_path['data/setting.json'])

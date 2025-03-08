@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 
 async def delete_item(params: types.DeleteItem):
 
@@ -18,14 +18,14 @@ async def delete_item(params: types.DeleteItem):
 
         # check item
         count = db.get_count(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = where,
         )
         if count == 0: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = where,
         )
 

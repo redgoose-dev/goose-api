@@ -1,8 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
-from src.libs.check import parse_json, check_url
-from src.libs.object import json_stringify
+from src.libs.db import DB, Table
 
 async def delete_item(params: types.DeleteItem):
 
@@ -14,15 +12,29 @@ async def delete_item(params: types.DeleteItem):
     db.connect()
 
     try:
-        print(params)
-        result = {
-            "message": "Category / delete-item",
-        }
+        # set where
+        where = []
+        if params.srl: where.append(f'and srl="{params.srl}"')
 
-    except Exception as e:
-        result = output.error(None, {
-            'error': e,
+        # check item
+        count = db.get_count(
+            table_name = Table.CATEGORY.value,
+            where = where,
+        )
+        if count == 0: raise Exception('Item not found.', 204)
+
+        # delete item
+        db.delete_item(
+            table_name = Table.CATEGORY.value,
+            where = where,
+        )
+
+        # set result
+        result = output.success({
+            'message': 'Success delete Category.',
         })
+    except Exception as e:
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

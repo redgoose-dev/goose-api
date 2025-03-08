@@ -1,22 +1,21 @@
 import re, sqlite3
+from enum import Enum
 from typing import Dict, List, Any
 from src.libs.string import color_text
 
-class DB:
+class Table(Enum):
+    APP = 'goose_app'
+    ARTICLE = 'goose_article'
+    CATEGORY = 'goose_category'
+    CHECKLIST = 'goose_checklist'
+    COMMENT = 'goose_comment'
+    FILE = 'goose_file'
+    JSON = 'goose_json'
+    NEST = 'goose_nest'
+    PROVIDER = 'goose_provider'
+    TOKEN = 'goose_token'
 
-    # table names
-    tables = {
-        'app': 'goose_app',
-        'article': 'goose_article',
-        'category': 'goose_category',
-        'checklist': 'goose_checklist',
-        'comment': 'goose_comment',
-        'file': 'goose_file',
-        'json': 'goose_json',
-        'nest': 'goose_nest',
-        'provider': 'goose_provider',
-        'token': 'goose_token',
-    }
+class DB:
 
     def __init__(self, db_path: str = 'data/db.sqlite'):
         self.file_path = db_path
@@ -50,6 +49,11 @@ class DB:
         _sort = src['sort'] if isinstance(src.get('sort'), str) else 'desc'
         return f'ORDER BY {_order} {_sort}'
 
+    @staticmethod
+    def __check_table_name__(name: str = ''):
+        if not name or name not in Table._value2member_map_:
+            raise Exception('Not found table name.')
+
     def connect(self):
         self.conn = sqlite3.connect(self.file_path)
 
@@ -57,9 +61,6 @@ class DB:
         if self.conn:
             self.conn.close()
             self.conn = None
-
-    def get_table_name(self, name: str = None) -> str|None:
-        return self.tables.get(name, None)
 
     def get_items(
         self,
@@ -71,8 +72,8 @@ class DB:
         order: dict = None,
         debug: bool = False,
     ) -> list:
-        table_name = self.get_table_name(table_name)
-        if not table_name: return []
+        # check table name
+        self.__check_table_name__(table_name)
         # set fields
         fields = self.__get_field__(fields)
         # set row factory
@@ -97,8 +98,8 @@ class DB:
         fields: list = None,
         where: list = None,
     ) -> dict|None:
-        table_name = self.get_table_name(table_name)
-        if not table_name: return None
+        # check table name
+        self.__check_table_name__(table_name)
         # set fields
         fields = self.__get_field__(fields)
         # set cursor
@@ -117,8 +118,8 @@ class DB:
         table_name: str = None,
         where: list = None,
     ) -> int:
-        table_name = self.get_table_name(table_name)
-        if not table_name: return 0
+        # check table name
+        self.__check_table_name__(table_name)
         # set cursor
         cursor = self.conn.cursor()
         # set query
@@ -134,8 +135,9 @@ class DB:
         placeholders: List[Dict[str, Any]] = None,
         values: Dict[str, str] = None,
     ) -> int|None:
-        table_name = self.get_table_name(table_name)
-        if not table_name or not placeholders or not values: return None
+        # check table name
+        self.__check_table_name__(table_name)
+        if not placeholders or not values: return None
         # set cursor
         cursor = self.conn.cursor()
         # set query
@@ -157,8 +159,9 @@ class DB:
         values: dict = None,
         where: list = None,
     ):
-        table_name = self.get_table_name(table_name)
-        if not table_name or not placeholders or not values: return None
+        # check table name
+        self.__check_table_name__(table_name)
+        if not placeholders or not values: return None
         # set cursor
         self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
@@ -175,8 +178,8 @@ class DB:
         table_name: str = None,
         where: list = None,
     ):
-        table_name = self.get_table_name(table_name)
-        if not table_name: return None
+        # check table name
+        self.__check_table_name__(table_name)
         # set cursor
         self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()

@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 from src.libs.string import convert_date
 
 async def get_index(params: types.GetIndex):
@@ -26,14 +26,14 @@ async def get_index(params: types.GetIndex):
 
         # get total
         total = db.get_count(
-            table_name = 'category',
+            table_name = Table.CATEGORY.value,
             where = where,
         )
         if total == 0: raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = 'category',
+            table_name = Table.CATEGORY.value,
             fields = fields,
             where = where,
             limit = {

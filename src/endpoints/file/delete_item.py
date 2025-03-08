@@ -1,8 +1,10 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from .__lib__ import delete_file
 
 async def delete_item(params: types.DeleteItem):
+
     # set values
     result = None
 
@@ -13,30 +15,28 @@ async def delete_item(params: types.DeleteItem):
     try:
         # set where
         where = []
-        if params.srl: where.append(f'and srl={params.srl}')
+        if params.srl: where.append(f'and srl="{params.srl}"')
 
-        # check item
-        count = db.get_count(
-            table_name = Table.NEST.value,
+        # get item
+        item = db.get_item(
+            table_name = Table.FILE.value,
+            fields = [ 'srl', 'path' ],
             where = where,
         )
-        if count == 0: raise Exception('Item not found.', 204)
+        if not item: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = Table.NEST.value,
+            table_name = Table.FILE.value,
             where = where,
         )
 
-        # TODO: 추가로 작업 해야할것들
-        # TODO: - 아티클
-        # TODO: - 카테고리
-        # TODO: - 파일
-        # TODO: - 댓글
+        # delete file
+        delete_file(item['path'])
 
         # set result
         result = output.success({
-            'message': 'Success delete Nest.',
+            'message': 'Success delete File.',
         })
     except Exception as e:
         result = output.exc(e)

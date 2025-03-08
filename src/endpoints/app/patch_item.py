@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 
 async def patch_item(params: types.PatchItem):
 
@@ -17,7 +17,7 @@ async def patch_item(params: types.PatchItem):
 
         # check item
         count = db.get_count(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = where,
         )
         if count == 0: raise Exception('Item not found.', 204)
@@ -47,14 +47,14 @@ async def patch_item(params: types.PatchItem):
         # check exist code
         if 'code' in values and values['code']:
             count = db.get_count(
-                table_name = 'app',
+                table_name = Table.APP.value,
                 where = [ f'and code LIKE "{values['code']}"' ],
             )
             if count > 0: raise Exception('"code" already exists.')
 
         # update item
         db.edit_item(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = where,
             placeholders = placeholders,
             values = values,

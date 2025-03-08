@@ -1,8 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
-from src.libs.check import parse_json, check_url
-from src.libs.object import json_stringify
+from src.libs.db import DB, Table
 
 async def put_item(params: types.PutItem):
 
@@ -21,7 +19,7 @@ async def put_item(params: types.PutItem):
             f'and target_srl={params.target_srl or 0}'
         ]
         count = db.get_count(
-            table_name = 'category',
+            table_name = Table.CATEGORY.value,
             where = where,
         )
 
@@ -44,7 +42,7 @@ async def put_item(params: types.PutItem):
 
         # add item
         data = db.add_item(
-            table_name = 'category',
+            table_name = Table.CATEGORY.value,
             placeholders = placeholders,
             values = values,
         )

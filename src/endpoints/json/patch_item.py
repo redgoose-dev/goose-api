@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 from src.libs.check import parse_json, check_url
 from src.libs.object import json_stringify
 
@@ -15,13 +15,11 @@ async def patch_item(params: types.PatchItem):
 
     try:
         # set where
-        where = [
-            f'and srl="{params.srl}"',
-        ]
+        where = [ f'and srl="{params.srl}"' ]
 
         # check item
         count = db.get_count(
-            table_name = 'json',
+            table_name = Table.JSON.value,
             where = where,
         )
         if count <= 0: raise Exception('Item not found.', 204)
@@ -29,7 +27,7 @@ async def patch_item(params: types.PatchItem):
         # check category_srl
         if params.category_srl:
             count = db.get_count(
-                table_name = 'category',
+                table_name = Table.CATEGORY.value,
                 where = [ f'srl={params.category_srl}' ]
             )
             if count <= 0: raise Exception('Category not found.', 455)
@@ -68,7 +66,7 @@ async def patch_item(params: types.PatchItem):
 
         # update item
         db.edit_item(
-            table_name = 'json',
+            table_name = Table.JSON.value,
             where = where,
             placeholders = placeholders,
             values = values,

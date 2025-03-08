@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 
 async def add_item(params: types.AddItem):
 
@@ -14,7 +14,7 @@ async def add_item(params: types.AddItem):
     try:
         # check code already exists
         count = db.get_count(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = [ f' and code LIKE "{params.code}"' ],
         )
         if count > 0: raise Exception('code already exists')
@@ -36,7 +36,7 @@ async def add_item(params: types.AddItem):
 
         # add item
         data = db.add_item(
-            table_name = 'app',
+            table_name = Table.APP.value,
             placeholders = placeholders,
             values = values,
         )

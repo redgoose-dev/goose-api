@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
+from src.libs.db import DB, Table
 
 async def delete_item(params: types.DeleteItem):
 
@@ -18,14 +18,14 @@ async def delete_item(params: types.DeleteItem):
 
         # check item
         count = db.get_count(
-            table_name = 'json',
+            table_name = Table.JSON.value,
             where = where,
         )
         if count == 0: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = 'json',
+            table_name = Table.JSON.value,
             where = where,
         )
 
@@ -34,15 +34,7 @@ async def delete_item(params: types.DeleteItem):
             'message': 'Success delete JSON.',
         })
     except Exception as e:
-        match e.args[1] if len(e.args) > 1 else 500:
-            case 204:
-                result = output.empty({
-                    'message': e.args[0],
-                })
-            case _:
-                result = output.error(None, {
-                    'error': e,
-                })
+        result = output.exc(e)
     finally:
         db.disconnect()
         return result

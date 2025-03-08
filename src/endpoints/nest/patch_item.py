@@ -1,7 +1,7 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
-from src.libs.check import parse_json, check_url
+from src.libs.db import DB, Table
+from src.libs.check import parse_json
 from src.libs.object import json_stringify
 
 async def patch_item(params: types.PatchItem):
@@ -23,7 +23,7 @@ async def patch_item(params: types.PatchItem):
 
         # check item
         count = db.get_count(
-            table_name = 'nest',
+            table_name = Table.NEST.value,
             where = where,
         )
         if count <= 0: raise Exception('Item not found.', 204)
@@ -31,7 +31,7 @@ async def patch_item(params: types.PatchItem):
         # check app_srl
         if params.app_srl:
             count = db.get_count(
-                table_name = 'app',
+                table_name = Table.APP.value,
                 where = [ f'srl={params.app_srl}' ],
             )
             if count <= 0: raise Exception('Not found App', 409)
@@ -39,7 +39,7 @@ async def patch_item(params: types.PatchItem):
         # check code
         if params.code:
             count = db.get_count(
-                table_name = 'nest',
+                table_name = Table.NEST.value,
                 where = [ f'code="{params.code}"' ],
             )
             if count > 0: raise Exception('Exist code in Nest.', 409)
@@ -76,7 +76,7 @@ async def patch_item(params: types.PatchItem):
 
         # update item
         db.edit_item(
-            table_name = 'nest',
+            table_name = Table.NEST.value,
             where = where,
             placeholders = placeholders,
             values = values,

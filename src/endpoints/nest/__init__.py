@@ -82,4 +82,4 @@ async def _patch_item(
 # get nest
 @router.delete('/{srl:int}/')
 async def _delete_item(srl: int):
-    return await patch_item(types.PatchItem(srl = srl))
+    return await delete_item(types.DeleteItem(srl = srl))

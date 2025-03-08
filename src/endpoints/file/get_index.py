@@ -17,26 +17,26 @@ async def get_index(params: types.GetIndex):
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
-        # set where
+        # ser where
         where = []
-        if params.category_srl is not None:
-            if params.category_srl == 0:
-                where.append(f'and category_srl IS NULL')
-            else:
-                where.append(f'and category_srl={params.category_srl}')
+        if params.module and params.target_srl:
+            where.append(f'and module LIKE "{params.module}"')
+            where.append(f'and target_srl={params.target_srl}')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
+        if params.type:
+            where.append(f'and type LIKE "%{params.type}%"')
 
         # get total
         total = db.get_count(
-            table_name = Table.JSON.value,
+            table_name = Table.FILE.value,
             where = where,
         )
         if total == 0: raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = Table.JSON.value,
+            table_name = Table.FILE.value,
             fields = fields,
             where = where,
             limit = {
@@ -49,20 +49,16 @@ async def get_index(params: types.GetIndex):
             },
         )
         def transform_item(item: dict) -> dict:
-            if 'created_at' in item:
-                item['created_at'] = convert_date(item['created_at'])
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
+            if 'created_at' in item:
+                item['created_at'] = convert_date(item['created_at'])
             return item
-        index = [ transform_item(item) for item in index ]
-
-        # TODO: 전 버전에서는 다음과 같이 추가기능이 있다.
-        # TODO: - 카테고리 목록 가져오기
-        # TODO: 전 버전은 ext_field 로 추가 기능을 사용해는데 이번에는 mod 로 해도 좋을거 같다. 좀 짧게..
+        index = [transform_item(item) for item in index]
 
         # set result
         result = output.success({
-            'message': 'Success get JSON index.',
+            'message': 'Get index.',
             'data': {
                 'total': total,
                 'index': index,

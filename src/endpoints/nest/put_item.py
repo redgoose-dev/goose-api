@@ -1,7 +1,7 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
-from src.libs.check import parse_json, check_url
+from src.libs.db import DB, Table
+from src.libs.check import parse_json
 from src.libs.object import json_stringify
 
 async def put_item(params: types.PutItem):
@@ -19,14 +19,14 @@ async def put_item(params: types.PutItem):
 
         # check app_srl
         count = db.get_count(
-            table_name = 'app',
+            table_name = Table.APP.value,
             where = [ f'srl={params.app_srl}' ],
         )
         if count <= 0: raise Exception('Not found App', 409)
 
         # check code
         count = db.get_count(
-            table_name = 'nest',
+            table_name = Table.NEST.value,
             where = [ f'code="{params.code}"' ],
         )
         if count > 0: raise Exception('Exist code in Nest.', 409)
@@ -52,7 +52,7 @@ async def put_item(params: types.PutItem):
 
         # add item
         data = db.add_item(
-            table_name = 'nest',
+            table_name = Table.NEST.value,
             placeholders = placeholders,
             values = values,
         )

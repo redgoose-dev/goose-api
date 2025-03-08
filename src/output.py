@@ -48,6 +48,17 @@ def success(data: Dict|None, options: Dict[str, any] = None) -> LocalJSONRespons
         indent = options.get('indent', 2) if options else 2,
     )
 
+# buffer
+def buffer(data: Any|None, options: Dict[str,any] = None) -> Response:
+    status_code = options.get('code', 200) if options else 200
+    headers = __get_header__(options.get('headers', {}) if options else {})
+    print(headers)
+    return Response(
+        status_code = status_code,
+        headers = headers,
+        content = data,
+    )
+
 # no content
 def empty(options: Dict[str, any] = None) -> Response:
     status_code = options.get('code', 204) if options else 204
