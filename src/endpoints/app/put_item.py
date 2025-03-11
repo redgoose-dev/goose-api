@@ -33,7 +33,7 @@ async def add_item(params: types.AddItem):
             { 'key': 'code', 'value': ':code' },
             { 'key': 'name', 'value': ':name' },
             { 'key': 'description', 'value': ':description' },
-            { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
+            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
         # add item

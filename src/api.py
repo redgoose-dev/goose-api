@@ -9,10 +9,14 @@ from .output import error
 from .endpoints.options_any import preflight
 from .endpoints.get_home import home
 from .endpoints.app import router as app
+from .endpoints.article import router as article
 from .endpoints.json import router as json
 from .endpoints.category import router as category
 from .endpoints.nest import router as nest
 from .endpoints.file import router as file
+
+# docs
+# - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
 
 # set router
 api = FastAPI()
@@ -27,12 +31,12 @@ async def add_process_time_header(req: Request, call_next):
     start_time = time.time()
     if __DEBUG__:
         now = datetime.now().strftime('%H:%M:%S')
-        print(color_text(f'=== ACTION START {now} ======================', 'cyan'))
+        print(color_text(f'\n***** | START | {now} | [{req.method}] {req.url} | *****', 'cyan'))
     response = await call_next(req)
     process_time = (time.time() - start_time) * 1000
     response.headers['X-Process-Time'] = f'{process_time:.2f} ms'
     if __DEBUG__:
-        print(color_text(f'=== ACTION END {now} ========================', 'cyan'))
+        print(color_text(f'***** | END | {now} | *****', 'cyan'))
     return response
 
 # preflight
@@ -49,16 +53,18 @@ def _home() -> JSONResponse:
 api.include_router(app, prefix='/app')
 
 # article
-# api.include_router(article, prefix='/article')
+api.include_router(article, prefix='/article')
 
 # auth
 
 # category
-
-# checklist
 api.include_router(category, prefix='/category')
 
+# checklist
+# api.include_router(checklist, prefix='/checklist')
+
 # comment
+# api.include_router(comment, prefix='/comment')
 
 # file
 api.include_router(file, prefix='/file')
@@ -90,7 +96,7 @@ async def custom_http_exception_handler(req: Request, exc: StarletteHTTPExceptio
 @api.exception_handler(RequestValidationError)
 async def validation_exception_handler(req: Request, exc: RequestValidationError):
     return error('Validation Error', {
-        'code': 422,
+        'code': 400,
         'method': req.method,
         'path': req.url.path,
         'error': exc.errors(),

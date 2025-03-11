@@ -4,14 +4,14 @@ from src.libs.db import DB, Table
 from src.libs.string import convert_date
 from src.libs.object import json_parse
 
-async def get_index(params: types.GetIndex):
+async def get_index(params: types.GetIndex, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # TODO: 인증 검사하기
@@ -26,8 +26,8 @@ async def get_index(params: types.GetIndex):
             where.append(f'and target_srl={params.target_srl}')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
-        if params.type:
-            where.append(f'and type LIKE "%{params.type}%"')
+        if params.mime:
+            where.append(f'and mime LIKE "%{params.mime}%"')
 
         # get total
         total = db.get_count(
@@ -69,5 +69,5 @@ async def get_index(params: types.GetIndex):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

@@ -41,15 +41,14 @@ async def get_index(params: types.GetIndex):
             table_name = Table.NEST.value,
             fields = fields,
             where = where,
-            limit={
+            limit = {
                 'size': params.size,
                 'page': params.page,
             },
-            order={
+            order = {
                 'order': params.order,
                 'sort': params.sort,
             },
-            debug = True,
         )
         def transform_item(item: dict) -> dict:
             if 'created_at' in item:

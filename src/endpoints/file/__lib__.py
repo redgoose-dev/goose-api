@@ -1,8 +1,8 @@
-import os
+import os, mimetypes
 from datetime import datetime
 from src.libs.string import create_random_string
 
-def get_filename(n: len = 12) -> str:
+def get_unique_name(n: len = 12) -> str:
     current_time = datetime.now().strftime('%Y%m%d%H%M%S')
     unique = create_random_string(n)
     return f'{current_time}-{unique}'
@@ -15,6 +15,15 @@ def get_dir_path() -> str:
     if not os.path.isdir(path):
         os.makedirs(path)
     return path
+
+def get_file_name(path: str) -> str:
+    if not path: return ''
+    return os.path.basename(path)
+
+def get_mime_type(path: str) -> str:
+    mime_type, _ = mimetypes.guess_type(path)
+    if not mime_type: raise Exception('MIME type not found.')
+    return mime_type
 
 def write_file(content: bytes, path: str):
     with open(path, 'wb') as f: f.write(content)

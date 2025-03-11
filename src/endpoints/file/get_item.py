@@ -6,13 +6,13 @@ from src.libs.string import convert_date
 from src.libs.object import json_parse
 from .__lib__ import convert_path_to_buffer
 
-async def get_item(params: types.GetItem):
+async def get_item(params: types.GetItem, _db: DB = None):
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # set srl
@@ -25,7 +25,7 @@ async def get_item(params: types.GetItem):
         # use_cache = True if code is not None else False
         # data = {
         #     'path': None,
-        #     'type': None,
+        #     'mime': None,
         #     'buffer': None,
         # }
 
@@ -52,7 +52,7 @@ async def get_item(params: types.GetItem):
         # set result
         result = output.buffer(buffer, {
             'headers': {
-                'Content-Type': item['type'],
+                'Content-Type': item['mime'],
                 'Content-Length': str(item['size']),
             },
         })
@@ -78,8 +78,8 @@ async def get_item(params: types.GetItem):
                         # TODO: NO? 패스 경로로 가져온다.
                     # TODO: use_cache: YES?
                         # TODO: 캐시 데이터를 만든다.
-                # TODO: data.path, data.type, data.buffer 값 세트
-        # TODO: data.path and data.type이 없다면: YES?
+                # TODO: data.path, data.mime, data.buffer 값 세트
+        # TODO: data.path and data.mime이 없다면: YES?
             # TODO: 파일 데이터가 없다고 예외처리(404)
         # TODO: data.buffer 값이 없다면 output.path 값으로 data.buffer 만든다.
         # TODO: 헤더는 `Content-Type`, `Content-Length` 설정하기
@@ -89,5 +89,5 @@ async def get_item(params: types.GetItem):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

@@ -3,14 +3,14 @@ from src import output
 from src.libs.db import DB, Table
 from .__lib__ import delete_file
 
-async def delete_item(params: types.DeleteItem):
+async def delete_item(params: types.DeleteItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # TODO: 인증 검사하기
@@ -42,5 +42,5 @@ async def delete_item(params: types.DeleteItem):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

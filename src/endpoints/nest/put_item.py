@@ -29,7 +29,7 @@ async def put_item(params: types.PutItem):
         # check code
         count = db.get_count(
             table_name = Table.NEST.value,
-            where = [ f'code="{params.code}"' ],
+            where = [ f'code LIKE "{params.code}"' ],
         )
         if count > 0: raise Exception('Exist code in Nest.', 409)
 
@@ -49,7 +49,7 @@ async def put_item(params: types.PutItem):
             { 'key': 'name', 'value': ':name' },
             { 'key': 'description', 'value': ':description' },
             { 'key': 'json', 'value': ':json' },
-            { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
+            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
         # add item

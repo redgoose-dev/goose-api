@@ -1,4 +1,4 @@
-import re, sqlite3
+import re, os, sqlite3
 from enum import Enum
 from typing import Dict, List, Any
 from src.libs.string import color_text
@@ -20,6 +20,7 @@ class DB:
     def __init__(self, db_path: str = 'data/db.sqlite'):
         self.file_path = db_path
         self.conn = None
+        self.debug = os.getenv('DEBUG') == 'True'
 
     @staticmethod
     def __where_list_to_str__(where: list = None) -> str:
@@ -54,23 +55,28 @@ class DB:
         if not name or name not in Table._value2member_map_:
             raise Exception('Not found table name.')
 
-    def connect(self):
+    def connect(self) -> 'DB':
         self.conn = sqlite3.connect(self.file_path)
+        if self.debug:
+            print(color_text(f'[DB_CONNECT]', 'magenta'))
+        return self
 
     def disconnect(self):
         if self.conn:
             self.conn.close()
             self.conn = None
+            if self.debug:
+                print(color_text(f'[DB_DISCONNECT]', 'magenta'))
 
     def get_items(
         self,
         table_name: str = None,
         fields: list = None,
         where: list = None,
-        values: dict = {},
         limit: dict = None,
         order: dict = None,
-        debug: bool = False,
+        unlimited: bool = False,
+        values: dict = {},
     ) -> list:
         # check table name
         self.__check_table_name__(table_name)
@@ -81,12 +87,13 @@ class DB:
         cursor = self.conn.cursor()
         # set query
         _where = self.__where_list_to_str__(where)
-        _limit = self.__get_limit__(limit)
+        _limit = self.__get_limit__(limit) if not unlimited else ''
         _order = self.__get_order__(order)
         sql = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
-        if debug:
-            print(color_text(f'[DB_SQL] {sql}', 'yellow'))
-            print(color_text(f'[DB_VALUES] {values}', 'yellow'))
+        if self.debug:
+            print(color_text(f'[DB_METHOD] get_items:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {sql}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
         cursor.execute(sql, values)
         rows = cursor.fetchall()
@@ -97,6 +104,7 @@ class DB:
         table_name: str = None,
         fields: list = None,
         where: list = None,
+        values: dict = {},
     ) -> dict|None:
         # check table name
         self.__check_table_name__(table_name)
@@ -108,8 +116,13 @@ class DB:
         # set query
         query = f'SELECT {fields} FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] get_item:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
-        cursor.execute(query)
+        cursor.execute(query, values)
         row = cursor.fetchone()
         return dict(row) if row else None
 
@@ -117,6 +130,7 @@ class DB:
         self,
         table_name: str = None,
         where: list = None,
+        values: dict = {},
     ) -> int:
         # check table name
         self.__check_table_name__(table_name)
@@ -125,15 +139,20 @@ class DB:
         # set query
         query = f'SELECT COUNT(*) FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] get_count:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
-        cursor.execute(query)
+        cursor.execute(query, values)
         return cursor.fetchone()[0]
 
     def add_item(
         self,
         table_name: str = None,
         placeholders: List[Dict[str, Any]] = None,
-        values: Dict[str, str] = None,
+        values: dict = {},
     ) -> int|None:
         # check table name
         self.__check_table_name__(table_name)
@@ -144,6 +163,11 @@ class DB:
         columns = ', '.join([item['key'] for item in placeholders])
         placeholders = ', '.join([item['value'] for item in placeholders])
         query = f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})'
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] add_item:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
         cursor.execute(query, values)
         self.conn.commit()
@@ -152,12 +176,12 @@ class DB:
         # return
         return cursor.fetchone()[0]
 
-    def edit_item(
+    def update_item(
         self,
         table_name: str = None,
         placeholders: list = None,
-        values: dict = None,
         where: list = None,
+        values: dict = {},
     ):
         # check table name
         self.__check_table_name__(table_name)
@@ -169,6 +193,11 @@ class DB:
         placeholders = ', '.join(placeholders) if placeholders else ''
         query = f'UPDATE {table_name} SET {placeholders}'
         if where: query += self.__where_list_to_str__(where)
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] update_item:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
         cursor.execute(query, values)
         self.conn.commit()
@@ -177,6 +206,7 @@ class DB:
         self,
         table_name: str = None,
         where: list = None,
+        values: dict = {},
     ):
         # check table name
         self.__check_table_name__(table_name)
@@ -186,8 +216,13 @@ class DB:
         # set query
         query = f'DELETE FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] delete_item:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
-        cursor.execute(query)
+        cursor.execute(query, values)
         self.conn.commit()
 
     def get_last_id(self) -> int:

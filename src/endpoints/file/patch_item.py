@@ -4,16 +4,16 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.check import parse_json
 from src.libs.object import json_stringify
-from .__lib__ import get_filename, get_dir_path, write_file, delete_file
+from .__lib__ import get_unique_name, get_dir_path, write_file, delete_file
 
-async def patch_item(params: types.PatchItem):
+async def patch_item(params: types.PatchItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     # set base
     path_file = ''
@@ -37,15 +37,16 @@ async def patch_item(params: types.PatchItem):
         # set json
         _json = None
         if params.json_data:
-            _json = {
-                **(parse_json(item['json']) or {}),
-                **parse_json(params.json_data),
-            }
+            _json = parse_json(params.json_data)
+            if 'json' in item:
+                old_json = parse_json(item['json'])
+                if 'width' in old_json: _json['width'] = old_json['width']
+                if 'height' in old_json: _json['height'] = old_json['height']
 
-        # set module ot target_srl
-        if params.module or params.target_srl:
+        # set module ot module_srl
+        if params.module or params.module_srl:
             _module = params.module or item['module']
-            _target_srl = params.target_srl or item['target_srl']
+            _module_srl = params.module_srl or item['module_srl']
             match _module:
                 case 'article': table_name = Table.ARTICLE.value
                 case 'json': table_name = Table.JSON.value
@@ -54,21 +55,22 @@ async def patch_item(params: types.PatchItem):
             if not table_name: raise Exception('Module item not found.', 400)
             count = db.get_count(
                 table_name = table_name,
-                where = [ f'srl={_target_srl}' ],
+                where = [ f'srl={_module_srl}' ],
             )
             if count <= 0: raise Exception('Module item not found.', 400)
             if params.module: values['module'] = params.module
-            if params.target_srl: values['target_srl'] = params.target_srl
+            if params.module_srl: values['module_srl'] = params.module_srl
 
         # set file
         _changed_file = False
         if params.file:
             file_content = await params.file.read() if params.file else None
             if not file_content: raise Exception('File not found.', 400)
-            path_file = f'{get_dir_path()}/{get_filename(8)}'
+            path_file = f'{get_dir_path()}/{get_unique_name(8)}'
             write_file(file_content, path_file)
+            values['name'] = params.file.filename
             values['path'] = path_file
-            values['type'] = params.file.content_type
+            values['mime'] = params.file.content_type
             values['size'] = len(file_content)
             if params.file.content_type.startswith('image/'):
                 image = Image.open(path_file)
@@ -83,27 +85,27 @@ async def patch_item(params: types.PatchItem):
 
         # check values
         if not bool(values):
-            raise Exception('No values to update.', 422)
+            raise Exception('No values to update.', 400)
 
         # set placeholder
         placeholders = []
         if 'module' in values and values['module']:
             placeholders.append('module = :module')
-        if 'target_srl' in values and values['target_srl']:
-            placeholders.append('target_srl = :target_srl')
+        if 'module_srl' in values and values['module_srl']:
+            placeholders.append('module_srl = :module_srl')
         if 'name' in values and values['name']:
             placeholders.append('name = :name')
         if 'path' in values and values['path']:
             placeholders.append('path = :path')
-        if 'type' in values and values['type']:
-            placeholders.append('type = :type')
+        if 'mime' in values and values['mime']:
+            placeholders.append('mime = :mime')
         if 'size' in values and values['size']:
             placeholders.append('size = :size')
-        if 'json' in values and values['json']:
+        if _json:
             placeholders.append('json = :json')
 
         # update item
-        db.edit_item(
+        db.update_item(
             table_name = Table.FILE.value,
             where = where,
             placeholders = placeholders,
@@ -122,6 +124,5 @@ async def patch_item(params: types.PatchItem):
         if path_file: delete_file(path_file)
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result
-

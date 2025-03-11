@@ -35,7 +35,7 @@ async def patch_item(params: types.PatchItem):
 
         # check values
         if not bool(values):
-            raise Exception('No values to update.', 422)
+            raise Exception('No values to update.', 400)
 
         # set sets
         placeholders = []
@@ -55,7 +55,7 @@ async def patch_item(params: types.PatchItem):
             if count > 0: raise Exception('"code" already exists.')
 
         # update item
-        db.edit_item(
+        db.update_item(
             table_name = Table.APP.value,
             where = where,
             placeholders = placeholders,

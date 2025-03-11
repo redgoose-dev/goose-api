@@ -32,15 +32,11 @@ async def get_index(params: types.GetIndex):
         )
         if total == 0: raise Exception('No data', 204)
 
-        # set values
-        values = {}
-
         # get index
         index = db.get_items(
             table_name = Table.APP.value,
             fields = fields,
             where = where,
-            values = values,
             limit = {
                 'size': params.size,
                 'page': params.page,

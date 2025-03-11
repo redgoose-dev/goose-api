@@ -4,16 +4,16 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.check import parse_json
 from src.libs.object import json_stringify
-from .__lib__ import get_filename, get_dir_path, write_file, delete_file
+from .__lib__ import get_unique_name, get_dir_path, write_file, delete_file
 
-async def put_item(params: types.PutItem):
+async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     # set base
     path_file = ''
@@ -29,14 +29,13 @@ async def put_item(params: types.PutItem):
         if not file_content: raise Exception('File not found.', 400)
 
         # print('filename:', params.file.filename)
-        # print('type:', params.file.content_type)
+        # print('mime:', params.file.content_type)
         # print('file_content:', len(file_content))
 
         # TODO: 파일 사이즈 제한 검사
         # TODO: 파일 타입 검사
 
-        # check exist target item
-        where = [ f'and srl={params.target_srl}' ]
+        # check exist module item
         match params.module:
             case 'article': table_name = Table.ARTICLE.value
             case 'json': table_name = Table.JSON.value
@@ -45,12 +44,12 @@ async def put_item(params: types.PutItem):
         if not table_name: raise Exception('Module item not found.', 400)
         count = db.get_count(
             table_name = table_name,
-            where = where,
+            where = [ f'and srl={params.module_srl}' ],
         )
         if count <= 0: raise Exception('Module item not found.', 400)
 
         # make path
-        path_file = f'{get_dir_path()}/{get_filename(8)}'
+        path_file = f'{get_dir_path()}/{get_unique_name(8)}'
 
         # copy file
         write_file(file_content, path_file)
@@ -64,10 +63,10 @@ async def put_item(params: types.PutItem):
 
         # set values
         values = {
-            'target_srl': params.target_srl,
+            'module_srl': params.module_srl,
             'name': params.file.filename,
             'path': path_file,
-            'type': params.file.content_type,
+            'mime': params.file.content_type,
             'size': len(file_content),
             'json': json_stringify(json_data),
             'module': params.module,
@@ -75,14 +74,14 @@ async def put_item(params: types.PutItem):
 
         # set placeholders
         placeholders = [
-            {'key': 'target_srl', 'value': ':target_srl'},
+            {'key': 'module_srl', 'value': ':module_srl'},
             {'key': 'name', 'value': ':name'},
             {'key': 'path', 'value': ':path'},
-            {'key': 'type', 'value': ':type'},
+            {'key': 'mime', 'value': ':mime'},
             {'key': 'size', 'value': ':size'},
             {'key': 'json', 'value': ':json'},
             {'key': 'module', 'value': ':module'},
-            {'key': 'created_at', 'value': 'CURRENT_TIMESTAMP'},
+            {'key': 'created_at', 'value': 'DATETIME("now", "localtime")'},
         ]
 
         # add item
@@ -101,5 +100,5 @@ async def put_item(params: types.PutItem):
         if path_file: delete_file(path_file)
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

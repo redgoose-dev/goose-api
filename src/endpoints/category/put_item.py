@@ -38,7 +38,7 @@ async def put_item(params: types.PutItem):
             { 'key': 'turn', 'value': ':turn' },
             { 'key': 'name', 'value': ':name' },
             { 'key': 'module', 'value': ':module' },
-            { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
+            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
         # add item

@@ -41,7 +41,7 @@ async def put_item(params: types.PutItem):
             { 'key': 'description', 'value': ':description' },
             { 'key': 'json', 'value': ':json' },
             { 'key': 'path', 'value': ':path' },
-            { 'key': 'created_at', 'value': 'CURRENT_TIMESTAMP' },
+            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
         # add item

@@ -51,7 +51,7 @@ async def patch_item(params: types.PatchItem):
 
         # check values
         if not bool(values):
-            raise Exception('No values to update.', 422)
+            raise Exception('No values to update.', 400)
 
         # set placeholder
         placeholders = []
@@ -67,7 +67,7 @@ async def patch_item(params: types.PatchItem):
             placeholders.append('path = :path')
 
         # update item
-        db.edit_item(
+        db.update_item(
             table_name = Table.JSON.value,
             where = where,
             placeholders = placeholders,

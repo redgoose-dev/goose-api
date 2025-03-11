@@ -18,6 +18,22 @@ def color_text(text: str, color: str = 'reset') -> str:
     }
     return f'{colors[color]}{text}{colors['reset']}'
 
+def get_date() -> str:
+    timezone = os.getenv('TIMEZONE')
+    date = datetime.now(pytz.timezone(timezone))
+    return date.strftime('%Y-%m-%d %H:%M:%S')
+
+def date_format(date: str = None, pattern: str = '%Y-%m-%d %H:%M:%S') -> str:
+    if not date: return ''
+    try:
+        timezone = os.getenv('TIMEZONE')
+        date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        local_timezone = pytz.timezone(timezone)
+        local_date = date.astimezone(local_timezone)
+        return local_date.strftime(pattern)
+    except:
+        return ''
+
 def convert_date(date: str = None) -> str:
     if not date: return ''
     try:
