@@ -2,28 +2,29 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class GetIndex(BaseModel):
-    code: Optional[str] = Field(default=None)
-    name: Optional[str] = Field(default=None)
-    fields: Optional[str] = Field(default=None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$')
-    page: Optional[int] = Field(default=1)
-    size: Optional[int] = Field(default=None)
-    order: Optional[str] = Field(default='srl')
-    sort: Optional[str] = Field(default='desc', pattern=r'^(asc|desc)$')
+    code: Optional[str]
+    name: Optional[str]
+    fields: Optional[str]
+    page: Optional[int]
+    size: Optional[int]
+    order: Optional[str]
+    sort: Optional[str]
+    unlimited: Optional[bool]
 
 class GetItem(BaseModel):
     srl: int|str
-    fields: Optional[str] = Field(default=None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$')
+    fields: Optional[str]
 
 class AddItem(BaseModel):
     code: str
     name: str
-    description: Optional[str] = Field(default=None)
+    description: Optional[str]
 
 class PatchItem(BaseModel):
     srl: int
-    code: Optional[str] = Field(default=None)
-    name: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
+    code: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
 
 class DeleteItem(BaseModel):
     srl: int

@@ -2,14 +2,14 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 
-async def add_item(params: types.AddItem):
+async def put_item(params: types.AddItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # TODO: 인증 검사하기
@@ -24,7 +24,7 @@ async def add_item(params: types.AddItem):
         # set values
         values = {
             'code': params.code,
-            'name': params.name or '',
+            'name': params.name,
             'description': params.description or '',
         }
 
@@ -51,5 +51,5 @@ async def add_item(params: types.AddItem):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

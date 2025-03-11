@@ -55,6 +55,10 @@ class DB:
         if not name or name not in Table._value2member_map_:
             raise Exception('Not found table name.')
 
+    @staticmethod
+    def __optimize_query__(query: str) -> str:
+        return re.sub(r'\s{2,}', ' ', query).strip()
+
     def connect(self) -> 'DB':
         self.conn = sqlite3.connect(self.file_path)
         if self.debug:
@@ -89,13 +93,14 @@ class DB:
         _where = self.__where_list_to_str__(where)
         _limit = self.__get_limit__(limit) if not unlimited else ''
         _order = self.__get_order__(order)
-        sql = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
+        query = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
+        query = self.__optimize_query__(query)
         if self.debug:
             print(color_text(f'[DB_METHOD] get_items:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {sql}', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
-        cursor.execute(sql, values)
+        cursor.execute(query, values)
         rows = cursor.fetchall()
         return [ dict(row) for row in rows ]
 
@@ -116,6 +121,7 @@ class DB:
         # set query
         query = f'SELECT {fields} FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        query = self.__optimize_query__(query)
         # print debug
         if self.debug:
             print(color_text(f'[DB_METHOD] get_item:', 'magenta'))
@@ -139,6 +145,7 @@ class DB:
         # set query
         query = f'SELECT COUNT(*) FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        query = self.__optimize_query__(query)
         # print debug
         if self.debug:
             print(color_text(f'[DB_METHOD] get_count:', 'magenta'))
@@ -163,6 +170,7 @@ class DB:
         columns = ', '.join([item['key'] for item in placeholders])
         placeholders = ', '.join([item['value'] for item in placeholders])
         query = f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})'
+        query = self.__optimize_query__(query)
         # print debug
         if self.debug:
             print(color_text(f'[DB_METHOD] add_item:', 'magenta'))
@@ -193,6 +201,7 @@ class DB:
         placeholders = ', '.join(placeholders) if placeholders else ''
         query = f'UPDATE {table_name} SET {placeholders}'
         if where: query += self.__where_list_to_str__(where)
+        query = self.__optimize_query__(query)
         # print debug
         if self.debug:
             print(color_text(f'[DB_METHOD] update_item:', 'magenta'))
@@ -216,6 +225,7 @@ class DB:
         # set query
         query = f'DELETE FROM {table_name}'
         if where: query += self.__where_list_to_str__(where)
+        query = self.__optimize_query__(query)
         # print debug
         if self.debug:
             print(color_text(f'[DB_METHOD] delete_item:', 'magenta'))
@@ -230,4 +240,3 @@ class DB:
         cursor.execute('SELECT last_insert_rowid()')
         last_id = cursor.fetchone()[0]
         return last_id
-

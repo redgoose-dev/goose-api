@@ -2,7 +2,7 @@ from fastapi import APIRouter, Form, Query
 from . import __types__ as types
 from .get_index import get_index
 from .get_item import get_item
-from .put_item import add_item
+from .put_item import put_item
 from .patch_item import patch_item
 from .delete_item import delete_item
 
@@ -14,11 +14,12 @@ router = APIRouter()
 async def _index(
     code: str = Query(None),
     name: str = Query(None),
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
-    sort: str = Query('desc'),
+    sort: str = Query('desc', pattern=r'^(asc|desc)$'),
+    unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
         code = code,
@@ -28,13 +29,14 @@ async def _index(
         size = size,
         order = order,
         sort = sort,
+        unlimited = unlimited,
     ))
 
 # get app
 @router.get('/{srl}/')
 async def _item(
     srl: int|str,
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
 ):
     return await get_item(types.GetItem(
         srl = srl,
@@ -43,12 +45,12 @@ async def _item(
 
 # add app
 @router.put('/')
-async def _add_item(
+async def _put_item(
     code: str = Form(...),
     name: str = Form(...),
     description: str = Form(None),
 ):
-    return await add_item(types.AddItem(
+    return await put_item(types.AddItem(
         code = code,
         name = name,
         description = description,

@@ -69,15 +69,25 @@ def delete_item(srl: int):
     res = client.delete(f'/file/{srl}/')
     assert res.status_code == 200
 
-
 def test_basic():
-    # TODO: 아티클 목록을 가져와서 한개를 가져와서 module_srl 값에 넣는다.
+    # get article_srl
+    articles = client.get('/article/', params = {
+        'fields': 'srl',
+        'page': 1,
+        'size': 1,
+    })
+    assert articles.status_code == 200
+    json = articles.json()
+    assert 'data' in json
+    assert 'index' in json['data']
+    assert len(json['data']['index']) > 0
+    article_srl = json['data']['index'][0]['srl']
     # 파일 추가하기
     path = '/Users/goose/Pictures/scrap/character/h38c.jpg'
     srl = put_item(
         data = {
             'module': 'article',
-            'module_srl': 1,
+            'module_srl': article_srl,
             'json': '{ "FOO": "BAR" }',
         },
         files = {
@@ -94,7 +104,7 @@ def test_basic():
         srl = srl,
         data = {
             'module': 'article',
-            'module_srl': 1,
+            'module_srl': article_srl,
             'json': '{ "123": "4567" }',
         },
         files = {

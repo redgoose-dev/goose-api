@@ -21,9 +21,9 @@ async def get_index(params: types.GetIndex, _db: DB = None):
 
         # ser where
         where = []
-        if params.module and params.target_srl:
+        if params.module and params.module_srl:
             where.append(f'and module LIKE "{params.module}"')
-            where.append(f'and target_srl={params.target_srl}')
+            where.append(f'and module_srl={params.module_srl}')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
         if params.mime:

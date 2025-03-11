@@ -20,20 +20,21 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
             table_name = Table.ARTICLE.value,
             where = [ f'srl={params.srl}' ],
         )
+        if not item: raise Exception('Item not found', 204)
 
         # delete item
-        # db.delete_item(
-        #     table_name = Table.ARTICLE.value,
-        #     where = [ f'srl={params.srl}' ],
-        # )
+        db.delete_item(
+            table_name = Table.ARTICLE.value,
+            where = [ f'srl={params.srl}' ],
+        )
 
         # delete file
         files = db.get_items(
             table_name = Table.FILE.value,
             fields = [ 'srl', 'path' ],
             where = [
-                f'and target_srl={params.srl}',
                 'and module LIKE "article"',
+                f'and module_srl={params.srl}',
             ],
         )
         if files and len(files) > 0:
@@ -42,13 +43,13 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
             db.delete_item(
                 table_name = Table.FILE.value,
                 where = [
-                    f'and target_srl={params.srl}',
                     'and module LIKE "article"',
+                    f'and module_srl={params.srl}',
                 ],
             )
 
         # delete comment
-        # TODO
+        # TODO: 연결되어있는 댓글 모두 삭제하기
 
         # set result
         result = output.success({

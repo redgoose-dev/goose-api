@@ -93,6 +93,8 @@ async def get_index(params: types.GetIndex, _db: DB = None):
             unlimited = params.unlimited,
             values = values,
         )
+        # TODO: mod - 카테고리 이름 가져오기
+        # TODO: mod - 둥지 이름 가져오기
 
         # set result
         result = output.success({

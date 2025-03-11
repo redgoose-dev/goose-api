@@ -5,14 +5,14 @@ from src.libs.db import DB, Table
 # 아티클 추가
 # 여기서는 mode=ready 상태의 빈 아티클만 추가한다.
 
-async def put_item(params: types.PutItem):
+async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # TODO: 인증 검사하기
@@ -38,8 +38,7 @@ async def put_item(params: types.PutItem):
             'data': data,
         })
     except Exception as e:
-        print('ERR', e)
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

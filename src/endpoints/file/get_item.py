@@ -69,7 +69,7 @@ async def get_item(params: types.GetItem, _db: DB = None):
             # TODO: DB에서 데이터를 가져온다. 있다면:
                 # TODO: NO? 데이터가 없으니 예외처리(404)
                 # TODO: item.path 파일이 없다면? 예외처리 (404)
-            # TODO: module, target_srl 값이 있다면: DB에서 부모 데이터 가져온다?
+            # TODO: module, module_srl 값이 있다면: DB에서 부모 데이터 가져온다?
                 # TODO: YES? 데이터의 상태를 알아본다:
                     # TODO: 비공개 데이터: YES?
                         # TODO: 인증 검사하고 허용 안되면 예외처리(403)

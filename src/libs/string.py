@@ -1,5 +1,5 @@
 import os, secrets, string, pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def create_random_string(length: int) -> str:
     letters = string.ascii_letters + string.digits
@@ -24,7 +24,7 @@ def get_date() -> str:
     return date.strftime('%Y-%m-%d %H:%M:%S')
 
 def date_format(date: str = None, pattern: str = '%Y-%m-%d %H:%M:%S') -> str:
-    if not date: return ''
+    if not date: date = get_date()
     try:
         timezone = os.getenv('TIMEZONE')
         date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
@@ -34,6 +34,7 @@ def date_format(date: str = None, pattern: str = '%Y-%m-%d %H:%M:%S') -> str:
     except:
         return ''
 
+# TODO: 삭제할 예정이다.
 def convert_date(date: str = None) -> str:
     if not date: return ''
     try:
@@ -43,6 +44,19 @@ def convert_date(date: str = None) -> str:
         local_timezone = pytz.timezone(timezone)
         local_date = date_utc.astimezone(local_timezone)
         return local_date.strftime('%Y-%m-%d %H:%M:%S')
+    except:
+        return ''
+
+# 날짜를 x일 앞으로 또는 뒤로 이동한다.
+def date_shift(date: str = None, tomorrow: bool = True, day: int = 1) -> str:
+    if not date: return ''
+    try:
+        date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        if tomorrow:
+            shifted_date = date + timedelta(days=day)
+        else:
+            shifted_date = date - timedelta(days=day)
+        return shifted_date.strftime('%Y-%m-%d %H:%M:%S')
     except:
         return ''
 

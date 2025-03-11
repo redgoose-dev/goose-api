@@ -6,6 +6,8 @@ from .put_item import put_item
 from .patch_item import patch_item
 from .delete_item import delete_item
 
+# TODO: 테스트와 개선작업 필요함
+
 # set router
 router = APIRouter()
 

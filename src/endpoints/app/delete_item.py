@@ -2,14 +2,14 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 
-async def delete_item(params: types.DeleteItem):
+async def delete_item(params: types.DeleteItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
         # TODO: 인증 검사하기
@@ -30,9 +30,21 @@ async def delete_item(params: types.DeleteItem):
             where = where,
         )
 
-        # TODO: article, nest 데이터를 어떻게 업데이트할지 고민 필요함.
-        # TODO: 자식 데이터는 삭제하는건 옳지 않다고 본다.
-        # TODO: app_srl 값만 업데이트 하는것으로 처리하는게 최선이지 않을까..
+        # update nest
+        db.update_item(
+            table_name = Table.NEST.value,
+            where = [ f'app_srl={params.srl}' ],
+            placeholders = ['app_srl = :app_srl'],
+            values = { 'app_srl': None },
+        )
+
+        # update article
+        db.update_item(
+            table_name = Table.ARTICLE.value,
+            where = [ f'app_srl={params.srl}' ],
+            placeholders = [ 'app_srl = :app_srl' ],
+            values = { 'app_srl': None },
+        )
 
         # set result
         result = output.success({
@@ -41,5 +53,5 @@ async def delete_item(params: types.DeleteItem):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

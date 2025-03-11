@@ -1,24 +1,45 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
+from src.libs.object import json_parse
 
-async def get_item(params: types.GetItem):
+async def get_item(params: types.GetItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
-
-    print('PARAMS: ', params)
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-        pass
+        # set fields
+        fields = params.fields.split(',') if params.fields else None
+
+        # set where
+        where = [ f'and srl = {params.srl}' ]
+        if params.mode: where.append(f'and mode LIKE "{params.mode}"')
+
+        # set data
+        data = db.get_item(
+            table_name = Table.ARTICLE.value,
+            fields = fields,
+            where = where,
+        )
+        if data and isinstance(data, dict):
+            if 'json' in data: data['json'] = json_parse(data['json'])
+
+        # TODO: mod - 카테고리 이름 가져오기
+        # TODO: mod - 네스트 이름 가져오기
+        # TODO: mod - 조회수 올리기
+
+        # set result
+        result = output.success({
+            'message': 'Success get Article item.',
+            'data': data,
+        })
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

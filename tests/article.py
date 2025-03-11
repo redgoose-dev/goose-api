@@ -1,12 +1,14 @@
-from typing import Any, Dict
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from src.libs.string import create_random_string
+from src.libs.string import create_random_string, date_format, get_date, date_shift
 
 client = TestClient(app)
 
-def get_index(params: Dict = {}) -> Dict:
+def pytest_addoption(parser):
+    parser.addoption("--foo", action="store", default="default_value", help="foo parameter")
+
+def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/article/',
         params = params,
@@ -16,6 +18,13 @@ def get_index(params: Dict = {}) -> Dict:
     assert 'data' in json and isinstance(json.get('data'), dict)
     assert 'total' in json['data'] and isinstance(json['data']['total'], int)
     assert 'index' in json['data'] and isinstance(json['data']['index'], list)
+    return json['data']['index']
+
+def get_item(srl: int = None, params: dict = {}) -> dict:
+    res = client.get(f'/article/{srl}/', params = params)
+    assert res.status_code == 200
+    json = res.json()
+    assert 'data' in json
     return json['data']
 
 def put_item() -> int|None:
@@ -25,7 +34,7 @@ def put_item() -> int|None:
     assert 'data' in json and isinstance(json.get('data'), int)
     return json.get('data')
 
-def patch_item(srl: int, data: Dict = {}):
+def patch_item(srl: int, data: dict = {}):
     if not srl: raise Exception('srl not found.')
     res = client.patch(
         url = f'/article/{srl}/',
@@ -38,40 +47,42 @@ def delete_item(srl: int):
     res = client.delete(f'/article/{srl}/')
     assert res.status_code == 200
 
-def test_basic():
-    # # add item
-    # srl = put_item()
-    # # update item
-    # patch_item(srl, {
-    #     # 'app': 1,
-    #     # 'nest': 1,
-    #     # 'category': 1,
-    #     'title': 'TITLE',
-    #     'content': 'CONTENT',
-    #     'hit': True,
-    #     'star': False,
-    #     'json': '{"FOO":"BAR"}',
-    #     'mode': 'public',
-    #     'regdate': '2024-10-04',
-    # })
-    # get index
-    index = get_index({
-        'fields': 'srl',
-        # 'q': 'TITLE',
-        # 'mode': 'public',
-        # 'duration': 'new,created_at,day,now',
-        # 'random': 22252315,
-        # 'order': 'srl',
-        # 'sort': 'asc',
-        'unlimited': False,
-    })
-    # get item
-    # TODO: 이 부분부터 작업해야한다.
-    # delete item
+@pytest.mark.skip
+def test_working():
+    delete_item(1245)
 
-def test_many_make_items():
+# @pytest.mark.skip
+def test_add_update_delete_item():
     # add item
-    for i in range(100):
+    srl = put_item()
+    # update item
+    patch_item(srl, {
+        # 'app': 1,
+        # 'nest': 1,
+        # 'category': 1,
+        'title': 'TITLE',
+        'content': 'EDITED CONTENT',
+        'hit': True,
+        'star': False,
+        'json': '{"FOO":"BAR"}',
+        'mode': 'public',
+        'regdate': '2024-10-04',
+    })
+    # delete item
+    delete_item(srl)
+
+# @pytest.mark.skip
+def test_get_items():
+    index = get_index()
+    assert isinstance(index, list) and len(index) > 0
+    get_item(index[0]['srl'])
+
+@pytest.mark.skip
+def test_add_items(request):
+    count: int = int(request.config.getoption('--foo') or 10)
+    date = get_date()
+    for i in range(count):
+        new_date = date_format(date_shift(date, tomorrow=False, day=i), '%Y-%m-%d')
         srl = put_item()
         patch_item(srl, {
             # 'app': 1,
@@ -83,5 +94,5 @@ def test_many_make_items():
             'star': True,
             'json': '{"FOO":"BAR"}',
             'mode': 'public',
-            'regdate': '2024-10-04',
+            'regdate': new_date,
         })

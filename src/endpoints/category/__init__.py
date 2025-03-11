@@ -9,6 +9,8 @@ from .delete_item import delete_item
 # set router
 router = APIRouter()
 
+# TODO: 테스트와 개선작업 필요함
+
 # get categories index
 @router.get('/')
 async def _get_index(

@@ -1,20 +1,17 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
 
-async def get_index(params: types.GetIndex):
+async def get_index(params: types.GetIndex, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
@@ -46,18 +43,16 @@ async def get_index(params: types.GetIndex):
                 'sort': params.sort,
             },
         )
-        def transform_item(item: dict) -> dict:
-            return {
-                **item,
-                'created_at': convert_date(item['created_at']),
-            }
-        index = [ transform_item(item) for item in index ]
+        # def transform_item(item: dict) -> dict:
+        #     new_item = { **item }
+        #     return new_item
+        # index = [ transform_item(item) for item in index ]
 
-        # TODO: 이전 버전에서는 nest 데이터 갯수도 포함
+        # TODO: mod - nest 데이터 갯수
 
         # set result
         result = output.success({
-            'message': 'Success get items index.',
+            'message': 'Success get App index.',
             'data': {
                 'total': total,
                 'index': index,
@@ -66,5 +61,5 @@ async def get_index(params: types.GetIndex):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result
