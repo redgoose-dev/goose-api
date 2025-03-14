@@ -1,22 +1,18 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
 from src.libs.object import json_parse
 
-async def get_index(params: types.GetIndex):
-    print('PARAMS:', params)
+async def get_index(params: types.GetIndex, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
@@ -49,22 +45,20 @@ async def get_index(params: types.GetIndex):
                 'order': params.order,
                 'sort': params.sort,
             },
+            unlimited = params.unlimited,
         )
         def transform_item(item: dict) -> dict:
-            if 'created_at' in item:
-                item['created_at'] = convert_date(item['created_at'])
-            if 'json' in item:
+            if 'json' in item and item['json']:
                 item['json'] = json_parse(item['json'])
             return item
         index = [transform_item(item) for item in index]
 
-        # TODO: 이전 버전에서는 다음과 같이 추가기능이 있다.
-        # TODO: - 아티클 갯수 가져오기
-        # TODO: - 앱 이름 가져오기
+        # TODO: mod - 아티클 갯수 가져오기
+        # TODO: mod - 앱 이름 가져오기
 
         # set result
         result = output.success({
-            'message': 'Success get nest index.',
+            'message': 'Complete get nest index.',
             'data': {
                 'total': total,
                 'index': index,
@@ -73,5 +67,5 @@ async def get_index(params: types.GetIndex):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

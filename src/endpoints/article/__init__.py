@@ -47,12 +47,10 @@ async def _get_index(
 async def _get_item(
     srl: int,
     fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
-    mode: str = Query(None, pattern=r'^(public|private)$'),
 ):
     return await get_item(types.GetItem(
         srl = srl,
         fields = fields,
-        mode = mode,
     ))
 
 # add article

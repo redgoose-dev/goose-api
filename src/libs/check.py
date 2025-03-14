@@ -1,5 +1,6 @@
 import json
 
+# TODO: 안쓸거 같은데..
 def parse_json(json_text: str) -> dict:
     try:
         return json.loads(json_text)

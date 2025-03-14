@@ -61,6 +61,7 @@ class DB:
 
     def connect(self) -> 'DB':
         self.conn = sqlite3.connect(self.file_path)
+        self.conn.row_factory = sqlite3.Row
         if self.debug:
             print(color_text(f'[DB_CONNECT]', 'magenta'))
         return self
@@ -87,7 +88,7 @@ class DB:
         # set fields
         fields = self.__get_field__(fields)
         # set row factory
-        self.conn.row_factory = sqlite3.Row
+
         cursor = self.conn.cursor()
         # set query
         _where = self.__where_list_to_str__(where)
@@ -116,7 +117,6 @@ class DB:
         # set fields
         fields = self.__get_field__(fields)
         # set cursor
-        self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
         # set query
         query = f'SELECT {fields} FROM {table_name}'
@@ -195,7 +195,6 @@ class DB:
         self.__check_table_name__(table_name)
         if not placeholders or not values: return None
         # set cursor
-        self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
         # set query
         placeholders = ', '.join(placeholders) if placeholders else ''
@@ -220,7 +219,6 @@ class DB:
         # check table name
         self.__check_table_name__(table_name)
         # set cursor
-        self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
         # set query
         query = f'DELETE FROM {table_name}'
@@ -240,3 +238,16 @@ class DB:
         cursor.execute('SELECT last_insert_rowid()')
         last_id = cursor.fetchone()[0]
         return last_id
+
+    def query(self, query: str = '', values: dict = {}) -> dict:
+        # set cursor
+        cursor = self.conn.cursor()
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] run_query:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+        # execute query
+        cursor.execute(query, values)
+        self.conn.commit()
+        return cursor

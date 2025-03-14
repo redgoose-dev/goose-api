@@ -16,15 +16,11 @@ async def get_item(params: types.GetItem, _db: DB = None):
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
-        # set where
-        where = [ f'and srl = {params.srl}' ]
-        if params.mode: where.append(f'and mode LIKE "{params.mode}"')
-
         # set data
         data = db.get_item(
             table_name = Table.ARTICLE.value,
             fields = fields,
-            where = where,
+            where = [ f'and srl = {params.srl}' ],
         )
         if data and isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
@@ -35,7 +31,7 @@ async def get_item(params: types.GetItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Success get Article item.',
+            'message': 'Complete get Article item.',
             'data': data,
         })
     except Exception as e:

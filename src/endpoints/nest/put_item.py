@@ -4,34 +4,32 @@ from src.libs.db import DB, Table
 from src.libs.check import parse_json
 from src.libs.object import json_stringify
 
-async def put_item(params: types.PutItem):
+async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # check parse json
         json_data = parse_json(params.json_data) if params.json_data else {}
 
         # check app_srl
         count = db.get_count(
             table_name = Table.APP.value,
-            where = [ f'srl={params.app_srl}' ],
+            where = [ f'srl = {params.app_srl}' ],
         )
-        if count <= 0: raise Exception('Not found App', 409)
+        if count <= 0: raise Exception('Not found App', 400)
 
         # check code
         count = db.get_count(
             table_name = Table.NEST.value,
             where = [ f'code LIKE "{params.code}"' ],
         )
-        if count > 0: raise Exception('Exist code in Nest.', 409)
+        if count > 0: raise Exception('Exist code in Nest.', 400)
 
         # set values
         values = {
@@ -61,11 +59,11 @@ async def put_item(params: types.PutItem):
 
         # set result
         result = output.success({
-            'message': 'Success add Nest.',
+            'message': 'Complete add Nest.',
             'data': data,
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

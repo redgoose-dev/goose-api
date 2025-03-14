@@ -19,7 +19,6 @@ class GetIndex(BaseModel):
 class GetItem(BaseModel):
     srl: int
     fields: Optional[str]
-    mode: Optional[str]
 
 class PutItem(BaseModel):
     pass

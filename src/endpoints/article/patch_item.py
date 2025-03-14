@@ -3,21 +3,18 @@ from datetime import datetime
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import get_date, date_format
 from src.libs.object import json_parse, json_stringify
 
-async def patch_item(params: types.PatchItem):
+async def patch_item(params: types.PatchItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # get item
         item = db.get_item(
             table_name = Table.ARTICLE.value,
@@ -91,25 +88,25 @@ async def patch_item(params: types.PatchItem):
 
         # set placeholders
         placeholders = []
-        if 'app_srl' in values and values['app_srl']:
+        if 'app_srl' in values:
             placeholders.append('app_srl = :app_srl')
-        if 'nest_srl' in values and values['nest_srl']:
+        if 'nest_srl' in values:
             placeholders.append('nest_srl = :nest_srl')
-        if 'category_srl' in values and values['category_srl']:
+        if 'category_srl' in values:
             placeholders.append('category_srl = :category_srl')
-        if 'title' in values and values['title']:
+        if 'title' in values:
             placeholders.append('title = :title')
-        if 'content' in values and values['content']:
+        if 'content' in values:
             placeholders.append('content = :content')
-        if 'hit' in values and values['hit']:
+        if 'hit' in values:
             placeholders.append('hit = :hit')
-        if 'star' in values and values['star']:
+        if 'star' in values:
             placeholders.append('star = :star')
-        if 'json' in values and values['json']:
+        if 'json' in values:
             placeholders.append('json = :json')
-        if 'mode' in values and values['mode']:
+        if 'mode' in values:
             placeholders.append('mode = :mode')
-        if 'regdate' in values and values['regdate']:
+        if 'regdate' in values:
             placeholders.append('regdate = :regdate')
         if item['mode'] == 'ready':
             placeholders.append(f'created_at = DATETIME("now", "localtime")')
@@ -124,11 +121,11 @@ async def patch_item(params: types.PatchItem):
         )
 
         result = output.success({
-            'message': 'Success update Article.',
+            'message': 'Complete update Article.',
         })
         pass
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

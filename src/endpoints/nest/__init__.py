@@ -6,22 +6,21 @@ from .put_item import put_item
 from .patch_item import patch_item
 from .delete_item import delete_item
 
-# TODO: 테스트와 개선작업 필요함
-
 # set router
 router = APIRouter()
 
 # get nests index
 @router.get('/')
 async def _get_index(
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
     app_srl: int = Query(None, alias='app'),
-    code: str = Query(None),
+    code: str = Query(None, pattern=r'^[a-zA-Z0-9-_]+$'),
     name: str = Query(None),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
-    sort: str = Query('desc'),
+    sort: str = Query('desc', pattern=r'^(asc|desc)$'),
+    unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
         fields = fields,
@@ -32,13 +31,14 @@ async def _get_index(
         size = size,
         order = order,
         sort = sort,
+        unlimited = unlimited,
     ))
 
 # get nest
 @router.get('/{srl}/')
 async def _get_item(
     srl: int|str,
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
 ):
     return await get_item(types.GetItem(
         srl = srl,
@@ -49,7 +49,7 @@ async def _get_item(
 @router.put('/')
 async def _put_item(
     app_srl: int = Form(..., alias='app'),
-    code: str = Form(...),
+    code: str = Form(..., pattern=r'^[a-zA-Z0-9-_]+$'),
     name: str = Form(...),
     description: str = Form(None),
     json_data: str = Form('{}', alias='json'),
@@ -67,7 +67,7 @@ async def _put_item(
 async def _patch_item(
     srl: int,
     app_srl: int = Form(None, alias='app'),
-    code: str = Form(None),
+    code: str = Form(None, pattern=r'^[a-zA-Z0-9-_]+$'),
     name: str = Form(None),
     description: str = Form(None),
     json_data: str = Form(None, alias='json')
@@ -84,4 +84,6 @@ async def _patch_item(
 # get nest
 @router.delete('/{srl:int}/')
 async def _delete_item(srl: int):
-    return await delete_item(types.DeleteItem(srl = srl))
+    return await delete_item(types.DeleteItem(
+        srl = srl,
+    ))
