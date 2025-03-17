@@ -4,40 +4,25 @@ from src.libs.db import DB, Table
 from src.libs.check import parse_json, check_url
 from src.libs.object import json_stringify
 
-async def patch_item(params: types.PatchItem):
+async def patch_item(params: types.PatchItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
-        # set where
-        where = [ f'and srl="{params.srl}"' ]
-
         # check item
         count = db.get_count(
             table_name = Table.JSON.value,
-            where = where,
+            where = [ f'and srl="{params.srl}"' ],
         )
         if count <= 0: raise Exception('Item not found.', 204)
 
-        # check category_srl
-        if params.category_srl:
-            count = db.get_count(
-                table_name = Table.CATEGORY.value,
-                where = [ f'srl={params.category_srl}' ]
-            )
-            if count <= 0: raise Exception('Category not found.', 455)
-
         # set values
         values = {}
-        if params.category_srl:
-            values['category_srl'] = params.category_srl
         if params.name:
             values['name'] = params.name
         if params.description:
@@ -48,6 +33,18 @@ async def patch_item(params: types.PatchItem):
         if params.path:
             check_url(params.path)
             values['path'] = params.path
+
+        # check category_srl
+        if params.category_srl:
+            count = db.get_count(
+                table_name = Table.CATEGORY.value,
+                where = [
+                    'and module LIKE "json"',
+                    f'and srl = {params.category_srl}',
+                ]
+            )
+            if not (count > 0): raise Exception('Invalid category_srl', 400)
+            values['category_srl'] = params.category_srl
 
         # check values
         if not bool(values):
@@ -69,17 +66,17 @@ async def patch_item(params: types.PatchItem):
         # update item
         db.update_item(
             table_name = Table.JSON.value,
-            where = where,
             placeholders = placeholders,
             values = values,
+            where=[ f'srl = {params.srl}' ],
         )
 
         # set result
         result = output.success({
-            'message': 'Success update JSON.',
+            'message': 'Complete update JSON.',
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

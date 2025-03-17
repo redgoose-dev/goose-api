@@ -60,10 +60,10 @@ CREATE TABLE `goose_nest` (
 -- table `category`
 CREATE TABLE `goose_category` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- category srl
-    `turn` INTEGER NOT NULL DEFAULT 0, -- category name
     `name` TEXT NOT NULL, -- category description
     `module` TEXT NOT NULL, -- nest,json
-    `module_srl` INTEGER NOT NULL DEFAULT 0, -- module srl
+    `module_srl` INTEGER NULL, -- module srl
+    `turn` INTEGER NOT NULL DEFAULT 0, -- category name
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `goose_nest`(`srl`, `nest`),
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `goose_json`(`srl`, `json`)

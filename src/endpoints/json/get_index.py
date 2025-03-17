@@ -1,21 +1,18 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
 from src.libs.object import json_parse
 
-async def get_index(params: types.GetIndex):
+async def get_index(params: types.GetIndex, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
@@ -28,6 +25,9 @@ async def get_index(params: types.GetIndex):
                 where.append(f'and category_srl={params.category_srl}')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
+
+        # set values
+        values = {}
 
         # get total
         total = db.get_count(
@@ -49,10 +49,10 @@ async def get_index(params: types.GetIndex):
                 'order': params.order,
                 'sort': params.sort,
             },
+            values = values,
+            unlimited = params.unlimited,
         )
         def transform_item(item: dict) -> dict:
-            if 'created_at' in item:
-                item['created_at'] = convert_date(item['created_at'])
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
             return item
@@ -60,11 +60,10 @@ async def get_index(params: types.GetIndex):
 
         # TODO: 전 버전에서는 다음과 같이 추가기능이 있다.
         # TODO: - 카테고리 목록 가져오기
-        # TODO: 전 버전은 ext_field 로 추가 기능을 사용해는데 이번에는 mod 로 해도 좋을거 같다. 좀 짧게..
 
         # set result
         result = output.success({
-            'message': 'Success get JSON index.',
+            'message': 'Complete get JSON index.',
             'data': {
                 'total': total,
                 'index': index,

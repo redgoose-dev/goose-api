@@ -14,18 +14,19 @@ client = TestClient(app)
 def get_index(params: Dict = {}) -> Dict:
     res = client.get(
         url = f'/file/',
-        params = {
-            # 'fields': 'srl',
-            # 'module': 'article',
-            # 'module_srl': 1,
-            # 'name': 'h38c.jpg',
-            # 'mime': 'image',
-            # 'page': 1,
-            # 'size': 10,
-            # 'order': 'srl',
-            # 'sort': 'desc',
-            **params,
-        },
+        params = params,
+        # params = {
+        #     # 'fields': 'srl',
+        #     # 'module': 'article',
+        #     # 'module_srl': 1,
+        #     # 'name': 'h38c.jpg',
+        #     # 'mime': 'image',
+        #     # 'page': 1,
+        #     # 'size': 10,
+        #     # 'order': 'srl',
+        #     # 'sort': 'desc',
+        #     **params,
+        # },
     )
     assert res.status_code == 200
     assert 'data' in res.json()
@@ -35,7 +36,7 @@ def get_index(params: Dict = {}) -> Dict:
     assert isinstance(res.json()['data']['index'], list)
     return res.json()['data']
 
-def get_item(srl: int = 4) -> bytes|None:
+def get_item(srl: int = 4, params: dict = {}) -> bytes:
     if not srl: raise Exception('srl not found.', 400)
     res = client.get(f'/file/{srl}/')
     assert res.status_code == 200
@@ -68,6 +69,8 @@ def delete_item(srl: int):
     if not srl: raise Exception('srl not found.', 400)
     res = client.delete(f'/file/{srl}/')
     assert res.status_code == 200
+
+### TEST AREA ###
 
 def test_basic():
     # get article_srl
@@ -113,3 +116,15 @@ def test_basic():
     )
     # 파일 삭제하기
     delete_item(srl)
+
+@pytest.mark.skip
+def test_working():
+    pass
+
+@pytest.mark.skip
+def test_add_update_delete_item():
+    pass
+
+@pytest.mark.skip
+def test_get_items():
+    pass

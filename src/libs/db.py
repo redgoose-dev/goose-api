@@ -87,11 +87,8 @@ class DB:
         self.__check_table_name__(table_name)
         # set fields
         fields = self.__get_field__(fields)
-        # set row factory
-
-        cursor = self.conn.cursor()
         # set query
-        _where = self.__where_list_to_str__(where)
+        _where = self.__where_list_to_str__(where) if where else ''
         _limit = self.__get_limit__(limit) if not unlimited else ''
         _order = self.__get_order__(order)
         query = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
@@ -101,6 +98,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         rows = cursor.fetchall()
         return [ dict(row) for row in rows ]
@@ -116,11 +114,9 @@ class DB:
         self.__check_table_name__(table_name)
         # set fields
         fields = self.__get_field__(fields)
-        # set cursor
-        cursor = self.conn.cursor()
         # set query
-        query = f'SELECT {fields} FROM {table_name}'
-        if where: query += self.__where_list_to_str__(where)
+        _where = self.__where_list_to_str__(where) if where else ''
+        query = f'SELECT {fields} FROM {table_name} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -128,6 +124,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         row = cursor.fetchone()
         return dict(row) if row else None
@@ -140,11 +137,9 @@ class DB:
     ) -> int:
         # check table name
         self.__check_table_name__(table_name)
-        # set cursor
-        cursor = self.conn.cursor()
         # set query
-        query = f'SELECT COUNT(*) FROM {table_name}'
-        if where: query += self.__where_list_to_str__(where)
+        _where = self.__where_list_to_str__(where) if where else ''
+        query = f'SELECT COUNT(*) FROM {table_name} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -152,6 +147,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         return cursor.fetchone()[0]
 
@@ -164,8 +160,6 @@ class DB:
         # check table name
         self.__check_table_name__(table_name)
         if not placeholders or not values: return None
-        # set cursor
-        cursor = self.conn.cursor()
         # set query
         columns = ', '.join([item['key'] for item in placeholders])
         placeholders = ', '.join([item['value'] for item in placeholders])
@@ -177,6 +171,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         self.conn.commit()
         # get last id
@@ -194,12 +189,10 @@ class DB:
         # check table name
         self.__check_table_name__(table_name)
         if not placeholders or not values: return None
-        # set cursor
-        cursor = self.conn.cursor()
         # set query
         placeholders = ', '.join(placeholders) if placeholders else ''
-        query = f'UPDATE {table_name} SET {placeholders}'
-        if where: query += self.__where_list_to_str__(where)
+        _where = self.__where_list_to_str__(where) if where else ''
+        query = f'UPDATE {table_name} SET {placeholders} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -207,6 +200,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         self.conn.commit()
 
@@ -218,11 +212,9 @@ class DB:
     ):
         # check table name
         self.__check_table_name__(table_name)
-        # set cursor
-        cursor = self.conn.cursor()
         # set query
-        query = f'DELETE FROM {table_name}'
-        if where: query += self.__where_list_to_str__(where)
+        _where = self.__where_list_to_str__(where) if where else ''
+        query = f'DELETE FROM {table_name} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -230,6 +222,7 @@ class DB:
             print(color_text(f'  [DB_SQL] {query}', 'magenta'))
             print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
         # execute query
+        cursor = self.conn.cursor()
         cursor.execute(query, values)
         self.conn.commit()
 
@@ -238,6 +231,29 @@ class DB:
         cursor.execute('SELECT last_insert_rowid()')
         last_id = cursor.fetchone()[0]
         return last_id
+
+    def get_max_number(
+        self,
+        table_name: str,
+        field_name: str,
+        where: list,
+        values: dict = {},
+    ) -> int:
+        # check table name
+        self.__check_table_name__(table_name)
+        # set query
+        _where = self.__where_list_to_str__(where) if where else ''
+        query = f'SELECT MAX({field_name}) as number FROM {table_name} {_where}'
+        query = self.__optimize_query__(query)
+        # print debug
+        if self.debug:
+            print(color_text(f'[DB_METHOD] get_max_number:', 'magenta'))
+            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
+            print(color_text(f'  [DB_VALUES] {where}', 'magenta'))
+        # execute query
+        cursor = self.conn.cursor()
+        result = cursor.execute(query, values).fetchone()
+        return result['number'] if result['number'] is not None else 0
 
     def query(self, query: str = '', values: dict = {}) -> dict:
         # set cursor

@@ -12,8 +12,6 @@ async def put_item(params: types.AddItem, _db: DB = None):
     else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # check code already exists
         count = db.get_count(
             table_name = Table.APP.value,
@@ -45,7 +43,7 @@ async def put_item(params: types.AddItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Success add item.',
+            'message': 'Complete add item.',
             'data': data,
         })
     except Exception as e:

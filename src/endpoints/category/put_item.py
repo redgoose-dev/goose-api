@@ -1,24 +1,25 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from .__libs__ import check_module
 
-async def put_item(params: types.PutItem):
+async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
+        # check module
+        check_module(db, params.module, params.module_srl)
 
-        # get max turn
-        where = [
-            f'and module LIKE "{params.module}"',
-            f'and target_srl={params.target_srl or 0}'
-        ]
+        # check module and get max turn
+        where = [ f'and module LIKE "{params.module}"' ]
+        if params.module_srl:
+            where.append(f'and module_srl = {params.module_srl}')
         count = db.get_count(
             table_name = Table.CATEGORY.value,
             where = where,
@@ -26,20 +27,22 @@ async def put_item(params: types.PutItem):
 
         # set values
         values = {
-            'target_srl': params.target_srl or 0,
             'name': params.name,
             'module': params.module,
             'turn': count + 1,
         }
+        if params.module_srl:
+            values['module_srl'] = params.module_srl
 
         # set placeholders
         placeholders = [
-            { 'key': 'target_srl', 'value': ':target_srl' },
-            { 'key': 'turn', 'value': ':turn' },
             { 'key': 'name', 'value': ':name' },
             { 'key': 'module', 'value': ':module' },
-            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
+        if 'module_srl' in values:
+            placeholders.append({ 'key': 'module_srl', 'value': ':module_srl' })
+        placeholders.append({ 'key': 'turn', 'value': ':turn' })
+        placeholders.append({ 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' })
 
         # add item
         data = db.add_item(
@@ -50,11 +53,11 @@ async def put_item(params: types.PutItem):
 
         # set result
         result = output.success({
-            'message': 'Success add Category.',
+            'message': 'Complete add Category.',
             'data': data,
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result

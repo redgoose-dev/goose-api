@@ -1,8 +1,7 @@
 from . import __types__ as types
 from src import output
-from src.libs.db import DB
-from src.libs.check import parse_json, check_url
-from src.libs.object import json_stringify
+from src.libs.db import DB, Table
+from .__libs__ import check_module
 
 async def patch_change_order(params: types.PatchChangeOrder):
 
@@ -14,19 +13,25 @@ async def patch_change_order(params: types.PatchChangeOrder):
     db.connect()
 
     try:
-        # TODO: 인증 검사하기
+        # check module
+        check_module(db, params.module, params.module_srl)
 
-        # set where
-        where = []
-        # if params.srl: where.append(f'and srl="{params.srl}"')
+        # get srls
+        srls = params.srls.split(',')
 
-        # TODO: 작업하기
+        # update items
+        for key, srl in enumerate(srls):
+            db.update_item(
+                table_name = Table.CATEGORY.value,
+                placeholders = [ 'turn = :turn' ],
+                where = [ f'srl = {srl}' ],
+                values = { 'turn': key + 1 },
+            )
 
         # set result
         result = output.success({
-            'message': 'Category / change-order',
+            'message': 'Complete change order.',
         })
-
     except Exception as e:
         result = output.exc(e)
     finally:

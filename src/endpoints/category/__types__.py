@@ -2,30 +2,35 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class GetIndex(BaseModel):
-    fields: Optional[str] = Field(default=None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$')
-    name: Optional[str] = Field(default=None)
-    module: Optional[str] = Field(default='nest', pattern=r'^(nest|json)$')
-    target_srl: Optional[int] = Field(default=None)
-    page: Optional[int] = Field(default=1)
-    size: Optional[int] = Field(default=None)
-    order: Optional[str] = Field(default='srl')
-    sort: Optional[str] = Field(default='desc', pattern=r'^(asc|desc)$')
+    fields: Optional[str]
+    name: Optional[str]
+    module: Optional[str]
+    module_srl: Optional[int]
+    page: Optional[int]
+    size: Optional[int]
+    order: Optional[str]
+    sort: Optional[str]
+    unlimited: Optional[bool]
+
+class GetItem(BaseModel):
+    srl: int
+    fields: Optional[str]
 
 class PutItem(BaseModel):
-    target_srl: Optional[int] = Field(default=0) # nest_srl,None
     name: str
-    module: Optional[str] = Field(default='nest', pattern=r'^(nest|json)$')
+    module: str
+    module_srl: Optional[int]
 
 class PatchItem(BaseModel):
     srl: int
-    target_srl: Optional[int] = Field(default=None) # nest_srl,None
-    name: Optional[str] = Field(default=None)
-    module: Optional[str] = Field(default=None, pattern=r'^(nest|json)$')
+    name: Optional[str]
+    module: Optional[str]
+    module_srl: Optional[int]
 
 class PatchChangeOrder(BaseModel):
-    srl: int
-    order: str = Field(pattern=r'^\d+(,\d+)*$') # 1,2,3
+    module: str
+    module_srl: int
+    srls: str
 
 class DeleteItem(BaseModel):
     srl: int
-

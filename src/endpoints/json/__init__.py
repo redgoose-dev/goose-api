@@ -6,8 +6,6 @@ from .put_item import put_item
 from .patch_item import patch_item
 from .delete_item import delete_item
 
-# TODO: 테스트와 개선작업 필요함
-
 # set router
 router = APIRouter()
 
@@ -16,11 +14,12 @@ router = APIRouter()
 async def _get_index(
     name: str = Query(None),
     category_srl: int = Query(None, alias='category'),
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
-    sort: str = Query('desc'),
+    sort: str = Query('desc', pattern=r'^(asc|desc)$'),
+    unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
         name = name,
@@ -30,13 +29,14 @@ async def _get_index(
         size = size,
         order = order,
         sort = sort,
+        unlimited = unlimited,
     ))
 
 # get json
 @router.get('/{srl:int}/')
 async def _get_item(
     srl: int,
-    fields: str = Query(None),
+    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
 ):
     return await get_item(types.GetItem(
         srl = srl,
@@ -46,7 +46,7 @@ async def _get_item(
 # add json
 @router.put('/')
 async def _put_item(
-    category_srl: int = Form(None),
+    category_srl: int = Form(None, alias='category'),
     name: str = Form(...),
     description: str = Form(None),
     json_data: str = Form(..., alias='json'),
@@ -64,7 +64,7 @@ async def _put_item(
 @router.patch('/{srl:int}/')
 async def _patch_item(
     srl: int,
-    category_srl: int = Form(None),
+    category_srl: int = Form(None, alias='category'),
     name: str = Form(None),
     description: str = Form(None),
     json_data: str = Form(None, alias='json'),

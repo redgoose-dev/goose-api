@@ -10,7 +10,7 @@ def pytest_addoption(parser):
 
 def get_index(params: dict = {}) -> list:
     res = client.get(
-        url = '/article/',
+        url = '/category/',
         params = params,
     )
     assert res.status_code == 200
@@ -20,57 +20,67 @@ def get_index(params: dict = {}) -> list:
     assert 'index' in json['data'] and isinstance(json['data']['index'], list)
     return json['data']['index']
 
-def get_item(srl: int = None, params: dict = {}) -> dict:
-    res = client.get(f'/article/{srl}/', params = params)
+def get_item(srl: int, params: dict = {}) -> dict:
+    res = client.get(f'/category/{srl}/', params = params)
     assert res.status_code == 200
     json = res.json()
     assert 'data' in json
     return json['data']
 
-def put_item() -> int:
-    res = client.put(f'/article/')
+def put_item(data: dict = {}) -> int:
+    res = client.put(
+        url = '/category/',
+        data = data,
+    )
     assert res.status_code == 200
     json = res.json()
-    assert 'data' in json and isinstance(json.get('data'), int)
-    return json.get('data')
+    assert 'data' in json
+    assert isinstance(json.get('data'), int)
+    return json['data']
 
 def patch_item(srl: int, data: dict = {}):
     if not srl: raise Exception('srl not found.')
     res = client.patch(
-        url = f'/article/{srl}/',
+        url = f'/category/{srl}/',
+        data = data,
+    )
+    assert res.status_code == 200
+
+def patch_change_order(data: dict = {}):
+    res = client.patch(
+        url = f'/category/change-order/',
         data = data,
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
     if not srl: raise Exception('srl not found.')
-    res = client.delete(f'/article/{srl}/')
+    res = client.delete(f'/category/{srl}/')
     assert res.status_code == 200
-
-### TEST AREA ###
 
 @pytest.mark.skip
 def test_working():
-    delete_item(1245)
+    put_item({
+        'name': create_random_string(4),
+        'module': 'json',
+        # 'module_srl': 2,
+    })
+    pass
 
 # @pytest.mark.skip
 def test_add_update_delete_item():
-    # add item
-    srl = put_item()
-    # update item
-    patch_item(srl, {
-        # 'app': 1,
-        # 'nest': 1,
-        # 'category': 1,
-        'title': 'TITLE',
-        'content': 'EDITED CONTENT',
-        'hit': True,
-        'star': False,
-        'json': '{"FOO":"BAR"}',
-        'mode': 'public',
-        'regdate': '2024-10-04',
+    module = 'nest'
+    module_srl = 2
+    srl = put_item({
+        'name': create_random_string(16),
+        'module': module,
+        'module_srl': module_srl,
     })
-    # delete item
+    patch_item(srl, {
+        'name': create_random_string(8),
+        'module': module,
+        'module_srl': module_srl,
+    })
     delete_item(srl)
 
 # @pytest.mark.skip
@@ -78,23 +88,3 @@ def test_get_items():
     index = get_index()
     assert isinstance(index, list) and len(index) > 0
     get_item(index[0]['srl'])
-
-@pytest.mark.skip
-def test_add_items(request):
-    count: int = int(request.config.getoption('--foo') or 10)
-    date = get_date()
-    for i in range(count):
-        new_date = date_format(date_shift(date, tomorrow=False, day=i), '%Y-%m-%d')
-        srl = put_item()
-        patch_item(srl, {
-            # 'app': 1,
-            # 'nest': 1,
-            # 'category': 1,
-            'title': create_random_string(10),
-            'content': create_random_string(20),
-            'hit': True,
-            'star': True,
-            'json': '{"FOO":"BAR"}',
-            'mode': 'public',
-            'regdate': new_date,
-        })

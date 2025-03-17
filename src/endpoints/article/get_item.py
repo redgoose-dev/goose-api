@@ -22,6 +22,7 @@ async def get_item(params: types.GetItem, _db: DB = None):
             fields = fields,
             where = [ f'and srl = {params.srl}' ],
         )
+        if not data: raise Exception('no data', 204)
         if data and isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
 

@@ -1,9 +1,9 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
 
 async def get_index(params: types.GetIndex):
+
     # set values
     result = None
 
@@ -12,8 +12,6 @@ async def get_index(params: types.GetIndex):
     db.connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
@@ -23,8 +21,8 @@ async def get_index(params: types.GetIndex):
             where.append(f'and name LIKE "%{params.name}%"')
         if params.module:
             where.append(f'and module="{params.module}"')
-        if params.target_srl is not None:
-            where.append(f'and target_srl={params.target_srl}')
+        if params.module_srl is not None:
+            where.append(f'and module_srl={params.module_srl}')
 
         # get total
         total = db.get_count(
@@ -46,16 +44,18 @@ async def get_index(params: types.GetIndex):
                 'order': params.order,
                 'sort': params.sort,
             },
+            unlimited = params.unlimited,
         )
-        def transform_item(item: dict) -> dict:
-            if 'created_at' in item:
-                item['created_at'] = convert_date(item['created_at'])
-            return item
-        index = [transform_item(item) for item in index]
+        # def transform_item(item: dict) -> dict:
+        #     if 'created_at' in item:
+        #         item['created_at'] = convert_date(item['created_at'])
+        #     return item
+        # index = [transform_item(item) for item in index]
 
         # TODO: 이전 버전에 있는 기능
-        # TODO: - article,json 갯수 가져오기
-        # TODO: - 카테고리 타입 (all,none) 값 가져오기
+        # TODO: - count / article or json 갯수 가져오기
+        # TODO: - all / 모든 모듈 데이터 갯수
+        # TODO: - none / 모듈 데이터에서 카테고리에 해당되지 않는 데이터 갯수
 
         # set result
         result = output.success({

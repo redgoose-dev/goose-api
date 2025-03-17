@@ -4,23 +4,31 @@ from src.libs.db import DB, Table
 from src.libs.check import parse_json, check_url
 from src.libs.object import json_stringify
 
-async def put_item(params: types.PutItem):
+async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values
     result = None
 
     # connect db
-    db = DB()
-    db.connect()
+    if _db: db = _db
+    else: db = DB().connect()
+
+    print('PARAMS: ', params)
 
     try:
-        # TODO: 인증 검사하기
-
         # check parse json
         json_data = parse_json(params.json_data)
 
         # check category_srl
-        # TODO: check exist category data
+        if params.category_srl:
+            count = db.get_count(
+                table_name = Table.CATEGORY.value,
+                where = [
+                    'and module LIKE "json"',
+                    f'and srl = {params.category_srl}',
+                ],
+            )
+            if not (count > 0): raise Exception('Invalid category_srl', 400)
 
         # check path
         if params.path: check_url(params.path)
@@ -28,7 +36,7 @@ async def put_item(params: types.PutItem):
         # set values
         values = {
             'category_srl': params.category_srl or None,
-            'name': params.name or None,
+            'name': params.name,
             'description': params.description or None,
             'json': json_stringify(json_data, None) or '{}',
             'path': params.path or None,
@@ -59,5 +67,5 @@ async def put_item(params: types.PutItem):
     except Exception as e:
         result = output.exc(e)
     finally:
-        db.disconnect()
+        if not _db: db.disconnect()
         return result
