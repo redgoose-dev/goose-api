@@ -1,35 +1,28 @@
 from fastapi import APIRouter, Form, Query, File, UploadFile
 from . import __types__ as types
+from src.libs.resource import Patterns
 from .get_index import get_index
 from .get_item import get_item
 from .put_item import put_item
 from .patch_item import patch_item
 from .delete_item import delete_item
 
-# TODO: 테스트와 개선작업 필요함
-
 # set router
 router = APIRouter()
-
-# patterns
-patterns = {
-    'module': r'^(article|json|checklist)$',
-    'fields': r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$',
-    'sort': r'^(asc|desc)$'
-}
 
 # get files index
 @router.get('/')
 async def _get_index(
-    fields: str = Query(None, pattern=patterns['fields']),
-    module: str = Query(None, pattern=patterns['module']),
+    fields: str = Query(None, pattern=Patterns.fields),
+    module: str = Query(None, pattern=Patterns.file_modules),
     module_srl: int = Query(None),
     name: str = Query(None),
     mime: str = Query(None),
     page: int = Query(default=1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query(default='srl'),
-    sort: str = Query(default='desc', pattern=patterns['sort']),
+    sort: str = Query(default='desc', pattern=Patterns.sort),
+    unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
         fields = fields,
@@ -41,6 +34,7 @@ async def _get_index(
         size = size,
         order = order,
         sort = sort,
+        unlimited = unlimited,
     ))
 
 # get file
@@ -51,23 +45,23 @@ async def _get_item(srl: int|str):
 # add file
 @router.put('/')
 async def _put_item(
-    module: str = Form(..., pattern=patterns['module']),
+    module: str = Form(..., pattern=Patterns.file_modules),
     module_srl: int = Form(...),
-    json_data: str = Form(default='{}', alias='json'),
     file: UploadFile = File(...),
+    json_data: str = Form(default='{}', alias='json'),
 ):
     return await put_item(types.PutItem(
         module = module,
         module_srl = module_srl,
-        json_data = json_data,
         file = file,
+        json_data = json_data,
     ))
 
 # edit file
 @router.patch('/{srl:int}/')
 async def _patch_item(
     srl: int,
-    module: str = Form(None, pattern=patterns['module']),
+    module: str = Form(None, pattern=Patterns.file_modules),
     module_srl: int = Form(None),
     json_data: str = Form(None, alias='json'),
     file: UploadFile = File(None),

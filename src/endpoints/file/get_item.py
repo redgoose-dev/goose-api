@@ -2,11 +2,11 @@ from typing import Optional
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import convert_date
 from src.libs.object import json_parse
 from .__lib__ import convert_path_to_buffer
 
 async def get_item(params: types.GetItem, _db: DB = None):
+
     # set values
     result = None
 
@@ -21,19 +21,11 @@ async def get_item(params: types.GetItem, _db: DB = None):
         try: srl = int(params.srl)
         except ValueError: code = str(params.srl)
 
-        # set values
-        # use_cache = True if code is not None else False
-        # data = {
-        #     'path': None,
-        #     'mime': None,
-        #     'buffer': None,
-        # }
-
         # set where
         if code is not None:
-            where = [ f'and code LIKE "{code}"' ]
+            where = [ f'code LIKE "{code}"' ]
         elif srl is not None:
-            where = [ f'and srl={srl}' ]
+            where = [ f'srl = {srl}' ]
         else:
             raise Exception('srl or code is required', 404)
 

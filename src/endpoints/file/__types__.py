@@ -12,15 +12,16 @@ class GetIndex(BaseModel):
     size: Optional[int]
     order: Optional[str]
     sort: Optional[str]
+    unlimited: Optional[bool]
 
 class GetItem(BaseModel):
-    srl: int
+    srl: int|str
 
 class PutItem(BaseModel):
     module: str
     module_srl: int
-    json_data: Optional[str]
     file: UploadFile
+    json_data: Optional[str]
 
 class PatchItem(BaseModel):
     srl: int
@@ -30,4 +31,4 @@ class PatchItem(BaseModel):
     file: Optional[UploadFile]
 
 class DeleteItem(BaseModel):
-    srl: int|str
+    srl: int

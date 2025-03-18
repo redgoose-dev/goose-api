@@ -95,7 +95,7 @@ async def get_index(params: types.GetIndex, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Success get Article index.',
+            'message': 'Complete get Article index.',
             'data': {
                 'total': total,
                 'index': index,

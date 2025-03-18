@@ -72,6 +72,7 @@ CREATE TABLE `goose_category` (
 -- table `file`
 CREATE TABLE `goose_file` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- file srl
+    `code` TEXT NOT NULL UNIQUE, -- unique file code
     `name` TEXT NOT NULL, -- file name
     `path` TEXT NOT NULL, -- file path
     `mime` TEXT NOT NULL, -- file mime type

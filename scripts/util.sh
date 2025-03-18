@@ -6,17 +6,14 @@ export $(grep -v '^#' .env | xargs)
 # set working directory
 cd "$(dirname "$0")/.."
 
-# activate virtual environment
-source .venv/bin/activate
-
 case "$1" in
 
   install)
-    python install.py
+    uv run install.py
     ;;
 
   dev)
-    uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
     ;;
 
   *)
@@ -25,6 +22,3 @@ case "$1" in
     ;;
 
 esac
-
-# deactivate virtual environment
-deactivate

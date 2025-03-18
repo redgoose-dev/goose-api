@@ -19,15 +19,10 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
     path_file = ''
 
     try:
-        # TODO: 인증 검사하기
-
-        # set where
-        where = [ f'and srl="{params.srl}"' ]
-
         # check item
         item = db.get_item(
             table_name = Table.FILE.value,
-            where = where,
+            where = [ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Item not found.', 204)
 
@@ -55,9 +50,9 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
             if not table_name: raise Exception('Module item not found.', 400)
             count = db.get_count(
                 table_name = table_name,
-                where = [ f'srl={_module_srl}' ],
+                where = [ f'srl = {_module_srl}' ],
             )
-            if count <= 0: raise Exception('Module item not found.', 400)
+            if not (count > 0): raise Exception('Module item not found.', 400)
             if params.module: values['module'] = params.module
             if params.module_srl: values['module_srl'] = params.module_srl
 
@@ -107,7 +102,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         # update item
         db.update_item(
             table_name = Table.FILE.value,
-            where = where,
+            where = [ f'srl = {params.srl}' ],
             placeholders = placeholders,
             values = values,
         )
@@ -117,9 +112,8 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Success update File.',
+            'message': 'Complete update File.',
         })
-        pass
     except Exception as e:
         if path_file: delete_file(path_file)
         result = output.exc(e)

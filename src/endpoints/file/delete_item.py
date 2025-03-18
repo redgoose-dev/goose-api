@@ -13,10 +13,8 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
     else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # set where
-        where = [ f'and srl={params.srl}' ]
+        where = [ f'and srl = {params.srl}' ]
 
         # get item
         item = db.get_item(
@@ -37,7 +35,7 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Success delete File.',
+            'message': 'Complete delete File.',
         })
     except Exception as e:
         result = output.exc(e)
