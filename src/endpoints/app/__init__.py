@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Form, Query
+from src.libs.resource import Patterns
 from . import __types__ as types
 from .get_index import get_index
 from .get_item import get_item
@@ -14,11 +15,11 @@ router = APIRouter()
 async def _index(
     code: str = Query(None),
     name: str = Query(None),
-    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
+    fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
-    sort: str = Query('desc', pattern=r'^(asc|desc)$'),
+    sort: str = Query('desc', pattern=Patterns.fields),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
@@ -36,7 +37,7 @@ async def _index(
 @router.get('/{srl}/')
 async def _item(
     srl: int|str,
-    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
+    fields: str = Query(None, pattern=Patterns.fields),
 ):
     return await get_item(types.GetItem(
         srl = srl,
@@ -46,7 +47,7 @@ async def _item(
 # add app
 @router.put('/')
 async def _put_item(
-    code: str = Form(...),
+    code: str = Form(..., pattern=Patterns.code),
     name: str = Form(...),
     description: str = Form(None),
 ):
@@ -60,7 +61,7 @@ async def _put_item(
 @router.patch('/{srl:int}/')
 async def _patch_item(
     srl: int,
-    code: str = Form(None),
+    code: str = Form(None, pattern=Patterns.code),
     name: str = Form(None),
     description: str = Form(None),
 ):

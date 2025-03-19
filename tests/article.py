@@ -6,7 +6,7 @@ from src.libs.string import create_random_string, date_format, get_date, date_sh
 client = TestClient(app)
 
 def pytest_addoption(parser):
-    parser.addoption("--foo", action="store", default="default_value", help="foo parameter")
+    parser.addoption("--custom", action="store", default="default_value", help="custom parameter")
 
 def get_index(params: dict = {}) -> list:
     res = client.get(
@@ -81,7 +81,7 @@ def test_get_items():
 
 @pytest.mark.skip
 def test_add_items(request):
-    count: int = int(request.config.getoption('--foo') or 10)
+    count: int = int(request.config.getoption('--custom') or 10)
     date = get_date()
     for i in range(count):
         new_date = date_format(date_shift(date, tomorrow=False, day=i), '%Y-%m-%d')

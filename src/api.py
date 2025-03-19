@@ -14,6 +14,7 @@ from .endpoints.json import router as json
 from .endpoints.category import router as category
 from .endpoints.nest import router as nest
 from .endpoints.file import router as file
+from .endpoints.comment import router as comment
 
 # docs
 # - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
@@ -64,7 +65,7 @@ api.include_router(category, prefix='/category')
 # api.include_router(checklist, prefix='/checklist')
 
 # comment
-# api.include_router(comment, prefix='/comment')
+api.include_router(comment, prefix='/comment')
 
 # file
 api.include_router(file, prefix='/file')

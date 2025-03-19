@@ -12,34 +12,24 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
     if _db: db = _db
     else: db = DB().connect()
 
+    print('PARAMS:', params)
+
     try:
         # check item
         count = db.get_count(
-            table_name = Table.CATEGORY.value,
+            table_name = Table.COMMENT.value,
             where = [ f'srl="{params.srl}"' ],
         )
         if count == 0: raise Exception('Item not found.', 204)
 
         # set values
         values = {}
-        if params.name:
-            values['name'] = params.name
-
-        # check module
-        if params.module:
+        if params.content:
+            values['content'] = params.content
+        if params.module and params.module_srl:
             check_module(db, params.module, params.module_srl)
             values['module'] = params.module
-            if params.module_srl: values['module_srl'] = params.module_srl
-            # get max turn
-            _where = [ f'and module LIKE "{params.module}"' ]
-            if params.module_srl:
-                _where.append(f'and module_srl = {params.module_srl}')
-            max_number = db.get_max_number(
-                table_name = Table.CATEGORY.value,
-                field_name = 'turn',
-                where = _where,
-            )
-            values['turn'] = max_number + 1
+            values['module_srl'] = params.module_srl
 
         # check values
         if not bool(values):
@@ -47,18 +37,16 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
 
         # set placeholder
         placeholders = []
-        if 'name' in values and values['name']:
-            placeholders.append('name = :name')
+        if 'content' in values and values['content']:
+            placeholders.append('content = :content')
         if 'module' in values and values['module']:
             placeholders.append('module = :module')
         if 'module_srl' in values and values['module_srl']:
             placeholders.append('module_srl = :module_srl')
-        if 'turn' in values and values['turn']:
-            placeholders.append('turn = :turn')
 
         # update item
         db.update_item(
-            table_name = Table.CATEGORY.value,
+            table_name = Table.COMMENT.value,
             placeholders = placeholders,
             values = values,
             where = [ f'srl = {params.srl}' ],
@@ -66,7 +54,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Complete update Category.',
+            'message': 'Complete update Comment.',
         })
     except Exception as e:
         result = output.exc(e)

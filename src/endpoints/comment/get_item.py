@@ -15,9 +15,9 @@ async def get_item(params: types.GetItem, _db: DB = None):
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
-        # set data
+        # get data
         data = db.get_item(
-            table_name = Table.CATEGORY.value,
+            table_name = Table.COMMENT.value,
             fields = fields,
             where = [ f'srl = {params.srl}' ],
         )
@@ -25,7 +25,7 @@ async def get_item(params: types.GetItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Complete get Category item.',
+            'message': 'Complete get comment item.',
             'data': data,
         })
     except Exception as e:

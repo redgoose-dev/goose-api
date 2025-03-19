@@ -1,7 +1,6 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.object import json_parse
 
 async def get_index(params: types.GetIndex, _db: DB = None):
 
@@ -18,23 +17,27 @@ async def get_index(params: types.GetIndex, _db: DB = None):
 
         # set where
         where = []
-        if params.app_srl:
-            where.append(f'and app_srl={params.app_srl}')
-        if params.code:
-            where.append(f'and code LIKE "{params.code}"')
-        if params.name:
-            where.append(f'and name LIKE "%{params.name}%"')
+        if params.module:
+            where.append(f'and module LIKE "{params.module}"')
+        if params.module_srl:
+            where.append(f'and module_srl = {params.module_srl}')
+        if params.content:
+            where.append(f'and content LIKE "%{params.content}%"')
+
+        # set values
+        values = {}
 
         # get total
         total = db.get_count(
-            table_name = Table.NEST.value,
+            table_name = Table.COMMENT.value,
             where = where,
+            values = values,
         )
         if not (total > 0): raise Exception('No data', 204)
 
-        # get index
+        # get data
         index = db.get_items(
-            table_name = Table.NEST.value,
+            table_name = Table.COMMENT.value,
             fields = fields,
             where = where,
             limit = {
@@ -45,25 +48,19 @@ async def get_index(params: types.GetIndex, _db: DB = None):
                 'order': params.order,
                 'sort': params.sort,
             },
+            values = values,
             unlimited = params.unlimited,
         )
-        def transform_item(item: dict) -> dict:
-            if 'json' in item and item['json']:
-                item['json'] = json_parse(item['json'])
-            return item
-        index = [transform_item(item) for item in index]
-
-        # TODO: mod - 아티클 갯수 가져오기
-        # TODO: mod - 앱 이름 가져오기
 
         # set result
         result = output.success({
-            'message': 'Complete get nest index.',
+            'message': 'Complete get comment index.',
             'data': {
                 'total': total,
                 'index': index,
             },
         })
+        pass
     except Exception as e:
         result = output.exc(e)
     finally:

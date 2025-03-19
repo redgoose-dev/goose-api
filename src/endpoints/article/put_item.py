@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 
 # 아티클 추가
-# 여기서는 mode=ready 상태의 빈 아티클만 추가한다.
+# 여기서 mode=ready 상태의 빈 아티클만 추가한다.
 
 async def put_item(params: types.PutItem, _db: DB = None):
 

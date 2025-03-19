@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form, Query, File, UploadFile
-from . import __types__ as types
 from src.libs.resource import Patterns
+from . import __types__ as types
 from .get_index import get_index
 from .get_item import get_item
 from .put_item import put_item

@@ -54,8 +54,6 @@ async def get_index(params: types.GetIndex, _db: DB = None):
             return item
         index = [transform_item(item) for item in index]
 
-        # TODO: mod - 카테고리 이름 가져오기
-
         # set result
         result = output.success({
             'message': 'Complete get File index.',

@@ -15,7 +15,7 @@ async def put_item(params: types.AddItem, _db: DB = None):
         # check code already exists
         count = db.get_count(
             table_name = Table.APP.value,
-            where = [ f' and code LIKE "{params.code}"' ],
+            where = [ f'and code LIKE "{params.code}"' ],
         )
         if count > 0: raise Exception('code already exists')
 

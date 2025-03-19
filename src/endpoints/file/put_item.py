@@ -39,6 +39,7 @@ async def put_item(params: types.PutItem, _db: DB = None):
             case 'article': table_name = Table.ARTICLE.value
             case 'json': table_name = Table.JSON.value
             case 'checklist': table_name = Table.CHECKLIST.value
+            case 'comment': table_name = Table.COMMENT.value
             case _: table_name = ''
         if not table_name: raise Exception('Module item not found.', 400)
         count = db.get_count(

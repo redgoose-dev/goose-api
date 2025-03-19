@@ -58,7 +58,7 @@ def delete_item(srl: int):
 def test_working():
     pass
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_add_update_delete_item():
     # set values
     path = '/Users/goose/Pictures/scrap/character/h38c.jpg'

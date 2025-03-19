@@ -19,11 +19,11 @@ async def get_index(params: types.GetIndex, _db: DB = None):
         # set where
         where = []
         if params.app_srl:
-            where.append(f'and app_srl={params.app_srl}')
+            where.append(f'and app_srl = {params.app_srl}')
         if params.nest_srl:
-            where.append(f'and nest_srl={params.nest_srl}')
+            where.append(f'and nest_srl = {params.nest_srl}')
         if params.category_srl:
-            where.append(f'and category_srl={params.category_srl}')
+            where.append(f'and category_srl = {params.category_srl}')
         if params.q:
             where.append(f'and (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
         if params.mode:
@@ -60,7 +60,7 @@ async def get_index(params: types.GetIndex, _db: DB = None):
             where = where,
             values = values,
         )
-        if total == 0: raise Exception('No data', 204)
+        if not (total > 0): raise Exception('No data', 204)
 
         # set random
         if params.random:
@@ -90,6 +90,7 @@ async def get_index(params: types.GetIndex, _db: DB = None):
             values = values,
             unlimited = params.unlimited,
         )
+
         # TODO: mod - 카테고리 이름 가져오기
         # TODO: mod - 둥지 이름 가져오기
 

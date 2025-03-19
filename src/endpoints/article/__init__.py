@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Form, Query
+from src.libs.resource import Patterns
 from . import __types__ as types
 from .get_index import get_index
 from .get_item import get_item
@@ -16,14 +17,14 @@ async def _get_index(
     nest_srl: int = Query(None, alias='nest'),
     category_srl: int = Query(None, alias='category'),
     q: str = Query(None),
-    mode: str = Query(None, pattern=r'^(ready|public|private)$'),
-    duration: str = Query(None, pattern=r'^(new|old),(regdate|created_at|updated_at),(day|week|month|year)'),
-    random: str = Query(None, pattern=r'^\d{8}$'),
-    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
+    mode: str = Query(None, pattern=Patterns.article_mode),
+    duration: str = Query(None, pattern=Patterns.article_duration),
+    random: str = Query(None, pattern=Patterns.article_random),
+    fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
-    sort: str = Query('desc', pattern=r'^(asc|desc)$'),
+    sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     return await get_index(types.GetIndex(
@@ -46,7 +47,7 @@ async def _get_index(
 @router.get('/{srl:int}/')
 async def _get_item(
     srl: int,
-    fields: str = Query(None, pattern=r'^[a-zA-Z_]+(,[a-zA-Z_]+)*$'),
+    fields: str = Query(None, pattern=Patterns.fields),
 ):
     return await get_item(types.GetItem(
         srl = srl,
@@ -70,8 +71,8 @@ async def _patch_item(
     hit: bool = Form(False, convert=lambda v: bool(int(v))),
     star: bool = Form(False, convert=lambda v: bool(int(v))),
     json_data: str = Form(None, alias='json'),
-    mode: str = Form(None, pattern=r'^(public|private)$'),
-    regdate: str = Form(None, pattern=r'^\d{4}-\d{2}-\d{2}$'),
+    mode: str = Form(None, pattern=Patterns.article_mode),
+    regdate: str = Form(None, pattern=Patterns.article_regdate),
 ):
     return await patch_item(types.PatchItem(
         srl = srl,

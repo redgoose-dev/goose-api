@@ -13,19 +13,17 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
     else: db = DB().connect()
 
     try:
-        # TODO: 인증 검사하기
-
         # get item
         item = db.get_item(
             table_name = Table.ARTICLE.value,
-            where = [ f'srl={params.srl}' ],
+            where = [ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Item not found', 204)
 
         # delete item
         db.delete_item(
             table_name = Table.ARTICLE.value,
-            where = [ f'srl={params.srl}' ],
+            where = [ f'srl = {params.srl}' ],
         )
 
         # delete file
@@ -34,7 +32,7 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
             fields = [ 'srl', 'path' ],
             where = [
                 'and module LIKE "article"',
-                f'and module_srl={params.srl}',
+                f'and module_srl = {params.srl}',
             ],
         )
         if files and len(files) > 0:
@@ -44,7 +42,7 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
                 table_name = Table.FILE.value,
                 where = [
                     'and module LIKE "article"',
-                    f'and module_srl={params.srl}',
+                    f'and module_srl = {params.srl}',
                 ],
             )
 
