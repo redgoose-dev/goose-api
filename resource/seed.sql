@@ -105,6 +105,7 @@ CREATE TABLE `goose_provider` (
     `user_name` TEXT NULL,
     `user_avatar` TEXT NULL,
     `user_email` TEXT NULL,
+    `user_password` TEXT NULL,
     `created_at` TEXT NOT NULL -- created date
 );
 
