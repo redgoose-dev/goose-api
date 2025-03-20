@@ -6,29 +6,25 @@ redgoose 컨텐츠 API 프로젝트
 ## Usage
 
 로컬 개발 환경에서 구동하기 위하여 다음과 같이 실행합니다.
+패키지 매니저는 `UV`가 필요합니다.
 
 ```shell
 # clone repo
 git clone https://github.com/redgoose-dev/goose-api.git
 cd goose-api
 
-# create virtualenv
-python -m venv .venv
+# install uv (if not installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # activate virtualenv
-source .venv/bin/activate
-
-# install dependencies
-pip install -r requirements.txt
+uv sync
 
 # install app
 ./scripts/util.sh install
 
 # run server
-unicorn main:app --reload --host 0.0.0.0 --port 8000
-
-# deactivate virtualenv
-deactivate
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+./scripts/util.sh dev # run shell script
 ```
 
 서버 스크립트 실행은 `/main.py`파일에서 시작합니다.
