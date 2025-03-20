@@ -9,4 +9,12 @@ def pytest_addoption(parser):
         '--custom',
         action = 'store',
         default = 'default_value',
-        help = 'custom parameter')
+        help = 'custom parameter',
+    )
+
+### TEST AREA ###
+
+def test_basic():
+    print('test_basic()')
+    client.post('/multi/')
+    pass

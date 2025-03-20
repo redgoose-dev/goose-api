@@ -6,7 +6,12 @@ from src.libs.string import create_random_string, date_format, get_date, date_sh
 client = TestClient(app)
 
 def pytest_addoption(parser):
-    parser.addoption("--foo", action="store", default="default_value", help="foo parameter")
+    parser.addoption(
+        '--custom',
+        action = 'store',
+        default = 'default_value',
+        help = 'custom parameter',
+    )
 
 def get_index(params: dict = {}) -> list:
     res = client.get(

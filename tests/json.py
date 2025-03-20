@@ -5,6 +5,14 @@ from src.libs.string import create_random_string
 
 client = TestClient(app)
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--custom',
+        action = 'store',
+        default = 'default_value',
+        help = 'custom parameter',
+    )
+
 def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/json/',

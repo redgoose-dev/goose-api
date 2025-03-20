@@ -42,8 +42,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
             values['turn'] = max_number + 1
 
         # check values
-        if not bool(values):
-            raise Exception('No values to update.', 400)
+        if not bool(values): raise Exception('No values to update.', 400)
 
         # set placeholder
         placeholders = []

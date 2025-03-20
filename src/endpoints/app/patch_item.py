@@ -34,8 +34,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
             values['description'] = params.description
 
         # check values
-        if not bool(values):
-            raise Exception('No values to update.', 400)
+        if not bool(values): raise Exception('No values to update.', 400)
 
         # set sets
         placeholders = []

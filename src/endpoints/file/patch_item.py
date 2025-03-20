@@ -80,8 +80,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         if _json: values['json'] = json_stringify(_json)
 
         # check values
-        if not bool(values):
-            raise Exception('No values to update.', 400)
+        if not bool(values): raise Exception('No values to update.', 400)
 
         # set placeholder
         placeholders = []

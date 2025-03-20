@@ -46,7 +46,7 @@ async def _get_item(
         fields = fields,
     ))
 
-# get nest
+# add nest
 @router.put('/')
 async def _put_item(
     app_srl: int = Form(..., alias='app'),
@@ -63,7 +63,7 @@ async def _put_item(
         json_data = json_data,
     ))
 
-# get nest
+# update nest
 @router.patch('/{srl:int}/')
 async def _patch_item(
     srl: int,
@@ -82,7 +82,7 @@ async def _patch_item(
         json_data = json_data,
     ))
 
-# get nest
+# delete nest
 @router.delete('/{srl:int}/')
 async def _delete_item(srl: int):
     return await delete_item(types.DeleteItem(

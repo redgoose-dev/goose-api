@@ -52,6 +52,9 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         if json_data:
             values['json'] = json_stringify(json_data)
 
+        # check values
+        if not bool(values): raise Exception('No values to update.', 400)
+
         # set placeholder
         placeholders = []
         if 'app_srl' in values:
@@ -68,7 +71,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         # update item
         db.update_item(
             table_name = Table.NEST.value,
-            where = [ f'srl={params.srl}' ],
+            where = [ f'srl = {params.srl}' ],
             placeholders = placeholders,
             values = values,
         )

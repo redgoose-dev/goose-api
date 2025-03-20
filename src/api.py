@@ -15,6 +15,8 @@ from .endpoints.category import router as category
 from .endpoints.nest import router as nest
 from .endpoints.file import router as file
 from .endpoints.comment import router as comment
+from .endpoints.checklist import router as checklist
+# from .endpoints.auth import router as auth
 
 # docs
 # - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
@@ -56,13 +58,11 @@ api.include_router(app, prefix='/app')
 # article
 api.include_router(article, prefix='/article')
 
-# auth
-
 # category
 api.include_router(category, prefix='/category')
 
 # checklist
-# api.include_router(checklist, prefix='/checklist')
+api.include_router(checklist, prefix='/checklist')
 
 # comment
 api.include_router(comment, prefix='/comment')
@@ -75,6 +75,19 @@ api.include_router(json, prefix='/json')
 
 # nest
 api.include_router(nest, prefix='/nest')
+
+# auth
+# api.include_router(auth, prefix='/auth')
+
+# multiple request
+@api.post('/multi/')
+async def _multi():
+    # TODO: 여러가지 요청을 한번에 처리하는 API
+    # TODO: 배열로 요청들을 받고, 각각의 요청을 처리한 후 결과를 배열로 반환
+    # TODO: 체인으로 연결된 요청을 처리할 수 있도록 구현
+    # TODO: 0번 요청을 처리하여 나온 리턴을 1번에서 값을 받아서 처리할 수 있는지 연구 필요하다.
+    print('multi=====>')
+    pass
 
 # 404
 @api.exception_handler(StarletteHTTPException)

@@ -7,6 +7,10 @@ from src.libs.object import json_stringify
 from src.libs.string import create_random_string
 from .__lib__ import get_unique_name, get_dir_path, write_file, delete_file
 
+# TODO: 파일 포맷을 사용하면 컨버팅하는것도 좋을거 같다. 그리되면 퀄리티 옵션도 필요할 것이다. (avif,webp)
+# TODO: 리사이즈 옵션까지는 과한거 같다.
+# TODO: 참고링크: https://grok.com/share/bGVnYWN5_5f6210f7-c511-4b50-be37-92cbd89b4133
+
 async def put_item(params: types.PutItem, _db: DB = None):
 
     # set values

@@ -86,6 +86,9 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         if params.regdate:
             values['regdate'] = params.regdate
 
+        # check values
+        if not bool(values): raise Exception('No values to update.', 400)
+
         # set placeholders
         placeholders = []
         if 'app_srl' in values:

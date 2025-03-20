@@ -2,7 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 
-async def get_item(params: types.GetItem, _db: DB = None):
+async def delete_item(params: types.DeleteItem, _db: DB = None):
 
     # set values
     result = None
@@ -12,21 +12,22 @@ async def get_item(params: types.GetItem, _db: DB = None):
     else: db = DB().connect()
 
     try:
-        # set fields
-        fields = params.fields.split(',') if params.fields else None
+        # check item
+        count = db.get_count(
+            table_name = Table.CHECKLIST.value,
+            where = [ f'srl={params.srl}' ],
+        )
+        if count == 0: raise Exception('Item not found.', 204)
 
-        # get data
-        data = db.get_item(
-            table_name = Table.CATEGORY.value,
-            fields = fields,
+        # add item
+        db.delete_item(
+            table_name = Table.CHECKLIST.value,
             where = [ f'srl = {params.srl}' ],
         )
-        if not data: raise Exception('Item not found', 204)
 
         # set result
         result = output.success({
-            'message': 'Complete get category item.',
-            'data': data,
+            'message': 'Complete delete checklist item.',
         })
     except Exception as e:
         result = output.exc(e)

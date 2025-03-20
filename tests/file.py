@@ -5,6 +5,14 @@ from src.endpoints.file.__lib__ import get_mime_type, get_file_name
 
 client = TestClient(app)
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--custom',
+        action = 'store',
+        default = 'default_value',
+        help = 'custom parameter',
+    )
+
 def get_index(params: dict = {}) -> dict:
     res = client.get(
         url = f'/file/',

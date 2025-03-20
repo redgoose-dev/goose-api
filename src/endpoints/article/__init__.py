@@ -72,7 +72,7 @@ async def _patch_item(
     star: bool = Form(False, convert=lambda v: bool(int(v))),
     json_data: str = Form(None, alias='json'),
     mode: str = Form(None, pattern=Patterns.article_mode),
-    regdate: str = Form(None, pattern=Patterns.article_regdate),
+    regdate: str = Form(None, pattern=Patterns.date),
 ):
     return await patch_item(types.PatchItem(
         srl = srl,

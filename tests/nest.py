@@ -5,6 +5,14 @@ from src.libs.string import create_random_string
 
 client = TestClient(app)
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--custom',
+        action = 'store',
+        default = 'default_value',
+        help = 'custom parameter',
+    )
+
 def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/nest/',
@@ -18,6 +26,7 @@ def get_index(params: dict = {}) -> list:
     return json['data']['index']
 
 def get_item(srl: int = None, params: dict = {}) -> dict:
+    if not srl: raise Exception('srl not found.')
     res = client.get(f'/nest/{srl}/', params = params)
     assert res.status_code == 200
     json = res.json()
@@ -46,6 +55,8 @@ def delete_item(srl: int):
     if not srl: raise Exception('srl not found.')
     res = client.delete(f'/nest/{srl}/')
     assert res.status_code == 200
+
+### TEST AREA ###
 
 @pytest.mark.skip
 def test_working():
