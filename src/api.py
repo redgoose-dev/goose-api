@@ -16,7 +16,7 @@ from .endpoints.nest import router as nest
 from .endpoints.file import router as file
 from .endpoints.comment import router as comment
 from .endpoints.checklist import router as checklist
-# from .endpoints.auth import router as auth
+from .endpoints.auth import router as auth
 
 # docs
 # - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
@@ -77,7 +77,7 @@ api.include_router(json, prefix='/json')
 api.include_router(nest, prefix='/nest')
 
 # auth
-# api.include_router(auth, prefix='/auth')
+api.include_router(auth, prefix='/auth')
 
 # multiple request
 @api.post('/multi/')

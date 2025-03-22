@@ -12,7 +12,7 @@ router = APIRouter()
 
 # get apps index
 @router.get('/')
-async def _index(
+async def _get_index(
     code: str = Query(None),
     name: str = Query(None),
     fields: str = Query(None, pattern=Patterns.fields),
@@ -35,7 +35,7 @@ async def _index(
 
 # get app
 @router.get('/{srl}/')
-async def _item(
+async def _get_item(
     srl: int|str,
     fields: str = Query(None, pattern=Patterns.fields),
 ):

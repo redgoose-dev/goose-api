@@ -99,8 +99,7 @@ CREATE TABLE `goose_comment` (
 -- table `provider`
 CREATE TABLE `goose_provider` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- provider srl
-    `code` TEXT NOT NULL UNIQUE, -- unique provider code
-    `name` TEXT NOT NULL UNIQUE, -- provider name
+    `code` TEXT NOT NULL UNIQUE, -- unique provider
     `user_id` TEXT NOT NULL,
     `user_name` TEXT NULL,
     `user_avatar` TEXT NULL,

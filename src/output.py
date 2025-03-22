@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from starlette.responses import Response
+from starlette.responses import Response, RedirectResponse
 from src.extends.Response import LocalJSONResponse
 from pydantic import BaseModel
 from .libs.string import create_random_string, color_text, get_status_message
@@ -58,6 +58,10 @@ def buffer(data: Any|None, options: Dict[str,any] = None) -> Response:
         content = data,
     )
 
+# redirect url
+def redirect(path: str, code: int = 302):
+    return RedirectResponse(path, status_code=code)
+
 # no content
 def empty(options: Dict[str, any] = None) -> Response:
     status_code = options.get('code', 204) if options else 204
@@ -77,7 +81,7 @@ def error(content: str|None, options: Dict[str, any] = None) -> Response:
     if not content: content = get_status_message(code)
     # set extra
     if code not in [ 404, 405 ]:
-        unique = create_random_string(16)
+        unique = create_random_string(12)
         headers['Error-Code'] = unique
         print(color_text(f'[ERROR] {options}', 'red'))
     # return

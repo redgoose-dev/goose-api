@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAuth Test</title>
+<style>
+h1 { font-weight: 900; }
+.nav, #confirm-link {
+  display: grid; place-content: center; gap: 4px 12px;
+  padding: 16px;
+}
+#confirm-link a { display: block; }
+#status { padding: 16px; border: 1px solid silver; }
+</style>
+</head>
+<body>
+<main>
+  <h1>OAUTH TEST TOOL</h1>
+  <hr>
+  <nav class="nav">
+    <button onclick="startAuthDiscord()">인증/디스코드</button>
+  </nav>
+  <hr>
+  <nav id="confirm-link"></nav>
+  <hr>
+  <pre id="status"></pre>
+</main>
+<script>
+const $status = document.getElementById('status')
+const $confirmLink = document.getElementById('confirm-link')
+
+function makeAuthLink(path)
+{
+  const link = document.createElement('a')
+  link.href = path
+  link.textContent = '인증하기'
+  link.target = '_blank'
+  $confirmLink.appendChild(link)
+}
+
+function startAuthDiscord()
+{
+  const socket_id = 'socket-' + Math.random().toString(36).substr(2, 9)
+  const ws = new WebSocket(`/auth/ws/${socket_id}/`)
+  ws.addEventListener('open', () => {
+    printMessage('웹소켓 연결시작')
+    ws.send(JSON.stringify({
+      mode: 'start-auth',
+      provider: 'discord',
+      redirect_uri: 'http://localhost:8000/auth/test-auth/',
+    }))
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    switch (data.mode)
+    {
+      case 'auth-link':
+        makeAuthLink(data.url)
+        break
+      case 'auth-complete':
+        printMessage('인증 성공했어요~')
+        printMessage(`- 엑세스 토큰: ${data.access_token}`)
+        printMessage(`- 리프레시 토큰: ${data.refresh_token}`)
+        printMessage(`- 만료시간: ${data.expires_in}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (e) => {
+    printMessage('웹소켓 연결종료')
+  })
+}
+
+function printMessage(msg)
+{
+  $status.innerText = $status.innerText + msg + '\n'
+}
+</script>
+</body>
+</html>

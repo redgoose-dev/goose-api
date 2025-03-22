@@ -8,6 +8,7 @@ class Patterns:
     srls = r'^\d+(,\d+)*$'
     code = r'^[a-zA-Z0-9-_]+$'
     date = r'^\d{4}-\d{2}-\d{2}$'
+    url = r'^(https?:\/\/[^\s]+)$'
     # article
     article_mode = r'^(ready|public|private)$'
     article_duration = r'^(new|old),(regdate|created_at|updated_at),(day|week|month|year)'
@@ -18,3 +19,5 @@ class Patterns:
     comment_module = r'^(article)$'
     # file
     file_modules = r'^(article|json|checklist|comment)$'
+    # auth
+    auth_provider = r'^(discord|google|github)$'

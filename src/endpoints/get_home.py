@@ -1,9 +1,18 @@
-from ..output import success, empty, error
+from src import output
 from src import __version__, __dev__
 
 def home():
-    return success({
-        'message': 'Hello goose-api',
-        'version': __version__,
-        'dev': __dev__,
-    })
+
+    # set values
+    result = None
+
+    try:
+        result = output.success({
+            'message': 'Hello goose-api',
+            'version': __version__,
+            'dev': __dev__,
+        })
+    except Exception as e:
+        result = output.exc(e)
+    finally:
+        return result

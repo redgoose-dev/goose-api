@@ -1,4 +1,4 @@
-import os, secrets, string, pytz
+import os, secrets, string, pytz, base64, json
 from datetime import datetime, timedelta
 
 def create_random_string(length: int) -> str:
@@ -31,19 +31,6 @@ def date_format(date: str = None, pattern: str = '%Y-%m-%d %H:%M:%S') -> str:
         local_timezone = pytz.timezone(timezone)
         local_date = date.astimezone(local_timezone)
         return local_date.strftime(pattern)
-    except:
-        return ''
-
-# TODO: 삭제할 예정이다.
-def convert_date(date: str = None) -> str:
-    if not date: return ''
-    try:
-        timezone = os.getenv('TIMEZONE')
-        date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-        date_utc = date.replace(tzinfo=pytz.UTC)
-        local_timezone = pytz.timezone(timezone)
-        local_date = date_utc.astimezone(local_timezone)
-        return local_date.strftime('%Y-%m-%d %H:%M:%S')
     except:
         return ''
 
@@ -88,3 +75,19 @@ def get_status_message(code: int) -> str:
             return 'Invalid Data'
         case _:
             return 'Service Error'
+
+def get_path(path: str = '') -> str:
+    return f'{os.getenv('PATH_ROOT')}{path}'
+
+def get_url(path: str = '') -> str:
+    return f'{os.getenv('PATH_URL')}{path}'
+
+def uri_encode(data: dict|list = None) -> str:
+    if not data: return ''
+    try: return base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
+    except: return ''
+
+def uri_decode(_base64: str = None) -> dict|list|None:
+    if not _base64: return None
+    try: return json.loads(base64.urlsafe_b64decode(_base64.encode()).decode())
+    except: return None
