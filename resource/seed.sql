@@ -99,7 +99,7 @@ CREATE TABLE `goose_comment` (
 -- table `provider`
 CREATE TABLE `goose_provider` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- provider srl
-    `code` TEXT NOT NULL UNIQUE, -- unique provider
+    `code` TEXT NOT NULL, -- provider name
     `user_id` TEXT NOT NULL,
     `user_name` TEXT NULL,
     `user_avatar` TEXT NULL,
@@ -113,7 +113,8 @@ CREATE TABLE `goose_token` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- token srl
     `provider_srl` INTEGER NOT NULL, -- provider srl
     `access` TEXT NOT NULL UNIQUE, -- access token
-    `expired` INTEGER NOT NULL, -- expired timestamp
+    `expires` INTEGER NOT NULL, -- expires_in timestamp
+    `refresh` TEXT NULL, -- refresh token
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`provider_srl`) REFERENCES `goose_provider`(`srl`)
 );

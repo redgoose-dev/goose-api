@@ -1,6 +1,5 @@
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import WebSocket
 
 class GetIndex(BaseModel):
     fields: Optional[str]
@@ -14,8 +13,28 @@ class GetCallback(BaseModel):
     code: str
     state: str
 
+class PostChecking(BaseModel):
+    authorization: Optional[str]
+
+class PutItem(BaseModel):
+    code: str
+    user_id: str
+    user_name: Optional[str]
+    user_avatar: Optional[str]
+    user_email: str
+    user_password: str
+
+class PostSignin(BaseModel):
+    user_id: str
+    user_password: str
+
+class PatchItem(BaseModel):
+    srl: int
+    user_id: Optional[str]
+    user_name: Optional[str]
+    user_avatar: Optional[str]
+    user_email: Optional[str]
+    user_password: Optional[str]
+
 class DeleteItem(BaseModel):
     srl: int
-
-class PostChecking(BaseModel):
-    pass

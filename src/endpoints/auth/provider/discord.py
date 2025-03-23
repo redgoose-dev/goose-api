@@ -1,5 +1,5 @@
 import os, httpx
-from src.libs.string import uri_decode, get_url
+from src.libs.string import get_url
 
 # set values
 scope = 'identify email'
@@ -44,6 +44,20 @@ async def get_user(access_token: str) -> dict|None:
     return {
         'id': json['id'],
         'name': json['username'],
-        'avatar': json['avatar'],
+        'avatar': __get_avatar_url__(json['id'], json['avatar']),
         'email': json['email'],
     }
+
+def check_user_id(user_id: str, user_data: dict) -> bool:
+    return user_id == user_data['id']
+
+def __get_avatar_url__(_id: str = None, _code: str = None) -> str:
+    url = {
+        'base': 'https://cdn.discordapp.com/avatars',
+        'embed': 'https://cdn.discordapp.com/embed/avatars',
+    }
+    if _code:
+        filename = f'{_code}.{'gif' if _code.startswith('a_') else 'png'}'
+        return f'{url['base']}/{_id}/{filename}'
+    else:
+        return f'{url['embed']}/{int(_id) % 5}.png'

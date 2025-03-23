@@ -12,15 +12,13 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
     if _db: db = _db
     else: db = DB().connect()
 
-    print('PARAMS:', params)
-
     try:
-        # check item
+        # check data
         count = db.get_count(
             table_name = Table.COMMENT.value,
-            where = [ f'srl="{params.srl}"' ],
+            where = [ f'srl = {params.srl}' ],
         )
-        if count == 0: raise Exception('Item not found.', 204)
+        if count == 0: raise Exception('Data not found.', 204)
 
         # set values
         values = {}
@@ -43,7 +41,7 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         if 'module_srl' in values and values['module_srl']:
             placeholders.append('module_srl = :module_srl')
 
-        # update item
+        # update data
         db.update_item(
             table_name = Table.COMMENT.value,
             placeholders = placeholders,

@@ -12,14 +12,14 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
     else: db = DB().connect()
 
     try:
-        # check item
+        # check data
         count = db.get_count(
             table_name = Table.PROVIDER.value,
-            where = [ f'srl={params.srl}' ],
+            where = [ f'srl = {params.srl}' ],
         )
-        if count == 0: raise Exception('Item not found.', 204)
+        if not (count > 0): raise Exception('Item not found.', 204)
 
-        # add item
+        # delete data
         db.delete_item(
             table_name = Table.PROVIDER.value,
             where = [ f'srl = {params.srl}' ],
@@ -27,7 +27,7 @@ async def delete_item(params: types.DeleteItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Complete delete provider item.',
+            'message': 'Complete delete provider.',
         })
     except Exception as e:
         result = output.exc(e)

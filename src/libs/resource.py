@@ -9,6 +9,7 @@ class Patterns:
     code = r'^[a-zA-Z0-9-_]+$'
     date = r'^\d{4}-\d{2}-\d{2}$'
     url = r'^(https?:\/\/[^\s]+)$'
+    email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     # article
     article_mode = r'^(ready|public|private)$'
     article_duration = r'^(new|old),(regdate|created_at|updated_at),(day|week|month|year)'

@@ -38,7 +38,7 @@ async def put_item(params: types.PutItem, _db: DB = None):
             { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
-        # add item
+        # add data
         data = db.add_item(
             table_name = Table.COMMENT.value,
             placeholders = placeholders,

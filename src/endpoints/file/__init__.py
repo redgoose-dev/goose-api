@@ -78,3 +78,5 @@ async def _patch_item(
 @router.delete('/{srl:int}/')
 async def _delete_item(srl: int):
     return await delete_item(types.DeleteItem(srl = srl))
+
+# TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
