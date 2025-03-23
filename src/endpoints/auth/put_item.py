@@ -1,31 +1,20 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .__libs__ import hash_password, create_token
-from src.libs.number import time_to_seconds
+from .__libs__ import hash_password, create_tokens
 from .provider import ProviderCode
 
-async def put_item(params: types.PutItem, _db: DB = None):
+async def put_item(params: types.PutItem, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
-        # check provider code
-        if not ProviderCode.check_exist(params.code):
-            raise Exception('Invalid provider code', 400)
-
         # check exist provider
         count = db.get_count(
             table_name = Table.PROVIDER.value,
-            where = [
-                f'and code like "{ProviderCode.password}"',
-                f'and user_id like "{params.user_id}"',
-            ],
+            where = [ f'code like "{ProviderCode.password}"' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
 
@@ -60,40 +49,20 @@ async def put_item(params: types.PutItem, _db: DB = None):
             values = values,
         )
 
-        # set tokens
-        access_token = create_token('access')
-        refresh_token = create_token('refresh')
-        expires = time_to_seconds('day', 7)
-
-        # add token
-        db.add_item(
-            table_name = Table.TOKEN.value,
-            values = {
-                'provider_srl': provider_srl,
-                'access': access_token,
-                'expires': expires,
-                'refresh': refresh_token,
-            },
-            placeholders = [
-                { 'key': 'provider_srl', 'value': ':provider_srl' },
-                { 'key': 'access', 'value': ':access' },
-                { 'key': 'expires', 'value': ':expires' },
-                { 'key': 'refresh', 'value': ':refresh' },
-                { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
-            ],
-        )
+        # new tokens
+        tokens = create_tokens(db, provider_srl)
 
         # set result
         result = output.success({
-            'message': 'Complete add Provider.',
+            'message': 'Complete add provider.',
             'data': {
-                'access_token': access_token,
-                'refresh_token': refresh_token,
-                'expires': expires,
+                'access': tokens['access'],
+                'refresh': tokens['refresh'],
+                'expires': tokens['expires'],
             },
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

@@ -1,21 +1,17 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.modules.verify import checking_token
 
-# 아티클 추가
-# 여기서 mode=ready 상태의 빈 아티클만 추가한다.
-
-async def put_item(params: types.PutItem, _db: DB = None):
+async def put_item(params: types.PutItem, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
-        # TODO: 인증 검사하기
+        # checking token
+        db = checking_token(req, db)
 
         # check ready mode item
         item = db.get_item(
@@ -28,7 +24,7 @@ async def put_item(params: types.PutItem, _db: DB = None):
         else:
             data = db.add_item(
                 table_name = Table.ARTICLE.value,
-                placeholders = [{ 'key': 'mode', 'value': ':mode' }],
+                placeholders = [ { 'key': 'mode', 'value': ':mode' } ],
                 values = { 'mode': 'ready' },
             )
 
@@ -40,5 +36,5 @@ async def put_item(params: types.PutItem, _db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

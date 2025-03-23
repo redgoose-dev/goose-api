@@ -1,19 +1,18 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.modules.verify import checking_token
 
-async def get_index(params: types.GetIndex, _db: DB = None):
-
-    # TODO: 테스트 해야함
+async def get_index(params: types.GetIndex, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
+        # checking token
+        db = checking_token(req, db)
+
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
@@ -34,6 +33,10 @@ async def get_index(params: types.GetIndex, _db: DB = None):
             where = where,
             unlimited = True,
         )
+        def transform_item(item: dict) -> dict:
+            if 'user_password' in item: del item['user_password']
+            return item
+        index = [transform_item(item) for item in index]
 
         # set result
         result = output.success({
@@ -46,5 +49,5 @@ async def get_index(params: types.GetIndex, _db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

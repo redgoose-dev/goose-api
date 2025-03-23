@@ -1,11 +1,6 @@
-from fastapi import APIRouter, Form, Query
+from fastapi import APIRouter, Request, Form, Query
 from src.libs.resource import Patterns
 from . import __types__ as types
-from .get_index import get_index
-from .get_item import get_item
-from .put_item import put_item
-from .patch_item import patch_item
-from .delete_item import delete_item
 
 # set router
 router = APIRouter()
@@ -13,6 +8,7 @@ router = APIRouter()
 # get json index
 @router.get('/')
 async def _get_index(
+    req: Request,
     name: str = Query(None),
     category_srl: int = Query(None, alias='category'),
     fields: str = Query(None, pattern=Patterns.fields),
@@ -22,6 +18,7 @@ async def _get_index(
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
+    from .get_index import get_index
     return await get_index(types.GetIndex(
         name = name,
         category_srl = category_srl,
@@ -31,39 +28,44 @@ async def _get_index(
         order = order,
         sort = sort,
         unlimited = unlimited,
-    ))
+    ), req = req)
 
 # get json
 @router.get('/{srl:int}/')
 async def _get_item(
+    req: Request,
     srl: int,
     fields: str = Query(None, pattern=Patterns.fields),
 ):
+    from .get_item import get_item
     return await get_item(types.GetItem(
         srl = srl,
         fields = fields,
-    ))
+    ), req = req)
 
 # add json
 @router.put('/')
 async def _put_item(
+    req: Request,
     category_srl: int = Form(None, alias='category'),
     name: str = Form(...),
     description: str = Form(None),
     json_data: str = Form(..., alias='json'),
     path: str = Form(None),
 ):
+    from .put_item import put_item
     return await put_item(types.PutItem(
         category_srl = category_srl,
         name = name,
         description = description,
         json_data = json_data,
         path = path,
-    ))
+    ), req = req)
 
 # edit json
 @router.patch('/{srl:int}/')
 async def _patch_item(
+    req: Request,
     srl: int,
     category_srl: int = Form(None, alias='category'),
     name: str = Form(None),
@@ -71,6 +73,7 @@ async def _patch_item(
     json_data: str = Form(None, alias='json'),
     path: str = Form(None),
 ):
+    from .patch_item import patch_item
     return await patch_item(types.PatchItem(
         srl = srl,
         category_srl = category_srl,
@@ -78,9 +81,15 @@ async def _patch_item(
         description = description,
         json_data = json_data,
         path = path,
-    ))
+    ), req = req)
 
 # delete json
 @router.delete('/{srl:int}/')
-async def _delete_item(srl: int):
-    return await delete_item(types.DeleteItem(srl = srl))
+async def _delete_item(
+    req: Request,
+    srl: int,
+):
+    from .delete_item import delete_item
+    return await delete_item(types.DeleteItem(
+        srl = srl,
+    ), req = req)

@@ -14,7 +14,7 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
     state = uri_decode(params.state)
 
     # connect db
-    if _db: db = _db
+    if _db and isinstance(_db, DB): db = _db
     else: db = DB().connect()
 
     try:

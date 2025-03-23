@@ -1,18 +1,19 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.modules.verify import checking_token
 from .__libs__ import check_module
 
-async def patch_item(params: types.PatchItem, _db: DB = None):
+async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
+        # checking token
+        db = checking_token(req, db)
+
         # check data
         count = db.get_count(
             table_name = Table.COMMENT.value,
@@ -51,10 +52,10 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
 
         # set result
         result = output.success({
-            'message': 'Complete update Comment.',
+            'message': 'Complete update comment.',
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

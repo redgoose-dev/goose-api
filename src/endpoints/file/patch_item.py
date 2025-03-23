@@ -4,21 +4,20 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.check import parse_json
 from src.libs.object import json_stringify
+from src.modules.verify import checking_token
 from .__lib__ import get_unique_name, get_dir_path, write_file, delete_file
 
-async def patch_item(params: types.PatchItem, _db: DB = None):
+async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
-
-    # set base
+    db = db if db and isinstance(db, DB) else DB().connect()
     path_file = ''
 
     try:
+        # checking token
+        db = checking_token(req, db)
+
         # check item
         item = db.get_item(
             table_name = Table.FILE.value,
@@ -118,5 +117,5 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
         if path_file: delete_file(path_file)
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

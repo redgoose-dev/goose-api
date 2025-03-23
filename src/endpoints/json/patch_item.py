@@ -3,21 +3,22 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.check import parse_json, check_url
 from src.libs.object import json_stringify
+from src.modules.verify import checking_token
 
-async def patch_item(params: types.PatchItem, _db: DB = None):
+async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
+        # checking token
+        db = checking_token(req, db)
+
         # check item
         count = db.get_count(
             table_name = Table.JSON.value,
-            where = [ f'and srl="{params.srl}"' ],
+            where = [ f'srl = {params.srl}' ],
         )
         if count <= 0: raise Exception('Item not found.', 204)
 
@@ -77,5 +78,5 @@ async def patch_item(params: types.PatchItem, _db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

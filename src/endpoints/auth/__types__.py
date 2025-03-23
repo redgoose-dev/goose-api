@@ -17,16 +17,18 @@ class PostChecking(BaseModel):
     authorization: Optional[str]
 
 class PutItem(BaseModel):
-    code: str
     user_id: str
     user_name: Optional[str]
     user_avatar: Optional[str]
     user_email: str
     user_password: str
 
-class PostSignin(BaseModel):
+class PostLogin(BaseModel):
     user_id: str
     user_password: str
+
+class PostLogout(BaseModel):
+    pass
 
 class PatchItem(BaseModel):
     srl: int

@@ -60,9 +60,9 @@ function startAuthDiscord()
         break
       case 'auth-complete':
         printMessage('인증 성공했어요~')
-        printMessage(`- 엑세스 토큰: ${data.access_token}`)
-        printMessage(`- 리프레시 토큰: ${data.refresh_token}`)
-        printMessage(`- 만료시간: ${data.expires_in}`)
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
         break
     }
   })

@@ -1,7 +1,6 @@
 from . import __types__ as types
 from urllib.parse import urlencode
 from src import output
-from src.libs.db import DB, Table
 from src.libs.string import uri_encode, get_url
 from . import provider
 
@@ -10,7 +9,7 @@ from . import provider
 GET /auth/redirect/discord/?redirect_uri={CLIENT_REDIRECT_URI}
 """
 
-async def get_redirect(params: types.GetRedirect, _db: DB = None):
+async def get_redirect(params: types.GetRedirect):
 
     # set values
     result = None

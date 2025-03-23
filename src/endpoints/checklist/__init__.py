@@ -1,11 +1,6 @@
-from fastapi import APIRouter, Form, Query
+from fastapi import APIRouter, Request, Form, Query
 from src.libs.resource import Patterns
 from . import __types__ as types
-from .get_index import get_index
-from .get_item import get_item
-from .put_item import put_item
-from .patch_item import patch_item
-from .delete_item import delete_item
 
 # set router
 router = APIRouter()
@@ -13,6 +8,7 @@ router = APIRouter()
 # get checklist index
 @router.get('/')
 async def _get_index(
+    req: Request,
     content: str = Query(None),
     start: str = Query(None, Patterns=Patterns.date),
     end: str = Query(None, Patterns=Patterns.date),
@@ -23,6 +19,7 @@ async def _get_index(
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
+    from .get_index import get_index
     return await get_index(types.GetIndex(
         content = content,
         start = start,
@@ -33,42 +30,52 @@ async def _get_index(
         order = order,
         sort = sort,
         unlimited = unlimited,
-    ))
+    ), req = req)
 
 # get checklist
 @router.get('/{srl}/')
 async def _get_item(
+    req: Request,
     srl: int,
     fields: str = Query(None, pattern=Patterns.fields),
 ):
+    from .get_item import get_item
     return await get_item(types.GetItem(
         srl = srl,
         fields = fields,
-    ))
+    ), req = req)
 
 # add checklist
 @router.put('/')
 async def _put_item(
+    req: Request,
     content: str = Form(None),
 ):
+    from .put_item import put_item
     return await put_item(types.PutItem(
         content = content,
-    ))
+    ), req = req)
 
 # update checklist
 @router.patch('/{srl:int}/')
 async def _patch_item(
+    req: Request,
     srl: int,
     content: str = Form(None),
 ):
+    from .patch_item import patch_item
     return await patch_item(types.PatchItem(
         srl = srl,
         content = content,
-    ))
+    ), req = req)
 
 # get checklist
 @router.delete('/{srl:int}/')
-async def _delete_item(srl: int):
+async def _delete_item(
+    req: Request,
+    srl: int,
+):
+    from .delete_item import delete_item
     return await delete_item(types.DeleteItem(
         srl = srl,
-    ))
+    ), req = req)

@@ -1,17 +1,18 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.modules.verify import checking_token
 
-async def put_item(params: types.PutItem, _db: DB = None):
+async def put_item(params: types.PutItem, req = None, db: DB = None):
 
     # set values
     result = None
-
-    # connect db
-    if _db: db = _db
-    else: db = DB().connect()
+    db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
+        # checking token
+        db = checking_token(req, db)
+
         # check exist module item
         match params.module:
             case 'article': table_name = Table.ARTICLE.value
@@ -53,5 +54,5 @@ async def put_item(params: types.PutItem, _db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if not _db: db.disconnect()
+        if db: db.disconnect()
         return result

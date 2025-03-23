@@ -1,4 +1,6 @@
 import os, time, hashlib
+from src.libs.db import Table
+from src.libs.number import time_to_seconds
 
 def hash_password(pw: str, salt: bytes = None) -> str:
     if salt is None: salt = os.urandom(16)
@@ -22,3 +24,29 @@ def create_token(mode: str) -> str:
     token_data = mode + current_time + mode
     token_hash = hashlib.sha256(token_data.encode('utf-8')).hexdigest()
     return 'xx' + token_hash[4:28] + 'xx' if mode == 'access' else token_hash
+
+def create_tokens(db, provider_srl) -> dict:
+    access_token = create_token('access')
+    refresh_token = create_token('refresh')
+    expires = time_to_seconds('day', 7)
+    db.add_item(
+        table_name = Table.TOKEN.value,
+        values = {
+            'provider_srl': provider_srl,
+            'access': access_token,
+            'expires': expires,
+            'refresh': refresh_token,
+        },
+        placeholders = [
+            { 'key': 'provider_srl', 'value': ':provider_srl' },
+            { 'key': 'access', 'value': ':access' },
+            { 'key': 'expires', 'value': ':expires' },
+            { 'key': 'refresh', 'value': ':refresh' },
+            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
+        ],
+    )
+    return {
+        'access': access_token,
+        'refresh': refresh_token,
+        'expires': expires,
+    }

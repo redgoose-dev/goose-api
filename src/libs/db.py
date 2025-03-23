@@ -94,9 +94,10 @@ class DB:
         query = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
         query = self.__optimize_query__(query)
         if self.debug:
-            print(color_text(f'[DB_METHOD] get_items:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('get_items', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -120,9 +121,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] get_item:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('get_item', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -143,9 +145,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] get_count:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('get_count', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -167,9 +170,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] add_item:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('add_item', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -196,9 +200,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] update_item:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('update_item', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -218,9 +223,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] delete_item:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('delete_item', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor = self.conn.cursor()
         cursor.execute(query, values)
@@ -247,9 +253,10 @@ class DB:
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] get_max_number:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {where}', 'magenta'))
+            print_debug('get_max_number', {
+                'DB_SQL': query,
+                'DB_WHERE': where,
+            })
         # execute query
         cursor = self.conn.cursor()
         result = cursor.execute(query, values).fetchone()
@@ -260,10 +267,16 @@ class DB:
         cursor = self.conn.cursor()
         # print debug
         if self.debug:
-            print(color_text(f'[DB_METHOD] run_query:', 'magenta'))
-            print(color_text(f'  [DB_SQL] {query}', 'magenta'))
-            print(color_text(f'  [DB_VALUES] {values}', 'magenta'))
+            print_debug('run_query', {
+                'DB_SQL': query,
+                'DB_VALUES': values,
+            })
         # execute query
         cursor.execute(query, values)
         self.conn.commit()
         return cursor
+
+def print_debug(method: str, data: dict):
+    print(color_text(f'[DB_METHOD] {method}:', 'magenta'))
+    for key, value in data.items():
+        if value: print(color_text(f'  [{key}] {value}', 'magenta'))
