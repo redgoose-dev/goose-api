@@ -2,7 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__lib__ import delete_file
+from .__libs__ import delete_file
 
 async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 

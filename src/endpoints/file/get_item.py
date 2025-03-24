@@ -4,7 +4,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
-from .__lib__ import convert_path_to_buffer
+from .__libs__ import convert_path_to_buffer
 
 async def get_item(params: types.GetItem, req = None, db: DB = None):
 

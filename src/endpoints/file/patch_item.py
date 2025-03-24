@@ -5,7 +5,7 @@ from src.libs.db import DB, Table
 from src.libs.check import parse_json
 from src.libs.object import json_stringify
 from src.modules.verify import checking_token
-from .__lib__ import get_unique_name, get_dir_path, write_file, delete_file
+from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 
 async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 

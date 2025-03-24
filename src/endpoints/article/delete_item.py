@@ -27,6 +27,7 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
             where = [ f'srl = {params.srl}' ],
         )
 
+        # TODO: 파일삭제는 함수 하나로 압축할 수 있을거 같은데..
         # delete file
         files = db.get_items(
             table_name = Table.FILE.value,
@@ -48,11 +49,17 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
             )
 
         # delete comment
-        # TODO: 연결되어있는 댓글 모두 삭제하기
+        db.delete_item(
+            table_name = Table.COMMENT.value,
+            where = [
+                'and module LIKE "article"',
+                f'and module_srl = {params.srl}',
+            ]
+        )
 
         # set result
         result = output.success({
-            'message': 'Success delete Article.',
+            'message': 'Success delete article.',
         })
     except Exception as e:
         result = output.exc(e)
