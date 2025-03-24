@@ -1,29 +1,32 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .__libs__ import hash_password, create_tokens
-from .provider import ProviderCode
+from .provider.password import ProviderPassword
+from .provider import Provider
 
-async def put_item(params: types.PutItem, db: DB = None):
+async def put_register(params: types.PutRegister, db: DB = None):
 
     # set values
     result = None
     db = db if db and isinstance(db, DB) else DB().connect()
 
     try:
+        # set provider instance
+        _provider_ = Provider(Provider.code_password)
+
         # check exist provider
         count = db.get_count(
             table_name = Table.PROVIDER.value,
-            where = [ f'code like "{ProviderCode.password}"' ],
+            where = [ f'code like "{_provider_.name}"' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
 
         # set password
-        password = hash_password(params.user_password)
+        password = ProviderPassword.hash_password(params.user_password)
 
         # set values
         values = {
-            'code': ProviderCode.password,
+            'code': _provider_.name,
             'user_id': params.user_id,
             'user_name': params.user_name,
             'user_avatar': params.user_avatar,
@@ -49,16 +52,34 @@ async def put_item(params: types.PutItem, db: DB = None):
             values = values,
         )
 
-        # new tokens
-        tokens = create_tokens(db, provider_srl)
+        # create new tokens
+        new_token = ProviderPassword.create_token()
+
+        # add token data
+        db.add_item(
+            table_name = Table.TOKEN.value,
+            values = {
+                'provider_srl': provider_srl,
+                'access': new_token['access'],
+                'expires': new_token['expires'],
+                'refresh': new_token['refresh'],
+            },
+            placeholders = [
+                { 'key': 'provider_srl', 'value': ':provider_srl' },
+                { 'key': 'access', 'value': ':access' },
+                { 'key': 'expires', 'value': ':expires' },
+                { 'key': 'refresh', 'value': ':refresh' },
+                { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
+            ],
+        )
 
         # set result
         result = output.success({
             'message': 'Complete add provider.',
             'data': {
-                'access': tokens['access'],
-                'refresh': tokens['refresh'],
-                'expires': tokens['expires'],
+                'access': new_token['access'],
+                'expires': new_token['expires'],
+                'refresh': new_token['refresh'],
             },
         })
     except Exception as e:

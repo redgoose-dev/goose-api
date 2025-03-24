@@ -11,7 +11,7 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # set where
         where = [ f'and srl={params.srl}' ]

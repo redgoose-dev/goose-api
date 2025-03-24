@@ -1,7 +1,7 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .__libs__ import hash_password
+from .provider.password import ProviderPassword
 from src.modules.verify import checking_token
 
 async def patch_item(params: types.PatchItem, req = None, db: DB = None):
@@ -12,7 +12,7 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # check data
         count = db.get_count(
@@ -39,7 +39,7 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
         if params.user_email:
             values['user_email'] = params.user_email
         if params.user_password:
-            values['user_password'] = hash_password(params.user_password)
+            values['user_password'] = ProviderPassword.hash_password(params.user_password)
 
         # check values
         if not bool(values): raise Exception('No values to update.', 400)

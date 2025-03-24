@@ -12,7 +12,7 @@ async def get_index(params: types.GetIndex, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None

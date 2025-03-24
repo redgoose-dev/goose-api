@@ -45,27 +45,36 @@ async def _get_callback(
 
 # 인증 검사하기
 @router.post('/checking/')
-async def _checking(
-    req: Request,
-    authorization: str = Header(None),
-):
+async def _checking(req: Request):
     from .post_checking import post_checking
-    # TODO: 작업하기
-    return await post_checking(types.PostChecking(
-        authorization = authorization
+    return await post_checking(req = req)
+
+# 리프레시 토큰으로 엑세스 토큰 재발급받기
+@router.post('/renew/')
+async def _renew(
+    req: Request,
+    provider: str = Form(..., pattern=Patterns.auth_provider),
+    access_token: str = Header(..., alias='authorization'),
+    refresh_token: str = Form('...', alias='refresh'),
+):
+    from .post_renew import post_renew
+    return await post_renew(types.PostRenew(
+        provider = provider,
+        access_token = access_token,
+        refresh_token = refresh_token,
     ), req = req)
 
 # 패스워드 타입의 프로바이더 등록
 @router.put('/')
-async def _put_item(
+async def _put_register(
     user_id: str = Form(..., alias='id', pattern=Patterns.code),
     user_name: str = Form(None, alias='name'),
     user_avatar: str = Form(None, alias='avatar', pattern=Patterns.url),
     user_email: str = Form(..., alias='email', pattern=Patterns.email),
     user_password: str = Form(..., alias='password'),
 ):
-    from .put_item import put_item
-    return await put_item(types.PutItem(
+    from .put_register import put_register
+    return await put_register(types.PutRegister(
         user_id = user_id,
         user_name = user_name,
         user_avatar = user_avatar,
@@ -76,6 +85,7 @@ async def _put_item(
 # 패스워드 타입의 프로바이더 로그인
 @router.post('/login/')
 async def _login(
+    req: Request,
     user_id: str = Form(..., alias='id', pattern=Patterns.code),
     user_password: str = Form(..., alias='password'),
 ):
@@ -83,13 +93,13 @@ async def _login(
     return await post_login(types.PostLogin(
         user_id = user_id,
         user_password = user_password,
-    ))
+    ), req = req)
 
 # 패스워드 타입의 프로바이더 로그아웃
 @router.post('/logout/')
 async def _logout(req: Request):
     from .post_logout import post_logout
-    return await post_logout(types.PostLogout(), req = req)
+    return await post_logout(req = req)
 
 # 프로바이더 수정
 @router.patch('/{srl:int}/')

@@ -12,7 +12,7 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # get item
         item = db.get_item(

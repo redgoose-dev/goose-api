@@ -2,49 +2,53 @@ from . import discord
 from . import github
 from . import password
 
-# provider code
-class ProviderCode:
-    discord = 'discord'
-    github = 'github'
-    google = 'google'
-    password = 'password'
-    @staticmethod
-    def check_exist(val: str) -> bool:
-        members = [
-            ProviderCode.discord,
-            ProviderCode.github,
-            ProviderCode.google,
-            ProviderCode.password,
-        ]
-        return True if val in members else False
+class Provider:
 
-def get_info(provider: str) -> dict|None:
-    match provider:
-        case ProviderCode.discord:
-            return {
-                'client_id': discord.client_id,
-                'client_secret': discord.client_secret,
-                'url_authorization': discord.url_authorization,
-                'url_token': discord.url_token,
-                'url_revoke': discord.url_revoke,
-                'scope': discord.scope,
-            }
-        case _:
-            return None
+    # codes
+    code_discord = 'discord'
+    code_github = 'github'
+    code_google = 'google'
+    code_password = 'password'
 
-async def get_token(provider: str, code: str) -> dict|None:
-    match provider:
-        case ProviderCode.discord:
-            return await discord.get_token(code)
+    # set values
+    name = ''
+    scope = ''
+    header_type = ''
+    client_id = ''
+    client_secret = ''
 
-async def get_user(provider: str, token: str) -> dict|None:
-    match provider:
-        case ProviderCode.discord:
-            return await discord.get_user(token)
+    # set urls
+    url_authorization = ''
+    url_token = ''
+    url_revoke = ''
+    url_userinfo = ''
 
-def check_user_id(provider: str, user_id: str, user_data: dict) -> bool:
-    match provider:
-        case ProviderCode.discord:
-            return discord.check_user_id(user_id, user_data)
-        case _:
-            return False
+    # initialize provider. 자식 클래스를 오버라이드한다.
+    def __init__(self, provider: str):
+        match provider:
+            case self.code_discord:
+                from .discord import ProviderDiscord
+                self.__class__ = ProviderDiscord
+            # case self.code_github:
+            #     from .github import ProviderGithub
+            #     self.provider = github
+            # case self.code_google:
+            #     from .google import ProviderGoogle
+            #     self.__class__ = ProviderGoogle
+            case self.code_password:
+                from .password import ProviderPassword
+                self.__class__ = ProviderPassword
+            case _:
+                raise Exception('Provider not found.')
+
+    async def get_token(self, code: str) -> dict|None: pass
+
+    async def get_user(self, token: str) -> dict|None: pass
+
+    def check_user_id(self, user_id: str, user_data: dict) -> bool: pass
+
+    async def renew_access_token(self, refresh_token: str) -> dict|None: pass
+
+    def verify_password(self): pass
+
+    def create_token(self): pass

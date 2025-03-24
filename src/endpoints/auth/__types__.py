@@ -13,10 +13,12 @@ class GetCallback(BaseModel):
     code: str
     state: str
 
-class PostChecking(BaseModel):
-    authorization: Optional[str]
+class PostRenew(BaseModel):
+    provider: str
+    access_token: str
+    refresh_token: str
 
-class PutItem(BaseModel):
+class PutRegister(BaseModel):
     user_id: str
     user_name: Optional[str]
     user_avatar: Optional[str]
@@ -26,9 +28,6 @@ class PutItem(BaseModel):
 class PostLogin(BaseModel):
     user_id: str
     user_password: str
-
-class PostLogout(BaseModel):
-    pass
 
 class PatchItem(BaseModel):
     srl: int

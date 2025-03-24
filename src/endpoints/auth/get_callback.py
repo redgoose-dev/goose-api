@@ -3,8 +3,8 @@ from urllib.parse import urlencode
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.string import uri_decode, get_url
-from .provider import get_token, get_user, check_user_id
+from src.libs.string import uri_decode
+from .provider import Provider
 from .ws_index import close_websocket_after_delay, ws_clients
 
 async def get_callback(params: types.GetCallback, _db: DB = None):
@@ -18,28 +18,31 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
     else: db = DB().connect()
 
     try:
+        # set provider instance
+        _provider_ = Provider(params.provider)
+
         # get exist provider
         provider = db.get_item(
             table_name = Table.PROVIDER.value,
-            where = [ f'code LIKE "{params.provider}"' ],
+            where = [ f'code LIKE "{_provider_.name}"' ],
         )
 
         # get tokens
-        tokens = await get_token(params.provider, params.code)
+        token = await _provider_.get_token(params.code)
 
         # get user info
-        user = await get_user(params.provider, tokens['access_token'])
+        user = await _provider_.get_user(token['access'])
 
         # check exist provider
         if provider:
-            if not check_user_id(params.provider, provider['user_id'], user):
+            if not _provider_.check_user_id(provider['user_id'], user):
                 raise Exception('Invalid user id.', 403)
             provider_srl = provider['srl']
         else:
             provider_srl = db.add_item(
                 table_name = Table.PROVIDER.value,
                 values = {
-                    'code': params.provider,
+                    'code': _provider_.name,
                     'user_id': user['id'],
                     'user_name': user['name'],
                     'user_avatar': user['avatar'],
@@ -63,9 +66,9 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
             table_name = Table.TOKEN.value,
             values = {
                 'provider_srl': provider_srl,
-                'access': tokens['access_token'],
-                'expires': tokens['expires_in'],
-                'refresh': tokens['refresh_token'] or None,
+                'access': token['access'],
+                'expires': token['expires'],
+                'refresh': token['refresh'] or None,
             },
             placeholders = [
                 { 'key': 'provider_srl', 'value': ':provider_srl' },
@@ -78,9 +81,9 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
 
         # result
         data = {
-            'access': tokens['access_token'],
-            'refresh': tokens['refresh_token'],
-            'expires': tokens['expires_in'],
+            'access': token['access'],
+            'expires': token['expires'],
+            'refresh': token['refresh'],
         }
         if 'socket_id' in state:
             # send result to client from websocket

@@ -3,31 +3,30 @@ from urllib.parse import urlencode
 from fastapi import WebSocket
 from src.libs.object import json_parse
 from src.libs.string import get_url, uri_encode
-from .provider import get_info
+from .provider import Provider
 
 ws_clients: dict = {}
 ws_timeout: int = 60 # seconds
 
 def make_auth_link(provider: str, socket_id: str):
-    # set values
-    provider = get_info(provider)
-    if not provider: raise Exception('Can\'t get provider.', 400)
+    # set provider instance
+    _provider_ = Provider(provider)
     # check values
-    if not ('client_id' in provider):
+    if not _provider_.client_id:
         raise Exception('Can\'t get client_id.', 400)
-    if not ('client_secret' in provider):
+    if not _provider_.client_secret:
         raise Exception('Can\'t get client_secret.', 400)
     if not socket_id:
         raise Exception('Can\'t get socket_id.', 400)
     # set query string
     query_string = urlencode({
-        'client_id': provider['client_id'],
+        'client_id': _provider_.client_id,
         'response_type': 'code',
         'redirect_uri': get_url('/auth/callback/discord/'),
         'scope': 'identify email',
         'state': uri_encode({'socket_id': socket_id}),
     })
-    return f'{provider['url_authorization']}?{query_string}'
+    return f'{_provider_.url_authorization}?{query_string}'
 
 async def ws_index(ws: WebSocket, socket_id: str):
     await ws.accept()

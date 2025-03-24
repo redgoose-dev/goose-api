@@ -12,7 +12,7 @@ async def get_item(params: types.GetItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # set srl
         srl: Optional[int] = None

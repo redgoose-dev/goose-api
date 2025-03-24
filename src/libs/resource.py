@@ -21,4 +21,4 @@ class Patterns:
     # file
     file_modules = r'^(article|json|checklist|comment)$'
     # auth
-    auth_provider = r'^(discord|google|github)$'
+    auth_provider = r'^(discord|google|github|password)$'

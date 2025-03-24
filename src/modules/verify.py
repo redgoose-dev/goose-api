@@ -1,15 +1,16 @@
 from fastapi import Request
 from datetime import datetime, timedelta
 from src.libs.db import DB, Table
+from src.libs.util import get_authorization
 
-def checking_token(req: Request, db: DB) -> DB|None:
+def checking_token(req: Request, db: DB) -> dict:
 
     # setup db
     if not db: db = DB().connect()
 
     try:
         # set values
-        authorization = req.headers.get('authorization')
+        authorization = get_authorization(req)
 
         # get token
         token = db.get_item(
@@ -22,8 +23,8 @@ def checking_token(req: Request, db: DB) -> DB|None:
         expiration_time = datetime.strptime(token['created_at'], '%Y-%m-%d %H:%M:%S') + timedelta(seconds = token['expires'])
         if datetime.now() > expiration_time: raise Exception('Expired token.', 401)
 
-        # return
-        return db
+        # return token
+        return token
     except Exception as e:
         if db: db.disconnect()
         raise e

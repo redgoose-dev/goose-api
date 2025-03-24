@@ -2,7 +2,7 @@ from . import __types__ as types
 from urllib.parse import urlencode
 from src import output
 from src.libs.string import uri_encode, get_url
-from . import provider
+from .provider import Provider
 
 """
 # URL Example
@@ -18,18 +18,18 @@ async def get_redirect(params: types.GetRedirect):
         # set state
         state = uri_encode({ 'redirect_uri': params.redirect_uri })
 
-        # set provider
-        provider_info = provider.get_info(params.provider)
+        # set provider instance
+        _provider_ = Provider(params.provider)
 
         # set query string and url
         qs = urlencode({
-            'client_id': provider_info['client_id'],
+            'client_id': _provider_.client_id,
             'redirect_uri': get_url(f'/auth/callback/{params.provider}/'),
             'response_type': 'code',
-            'scope': provider_info['scope'],
+            'scope': _provider_.scope,
             'state': state,
         })
-        url = f'{provider_info['url_authorization']}/?{qs}'
+        url = f'{_provider_.url_authorization}/?{qs}'
 
         # set result
         result = output.redirect(url)

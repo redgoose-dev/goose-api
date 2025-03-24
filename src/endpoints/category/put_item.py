@@ -12,7 +12,7 @@ async def put_item(params: types.PutItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # check module
         check_module(db, params.module, params.module_srl)

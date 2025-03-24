@@ -11,7 +11,7 @@ async def put_item(params: types.PutItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # check exist module item
         match params.module:

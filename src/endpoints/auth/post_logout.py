@@ -1,9 +1,9 @@
-from . import __types__ as types
+from fastapi import Request
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def post_logout(params: types.PostLogout, req = None, db: DB = None):
+async def post_logout(req = Request, db: DB = None):
 
     # set values
     result = None
@@ -11,7 +11,7 @@ async def post_logout(params: types.PostLogout, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # get authorization
         authorization = req.headers.get('authorization')

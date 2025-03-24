@@ -11,7 +11,7 @@ async def put_item(params: types.AddItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # check code already exists
         count = db.get_count(

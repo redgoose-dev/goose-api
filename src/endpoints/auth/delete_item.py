@@ -11,7 +11,7 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 
     try:
         # checking token
-        db = checking_token(req, db)
+        checking_token(req, db)
 
         # check data
         count = db.get_count(
