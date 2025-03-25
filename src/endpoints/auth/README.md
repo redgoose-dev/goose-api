@@ -115,3 +115,11 @@ PATCH /auth/{SRL}/
 ```
 DELETE /auth/{SRL}/
 ```
+
+
+
+## 프로바이더 설정 페이지 링크
+
+- 디스코드: https://discord.com/developers/applications
+- 구글: https://console.cloud.google.com/apis/credentials
+- 깃허브: https://github.com/settings/apps

@@ -2,6 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from ..file.__libs__ import delete_files_data
 
 async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 
@@ -25,6 +26,9 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
             table_name = Table.COMMENT.value,
             where = [ f'srl = {params.srl}' ],
         )
+
+        # delete files
+        delete_files_data(db, 'comment', params.srl)
 
         # set result
         result = output.success({

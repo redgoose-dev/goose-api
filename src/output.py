@@ -34,6 +34,10 @@ class ResponseModel(BaseModel):
     headers: Dict[str, str] = {}
     content: Dict[str, Any] = None
 
+# simple text
+def text(content: str = '', status_code: int = 200):
+    return Response(content = content, status_code = status_code)
+
 # success
 def success(data: Dict|None, options: Dict[str, any] = None) -> LocalJSONResponse:
     status_code = options.get('code', 200) if options else 200

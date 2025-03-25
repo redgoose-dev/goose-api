@@ -2,8 +2,7 @@ from PIL import Image
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.check import parse_json
-from src.libs.object import json_stringify
+from src.libs.object import json_parse, json_stringify
 from src.libs.string import create_random_string
 from src.modules.verify import checking_token
 from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
@@ -24,7 +23,7 @@ async def put_item(params: types.PutItem, req = None, db: DB = None):
         checking_token(req, db)
 
         # check parse json
-        json_data = parse_json(params.json_data) if params.json_data else {}
+        json_data = json_parse(params.json_data) if params.json_data else {}
 
         # read file
         file_content = await params.file.read() if params.file else None

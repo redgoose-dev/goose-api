@@ -59,8 +59,7 @@ async def get_index(params: types.GetIndex, req = None, db: DB = None):
             return item
         index = [ transform_item(item) for item in index ]
 
-        # TODO: 전 버전에서는 다음과 같이 추가기능이 있다.
-        # TODO: - 카테고리 목록 가져오기
+        # TODO: mod - 카테고리 목록 가져오기
 
         # set result
         result = output.success({

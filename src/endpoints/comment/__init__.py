@@ -9,7 +9,7 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
-    module: str = Query(None),
+    module: str = Query(None, pattern=Patterns.comment_module),
     module_srl: int = Query(None),
     content: str = Query(None),
     fields: str = Query(None, pattern=Patterns.fields),

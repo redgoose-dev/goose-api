@@ -2,8 +2,7 @@ from PIL import Image
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.check import parse_json
-from src.libs.object import json_stringify
+from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 
@@ -31,9 +30,9 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
         # set json
         _json = None
         if params.json_data:
-            _json = parse_json(params.json_data)
+            _json = json_parse(params.json_data)
             if 'json' in item:
-                old_json = parse_json(item['json'])
+                old_json = json_parse(item['json'])
                 if 'width' in old_json: _json['width'] = old_json['width']
                 if 'height' in old_json: _json['height'] = old_json['height']
 
@@ -70,7 +69,7 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
             if params.file.content_type.startswith('image/'):
                 image = Image.open(path_file)
                 width, height = image.size
-                if not _json: _json = parse_json(item['json']) or {}
+                if not _json: _json = json_parse(item['json']) or {}
                 _json['width'] = width
                 _json['height'] = height
             _changed_file = True

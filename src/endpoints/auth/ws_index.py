@@ -6,7 +6,7 @@ from src.libs.string import get_url, uri_encode
 from .provider import Provider
 
 ws_clients: dict = {}
-ws_timeout: int = 60 # seconds
+ws_timeout: int = 30 # seconds
 
 def make_auth_link(provider: str, socket_id: str):
     # set provider instance
@@ -19,14 +19,8 @@ def make_auth_link(provider: str, socket_id: str):
     if not socket_id:
         raise Exception('Can\'t get socket_id.', 400)
     # set query string
-    query_string = urlencode({
-        'client_id': _provider_.client_id,
-        'response_type': 'code',
-        'redirect_uri': get_url('/auth/callback/discord/'),
-        'scope': 'identify email',
-        'state': uri_encode({'socket_id': socket_id}),
-    })
-    return f'{_provider_.url_authorization}?{query_string}'
+    url = _provider_.create_authorize_url(uri_encode({'socket_id': socket_id}))
+    return url
 
 async def ws_index(ws: WebSocket, socket_id: str):
     await ws.accept()
@@ -47,7 +41,7 @@ async def ws_index(ws: WebSocket, socket_id: str):
                     }))
             await asyncio.sleep(ws_timeout)
             raise Exception('timeout')
-    except Exception:
+    except Exception as _:
         if socket_id in ws_clients: del ws_clients[socket_id]
         try: await ws.close()
         except Exception: pass

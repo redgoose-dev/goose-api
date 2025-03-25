@@ -93,8 +93,8 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
                 **data,
             }))
             # close websocket
-            asyncio.create_task(close_websocket_after_delay(state['socket_id'], 5))
-            result = 'Complete auth. Please close this window.'
+            asyncio.create_task(close_websocket_after_delay(state['socket_id'], 2))
+            result = output.text('Complete auth. Please close this window.')
         elif 'redirect_uri' in state:
             qs = urlencode(data)
             result = output.redirect(f'{state['redirect_uri']}?{qs}')
@@ -106,6 +106,7 @@ async def get_callback(params: types.GetCallback, _db: DB = None):
     except Exception as e:
         result = output.exc(e)
         if 'socket_id' in state:
+            asyncio.create_task(close_websocket_after_delay(state['socket_id'], 1))
             result = 'Failed auth. Please close this window.'
         elif 'redirect_uri' in state:
             qs = {}

@@ -2,6 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from ..file.__libs__ import delete_files_data
 
 async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 
@@ -13,18 +14,21 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
         # checking token
         checking_token(req, db)
 
-        # check item
+        # check data
         count = db.get_count(
             table_name = Table.CHECKLIST.value,
             where = [ f'srl = {params.srl}' ],
         )
         if count == 0: raise Exception('Item not found.', 204)
 
-        # add item
+        # delete data
         db.delete_item(
             table_name = Table.CHECKLIST.value,
             where = [ f'srl = {params.srl}' ],
         )
+
+        # delete files
+        delete_files_data(db, 'checklist', params.srl)
 
         # set result
         result = output.success({

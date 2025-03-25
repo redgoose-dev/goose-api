@@ -12,3 +12,12 @@ def check_module(db: DB, module: str, srl: int):
             pass
         case _:
             raise Exception('Module not found.', 400)
+
+def delete_category_data(db: DB, module: str, srl: int):
+    db.delete_item(
+        table_name = Table.CATEGORY.value,
+        where = [
+            f'and module LIKE "{module}"',
+            f'and module_srl = {srl}',
+        ],
+    )

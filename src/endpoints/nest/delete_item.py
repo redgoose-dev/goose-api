@@ -2,6 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from ..category.__libs__ import delete_category_data
 
 async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
 
@@ -20,9 +21,11 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
         )
         if count == 0: raise Exception('Item not found.', 204)
 
+        # delete category
+        delete_category_data(db, 'nest', params.srl)
+
         # TODO: 추가로 작업 해야할것들
-        # TODO: - 카테고리 삭제
-        # TODO: - 아티클 목록 가져오기
+        # TODO: - 아티클 데이터 삭제
         # TODO: - 아티클에 해당되는 파일 삭제
         # TODO: - 아티클에 해당되는 댓글 삭제
 

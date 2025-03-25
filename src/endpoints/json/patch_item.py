@@ -1,8 +1,8 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.check import parse_json, check_url
-from src.libs.object import json_stringify
+from src.libs.check import check_url
+from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 
 async def patch_item(params: types.PatchItem, req = None, db: DB = None):
@@ -29,7 +29,7 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
         if params.description:
             values['description'] = params.description
         if params.json_data:
-            json_data = parse_json(params.json_data)
+            json_data = json_parse(params.json_data)
             values['json'] = json_stringify(json_data, None) or '{}'
         if params.path:
             check_url(params.path)

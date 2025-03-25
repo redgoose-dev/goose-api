@@ -1,8 +1,7 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from src.libs.check import parse_json
-from src.libs.object import json_stringify
+from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 
 async def put_item(params: types.PutItem, req = None, db: DB = None):
@@ -16,7 +15,7 @@ async def put_item(params: types.PutItem, req = None, db: DB = None):
         checking_token(req, db)
 
         # check parse json
-        json_data = parse_json(params.json_data) if params.json_data else {}
+        json_data = json_parse(params.json_data) if params.json_data else {}
 
         # check app_srl
         count = db.get_count(

@@ -10,3 +10,12 @@ def check_module(db: DB, module: str, srl: int):
             if not (count > 0): raise Exception('Module not found.', 400)
         case _:
             raise Exception('Module not found.', 400)
+
+def delete_comment_data(db: DB, module: str, srl: int):
+    db.delete_item(
+        table_name = Table.COMMENT.value,
+        where = [
+            f'and module LIKE "{module}"',
+            f'and module_srl = {srl}',
+        ]
+    )

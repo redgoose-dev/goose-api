@@ -1,5 +1,6 @@
 import os, mimetypes
 from datetime import datetime
+from src.libs.db import DB, Table
 from src.libs.string import create_random_string
 
 def get_unique_name(n: len = 12) -> str:
@@ -36,3 +37,23 @@ def convert_path_to_buffer(path: str) -> bytes|None:
         return None
     with open(path, 'rb') as file:
         return file.read()
+
+def delete_files_data(db: DB, module: str, srl: int):
+    files = db.get_items(
+        table_name = Table.FILE.value,
+        fields = ['srl', 'path'],
+        where = [
+            f'and module LIKE "{module}"',
+            f'and module_srl = {srl}',
+        ],
+    )
+    if files and len(files) > 0:
+        paths = [file['path'] for file in files]
+        for path in paths: delete_file(path)
+        db.delete_item(
+            table_name = Table.FILE.value,
+            where = [
+                f'and module LIKE "{module}"',
+                f'and module_srl = {srl}',
+            ],
+        )

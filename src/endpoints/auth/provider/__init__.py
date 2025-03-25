@@ -20,7 +20,6 @@ class Provider:
     # set urls
     url_authorization = ''
     url_token = ''
-    url_revoke = ''
     url_userinfo = ''
 
     # initialize provider. 자식 클래스를 오버라이드한다.
@@ -29,17 +28,19 @@ class Provider:
             case self.code_discord:
                 from .discord import ProviderDiscord
                 self.__class__ = ProviderDiscord
-            # case self.code_github:
-            #     from .github import ProviderGithub
-            #     self.provider = github
-            # case self.code_google:
-            #     from .google import ProviderGoogle
-            #     self.__class__ = ProviderGoogle
+            case self.code_github:
+                from .github import ProviderGithub
+                self.__class__ = ProviderGithub
+            case self.code_google:
+                from .google import ProviderGoogle
+                self.__class__ = ProviderGoogle
             case self.code_password:
                 from .password import ProviderPassword
                 self.__class__ = ProviderPassword
             case _:
                 raise Exception('Provider not found.')
+
+    def create_authorize_url(self, state: str): pass
 
     async def get_token(self, code: str) -> dict|None: pass
 

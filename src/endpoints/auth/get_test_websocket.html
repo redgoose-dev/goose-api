@@ -6,12 +6,10 @@
 <title>OAuth Test</title>
 <style>
 h1 { font-weight: 900; }
-.nav, #confirm-link {
-  display: grid; place-content: center; gap: 4px 12px;
-  padding: 16px;
-}
+.nav { display: flex; justify-content: center; gap: 4px 12px;padding: 16px; }
+#confirm-link { display: grid; place-content: center; gap: 4px 12px; padding: 16px; }
 #confirm-link a { display: block; }
-#status { padding: 16px; border: 1px solid silver; }
+#status { padding: 16px; white-space: normal; border: 1px solid silver; }
 </style>
 </head>
 <body>
@@ -20,6 +18,8 @@ h1 { font-weight: 900; }
   <hr>
   <nav class="nav">
     <button onclick="startAuthDiscord()">인증/디스코드</button>
+    <button onclick="startAuthGithub()">인증/깃허브</button>
+    <button onclick="startAuthGoogle()">인증/구글</button>
   </nav>
   <hr>
   <nav id="confirm-link"></nav>
@@ -30,12 +30,13 @@ h1 { font-weight: 900; }
 const $status = document.getElementById('status')
 const $confirmLink = document.getElementById('confirm-link')
 
-function makeAuthLink(path)
+function makeAuthLink(path, name)
 {
   const link = document.createElement('a')
   link.href = path
-  link.textContent = '인증하기'
+  link.textContent = `${name} 인증하기`
   link.target = '_blank'
+  $confirmLink.innerHTML = ''
   $confirmLink.appendChild(link)
 }
 
@@ -44,22 +45,23 @@ function startAuthDiscord()
   const socket_id = 'socket-' + Math.random().toString(36).substr(2, 9)
   const ws = new WebSocket(`/auth/ws/${socket_id}/`)
   ws.addEventListener('open', () => {
-    printMessage('웹소켓 연결시작')
+    printMessage('디스코드 웹소켓 연결시작')
     ws.send(JSON.stringify({
       mode: 'start-auth',
       provider: 'discord',
-      redirect_uri: 'http://localhost:8000/auth/test-auth/',
+      redirect_uri: 'http://localhost:8000/',
     }))
   })
   ws.addEventListener('message', (e) => {
     const data = JSON.parse(e.data)
+    console.log('MESSAGE: ', data.mode)
     switch (data.mode)
     {
       case 'auth-link':
-        makeAuthLink(data.url)
+        makeAuthLink(data.url, '디스코드')
         break
       case 'auth-complete':
-        printMessage('인증 성공했어요~')
+        printMessage('[디스코드] 인증 성공했어요~')
         printMessage(`- 엑세스 토큰: ${data['access']}`)
         printMessage(`- 리프레시 토큰: ${data['refresh']}`)
         printMessage(`- 만료시간: ${data['expires']}`)
@@ -67,7 +69,71 @@ function startAuthDiscord()
     }
   })
   ws.addEventListener('close', (e) => {
-    printMessage('웹소켓 연결종료')
+    printMessage('디스코드 웹소켓 연결종료')
+  })
+}
+
+function startAuthGithub()
+{
+  const socket_id = 'socket-' + Math.random().toString(36).substr(2, 9)
+  const ws = new WebSocket(`/auth/ws/${socket_id}/`)
+  ws.addEventListener('open', () => {
+    printMessage('깃허브 웹소켓 연결시작')
+    ws.send(JSON.stringify({
+      mode: 'start-auth',
+      provider: 'github',
+      redirect_uri: 'http://localhost:8000/',
+    }))
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    switch (data.mode)
+    {
+      case 'auth-link':
+        makeAuthLink(data.url, '깃허브')
+        break
+      case 'auth-complete':
+        printMessage('[깃허브] 인증 성공했어요~')
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (e) => {
+    printMessage('깃허브 웹소켓 연결종료')
+  })
+}
+
+function startAuthGoogle()
+{
+  const socket_id = 'socket-' + Math.random().toString(36).substr(2, 9)
+  const ws = new WebSocket(`/auth/ws/${socket_id}/`)
+  ws.addEventListener('open', () => {
+    printMessage('구글 웹소켓 연결시작')
+    ws.send(JSON.stringify({
+      mode: 'start-auth',
+      provider: 'google',
+      redirect_uri: 'http://localhost:8000/',
+    }))
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    switch (data.mode)
+    {
+      case 'auth-link':
+        makeAuthLink(data.url, '구글')
+        break
+      case 'auth-complete':
+        printMessage('[구글] 인증 성공했어요~')
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (e) => {
+    printMessage('구글 웹소켓 연결종료')
   })
 }
 

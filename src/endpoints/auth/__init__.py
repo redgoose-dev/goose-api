@@ -141,7 +141,7 @@ async def _ws_index(ws: WebSocket, socket_id: str = Path(...)):
 if __dev__:
     # 웹소켓 테스트
     @router.get('/test_websocket/')
-    async def _test_auth():
+    async def _test_websocket():
         from fastapi.responses import HTMLResponse
         from pathlib import Path
         path = Path(__file__).parent / 'get_test_websocket.html'

@@ -27,8 +27,7 @@ async def get_item(params: types.GetItem, req = None, db: DB = None):
         if data and isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
 
-        # TODO: MOD 기능
-        # TODO: - 카테고리 이름 가져오기
+        # TODO: mod - 카테고리 이름 가져오기
 
         # set result
         result = output.success({

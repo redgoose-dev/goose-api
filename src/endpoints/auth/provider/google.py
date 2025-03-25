@@ -2,31 +2,19 @@ import os, httpx
 from urllib.parse import urlencode
 from src.libs.string import get_url
 
-class ProviderDiscord:
+class ProviderGoogle:
 
     # set values
-    name = 'discord'
-    scope = 'identify email'
+    name = 'google'
+    scope = 'openid email profile'
     header_type = 'Bearer'
-    client_id = os.getenv('AUTH_DISCORD_CLIENT_ID')
-    client_secret = os.getenv('AUTH_DISCORD_CLIENT_SECRET')
+    client_id = os.getenv('AUTH_GOOGLE_CLIENT_ID')
+    client_secret = os.getenv('AUTH_GOOGLE_CLIENT_SECRET')
 
     # url path
-    url_authorization = 'https://discord.com/oauth2/authorize'
-    url_token = 'https://discord.com/api/oauth2/token'
-    url_userinfo = 'https://discord.com/api/users/@me'
-
-    @staticmethod
-    def __get_avatar_url__(_id: str = None, _code: str = None) -> str:
-        url = {
-            'base': 'https://cdn.discordapp.com/avatars',
-            'embed': 'https://cdn.discordapp.com/embed/avatars',
-        }
-        if _code:
-            filename = f'{_code}.{'gif' if _code.startswith('a_') else 'png'}'
-            return f'{url['base']}/{_id}/{filename}'
-        else:
-            return f'{url['embed']}/{int(_id) % 5}.png'
+    url_authorization = 'https://accounts.google.com/o/oauth2/v2/auth'
+    url_token = 'https://oauth2.googleapis.com/token'
+    url_userinfo = 'https://www.googleapis.com/oauth2/v2/userinfo'
 
     def create_authorize_url(self, state: str):
         qs = urlencode({
@@ -34,19 +22,22 @@ class ProviderDiscord:
             'redirect_uri': get_url(f'/auth/callback/{self.name}/'),
             'response_type': 'code',
             'scope': self.scope,
+            'prompt': 'consent',
+            'access_type': 'offline',
             'state': state,
         })
-        return f'{self.url_authorization}/?{qs}'
+        return f'{self.url_authorization}?{qs}'
 
-    async def get_token(self, code: str) -> dict|None:
+    async def get_token(self, code: str) -> dict | None:
         async with httpx.AsyncClient() as client:
             res = await client.post(
                 url = self.url_token,
+                headers = { 'Accept': 'application/json' },
                 data = {
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
-                    'grant_type': 'authorization_code',
                     'code': code,
+                    'grant_type': 'authorization_code',
                     'redirect_uri': get_url(f'/auth/callback/{self.name}/'),
                 },
             )
@@ -68,19 +59,20 @@ class ProviderDiscord:
             json = res.json()
         return {
             'id': json['id'],
-            'name': json['username'],
+            'name': json['name'],
             'email': json['email'],
-            'avatar': self.__get_avatar_url__(json['id'], json['avatar']),
+            'avatar': json['picture'],
         }
 
     def check_user_id(self, user_id: str, user_data: dict) -> bool:
         return user_id == user_data['id']
 
-    async def renew_access_token(self, refresh_token: str) -> dict|None:
+    async def renew_access_token(self, refresh_token: str) -> dict | None:
         if not refresh_token: return None
         async with httpx.AsyncClient() as client:
             res = await client.post(
                 url = self.url_token,
+                headers = { 'Accept': 'application/json' },
                 data = {
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
@@ -93,5 +85,5 @@ class ProviderDiscord:
         return {
             'access': json['access_token'],
             'expires': json['expires_in'],
-            'refresh': json['refresh_token'],
+            'refresh': refresh_token,
         }
