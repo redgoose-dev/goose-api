@@ -53,10 +53,9 @@ async def get_index(params: types.GetIndex, req = None, db: DB = None):
         #     return item
         # index = [transform_item(item) for item in index]
 
-        # TODO: 이전 버전에 있는 기능
-        # TODO: - count / article or json 갯수 가져오기
-        # TODO: - all / 모든 모듈 데이터 갯수
-        # TODO: - none / 모듈 데이터에서 카테고리에 해당되지 않는 데이터 갯수
+        # TODO: mod - count / article or json 갯수 가져오기
+        # TODO: mod - all / 모든 모듈 데이터 갯수
+        # TODO: mod - none / 모듈 데이터에서 카테고리에 해당되지 않는 데이터 갯수
 
         # set result
         result = output.success({
