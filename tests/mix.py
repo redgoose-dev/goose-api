@@ -16,5 +16,5 @@ def pytest_addoption(parser):
 
 def test_basic():
     print('test_basic()')
-    client.post('/multi/')
+    client.post('/mix/')
     pass

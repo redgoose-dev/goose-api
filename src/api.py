@@ -84,9 +84,9 @@ api.include_router(nest, prefix='/nest')
 from .endpoints.auth import router as auth
 api.include_router(auth, prefix='/auth')
 
-# multiple request
-from .endpoints.multi import router as multi
-api.include_router(multi, prefix='/multi')
+# mix request
+from .endpoints.mix import router as mix
+api.include_router(mix, prefix='/mix')
 
 # 404 error
 @api.exception_handler(StarletteHTTPException)
