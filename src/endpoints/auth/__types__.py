@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class GetIndex(BaseModel):
-    fields: Optional[str]
+    fields: Optional[str] = None
 
 class GetRedirect(BaseModel):
     provider: str
@@ -20,8 +20,8 @@ class PostRenew(BaseModel):
 
 class PutRegister(BaseModel):
     user_id: str
-    user_name: Optional[str]
-    user_avatar: Optional[str]
+    user_name: Optional[str] = None
+    user_avatar: Optional[str] = None
     user_email: str
     user_password: str
 
@@ -31,11 +31,11 @@ class PostLogin(BaseModel):
 
 class PatchItem(BaseModel):
     srl: int
-    user_id: Optional[str]
-    user_name: Optional[str]
-    user_avatar: Optional[str]
-    user_email: Optional[str]
-    user_password: Optional[str]
+    user_id: Optional[str] = None
+    user_name: Optional[str] = None
+    user_avatar: Optional[str] = None
+    user_email: Optional[str] = None
+    user_password: Optional[str] = None
 
 class DeleteItem(BaseModel):
     srl: int

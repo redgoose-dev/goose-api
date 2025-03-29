@@ -3,13 +3,16 @@ from src import output
 from src.libs.db import DB, Table
 from .provider import Provider
 
-async def post_renew(params: types.PostRenew, req = None, db: DB = None):
+async def post_renew(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.PostRenew(**params)
+
         # get token
         token = db.get_item(
             table_name = Table.TOKEN.value,
@@ -73,5 +76,5 @@ async def post_renew(params: types.PostRenew, req = None, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

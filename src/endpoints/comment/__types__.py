@@ -2,19 +2,19 @@ from typing import Optional
 from pydantic import BaseModel
 
 class GetIndex(BaseModel):
-    module: Optional[str]
-    module_srl: Optional[int]
-    content: Optional[str]
-    fields: Optional[str]
-    page: Optional[int]
-    size: Optional[int]
-    order: Optional[str]
-    sort: Optional[str]
-    unlimited: Optional[bool]
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
+    content: Optional[str] = None
+    fields: Optional[str] = None
+    page: Optional[int] = 1
+    size: Optional[int] = None
+    order: Optional[str] = 'srl'
+    sort: Optional[str] = 'desc'
+    unlimited: Optional[bool] = False
 
 class GetItem(BaseModel):
     srl: int
-    fields: Optional[str]
+    fields: Optional[str] = None
 
 class PutItem(BaseModel):
     content: str
@@ -23,9 +23,9 @@ class PutItem(BaseModel):
 
 class PatchItem(BaseModel):
     srl: int
-    content: Optional[str]
-    module: Optional[str]
-    module_srl: Optional[int]
+    content: Optional[str] = None
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
 
 class DeleteItem(BaseModel):
     srl: int

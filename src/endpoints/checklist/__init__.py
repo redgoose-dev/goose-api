@@ -20,17 +20,17 @@ async def _get_index(
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     from .get_index import get_index
-    return await get_index(types.GetIndex(
-        content = content,
-        start = start,
-        end = end,
-        fields = fields,
-        page = page,
-        size = size,
-        order = order,
-        sort = sort,
-        unlimited = unlimited,
-    ), req = req)
+    return await get_index({
+        'content': content,
+        'start': start,
+        'end': end,
+        'fields': fields,
+        'page': page,
+        'size': size,
+        'order': order,
+        'sort': sort,
+        'unlimited': unlimited,
+    }, req=req)
 
 # get checklist
 @router.get('/{srl}/')
@@ -40,10 +40,10 @@ async def _get_item(
     fields: str = Query(None, pattern=Patterns.fields),
 ):
     from .get_item import get_item
-    return await get_item(types.GetItem(
-        srl = srl,
-        fields = fields,
-    ), req = req)
+    return await get_item({
+        'srl': srl,
+        'fields': fields,
+    }, req=req)
 
 # add checklist
 @router.put('/')
@@ -52,9 +52,9 @@ async def _put_item(
     content: str = Form(None),
 ):
     from .put_item import put_item
-    return await put_item(types.PutItem(
-        content = content,
-    ), req = req)
+    return await put_item({
+        'content': content,
+    }, req=req)
 
 # update checklist
 @router.patch('/{srl:int}/')
@@ -64,10 +64,10 @@ async def _patch_item(
     content: str = Form(None),
 ):
     from .patch_item import patch_item
-    return await patch_item(types.PatchItem(
-        srl = srl,
-        content = content,
-    ), req = req)
+    return await patch_item({
+        'srl': srl,
+        'content': content,
+    }, req=req)
 
 # get checklist
 @router.delete('/{srl:int}/')
@@ -76,6 +76,6 @@ async def _delete_item(
     srl: int,
 ):
     from .delete_item import delete_item
-    return await delete_item(types.DeleteItem(
-        srl = srl,
-    ), req = req)
+    return await delete_item({
+        'srl': srl,
+    }, req=req)

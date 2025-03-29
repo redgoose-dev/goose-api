@@ -24,21 +24,21 @@ async def _get_index(
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     from .get_index import get_index
-    return await get_index(types.GetIndex(
-        app_srl = app_srl,
-        nest_srl = nest_srl,
-        category_srl = category_srl,
-        q = q,
-        mode = mode,
-        duration = duration,
-        random = random,
-        fields = fields,
-        page = page,
-        size = size,
-        order = order,
-        sort = sort,
-        unlimited = unlimited,
-    ), req = req)
+    return await get_index({
+        'app_srl': app_srl,
+        'nest_srl': nest_srl,
+        'category_srl': category_srl,
+        'q': q,
+        'mode': mode,
+        'duration': duration,
+        'random': random,
+        'fields': fields,
+        'page': page,
+        'size': size,
+        'order': order,
+        'sort': sort,
+        'unlimited': unlimited,
+    }, req=req)
 
 # get article
 @router.get('/{srl:int}/')
@@ -48,16 +48,16 @@ async def _get_item(
     fields: str = Query(None, pattern=Patterns.fields),
 ):
     from .get_item import get_item
-    return await get_item(types.GetItem(
-        srl = srl,
-        fields = fields,
-    ), req = req)
+    return await get_item({
+        'srl': srl,
+        'fields': fields,
+    }, req=req)
 
 # add article
 @router.put('/')
 async def _put_item(req: Request):
     from .put_item import put_item
-    return await put_item(types.PutItem(), req = req)
+    return await put_item(req=req)
 
 # edit article
 @router.patch('/{srl:int}/')
@@ -76,19 +76,19 @@ async def _patch_item(
     regdate: str = Form(None, pattern=Patterns.date),
 ):
     from .patch_item import patch_item
-    return await patch_item(types.PatchItem(
-        srl = srl,
-        app_srl = app_srl,
-        nest_srl = nest_srl,
-        category_srl = category_srl,
-        title = title,
-        content = content,
-        hit = hit,
-        star = star,
-        json_data = json_data,
-        mode = mode,
-        regdate = regdate,
-    ), req = req)
+    return await patch_item({
+        'srl': srl,
+        'app_srl': app_srl,
+        'nest_srl': nest_srl,
+        'category_srl': category_srl,
+        'title': title,
+        'content': content,
+        'hit': hit,
+        'star': star,
+        'json_data': json_data,
+        'mode': mode,
+        'regdate': regdate,
+    }, req=req)
 
 # delete article
 @router.delete('/{srl:int}/')
@@ -97,6 +97,6 @@ async def _delete_item(
     srl: int
 ):
     from .delete_item import delete_item
-    return await delete_item(types.DeleteItem(
-        srl = srl,
-    ), req = req)
+    return await delete_item({
+        'srl': srl,
+    }, req=req)

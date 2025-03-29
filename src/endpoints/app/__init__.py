@@ -19,16 +19,16 @@ async def _get_index(
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     from .get_index import get_index
-    return await get_index(types.GetIndex(
-        code = code,
-        name = name,
-        fields = fields,
-        page = page,
-        size = size,
-        order = order,
-        sort = sort,
-        unlimited = unlimited,
-    ), req = req)
+    return await get_index({
+        'code': code,
+        'name': name,
+        'fields': fields,
+        'page': page,
+        'size': size,
+        'order': order,
+        'sort': sort,
+        'unlimited': unlimited,
+    }, req=req)
 
 # get app
 @router.get('/{srl}/')
@@ -38,10 +38,10 @@ async def _get_item(
     fields: str = Query(None, pattern=Patterns.fields),
 ):
     from .get_item import get_item
-    return await get_item(types.GetItem(
-        srl = srl,
-        fields = fields,
-    ), req = req)
+    return await get_item({
+        'srl': srl,
+        'fields': fields,
+    }, req=req)
 
 # add app
 @router.put('/')
@@ -52,11 +52,11 @@ async def _put_item(
     description: str = Form(None),
 ):
     from .put_item import put_item
-    return await put_item(types.AddItem(
-        code = code,
-        name = name,
-        description = description,
-    ), req = req)
+    return await put_item({
+        'code': code,
+        'name': name,
+        'description': description,
+    }, req=req)
 
 # edit app
 @router.patch('/{srl:int}/')
@@ -68,12 +68,12 @@ async def _patch_item(
     description: str = Form(None),
 ):
     from .patch_item import patch_item
-    return await patch_item(types.PatchItem(
-        srl = srl,
-        code = code,
-        name = name,
-        description = description,
-    ), req = req)
+    return await patch_item({
+        'srl': srl,
+        'code': code,
+        'name': name,
+        'description': description,
+    }, req=req)
 
 # delete app
 @router.delete('/{srl:int}/')
@@ -82,6 +82,6 @@ async def _delete_item(
     srl: int
 ):
     from .delete_item import delete_item
-    return await delete_item(types.DeleteItem(
-        srl = srl,
-    ), req = req)
+    return await delete_item({
+        'srl': srl,
+    }, req=req)

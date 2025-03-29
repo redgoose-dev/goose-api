@@ -4,13 +4,16 @@ from src.libs.db import DB, Table
 from .provider.password import ProviderPassword
 from .provider import Provider
 
-async def put_register(params: types.PutRegister, db: DB = None):
+async def put_register(params: dict = {}, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.PutRegister(**params)
+
         # set provider instance
         _provider_ = Provider(Provider.code_password)
 
@@ -85,5 +88,5 @@ async def put_register(params: types.PutRegister, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

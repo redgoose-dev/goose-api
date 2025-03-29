@@ -1,5 +1,4 @@
 import os, httpx
-from traceback import print_tb
 from urllib.parse import urlencode
 from src.libs.string import get_url
 

@@ -3,22 +3,25 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def put_item(params: types.AddItem, req = None, db: DB = None):
+async def put_item(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.PutItem(**params)
+
         # checking token
         checking_token(req, db)
 
         # check code already exists
         count = db.get_count(
             table_name = Table.APP.value,
-            where = [ f'and code LIKE "{params.code}"' ],
+            where = [ f'code LIKE "{params.code}"' ],
         )
-        if count > 0: raise Exception('code already exists')
+        if count > 0: raise Exception('code already exists', 400)
 
         # set values
         values = {
@@ -50,5 +53,5 @@ async def put_item(params: types.AddItem, req = None, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

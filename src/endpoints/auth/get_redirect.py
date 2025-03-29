@@ -8,12 +8,15 @@ from .provider import Provider
 GET /auth/redirect/discord/?redirect_uri={CLIENT_REDIRECT_URI}
 """
 
-async def get_redirect(params: types.GetRedirect):
+async def get_redirect(params: dict = {}):
 
     # set values
     result = None
 
     try:
+        # set params
+        params = types.GetRedirect(**params)
+
         # set state
         state = uri_encode({ 'redirect_uri': params.redirect_uri })
 

@@ -2,30 +2,30 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class GetIndex(BaseModel):
-    fields: Optional[str]
-    name: Optional[str]
-    module: Optional[str]
-    module_srl: Optional[int]
-    page: Optional[int]
-    size: Optional[int]
-    order: Optional[str]
-    sort: Optional[str]
-    unlimited: Optional[bool]
+    fields: Optional[str] = None
+    name: Optional[str] = None
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
+    page: Optional[int] = 1
+    size: Optional[int] = None
+    order: Optional[str] = 'srl'
+    sort: Optional[str] = 'desc'
+    unlimited: Optional[bool] = False
 
 class GetItem(BaseModel):
     srl: int
-    fields: Optional[str]
+    fields: Optional[str] = None
 
 class PutItem(BaseModel):
     name: str
     module: str
-    module_srl: Optional[int]
+    module_srl: Optional[int] = None
 
 class PatchItem(BaseModel):
     srl: int
-    name: Optional[str]
-    module: Optional[str]
-    module_srl: Optional[int]
+    name: Optional[str] = None
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
 
 class PatchChangeOrder(BaseModel):
     module: str

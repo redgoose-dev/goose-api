@@ -7,17 +7,21 @@ from src.libs.string import uri_decode
 from .provider import Provider
 from .ws_index import close_websocket_after_delay, ws_clients
 
-async def get_callback(params: types.GetCallback, _db: DB = None):
+async def get_callback(params: dict = {}, _db: DB = None):
 
     # set values
     result = None
-    state = uri_decode(params.state)
+    state = {}
 
     # connect db
     if _db and isinstance(_db, DB): db = _db
     else: db = DB().connect()
 
     try:
+        # set params
+        params = types.GetCallback(**params)
+        state = uri_decode(params.state)
+
         # set provider instance
         _provider_ = Provider(params.provider)
 

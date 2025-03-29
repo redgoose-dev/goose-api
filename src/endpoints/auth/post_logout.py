@@ -3,11 +3,11 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def post_logout(req = Request, db: DB = None):
+async def post_logout(req = Request, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
         # checking token
@@ -36,5 +36,5 @@ async def post_logout(req = Request, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

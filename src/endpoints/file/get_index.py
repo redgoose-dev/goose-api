@@ -4,13 +4,16 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
 
-async def get_index(params: types.GetIndex, req = None, db: DB = None):
+async def get_index(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.GetIndex(**params)
+
         # checking token
         checking_token(req, db)
 
@@ -66,5 +69,5 @@ async def get_index(params: types.GetIndex, req = None, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

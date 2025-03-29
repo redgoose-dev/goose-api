@@ -4,11 +4,11 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from .provider import Provider
 
-async def post_checking(req: Request, db: DB = None):
+async def post_checking(req: Request, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
         # checking token
@@ -41,5 +41,5 @@ async def post_checking(req: Request, db: DB = None):
         if result.status_code == 401:
             result = output.empty({ 'code': 202 })
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

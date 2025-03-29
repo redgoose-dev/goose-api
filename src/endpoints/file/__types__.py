@@ -1,18 +1,18 @@
 from typing import Optional
 from fastapi import UploadFile
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class GetIndex(BaseModel):
-    fields: Optional[str]
-    module: Optional[str]
-    module_srl: Optional[int]
-    name: Optional[str]
-    mime: Optional[str]
-    page: Optional[int]
-    size: Optional[int]
-    order: Optional[str]
-    sort: Optional[str]
-    unlimited: Optional[bool]
+    fields: Optional[str] = None
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
+    name: Optional[str] = None
+    mime: Optional[str] = None
+    page: Optional[int] = 1
+    size: Optional[int] = None
+    order: Optional[str] = 'srl'
+    sort: Optional[str] = 'desc'
+    unlimited: Optional[bool] = False
 
 class GetItem(BaseModel):
     srl: int|str
@@ -21,14 +21,14 @@ class PutItem(BaseModel):
     module: str
     module_srl: int
     file: UploadFile
-    json_data: Optional[str]
+    json_data: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int
-    module: Optional[str]
-    module_srl: Optional[int]
-    json_data: Optional[str]
-    file: Optional[UploadFile]
+    module: Optional[str] = None
+    module_srl: Optional[int] = None
+    json_data: Optional[str] = None
+    file: Optional[UploadFile] = None
 
 class DeleteItem(BaseModel):
     srl: int

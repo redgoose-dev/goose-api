@@ -1,17 +1,19 @@
-from fastapi import Request
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from .provider import Provider
 from .provider.password import ProviderPassword
 
-async def post_login(params: types.PostLogin, req: Request, db: DB = None):
+async def post_login(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.PostLogin(**params)
+
         # set provider instance
         _provider_ = Provider(Provider.code_password)
 
@@ -62,5 +64,5 @@ async def post_login(params: types.PostLogin, req: Request, db: DB = None):
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

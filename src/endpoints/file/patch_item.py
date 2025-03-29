@@ -6,14 +6,19 @@ from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 
-async def patch_item(params: types.PatchItem, req = None, db: DB = None):
+# TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
+
+async def patch_item(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
     path_file = ''
 
     try:
+        # set params
+        params = types.PatchItem(**params)
+
         # checking token
         checking_token(req, db)
 
@@ -116,5 +121,5 @@ async def patch_item(params: types.PatchItem, req = None, db: DB = None):
         if path_file: delete_file(path_file)
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

@@ -2,39 +2,36 @@ from typing import Optional
 from pydantic import BaseModel
 
 class GetIndex(BaseModel):
-    app_srl: Optional[int]
-    nest_srl: Optional[int]
-    category_srl: Optional[int]
-    q: Optional[str]
-    mode: Optional[str]
-    duration: Optional[str]
-    random: Optional[str]
-    fields: Optional[str]
-    page: Optional[int]
-    size: Optional[int]
-    order: Optional[str]
-    sort: Optional[str]
-    unlimited: Optional[bool]
+    app_srl: Optional[int] = None
+    nest_srl: Optional[int] = None
+    category_srl: Optional[int] = None
+    q: Optional[str] = None
+    mode: Optional[str] = None
+    duration: Optional[str] = None
+    random: Optional[str] = None
+    fields: Optional[str] = None
+    page: Optional[int] = 1
+    size: Optional[int] = None
+    order: Optional[str] = 'srl'
+    sort: Optional[str] = 'desc'
+    unlimited: Optional[bool] = False
 
 class GetItem(BaseModel):
     srl: int
-    fields: Optional[str]
-
-class PutItem(BaseModel):
-    pass
+    fields: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int
-    app_srl: Optional[int]
-    nest_srl: Optional[int]
-    category_srl: Optional[int]
-    title: Optional[str]
-    content: Optional[str]
-    hit: Optional[bool]
-    star: Optional[bool]
-    json_data: Optional[str]
-    mode: Optional[str]
-    regdate: Optional[str]
+    app_srl: Optional[int] = None
+    nest_srl: Optional[int] = None
+    category_srl: Optional[int] = None
+    title: Optional[str] = None
+    content: Optional[str] = None
+    hit: Optional[bool] = False
+    star: Optional[bool] = False
+    json_data: Optional[str] = None
+    mode: Optional[str] = None
+    regdate: Optional[str] = None
 
 class DeleteItem(BaseModel):
     srl: int

@@ -3,18 +3,21 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
+async def delete_item(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None
-    db = db if db and isinstance(db, DB) else DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.DeleteItem(**params)
+
         # checking token
         checking_token(req, db)
 
         # set where
-        where = [ f'and srl={params.srl}' ]
+        where = [ f'srl = {params.srl}' ]
 
         # check item
         count = db.get_count(
@@ -32,7 +35,7 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
         # update nest
         db.update_item(
             table_name = Table.NEST.value,
-            where = [ f'app_srl={params.srl}' ],
+            where = [ f'app_srl = {params.srl}' ],
             placeholders = ['app_srl = :app_srl'],
             values = { 'app_srl': None },
         )
@@ -40,17 +43,17 @@ async def delete_item(params: types.DeleteItem, req = None, db: DB = None):
         # update article
         db.update_item(
             table_name = Table.ARTICLE.value,
-            where = [ f'app_srl={params.srl}' ],
+            where = [ f'app_srl = {params.srl}' ],
             placeholders = [ 'app_srl = :app_srl' ],
             values = { 'app_srl': None },
         )
 
         # set result
         result = output.success({
-            'message': 'Success delete App.',
+            'message': 'Success delete app.',
         })
     except Exception as e:
         result = output.exc(e)
     finally:
-        if db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

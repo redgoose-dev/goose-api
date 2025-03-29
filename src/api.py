@@ -44,9 +44,9 @@ async def _options(path_str: str) -> Response:
 
 # home
 @api.get('/')
-def _home() -> JSONResponse:
+async def _home() -> JSONResponse:
     from .endpoints.get_home import home
-    return home()
+    return await home()
 
 # app
 from .endpoints.app import router as app
@@ -85,14 +85,8 @@ from .endpoints.auth import router as auth
 api.include_router(auth, prefix='/auth')
 
 # multiple request
-@api.post('/multi/')
-async def _multi():
-    # TODO: 여러가지 요청을 한번에 처리하는 API
-    # TODO: 배열로 요청들을 받고, 각각의 요청을 처리한 후 결과를 배열로 반환
-    # TODO: 체인으로 연결된 요청을 처리할 수 있도록 구현
-    # TODO: 0번 요청을 처리하여 나온 리턴을 1번에서 값을 받아서 처리할 수 있는지 연구 필요하다.
-    print('multi=====>')
-    pass
+from .endpoints.multi import router as multi
+api.include_router(multi, prefix='/multi')
 
 # 404 error
 @api.exception_handler(StarletteHTTPException)

@@ -19,16 +19,16 @@ async def _get_index(
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
 ):
     from .get_index import get_index
-    return await get_index(types.GetIndex(
-        name = name,
-        category_srl = category_srl,
-        fields = fields,
-        page = page,
-        size = size,
-        order = order,
-        sort = sort,
-        unlimited = unlimited,
-    ), req = req)
+    return await get_index({
+        'name': name,
+        'category_srl': category_srl,
+        'fields': fields,
+        'page': page,
+        'size': size,
+        'order': order,
+        'sort': sort,
+        'unlimited': unlimited,
+    }, req=req)
 
 # get json
 @router.get('/{srl:int}/')
@@ -38,10 +38,10 @@ async def _get_item(
     fields: str = Query(None, pattern=Patterns.fields),
 ):
     from .get_item import get_item
-    return await get_item(types.GetItem(
-        srl = srl,
-        fields = fields,
-    ), req = req)
+    return await get_item({
+        'srl': srl,
+        'fields': fields,
+    }, req=req)
 
 # add json
 @router.put('/')
@@ -54,13 +54,13 @@ async def _put_item(
     path: str = Form(None),
 ):
     from .put_item import put_item
-    return await put_item(types.PutItem(
-        category_srl = category_srl,
-        name = name,
-        description = description,
-        json_data = json_data,
-        path = path,
-    ), req = req)
+    return await put_item({
+        'category_srl': category_srl,
+        'name': name,
+        'description': description,
+        'json_data': json_data,
+        'path': path,
+    }, req=req)
 
 # edit json
 @router.patch('/{srl:int}/')
@@ -74,14 +74,14 @@ async def _patch_item(
     path: str = Form(None),
 ):
     from .patch_item import patch_item
-    return await patch_item(types.PatchItem(
-        srl = srl,
-        category_srl = category_srl,
-        name = name,
-        description = description,
-        json_data = json_data,
-        path = path,
-    ), req = req)
+    return await patch_item({
+        'srl': srl,
+        'category_srl': category_srl,
+        'name': name,
+        'description': description,
+        'json_data': json_data,
+        'path': path,
+    }, req=req)
 
 # delete json
 @router.delete('/{srl:int}/')
@@ -90,6 +90,6 @@ async def _delete_item(
     srl: int,
 ):
     from .delete_item import delete_item
-    return await delete_item(types.DeleteItem(
-        srl = srl,
-    ), req = req)
+    return await delete_item({
+        'srl': srl,
+    }, req=req)

@@ -13,9 +13,9 @@ async def _get_index(
     fields: str = Query(None, pattern=Patterns.fields),
 ):
     from .get_index import get_index
-    return await get_index(types.GetIndex(
-        fields = fields,
-    ), req = req)
+    return await get_index({
+        'fields': fields,
+    }, req=req)
 
 # OAuth 인증요청으로 가기위한 경유지
 @router.get('/redirect/{provider:str}/')
@@ -24,10 +24,10 @@ async def _get_redirect(
     redirect_uri: str = Query(..., pattern=Patterns.url),
 ):
     from .get_redirect import get_redirect
-    return await get_redirect(types.GetRedirect(
-        provider = provider,
-        redirect_uri = redirect_uri,
-    ))
+    return await get_redirect({
+        'provider': provider,
+        'redirect_uri': redirect_uri,
+    })
 
 # OAuth 에서 리다이렉트 콜백
 @router.get('/callback/{provider:str}/')
@@ -37,17 +37,17 @@ async def _get_callback(
     state: str = Query(...),
 ):
     from .get_callback import get_callback
-    return await get_callback(types.GetCallback(
-        provider = provider,
-        code = code,
-        state = state,
-    ))
+    return await get_callback({
+        'provider': provider,
+        'code': code,
+        'state': state,
+    })
 
 # 인증 검사하기
 @router.post('/checking/')
 async def _checking(req: Request):
     from .post_checking import post_checking
-    return await post_checking(req = req)
+    return await post_checking(req=req)
 
 # 리프레시 토큰으로 엑세스 토큰 재발급받기
 @router.post('/renew/')
@@ -58,11 +58,11 @@ async def _renew(
     refresh_token: str = Form('...', alias='refresh'),
 ):
     from .post_renew import post_renew
-    return await post_renew(types.PostRenew(
-        provider = provider,
-        access_token = access_token,
-        refresh_token = refresh_token,
-    ), req = req)
+    return await post_renew({
+        'provider': provider,
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+    }, req=req)
 
 # 패스워드 타입의 프로바이더 등록
 @router.put('/')
@@ -74,13 +74,13 @@ async def _put_register(
     user_password: str = Form(..., alias='password'),
 ):
     from .put_register import put_register
-    return await put_register(types.PutRegister(
-        user_id = user_id,
-        user_name = user_name,
-        user_avatar = user_avatar,
-        user_email = user_email,
-        user_password = user_password,
-    ))
+    return await put_register({
+        'user_id': user_id,
+        'user_name': user_name,
+        'user_avatar': user_avatar,
+        'user_email': user_email,
+        'user_password': user_password,
+    })
 
 # 패스워드 타입의 프로바이더 로그인
 @router.post('/login/')
@@ -90,16 +90,16 @@ async def _login(
     user_password: str = Form(..., alias='password'),
 ):
     from .post_login import post_login
-    return await post_login(types.PostLogin(
-        user_id = user_id,
-        user_password = user_password,
-    ), req = req)
+    return await post_login({
+        'user_id': user_id,
+        'user_password': user_password,
+    }, req=req)
 
 # 패스워드 타입의 프로바이더 로그아웃
 @router.post('/logout/')
 async def _logout(req: Request):
     from .post_logout import post_logout
-    return await post_logout(req = req)
+    return await post_logout(req=req)
 
 # 프로바이더 수정
 @router.patch('/{srl:int}/')
@@ -113,14 +113,14 @@ async def _patch_item(
     user_password: str = Form(None, alias='password'),
 ):
     from .patch_item import patch_item
-    return await patch_item(types.PatchItem(
-        srl = srl,
-        user_id = user_id,
-        user_name = user_name,
-        user_avatar = user_avatar,
-        user_email = user_email,
-        user_password = user_password,
-    ), req = req)
+    return await patch_item({
+        'srl': srl,
+        'user_id': user_id,
+        'user_name': user_name,
+        'user_avatar': user_avatar,
+        'user_email': user_email,
+        'user_password': user_password,
+    }, req=req)
 
 # 프로바이더 삭제
 @router.delete('/{srl:int}/')
@@ -129,7 +129,9 @@ async def _delete_item(
     srl: int
 ):
     from .delete_item import delete_item
-    return await delete_item(types.DeleteItem(srl = srl), req = req)
+    return await delete_item({
+        'srl': srl,
+    }, req=req)
 
 # 프로바이더 인증 웹소켓
 @router.websocket('/ws/{socket_id:str}/')
