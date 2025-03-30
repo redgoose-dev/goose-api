@@ -4,16 +4,16 @@ from typing import Dict, List, Any
 from src.libs.string import color_text
 
 class Table(Enum):
-    APP = 'goose_app'
-    ARTICLE = 'goose_article'
-    CATEGORY = 'goose_category'
-    CHECKLIST = 'goose_checklist'
-    COMMENT = 'goose_comment'
-    FILE = 'goose_file'
-    JSON = 'goose_json'
-    NEST = 'goose_nest'
-    PROVIDER = 'goose_provider'
-    TOKEN = 'goose_token'
+    APP = 'app'
+    ARTICLE = 'article'
+    CATEGORY = 'category'
+    CHECKLIST = 'checklist'
+    COMMENT = 'comment'
+    FILE = 'file'
+    JSON = 'json'
+    NEST = 'nest'
+    PROVIDER = 'provider'
+    TOKEN = 'token'
 
 class DB:
 
