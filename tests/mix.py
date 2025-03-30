@@ -28,7 +28,7 @@ def test_app():
             'key': 'get-app-item',
             'url': '/app/{srl}/',
             'params': {
-                'srl': '{{get-app-index.data.index[1].srl}}'
+                'srl': '{{get-app-index.data.index[0].srl}}'
             },
         },
     ]

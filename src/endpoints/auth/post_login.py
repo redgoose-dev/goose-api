@@ -25,7 +25,7 @@ async def post_login(params: dict = {}, req = None, _db: DB = None):
                 f'and code LIKE "{_provider_.name}"'
             ],
         )
-        if not provider: raise Exception('Provider not found.', 204)
+        if not provider: raise Exception('Provider not found.', 401)
 
         # verify password
         verifyed = ProviderPassword.verify_password(provider['user_password'], params.user_password)
