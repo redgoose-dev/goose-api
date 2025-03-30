@@ -3,18 +3,63 @@ from src.libs.object import check_keys_exist, get_value_dict
 
 def get_router(path: str) -> callable:
     match path:
+        # home
         case 'get /':
             from ..get_home import home
             return home
-        case 'get /app':
+        # app
+        case 'get /app/':
             from ..app.get_index import get_index
             return get_index
-        case 'get /app/{srl}':
+        case 'get /app/{srl}/':
             from ..app.get_item import get_item
             return get_item
-        case 'put /app':
-            from ..app.put_item import put_item
-            return put_item
+        # article
+        case 'get /article/':
+            from ..article.get_index import get_index
+            return get_index
+        case 'get /article/{srl}/':
+            from ..article.get_item import get_item
+            return get_item
+        # category
+        case 'get /category/':
+            from ..category.get_index import get_index
+            return get_index
+        case 'get /category/{srl}/':
+            from ..category.get_item import get_item
+            return get_item
+        # checklist
+        case 'get /checklist/':
+            from ..checklist.get_index import get_index
+            return get_index
+        case 'get /checklist/{srl}/':
+            from ..checklist.get_item import get_item
+            return get_item
+        # comment
+        case 'get /comment/':
+            from ..comment.get_index import get_index
+            return get_index
+        case 'get /comment/{srl}/':
+            from ..comment.get_item import get_item
+            return get_item
+        # file
+        case 'get /file/':
+            from ..file.get_index import get_index
+            return get_index
+        # json
+        case 'get /json/':
+            from ..json.get_index import get_index
+            return get_index
+        case 'get /json/{srl}/':
+            from ..json.get_item import get_item
+            return get_item
+        # nest
+        case 'get /nest/':
+            from ..nest.get_index import get_index
+            return get_index
+        case 'get /nest/{srl}/':
+            from ..nest.get_item import get_item
+            return get_item
         case _:
             return None
 
@@ -38,12 +83,11 @@ def parse_params(params: dict, data: dict = {}) -> dict:
     for key in keys:
         if not (key in params): continue
         pattern = re.compile(r'^\{\{(.*)\}\}$')
-        match = pattern.match(params[key])
+        match = pattern.match(params[key]) if isinstance(params[key], str) else None
         if match:
             value = get_value_dict(data, match.group(1))
             if isinstance(value, (str, int, bool)):
                 params[key] = value
             elif value is None:
                 del params[key]
-
     return params

@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from .__libs__ import filtering_content, get_percent_into_checkboxes
 
-async def put_item(params: dict = {}, req = None, _db: DB = None):
+async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None):
         params = types.PutItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # adjust content
         content = filtering_content(params.content)

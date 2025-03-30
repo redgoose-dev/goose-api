@@ -4,15 +4,18 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 
-async def put_item(params: types.PutItem, req = None, _db: DB = None):
+async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.PutItem(**params)
+
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check parse json
         json_data = json_parse(params.json_data) if params.json_data else {}

@@ -8,7 +8,7 @@ from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 
 # TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
 
-async def patch_item(params: dict = {}, req = None, _db: DB = None):
+async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -20,7 +20,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None):
         params = types.PatchItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check item
         item = db.get_item(

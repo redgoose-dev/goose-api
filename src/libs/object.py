@@ -1,14 +1,15 @@
 import json
 
-def json_stringify(data: dict, space: int|None = None) -> str:
+def json_stringify(data: dict|list, space: int|None = None) -> str:
     return json.dumps(
         data,
         indent = space,
         ensure_ascii = False
     )
 
-def json_parse(text: str) -> dict:
-    return json.loads(text)
+def json_parse(text: str) -> dict|None:
+    try: return json.loads(text)
+    except json.JSONDecodeError as _: return None
 
 def check_keys_exist(data: dict, keys: list) -> bool:
     return all(key in data for key in keys)

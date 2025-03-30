@@ -13,7 +13,7 @@ from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 
 # TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
 
-async def put_item(params: dict = {}, req = None, _db: DB = None):
+async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -25,7 +25,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None):
         params = types.PutItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check parse json
         json_data = json_parse(params.json_data) if params.json_data else {}

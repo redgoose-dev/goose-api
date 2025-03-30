@@ -2,9 +2,10 @@ import re
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.libs.object import json_parse
 from src.modules.verify import checking_token
 
-async def get_index(params: dict = {}, req = None, _db: DB = None):
+async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -15,7 +16,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None):
         params = types.GetIndex(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
@@ -94,6 +95,11 @@ async def get_index(params: dict = {}, req = None, _db: DB = None):
             values = values,
             unlimited = params.unlimited,
         )
+        def transform_item(item: dict) -> dict:
+            if 'json' in item:
+                item['json'] = json_parse(item['json'])
+            return item
+        index = [ transform_item(item) for item in index ]
 
         # TODO: mod - 카테고리 이름 가져오기
         # TODO: mod - 둥지 이름 가져오기

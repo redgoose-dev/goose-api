@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from .__libs__ import check_module
 from src.modules.verify import checking_token
 
-async def put_item(params: dict, req = None, _db: DB = None):
+async def put_item(params: dict, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def put_item(params: dict, req = None, _db: DB = None):
         params = types.PutItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check module
         check_module(db, params.module, params.module_srl)

@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
 
-async def get_item(params: dict = {}, req = None, _db: DB = None):
+async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         params = types.GetItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None

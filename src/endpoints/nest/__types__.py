@@ -2,34 +2,34 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class GetIndex(BaseModel):
-    fields: Optional[str]
-    app_srl: Optional[int]
-    code: Optional[str]
-    name: Optional[str]
-    page: Optional[int]
-    size: Optional[int]
-    order: Optional[str]
-    sort: Optional[str]
-    unlimited: Optional[bool]
+    fields: Optional[str] = None
+    app_srl: Optional[int] = None
+    code: Optional[str] = None
+    name: Optional[str] = None
+    page: Optional[int] = 1
+    size: Optional[int] = None
+    order: Optional[str] = 'srl'
+    sort: Optional[str] = 'desc'
+    unlimited: Optional[bool] = False
 
 class GetItem(BaseModel):
     srl: int|str
-    fields: Optional[str]
+    fields: Optional[str] = None
 
 class PutItem(BaseModel):
     app_srl: int
     code: str
     name: str
-    description: Optional[str]
-    json_data: Optional[str]
+    description: Optional[str] = None
+    json_data: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int
-    app_srl: Optional[int]
-    code: Optional[str]
-    name: Optional[str]
-    description: Optional[str]
-    json_data: Optional[str]
+    app_srl: Optional[int] = None
+    code: Optional[str] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    json_data: Optional[str] = None
 
 class DeleteItem(BaseModel):
     srl: int

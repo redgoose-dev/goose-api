@@ -88,4 +88,3 @@ def test_get_items():
 @pytest.mark.skip
 def test_add_items(request):
     count: int = int(request.config.getoption('--custom') or 10)
-    pass

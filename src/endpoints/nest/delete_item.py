@@ -4,15 +4,18 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from ..category.__libs__ import delete_category_data
 
-async def delete_item(params: types.DeleteItem, req = None, _db: DB = None):
+async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
 
     try:
+        # set params
+        params = types.DeleteItem(**params)
+
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check item
         count = db.get_count(

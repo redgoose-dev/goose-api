@@ -87,7 +87,7 @@ def error(content: str|None, options: Dict[str, any] = None) -> Response:
     if code not in [ 404, 405 ]:
         unique = create_random_string(12)
         headers['Error-Code'] = unique
-        print(color_text(f'[ERROR] {options}', 'red'))
+        print(color_text(f'[ERROR/{headers['Error-Code']}] {options}', 'red'))
     # return
     return Response(
         status_code = code,

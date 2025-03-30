@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def delete_item(params: dict = {}, req = None, _db: DB = None):
+async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -14,7 +14,7 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None):
         params = types.DeleteItem(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # check data
         count = db.get_count(

@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def get_index(params: dict = {}, req = None, _db: DB = None):
+async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -14,7 +14,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None):
         params = types.GetIndex(**params)
 
         # checking token
-        checking_token(req, db)
+        if _check_token: checking_token(req, db)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
