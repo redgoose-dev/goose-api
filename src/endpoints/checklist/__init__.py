@@ -18,6 +18,7 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    tag: str = Query(None, pattern=Patterns.tags),
 ):
     from .get_index import get_index
     return await get_index({
@@ -30,6 +31,7 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'tag': tag,
     }, req=req)
 
 # get checklist
@@ -50,10 +52,12 @@ async def _get_item(
 async def _put_item(
     req: Request,
     content: str = Form(None),
+    tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .put_item import put_item
     return await put_item({
         'content': content,
+        'tag': tag,
     }, req=req)
 
 # update checklist
@@ -62,11 +66,13 @@ async def _patch_item(
     req: Request,
     srl: int,
     content: str = Form(None),
+    tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .patch_item import patch_item
     return await patch_item({
         'srl': srl,
         'content': content,
+        'tag': tag,
     }, req=req)
 
 # get checklist

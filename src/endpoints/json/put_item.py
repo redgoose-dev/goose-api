@@ -4,6 +4,7 @@ from src.libs.db import DB, Table
 from src.libs.check import check_url
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
+from ..category import __libs__ as category_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -26,7 +27,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             count = db.get_count(
                 table_name = Table.CATEGORY.value,
                 where = [
-                    'and module LIKE "json"',
+                    f'and module LIKE "{category_libs.Module.JSON}"',
                     f'and srl = {params.category_srl}',
                 ],
             )
@@ -61,9 +62,19 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             values = values,
         )
 
+        # add tag
+        if params.tag:
+            from ..tag import __libs__ as tag_libs
+            tag_libs.add(
+                _db = db,
+                tags = params.tag,
+                module = tag_libs.Module.JSON,
+                module_srl = data,
+            )
+
         # set result
         result = output.success({
-            'message': 'Success add JSON.',
+            'message': 'Complete add JSON.',
             'data': data,
         })
     except Exception as e:

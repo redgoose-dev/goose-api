@@ -10,6 +10,7 @@ class GetIndex(BaseModel):
     order: Optional[str] = 'srl'
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = False
+    tag: Optional[str] = None
 
 class GetItem(BaseModel):
     srl: int
@@ -21,6 +22,7 @@ class PutItem(BaseModel):
     description: Optional[str] = None
     json_data: str
     path: Optional[str] = None
+    tag: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int
@@ -29,6 +31,7 @@ class PatchItem(BaseModel):
     description: Optional[str] = None
     json_data: Optional[str] = None
     path: Optional[str] = None
+    tag: Optional[str] = None
 
 class DeleteItem(BaseModel):
     srl: int

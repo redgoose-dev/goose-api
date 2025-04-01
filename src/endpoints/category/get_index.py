@@ -62,7 +62,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set result
         result = output.success({
-            'message': 'Success get category index.',
+            'message': 'Complete get category index.',
             'data': {
                 'total': total,
                 'index': index,

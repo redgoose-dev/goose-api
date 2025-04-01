@@ -2,6 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from ..tag import __libs__ as tag_libs
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -26,6 +27,14 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             where = [ f'srl = {params.srl}' ],
         )
         if not data: raise Exception('Item not found', 204)
+
+        # get tag
+        tag_index = tag_libs.get_index(
+            _db = db,
+            module = tag_libs.Module.CHECKLIST,
+            module_srl = params.srl,
+        )
+        if tag_index and len(tag_index) > 0: data['tag'] = tag_index
 
         # set result
         result = output.success({

@@ -56,7 +56,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set result
         result = output.success({
-            'message': 'Success get App index.',
+            'message': 'Complete get app index.',
             'data': {
                 'total': total,
                 'index': index,

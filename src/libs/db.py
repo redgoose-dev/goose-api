@@ -14,6 +14,8 @@ class Table(Enum):
     NEST = 'nest'
     PROVIDER = 'provider'
     TOKEN = 'token'
+    TAG = 'tag'
+    MAP_TAG = 'map_tag'
 
 class DB:
 
@@ -77,6 +79,7 @@ class DB:
         self,
         table_name: str = None,
         fields: list = None,
+        join: list = None,
         where: list = None,
         limit: dict = None,
         order: dict = None,
@@ -88,10 +91,11 @@ class DB:
         # set fields
         fields = self.__get_field__(fields)
         # set query
+        _join = ' '.join(join) if join else ''
         _where = self.__where_list_to_str__(where) if where else ''
         _limit = self.__get_limit__(limit) if not unlimited else ''
         _order = self.__get_order__(order)
-        query = f'SELECT {fields} FROM {table_name} {_where} {_order} {_limit}'
+        query = f'SELECT {fields} FROM {table_name} {_join} {_where} {_order} {_limit}'
         query = self.__optimize_query__(query)
         if self.debug:
             print_debug('get_items', {
@@ -134,6 +138,7 @@ class DB:
     def get_count(
         self,
         table_name: str = None,
+        join: list = None,
         where: list = None,
         values: dict = {},
     ) -> int:

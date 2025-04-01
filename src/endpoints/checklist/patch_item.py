@@ -50,6 +50,16 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             values = values,
         )
 
+        # update tag
+        if params.tag:
+            from ..tag import __libs__ as tag_libs
+            tag_libs.update(
+                _db = db,
+                new_tags = params.tag,
+                module = tag_libs.Module.CHECKLIST,
+                module_srl = params.srl,
+            )
+
         # set result
         result = output.success({
             'message': 'Complete update checklist item.',

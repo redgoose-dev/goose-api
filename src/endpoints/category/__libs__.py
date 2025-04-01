@@ -1,5 +1,9 @@
 from src.libs.db import DB, Table
 
+class Module:
+    NEST = 'nest'
+    JSON = 'json'
+
 def check_module(db: DB, module: str, srl: int):
     match module:
         case 'nest':
@@ -13,7 +17,9 @@ def check_module(db: DB, module: str, srl: int):
         case _:
             raise Exception('Module not found.', 400)
 
-def delete_category_data(db: DB, module: str, srl: int):
+# PUBLIC MODULES
+
+def delete(db: DB, module: str, srl: int):
     db.delete_item(
         table_name = Table.CATEGORY.value,
         where = [

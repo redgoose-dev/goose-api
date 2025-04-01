@@ -78,7 +78,7 @@ CREATE TABLE `file` (
     `mime` TEXT NOT NULL, -- file mime type
     `size` INTEGER NOT NULL DEFAULT 0, -- file size
     `json` TEXT NULL DEFAULT '{}', -- file json data
-    `module` TEXT NOT NULL DEFAULT 'article', -- article,json,checklist
+    `module` TEXT NOT NULL, -- article,json,checklist
     `module_srl` INTEGER NOT NULL, -- module srl
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `article`),
@@ -90,21 +90,38 @@ CREATE TABLE `file` (
 CREATE TABLE `comment` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- comment srl
     `content` TEXT NOT NULL, -- markdown content
-    `module` TEXT NOT NULL DEFAULT 'article', -- article
+    `module` TEXT NOT NULL, -- article
     `module_srl` INTEGER NOT NULL, -- module srl
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `article`)
+);
+
+-- table `tag`
+CREATE TABLE `tag` (
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- tag srl
+    `name` TEXT NOT NULL -- tag name
+);
+-- table `map_tag`
+CREATE TABLE `map_tag` (
+    `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
+    `tag_srl` INTEGER NOT NULL, -- tag srl
+    `module` TEXT NOT NULL, -- article,json,checklist
+    `module_srl` INTEGER NOT NULL, -- module srl
+    FOREIGN KEY (`tag_srl`) REFERENCES `tag`(`srl`),
+    FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `article`),
+    FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `json`),
+    FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `checklist`)
 );
 
 -- table `provider`
 CREATE TABLE `provider` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- provider srl
     `code` TEXT NOT NULL, -- provider name
-    `user_id` TEXT NOT NULL,
-    `user_name` TEXT NULL,
-    `user_avatar` TEXT NULL,
-    `user_email` TEXT NULL,
-    `user_password` TEXT NULL,
+    `user_id` TEXT NOT NULL, -- user id
+    `user_name` TEXT NULL, -- user name
+    `user_avatar` TEXT NULL, -- user avatar
+    `user_email` TEXT NULL, -- user email
+    `user_password` TEXT NULL, -- user password (for code=password)
     `created_at` TEXT NOT NULL -- created date
 );
 

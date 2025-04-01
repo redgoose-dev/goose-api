@@ -3,6 +3,12 @@ from datetime import datetime
 from src.libs.db import DB, Table
 from src.libs.string import create_random_string
 
+class Module:
+    ARTICLE = 'article'
+    JSON = 'json'
+    CHECKLIST = 'checklist'
+    COMMENT = 'comment'
+
 def get_unique_name(n: len = 12) -> str:
     current_time = datetime.now().strftime('%Y%m%d%H%M%S')
     unique = create_random_string(n)
@@ -38,7 +44,9 @@ def convert_path_to_buffer(path: str) -> bytes|None:
     with open(path, 'rb') as file:
         return file.read()
 
-def delete_files_data(db: DB, module: str, srl: int):
+# PUBLIC MODULES
+
+def delete(db: DB, module: str, srl: int):
     files = db.get_items(
         table_name = Table.FILE.value,
         fields = ['srl', 'path'],

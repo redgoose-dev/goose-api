@@ -2,7 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__libs__ import check_module
+from . import __libs__ as libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -29,7 +29,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if params.content:
             values['content'] = params.content
         if params.module and params.module_srl:
-            check_module(db, params.module, params.module_srl)
+            libs.check_module(db, params.module, params.module_srl)
             values['module'] = params.module
             values['module_srl'] = params.module_srl
 

@@ -41,7 +41,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # set result
         result = output.success({
-            'message': 'Success get App item.',
+            'message': 'Complete get app item.',
             'data': data,
         })
     except Exception as e:

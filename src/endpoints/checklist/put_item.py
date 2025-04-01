@@ -43,6 +43,16 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             values = values,
         )
 
+        # add tag
+        if params.tag:
+            from ..tag import __libs__ as tag_libs
+            tag_libs.add(
+                _db = db,
+                tags = params.tag,
+                module = tag_libs.Module.CHECKLIST,
+                module_srl = data,
+            )
+
         # set result
         result = output.success({
             'message': 'Complete add checklist item.',

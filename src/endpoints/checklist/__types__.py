@@ -11,6 +11,7 @@ class GetIndex(BaseModel):
     order: Optional[str] = 'srl'
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = False
+    tag: Optional[str] = None
 
 class GetItem(BaseModel):
     srl: int
@@ -18,10 +19,12 @@ class GetItem(BaseModel):
 
 class PutItem(BaseModel):
     content: Optional[str] = None
+    tag: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int
     content: Optional[str] = None
+    tag: Optional[str] = None
 
 class DeleteItem(BaseModel):
     srl: int

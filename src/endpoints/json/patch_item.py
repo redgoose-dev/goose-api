@@ -4,6 +4,7 @@ from src.libs.db import DB, Table
 from src.libs.check import check_url
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
+from ..category import __libs__ as category_libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -43,7 +44,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             count = db.get_count(
                 table_name = Table.CATEGORY.value,
                 where = [
-                    'and module LIKE "json"',
+                    f'and module LIKE "{category_libs.Module.JSON}"',
                     f'and srl = {params.category_srl}',
                 ]
             )
@@ -73,6 +74,16 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             values = values,
             where=[ f'srl = {params.srl}' ],
         )
+
+        # update tag
+        if params.tag:
+            from ..tag import __libs__ as tag_libs
+            tag_libs.update(
+                _db = db,
+                new_tags = params.tag,
+                module = tag_libs.Module.JSON,
+                module_srl = params.srl,
+            )
 
         # set result
         result = output.success({

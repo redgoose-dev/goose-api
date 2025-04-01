@@ -29,7 +29,7 @@ async def put_item(req = None, _db: DB = None, _check_token = True):
 
         # set result
         result = output.success({
-            'message': 'Success add article.',
+            'message': 'Complete add article.',
             'data': data,
         })
     except Exception as e:

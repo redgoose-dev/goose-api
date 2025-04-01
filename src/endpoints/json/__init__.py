@@ -17,6 +17,7 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    tag: str = Query(None, pattern=Patterns.tags),
 ):
     from .get_index import get_index
     return await get_index({
@@ -28,6 +29,7 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'tag': tag,
     }, req=req)
 
 # get json
@@ -52,6 +54,7 @@ async def _put_item(
     description: str = Form(None),
     json_data: str = Form(..., alias='json'),
     path: str = Form(None),
+    tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .put_item import put_item
     return await put_item({
@@ -60,6 +63,7 @@ async def _put_item(
         'description': description,
         'json_data': json_data,
         'path': path,
+        'tag': tag,
     }, req=req)
 
 # edit json
@@ -72,6 +76,7 @@ async def _patch_item(
     description: str = Form(None),
     json_data: str = Form(None, alias='json'),
     path: str = Form(None),
+    tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .patch_item import patch_item
     return await patch_item({
@@ -81,6 +86,7 @@ async def _patch_item(
         'description': description,
         'json_data': json_data,
         'path': path,
+        'tag': tag,
     }, req=req)
 
 # delete json

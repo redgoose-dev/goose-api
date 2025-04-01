@@ -66,7 +66,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # set result
         result = output.success({
-            'message': 'Success update App.',
+            'message': 'Complete update app.',
         })
     except Exception as e:
         result = output.exc(e)

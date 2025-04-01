@@ -21,21 +21,29 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
-        # set where
+        # set data assets
         where = []
-        if params.app_srl:
-            where.append(f'and app_srl = {params.app_srl}')
-        if params.nest_srl:
-            where.append(f'and nest_srl = {params.nest_srl}')
-        if params.category_srl:
-            where.append(f'and category_srl = {params.category_srl}')
-        if params.q:
-            where.append(f'and (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
-        if params.mode:
-            where.append(f'and mode LIKE "{params.mode}"')
-
-        # set values
         values = {}
+        join = []
+
+        # set base params
+        if params.app_srl:
+            where.append(f'AND app_srl = {params.app_srl}')
+        if params.nest_srl:
+            where.append(f'AND nest_srl = {params.nest_srl}')
+        if params.category_srl:
+            where.append(f'AND category_srl = {params.category_srl}')
+        if params.q:
+            where.append(f'AND (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
+        if params.mode:
+            where.append(f'AND mode LIKE "{params.mode}"')
+
+        # set tag
+        if params.tag:
+            from ..tag import __libs__ as tag_lib
+            _tag = ','.join(params.tag.split(','))
+            where.append(f'AND article.srl IN (SELECT map_tag.module_srl FROM map_tag WHERE map_tag.module LIKE :module AND map_tag.tag_srl IN ({_tag}))')
+            values['module'] = tag_lib.Module.ARTICLE
 
         # set duration
         if params.duration:
@@ -63,6 +71,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         total = db.get_count(
             table_name = Table.ARTICLE.value,
             where = where,
+            join = join,
             values = values,
         )
         if not (total > 0): raise Exception('No data', 204)
@@ -84,6 +93,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             table_name = Table.ARTICLE.value,
             fields = fields,
             where = where,
+            join = join,
             limit = {
                 'size': params.size,
                 'page': params.page,
@@ -106,7 +116,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set result
         result = output.success({
-            'message': 'Complete get Article index.',
+            'message': 'Complete get article index.',
             'data': {
                 'total': total,
                 'index': index,

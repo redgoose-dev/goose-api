@@ -2,7 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__libs__ import delete_file
+from . import __libs__ as file_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -35,7 +35,7 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         )
 
         # delete file
-        delete_file(item['path'])
+        file_libs.delete_file(item['path'])
 
         # set result
         result = output.success({

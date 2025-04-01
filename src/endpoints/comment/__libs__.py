@@ -1,5 +1,8 @@
 from src.libs.db import DB, Table
 
+class Module:
+    ARTICLE = 'article'
+
 def check_module(db: DB, module: str, srl: int):
     match module:
         case 'article':
@@ -11,7 +14,9 @@ def check_module(db: DB, module: str, srl: int):
         case _:
             raise Exception('Module not found.', 400)
 
-def delete_comment_data(db: DB, module: str, srl: int):
+# PUBLIC MODULES
+
+def delete(db: DB, module: str, srl: int):
     db.delete_item(
         table_name = Table.COMMENT.value,
         where = [

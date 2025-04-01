@@ -22,6 +22,7 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    tag: str = Query(None, pattern=Patterns.tags),
 ):
     from .get_index import get_index
     return await get_index({
@@ -38,6 +39,7 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'tag': tag,
     }, req=req)
 
 # get article
@@ -72,6 +74,7 @@ async def _patch_item(
     hit: bool = Form(False, convert=lambda v: bool(int(v))),
     star: bool = Form(False, convert=lambda v: bool(int(v))),
     json_data: str = Form(None, alias='json'),
+    tag: str = Form(None, pattern=Patterns.tags),
     mode: str = Form(None, pattern=Patterns.article_mode),
     regdate: str = Form(None, pattern=Patterns.date),
 ):
@@ -86,6 +89,7 @@ async def _patch_item(
         'hit': hit,
         'star': star,
         'json_data': json_data,
+        'tag': tag,
         'mode': mode,
         'regdate': regdate,
     }, req=req)

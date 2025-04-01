@@ -29,3 +29,13 @@ def get_value_dict(data: dict, path: str):
         else:
             return None
     return item
+
+# 배열 두개를 비교하여 추가, 중복, 삭제 상황의 값들을 가져올 수 있다.
+def compare_list(a: list, b: list) -> dict:
+    def _filter(s):
+        return s.strip() if isinstance(s, str) else s
+    return {
+        'added': [x for x in b if x and _filter(x) not in a],
+        'duplicate': [x for x in b if x and _filter(x) in a],
+        'removed': [x for x in a if x and _filter(x) not in b],
+    }

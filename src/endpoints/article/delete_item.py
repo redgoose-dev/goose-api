@@ -2,8 +2,9 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from ..file.__libs__ import delete_files_data
-from ..comment.__libs__ import delete_comment_data
+from ..file import __libs__ as file_libs
+from ..comment import __libs__ as comment_libs
+from ..tag import __libs__ as tag_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -32,14 +33,17 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         )
 
         # delete files
-        delete_files_data(db, 'article', params.srl)
+        file_libs.delete(db, file_libs.Module.ARTICLE, params.srl)
 
         # delete comment
-        delete_comment_data(db, 'article', params.srl)
+        comment_libs.delete(db, comment_libs.Module.ARTICLE, params.srl)
+
+        # delete tag
+        tag_libs.delete_all(db, tag_libs.Module.ARTICLE, params.srl)
 
         # set result
         result = output.success({
-            'message': 'Success delete article.',
+            'message': 'Complete delete article.',
         })
     except Exception as e:
         result = output.exc(e)

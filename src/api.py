@@ -80,6 +80,10 @@ api.include_router(json, prefix='/json')
 from .endpoints.nest import router as nest
 api.include_router(nest, prefix='/nest')
 
+# tag
+from .endpoints.tag import router as tag
+api.include_router(tag, prefix='/tag')
+
 # auth
 from .endpoints.auth import router as auth
 api.include_router(auth, prefix='/auth')
