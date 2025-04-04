@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
-from ..tag import __libs__ as tag_libs
+from src.modules.mod import MOD
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -12,14 +12,18 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
     db = _db if _db else DB().connect()
 
     try:
-        # set params
+        # set base values
         params = types.GetItem(**params)
+        placeholder = []
 
         # checking token
         if _check_token: checking_token(req, db)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
+
+        # set mod
+        mod = MOD(params.mod or '')
 
         # set data
         data = db.get_item(
@@ -31,17 +35,19 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         if data and isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
 
-        # get tag
-        tag_index = tag_libs.get_index(
-            _db = db,
-            module = tag_libs.Module.ARTICLE,
-            module_srl = params.srl,
-        )
-        if tag_index and len(tag_index) > 0: data['tag'] = tag_index
+        # MOD / hit or star
+        if mod.check('up-hit') or mod.check('up-star'):
+            placeholder = []
+            if mod.check('up-hit'): placeholder.append('hit = hit + 1')
+            if mod.check('up-star'): placeholder.append('star = star + 1')
 
-        # TODO: mod - 카테고리 이름 가져오기
-        # TODO: mod - 네스트 이름 가져오기
-        # TODO: mod - 조회수 올리기
+        # update data
+        if len(placeholder):
+            db.update_item(
+                table_name = Table.ARTICLE.value,
+                where = [ f'srl = {params.srl}' ],
+                placeholders = placeholder,
+            )
 
         # set result
         result = output.success({

@@ -1,7 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from src.endpoints.file.__lib__ import get_mime_type, get_file_name
+from . import default_headers
+from src.endpoints.file.__libs__ import get_mime_type, get_file_name
 
 client = TestClient(app)
 
@@ -17,6 +18,7 @@ def get_index(params: dict = {}) -> dict:
     res = client.get(
         url = f'/file/',
         params = params,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     assert 'data' in res.json()
@@ -28,7 +30,10 @@ def get_index(params: dict = {}) -> dict:
 
 def get_item(srl: int = 4, params: dict = {}) -> bytes:
     if not srl: raise Exception('srl not found.', 400)
-    res = client.get(f'/file/{srl}/')
+    res = client.get(
+        url = f'/file/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     assert isinstance(res.content, bytes)
     return res.content
@@ -39,6 +44,7 @@ def put_item(data: dict = {}, files: dict = {}) -> int:
         url = f'/file/',
         data = data,
         files = files,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -52,12 +58,16 @@ def patch_item(srl: int, data: dict = {}, files: dict = {}):
         url = f'/file/{srl}/',
         data = data,
         files = files,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
     if not srl: raise Exception('srl not found.', 400)
-    res = client.delete(f'/file/{srl}/')
+    res = client.delete(
+        url = f'/file/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
 
 ### TEST AREA ###

@@ -4,6 +4,11 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
+from ..app import __libs__ as app_libs
+from ..nest import __libs__ as nest_libs
+from ..category import __libs__ as category_libs
+from ..tag import __libs__ as tag_libs
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -20,6 +25,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
+
+        # set mod
+        mod = MOD(params.mod or '')
 
         # set data assets
         where = []
@@ -105,14 +113,41 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             values = values,
             unlimited = params.unlimited,
         )
+
+        # transform items
         def transform_item(item: dict) -> dict:
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
+            # MOD / app
+            if mod.check('app') and item.get('app_srl'):
+                item['app'] = app_libs.get_item(
+                    _db = db,
+                    srl = item.get('app_srl'),
+                    fields = [ 'srl', 'code', 'name' ],
+                )
+            # MOD / nest
+            if mod.check('nest') and item.get('nest_srl'):
+                item['nest'] = nest_libs.get_item(
+                    _db = db,
+                    srl = item.get('nest_srl'),
+                    fields = [ 'srl', 'code', 'name' ],
+                )
+            # MOD / category
+            if mod.check('category') and item.get('category_srl'):
+                item['category'] = category_libs.get_item(
+                    _db = db,
+                    srl = item.get('category_srl'),
+                    fields = [ 'srl', 'name' ],
+                )
+            # MOD / tag
+            if mod.check('tag'):
+                item['tag'] = tag_libs.get_index(
+                    _db = db,
+                    module = tag_libs.Module.ARTICLE,
+                    module_srl = item.get('srl'),
+                )
             return item
         index = [ transform_item(item) for item in index ]
-
-        # TODO: mod - 카테고리 이름 가져오기
-        # TODO: mod - 둥지 이름 가져오기
 
         # set result
         result = output.success({

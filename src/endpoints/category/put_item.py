@@ -24,6 +24,8 @@ async def put_item(params: dict, req = None, _db: DB = None, _check_token = True
         where = [ f'and module LIKE "{params.module}"' ]
         if params.module_srl:
             where.append(f'and module_srl = {params.module_srl}')
+        else:
+            where.append(f'and module_srl IS NULL')
         count = db.get_count(
             table_name = Table.CATEGORY.value,
             where = where,

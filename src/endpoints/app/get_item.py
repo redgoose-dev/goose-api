@@ -3,6 +3,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -26,6 +27,9 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
+        # set mod
+        mod = MOD(params.mod or '')
+
         # set where
         where = []
         if srl: where.append(f'and srl={srl}')
@@ -38,6 +42,16 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             fields = fields,
         )
         if not data: raise Exception('Item not found', 204)
+
+        # MOD / count-nest
+        if mod.check('count-nest'):
+            from ..nest import __libs__ as nest_libs
+            data['count_nest'] = nest_libs.get_count(db, [ f'app_srl = {data['srl']}' ])
+
+        # MOD / count-article
+        if mod.check('count-article'):
+            from ..article import __libs__ as article_libs
+            data['count_article'] = article_libs.get_count(db, [ f'app_srl = {data['srl']}' ])
 
         # set result
         result = output.success({

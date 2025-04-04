@@ -38,7 +38,7 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         file_libs.delete(db, file_libs.Module.JSON, params.srl)
 
         # delete tag
-        tag_libs.delete_all(db, tag_libs.Module.JSON, params.srl)
+        tag_libs.delete(db, tag_libs.Module.JSON, params.srl)
 
         # set result
         result = output.success({

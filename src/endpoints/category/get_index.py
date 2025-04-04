@@ -2,6 +2,10 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
+from . import __libs__ as category_libs
+from ..article import __libs__ as article_libs
+from ..json import __libs__ as json_libs
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -19,6 +23,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
+        # set mod
+        mod = MOD(params.mod or '')
+
         # set where
         where = []
         if params.name:
@@ -26,7 +33,10 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         if params.module:
             where.append(f'and module="{params.module}"')
         if params.module_srl is not None:
-            where.append(f'and module_srl={params.module_srl}')
+            if params.module_srl > 0:
+                where.append(f'and module_srl={params.module_srl}')
+            else:
+                where.append(f'and module_srl IS NULL')
 
         # get total
         total = db.get_count(
@@ -50,15 +60,56 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             },
             unlimited = params.unlimited,
         )
-        # def transform_item(item: dict) -> dict:
-        #     if 'created_at' in item:
-        #         item['created_at'] = convert_date(item['created_at'])
-        #     return item
-        # index = [transform_item(item) for item in index]
 
-        # TODO: mod - count / article or json 갯수 가져오기
-        # TODO: mod - all / 모든 모듈 데이터 갯수
-        # TODO: mod - none / 모듈 데이터에서 카테고리에 해당되지 않는 데이터 갯수
+        # set where for module
+        where = []
+        if params.q:
+            match params.module:
+                case category_libs.Module.NEST:
+                    where.append(f'and (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
+                case category_libs.Module.JSON:
+                    where.append(f'and (name LIKE "%{params.q}%" OR description LIKE "%{params.q}%")')
+
+        # transform items
+        def transform_item(item: dict) -> dict:
+            if 'srl' in item and 'module' in item:
+                item_where = [ f'and category_srl = {item['srl']}' ]
+                item_where.extend(where)
+                # MOD / count
+                if mod.check('count'):
+                    match params.module:
+                        case category_libs.Module.NEST:
+                            item['count'] = article_libs.get_count(db, item_where)
+                        case category_libs.Module.JSON:
+                            item['count'] = json_libs.get_count(db, item_where)
+            return item
+        index = [ transform_item(item) for item in index ]
+
+        # MOD / none
+        if mod.check('none'):
+            new_item = { 'name': 'none' }
+            _where = [ f'and category_srl IS NULL' ]
+            _where.extend(where)
+            if mod.check('count'):
+                match params.module:
+                    case category_libs.Module.NEST:
+                        new_item['count'] = article_libs.get_count(db, _where)
+                    case category_libs.Module.JSON:
+                        new_item['count'] = json_libs.get_count(db, _where)
+            index.insert(0, new_item)
+
+        # MOD / all
+        if mod.check('all'):
+            new_item = { 'name': 'all' }
+            _where = []
+            _where.extend(where)
+            if mod.check('count'):
+                match params.module:
+                    case category_libs.Module.NEST:
+                        new_item['count'] = article_libs.get_count(db, _where)
+                    case category_libs.Module.JSON:
+                        new_item['count'] = json_libs.get_count(db, _where)
+            index.append(new_item)
 
         # set result
         result = output.success({

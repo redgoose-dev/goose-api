@@ -2,9 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from ..file import __libs__ as file_libs
-from ..comment import __libs__ as comment_libs
-from ..tag import __libs__ as tag_libs
+from . import __libs__ as article_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -27,19 +25,7 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         if not item: raise Exception('Item not found', 204)
 
         # delete item
-        db.delete_item(
-            table_name = Table.ARTICLE.value,
-            where = [ f'srl = {params.srl}' ],
-        )
-
-        # delete files
-        file_libs.delete(db, file_libs.Module.ARTICLE, params.srl)
-
-        # delete comment
-        comment_libs.delete(db, comment_libs.Module.ARTICLE, params.srl)
-
-        # delete tag
-        tag_libs.delete_all(db, tag_libs.Module.ARTICLE, params.srl)
+        article_libs.delete(db, params.srl)
 
         # set result
         result = output.success({

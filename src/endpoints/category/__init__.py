@@ -18,6 +18,8 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    mod: str = Query(None, pattern=Patterns.mod),
+    q: str = Query(None),
 ):
     from .get_index import get_index
     return await get_index({
@@ -30,6 +32,8 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'mod': mod,
+        'q': q,
     }, req=req)
 
 # get category

@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from .provider.password import ProviderPassword
 from src.modules.verify import checking_token
 
-async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None

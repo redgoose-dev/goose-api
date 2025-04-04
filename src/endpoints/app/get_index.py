@@ -2,6 +2,9 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
+from ..nest import __libs__ as nest_libs
+from ..article import __libs__ as article_libs
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -18,6 +21,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
+
+        # set mod
+        mod = MOD(params.mod or '')
 
         # set where
         where = []
@@ -47,12 +53,17 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
                 'sort': params.sort,
             },
         )
-        # def transform_item(item: dict) -> dict:
-        #     new_item = { **item }
-        #     return new_item
-        # index = [ transform_item(item) for item in index ]
 
-        # TODO: mod - nest 데이터 갯수
+        # transform items
+        def transform_item(item: dict) -> dict:
+            # MOD / count-nest
+            if mod.check('count-nest'):
+                item['count_nest'] = nest_libs.get_count(db, [ f'app_srl = {item['srl']}' ])
+            # MOD / count-article
+            if mod.check('count-article'):
+                item['count_article'] = article_libs.get_count(db, [ f'app_srl = {item['srl']}' ])
+            return item
+        index = [ transform_item(item) for item in index ]
 
         # set result
         result = output.success({

@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def delete_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None

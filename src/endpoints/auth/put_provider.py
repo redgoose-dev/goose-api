@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from .provider.password import ProviderPassword
 from .provider import Provider
 
-async def put_register(params: dict = {}, _db: DB = None):
+async def put_provider(params: dict = {}, _db: DB = None):
 
     # set values
     result = None

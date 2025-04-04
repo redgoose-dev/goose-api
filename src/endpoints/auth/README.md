@@ -27,6 +27,7 @@ OAuth 인증을 추가하기 위해서는 리다이렉트 URL을 설정해야 �
 
 ```
 GET /auth/redirect/{PROVIDER}/
+
 query = {
   "redirect_uri": "{CLIENT_REDIRECT_URI}"
 }
@@ -51,6 +52,7 @@ OAuth 없이 ID/PW로 인증을 추가하기 위해서는 다음과 같은 과�
 
 ```
 PUT /auth/
+
 data = {
   "id": "{USER_ID}",
   "name": "{USER_NAME}",
@@ -65,9 +67,12 @@ data = {
 
 엑세스 토큰이 올바른지 확인하기 위해서는 다음과 같은 요청을 보냅니다.
 
-
 ```
 POST /auth/checking/
+
+headers = {
+  "Authorization": "{ACCESS_TOKEN}"
+}
 ```
 
 
@@ -77,9 +82,10 @@ POST /auth/checking/
 
 ```
 POST /auth/login/
+
 data = {
   "id": "{USER_ID}",
-  "password": "{USER_PASSWORD}"
+  "password": "{USER_PASSWORD}",
 }
 ```
 
@@ -88,6 +94,7 @@ data = {
 
 ```
 POST /auth/logout/
+
 headers = {
   "Authorization": "{ACCESS_TOKEN}"
 }

@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
+from . import default_headers
 from src.libs.string import create_random_string
 
 client = TestClient(app)
@@ -14,7 +15,11 @@ def pytest_addoption(parser):
     )
 
 def get_index(params: dict = {}) -> list:
-    res = client.get('/app/', params = params)
+    res = client.get(
+        url = '/app/',
+        params = params,
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     json = res.json()
     assert isinstance(json.get('data'), dict)
@@ -22,7 +27,11 @@ def get_index(params: dict = {}) -> list:
     return json['data']['index']
 
 def get_item(srl: int, params: dict = {}) -> dict:
-    res = client.get(f'/app/{srl}/', params = params)
+    res = client.get(
+        url = f'/app/{srl}/',
+        params = params,
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     json = res.json()
     assert 'data' in json
@@ -32,6 +41,7 @@ def put_item(data: dict = {}) -> int:
     res = client.put(
         url = '/app/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -44,11 +54,15 @@ def patch_item(srl: int, data: dict = {}):
     res = client.patch(
         url = f'/app/{srl}/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
-    res = client.delete(f'/app/{srl}/')
+    res = client.delete(
+        url = f'/app/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
 
 ### TEST AREA ###

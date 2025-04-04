@@ -3,7 +3,9 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
 from ..tag import __libs__ as tag_libs
+from ..category import __libs__ as category_libs
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -20,6 +22,9 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
+
+        # set mod
+        mod = MOD(params.mod or '')
 
         # get data
         data = db.get_item(
@@ -39,7 +44,13 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         )
         if tag_index and len(tag_index) > 0: data['tag'] = tag_index
 
-        # TODO: mod - 카테고리 이름 가져오기
+        # MOD / category
+        if mod.check('category'):
+            data['category'] = category_libs.get_item(
+                _db = db,
+                srl = data.get('category_srl', 0),
+                fields = [ 'srl', 'name' ],
+            )
 
         # set result
         result = output.success({

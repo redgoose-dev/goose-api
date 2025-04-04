@@ -3,6 +3,9 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
+from ..app import __libs__ as app_libs
+from ..article import __libs__ as article_libs
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -20,10 +23,13 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
+        # set mod
+        mod = MOD(params.mod or '')
+
         # set where
         where = []
         if params.app_srl:
-            where.append(f'and app_srl={params.app_srl}')
+            where.append(f'and app_srl = {params.app_srl}')
         if params.code:
             where.append(f'and code LIKE "{params.code}"')
         if params.name:
@@ -51,14 +57,26 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             },
             unlimited = params.unlimited,
         )
+
+        # transform items
         def transform_item(item: dict) -> dict:
             if 'json' in item and item['json']:
                 item['json'] = json_parse(item['json'])
+            # MOD / app
+            if mod.check('app') and item.get('app_srl'):
+                item['app'] = app_libs.get_item(
+                    _db = db,
+                    srl = item.get('app_srl'),
+                    fields = [ 'srl', 'code', 'name' ],
+                )
+            # MOD / count-article
+            if mod.check('count-article'):
+                item['count_article'] = article_libs.get_count(
+                    _db = db,
+                    where = [ f'nest_srl = {item['srl']}' ],
+                )
             return item
-        index = [transform_item(item) for item in index]
-
-        # TODO: mod - 아티클 갯수 가져오기
-        # TODO: mod - 앱 이름 가져오기
+        index = [ transform_item(item) for item in index ]
 
         # set result
         result = output.success({

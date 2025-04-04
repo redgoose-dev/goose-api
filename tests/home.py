@@ -1,10 +1,14 @@
 from fastapi.testclient import TestClient
 from main import app
+from . import default_headers
 
 client = TestClient(app)
 
 def test_home():
-    res = client.get('/')
+    res = client.get(
+        url = '/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     # assert res.json() == { 'message': 'Hello World' }
 

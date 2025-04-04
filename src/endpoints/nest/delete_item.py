@@ -2,7 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from ..category import __libs__ as category_libs
+from . import __libs__ as nest_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -24,19 +24,8 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         )
         if count == 0: raise Exception('Item not found.', 204)
 
-        # delete category
-        category_libs.delete(db, category_libs.Module.NEST, params.srl)
-
-        # TODO: 추가로 작업 해야할것들
-        # TODO: - 아티클 데이터 삭제
-        # TODO: - 아티클에 해당되는 파일 삭제
-        # TODO: - 아티클에 해당되는 댓글 삭제
-
-        # delete item
-        db.delete_item(
-            table_name = Table.NEST.value,
-            where = [ f'srl={params.srl}' ],
-        )
+        # delete data
+        nest_libs.delete(db, params.srl)
 
         # set result
         result = output.success({

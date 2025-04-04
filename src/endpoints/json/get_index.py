@@ -3,6 +3,8 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
+from ..category import __libs__ as category_libs
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -20,6 +22,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set fields
         fields = params.fields.split(',') if params.fields else None
 
+        # set mod
+        mod = MOD(params.mod or '')
+
         # set data assets
         where = []
         values = {}
@@ -27,10 +32,10 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set base params
         if params.category_srl is not None:
-            if params.category_srl == 0:
-                where.append(f'and category_srl IS NULL')
-            else:
+            if params.category_srl > 0:
                 where.append(f'and category_srl = {params.category_srl}')
+            else:
+                where.append(f'and category_srl IS NULL')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
 
@@ -70,10 +75,15 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         def transform_item(item: dict) -> dict:
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
+            # MOD / category
+            if mod.check('category'):
+                item['category'] = category_libs.get_item(
+                    _db = db,
+                    srl = item.get('category_srl', 0),
+                    fields = [ 'srl', 'name' ],
+                )
             return item
         index = [ transform_item(item) for item in index ]
-
-        # TODO: mod - 카테고리 목록 가져오기
 
         # set result
         result = output.success({

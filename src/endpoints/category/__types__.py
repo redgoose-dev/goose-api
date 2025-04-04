@@ -11,6 +11,8 @@ class GetIndex(BaseModel):
     order: Optional[str] = 'srl'
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = False
+    mod: Optional[str] = None
+    q: Optional[str] = None
 
 class GetItem(BaseModel):
     srl: int

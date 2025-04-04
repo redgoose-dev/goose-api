@@ -10,10 +10,12 @@ class GetIndex(BaseModel):
     order: Optional[str] = 'srl'
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = False
+    mod: Optional[str] = None
 
 class GetItem(BaseModel):
     srl: int|str
     fields: Optional[str] = None
+    mod: Optional[str] = None
 
 class PutItem(BaseModel):
     code: str

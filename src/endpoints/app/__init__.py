@@ -17,6 +17,7 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.fields),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    mod: str = Query(None, pattern=Patterns.mod)
 ):
     from .get_index import get_index
     return await get_index({
@@ -28,6 +29,7 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'mod': mod,
     }, req=req)
 
 # get app
@@ -36,11 +38,13 @@ async def _get_item(
     req: Request,
     srl: int|str,
     fields: str = Query(None, pattern=Patterns.fields),
+    mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_item import get_item
     return await get_item({
         'srl': srl,
         'fields': fields,
+        'mod': mod,
     }, req=req)
 
 # add app

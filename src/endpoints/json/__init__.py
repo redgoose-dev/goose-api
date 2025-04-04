@@ -18,6 +18,7 @@ async def _get_index(
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
     tag: str = Query(None, pattern=Patterns.tags),
+    mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_index import get_index
     return await get_index({
@@ -30,6 +31,7 @@ async def _get_index(
         'sort': sort,
         'unlimited': unlimited,
         'tag': tag,
+        'mod': mod,
     }, req=req)
 
 # get json
@@ -38,11 +40,13 @@ async def _get_item(
     req: Request,
     srl: int,
     fields: str = Query(None, pattern=Patterns.fields),
+    mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_item import get_item
     return await get_item({
         'srl': srl,
         'fields': fields,
+        'mod': mod,
     }, req=req)
 
 # add json

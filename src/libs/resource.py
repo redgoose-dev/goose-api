@@ -11,6 +11,7 @@ class Patterns:
     url = r'^(https?:\/\/[^\s]+)$'
     email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     tags = r'^[\w\-_]+(,[\w\-_]+)*$'
+    mod = r'^[a-zA-Z_-]+(,[a-zA-Z_-]+)*$'
     # article
     article_mode = r'^(ready|public|private)$'
     article_duration = r'^(new|old),(regdate|created_at|updated_at),(day|week|month|year)'

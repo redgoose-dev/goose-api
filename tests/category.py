@@ -1,7 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from src.libs.string import create_random_string, date_format, get_date, date_shift
+from . import default_headers
+from src.libs.string import create_random_string
 
 client = TestClient(app)
 
@@ -17,6 +18,7 @@ def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/category/',
         params = params,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -26,7 +28,11 @@ def get_index(params: dict = {}) -> list:
     return json['data']['index']
 
 def get_item(srl: int, params: dict = {}) -> dict:
-    res = client.get(f'/category/{srl}/', params = params)
+    res = client.get(
+        url = f'/category/{srl}/',
+        params = params,
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     json = res.json()
     assert 'data' in json
@@ -36,6 +42,7 @@ def put_item(data: dict = {}) -> int:
     res = client.put(
         url = '/category/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -48,6 +55,7 @@ def patch_item(srl: int, data: dict = {}):
     res = client.patch(
         url = f'/category/{srl}/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
@@ -55,12 +63,16 @@ def patch_change_order(data: dict = {}):
     res = client.patch(
         url = f'/category/change-order/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
     if not srl: raise Exception('srl not found.')
-    res = client.delete(f'/category/{srl}/')
+    res = client.delete(
+        url = f'/category/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
 
 @pytest.mark.skip

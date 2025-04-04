@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
+from . import default_headers
 from src.libs.string import create_random_string
 
 client = TestClient(app)
@@ -17,6 +18,7 @@ def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/json/',
         params = params,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -27,7 +29,11 @@ def get_index(params: dict = {}) -> list:
 
 def get_item(srl: int, params: dict = {}) -> dict:
     if not srl: raise Exception('srl not found.')
-    res = client.get(f'/json/{srl}/', params = params)
+    res = client.get(
+        url = f'/json/{srl}/',
+        params = params,
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     json = res.json()
     assert 'data' in json
@@ -37,6 +43,7 @@ def put_item(data: dict = {}) -> int:
     res = client.put(
         url = '/json/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -49,12 +56,16 @@ def patch_item(srl: int, data: dict = {}):
     res = client.patch(
         url = f'/json/{srl}/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
     if not srl: raise Exception('srl not found.')
-    res = client.delete(f'/json/{srl}/')
+    res = client.delete(
+        url = f'/json/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
 
 ### TEST AREA ###

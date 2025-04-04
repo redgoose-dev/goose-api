@@ -126,16 +126,7 @@ def update(_db: DB, new_tags: str|list, module: str, module_srl: int):
         for tag in compare['added']:
             __add_tag__(tag=tag, module=module, module_srl=module_srl, _db=_db)
 
-def delete(_db: DB, tags: str|list, module: str, module_srl: int):
-    # check module
-    __check_module_name__(module)
-    # get tags
-    tags = __get_tags__(tags)
-    # action
-    for tag in tags:
-        __delete_tag__(tag=tag, module=module, module_srl=module_srl, _db=_db)
-
-def delete_all(_db: DB, module: str, module_srl: int):
+def delete(_db: DB, module: str, module_srl: int):
     # check module
     __check_module_name__(module)
     # get tags
@@ -155,13 +146,16 @@ def delete_all(_db: DB, module: str, module_srl: int):
     for tag in tags:
         __delete_tag__(tag=tag, module=module, module_srl=module_srl, _db=_db)
 
-def get_index(module: str, module_srl: int, _db: DB) -> list:
+def get_index(_db: DB, module: str, module_srl: int) -> list:
     # check module
     __check_module_name__(module)
     # get tags
     tags = _db.get_items(
         table_name = Table.TAG.value,
-        fields = [ f'{Table.TAG.value}.name' ],
+        fields = [
+            f'{Table.TAG.value}.srl',
+            f'{Table.TAG.value}.name',
+        ],
         join = [
             f'JOIN {Table.MAP_TAG.value} ON {Table.MAP_TAG.value}.tag_srl = {Table.TAG.value}.srl',
         ],
@@ -170,5 +164,4 @@ def get_index(module: str, module_srl: int, _db: DB) -> list:
             f'and module_srl = {module_srl}',
         ],
     )
-    if not (tags and len(tags) > 0): return []
-    return [item['name'] for item in tags]
+    return tags if (tags and len(tags) > 0) else []

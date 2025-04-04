@@ -6,17 +6,6 @@ from . import __types__ as types
 # setters
 router = APIRouter()
 
-# 프로바이더 목록
-@router.get('/')
-async def _get_index(
-    req: Request,
-    fields: str = Query(None, pattern=Patterns.fields),
-):
-    from .get_index import get_index
-    return await get_index({
-        'fields': fields,
-    }, req=req)
-
 # OAuth 인증요청으로 가기위한 경유지
 @router.get('/redirect/{provider:str}/')
 async def _get_redirect(
@@ -64,27 +53,15 @@ async def _renew(
         'refresh_token': refresh_token,
     }, req=req)
 
-# 패스워드 타입의 프로바이더 등록
-@router.put('/')
-async def _put_register(
-    user_id: str = Form(..., alias='id', pattern=Patterns.code),
-    user_name: str = Form(None, alias='name'),
-    user_avatar: str = Form(None, alias='avatar', pattern=Patterns.url),
-    user_email: str = Form(..., alias='email', pattern=Patterns.email),
-    user_password: str = Form(..., alias='password'),
-):
-    from .put_register import put_register
-    return await put_register({
-        'user_id': user_id,
-        'user_name': user_name,
-        'user_avatar': user_avatar,
-        'user_email': user_email,
-        'user_password': user_password,
-    })
+# 로그인 준비
+@router.get('/login/')
+async def _get_login(req: Request):
+    from .get_login import get_login
+    return await get_login(req=req)
 
 # 패스워드 타입의 프로바이더 로그인
 @router.post('/login/')
-async def _login(
+async def _post_login(
     req: Request,
     user_id: str = Form(..., alias='id', pattern=Patterns.code),
     user_password: str = Form(..., alias='password'),
@@ -97,13 +74,42 @@ async def _login(
 
 # 패스워드 타입의 프로바이더 로그아웃
 @router.post('/logout/')
-async def _logout(req: Request):
+async def _post_logout(req: Request):
     from .post_logout import post_logout
     return await post_logout(req=req)
 
+# 프로바이더 목록
+@router.get('/provider/')
+async def _get_providers(
+    req: Request,
+    fields: str = Query(None, pattern=Patterns.fields),
+):
+    from .get_providers import get_providers
+    return await get_providers({
+        'fields': fields,
+    }, req=req)
+
+# 패스워드 타입의 프로바이더 등록
+@router.put('/provider/')
+async def _put_provider(
+    user_id: str = Form(..., alias='id', pattern=Patterns.code),
+    user_name: str = Form(None, alias='name'),
+    user_avatar: str = Form(None, alias='avatar', pattern=Patterns.url),
+    user_email: str = Form(..., alias='email', pattern=Patterns.email),
+    user_password: str = Form(..., alias='password'),
+):
+    from .put_provider import put_provider
+    return await put_provider({
+        'user_id': user_id,
+        'user_name': user_name,
+        'user_avatar': user_avatar,
+        'user_email': user_email,
+        'user_password': user_password,
+    })
+
 # 프로바이더 수정
-@router.patch('/{srl:int}/')
-async def _patch_item(
+@router.patch('/provider/{srl:int}/')
+async def _patch_provider(
     req: Request,
     srl: int,
     user_id: str = Form(None, alias='id', pattern=Patterns.code),
@@ -112,8 +118,8 @@ async def _patch_item(
     user_email: str = Form(None, alias='email', pattern=Patterns.email),
     user_password: str = Form(None, alias='password'),
 ):
-    from .patch_item import patch_item
-    return await patch_item({
+    from .patch_provider import patch_provider
+    return await patch_provider({
         'srl': srl,
         'user_id': user_id,
         'user_name': user_name,
@@ -123,13 +129,13 @@ async def _patch_item(
     }, req=req)
 
 # 프로바이더 삭제
-@router.delete('/{srl:int}/')
-async def _delete_item(
+@router.delete('/provider/{srl:int}/')
+async def _delete_provider(
     req: Request,
     srl: int
 ):
-    from .delete_item import delete_item
-    return await delete_item({
+    from .delete_provider import delete_provider
+    return await delete_provider({
         'srl': srl,
     }, req=req)
 

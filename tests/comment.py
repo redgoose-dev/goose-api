@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
+from . import default_headers
 from src.libs.string import create_random_string
 
 client = TestClient(app)
@@ -17,6 +18,7 @@ def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/comment/',
         params = params,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -26,7 +28,11 @@ def get_index(params: dict = {}) -> list:
     return json['data']['index']
 
 def get_item(srl: int = None, params: dict = {}) -> dict:
-    res = client.get(f'/comment/{srl}/', params = params)
+    res = client.get(
+        url = f'/comment/{srl}/',
+        params = params,
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
     json = res.json()
     assert 'data' in json
@@ -36,6 +42,7 @@ def put_item(data: dict = {}) -> int:
     res = client.put(
         url = '/comment/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
     json = res.json()
@@ -48,12 +55,16 @@ def patch_item(srl: int, data: dict = {}):
     res = client.patch(
         url = f'/comment/{srl}/',
         data = data,
+        headers = { **default_headers },
     )
     assert res.status_code == 200
 
 def delete_item(srl: int):
     if not srl: raise Exception('srl not found.')
-    res = client.delete(f'/comment/{srl}/')
+    res = client.delete(
+        url = f'/comment/{srl}/',
+        headers = { **default_headers },
+    )
     assert res.status_code == 200
 
 ### TEST AREA ###

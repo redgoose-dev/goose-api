@@ -11,10 +11,12 @@ class GetIndex(BaseModel):
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = False
     tag: Optional[str] = None
+    mod: Optional[str] = None
 
 class GetItem(BaseModel):
     srl: int
     fields: Optional[str] = None
+    mod: Optional[str] = None
 
 class PutItem(BaseModel):
     category_srl: Optional[int] = None

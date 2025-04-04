@@ -197,7 +197,7 @@ class DB:
     ):
         # check table name
         self.__check_table_name__(table_name)
-        if not placeholders or not values: return None
+        if not placeholders: return None
         # set query
         placeholders = ', '.join(placeholders) if placeholders else ''
         _where = self.__where_list_to_str__(where) if where else ''

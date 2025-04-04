@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_providers(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -36,10 +36,12 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             where = where,
             unlimited = True,
         )
+
+        # transform items
         def transform_item(item: dict) -> dict:
             if 'user_password' in item: del item['user_password']
             return item
-        index = [transform_item(item) for item in index]
+        index = [ transform_item(item) for item in index ]
 
         # set result
         result = output.success({
