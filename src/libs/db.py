@@ -112,6 +112,7 @@ class DB:
         self,
         table_name: str = None,
         fields: list = None,
+        join: list = None,
         where: list = None,
         values: dict = {},
     ) -> dict|None:
@@ -120,8 +121,9 @@ class DB:
         # set fields
         fields = self.__get_field__(fields)
         # set query
+        _join = ' '.join(join) if join else ''
         _where = self.__where_list_to_str__(where) if where else ''
-        query = f'SELECT {fields} FROM {table_name} {_where}'
+        query = f'SELECT {fields} FROM {table_name} {_join} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -145,8 +147,9 @@ class DB:
         # check table name
         self.__check_table_name__(table_name)
         # set query
+        _join = ' '.join(join) if join else ''
         _where = self.__where_list_to_str__(where) if where else ''
-        query = f'SELECT COUNT(*) FROM {table_name} {_where}'
+        query = f'SELECT COUNT(*) FROM {table_name} {_join} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:

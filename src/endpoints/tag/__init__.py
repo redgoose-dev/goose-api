@@ -9,7 +9,13 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
+    module: str = Query(None, pattern=Patterns.tag_module),
+    module_srl: int = Query(None),
+    name: str = Query(None),
 ):
-    # TODO: 추가할 항목 - module, module_srl, name
     from .get_index import get_index
-    return await get_index({}, req=req)
+    return await get_index({
+        'module': module,
+        'module_srl': module_srl,
+        'name': name,
+    }, req=req)
