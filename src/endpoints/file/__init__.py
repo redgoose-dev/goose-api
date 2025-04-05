@@ -13,7 +13,7 @@ async def _get_index(
     module: str = Query(None, pattern=Patterns.file_modules),
     module_srl: int = Query(None),
     name: str = Query(None),
-    mime: str = Query(None),
+    mime: str = Query(None, pattern=Patterns.file_mime),
     page: int = Query(default=1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query(default='srl'),
@@ -53,6 +53,8 @@ async def _put_item(
     module_srl: int = Form(...),
     file: UploadFile = File(...),
     json_data: str = Form(default='{}', alias='json'),
+    file_format: str = Form(None, alias='format'), # image/webp,image/avif
+    file_quality: int = Form(90, gt=1, le=100, alias='quality'), # 0 ~ 100
 ):
     from .put_item import put_item
     return await put_item({
@@ -60,6 +62,8 @@ async def _put_item(
         'module_srl': module_srl,
         'file': file,
         'json_data': json_data,
+        'file_format': file_format,
+        'file_quality': file_quality,
     }, req=req)
 
 # edit file
@@ -71,6 +75,8 @@ async def _patch_item(
     module_srl: int = Form(None),
     json_data: str = Form(None, alias='json'),
     file: UploadFile = File(None),
+    file_format: str = Form(None, alias='format'), # image/webp,image/avif
+    file_quality: int = Form(95, gt=1, le=100, alias='quality'), # 0 ~ 100
 ):
     from .patch_item import patch_item
     return await patch_item({
@@ -79,6 +85,8 @@ async def _patch_item(
         'module_srl': module_srl,
         'json_data': json_data,
         'file': file,
+        'file_format': file_format,
+        'file_quality': file_quality,
     }, req=req)
 
 # delete file

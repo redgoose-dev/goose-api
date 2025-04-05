@@ -1,7 +1,9 @@
-import os, mimetypes
+import os, io, mimetypes, pillow_avif
+from PIL import Image
 from datetime import datetime
 from src.libs.db import DB, Table
 from src.libs.string import create_random_string
+from src.libs.object import json_parse
 
 class Module:
     ARTICLE = 'article'
@@ -43,6 +45,42 @@ def convert_path_to_buffer(path: str) -> bytes|None:
         return None
     with open(path, 'rb') as file:
         return file.read()
+
+def use_convert_image_format(mime1: str, mime2: str) -> bool:
+    if not mime1 or not mime2: return False
+    mime1 = mime1.split('/')
+    mime2 = mime2.split('/')
+    if mime1[0] != 'image' or mime2[0] != 'image': return False
+    if mime1[1] == mime2[1]: return False
+    return True
+
+def convert_image_format(file: dict, mime: str, quality: int = 95):
+    file['mime'] = mime
+    file['ext'] = file['mime'].split('/')[1]
+    image = Image.open(io.BytesIO(file['content']))
+    metadata = image.info
+    output_io = io.BytesIO()
+    image.save(
+        fp=output_io,
+        format=file['ext'],
+        quality=quality,
+        **metadata,
+    )
+    file['content'] = output_io.getvalue()
+    file['name'] = change_file_extension(file['name'], file['ext'])
+    return file
+
+def change_file_extension(path: str, ext: str) -> str:
+    if not path: return ''
+    base = os.path.splitext(path)[0]
+    return f'{base}.{ext}'
+
+def update_image_size(json: dict, path: str) -> dict:
+    image = Image.open(path)
+    width, height = image.size
+    json['width'] = width
+    json['height'] = height
+    return json
 
 # PUBLIC MODULES
 

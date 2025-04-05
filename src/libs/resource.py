@@ -22,6 +22,7 @@ class Patterns:
     comment_module = r'^(article)$'
     # file
     file_modules = r'^(article|json|checklist|comment)$'
+    file_mime = r'^[a-zA-Z_-]+(\/[a-zA-Z_-]+)*$'
     # auth
     auth_provider = r'^(discord|google|github|password)$'
     # tag

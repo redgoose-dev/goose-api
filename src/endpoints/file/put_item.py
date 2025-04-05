@@ -1,24 +1,17 @@
-from PIL import Image
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.libs.string import create_random_string
 from src.modules.verify import checking_token
-from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
-
-# TODO: 파일 포맷을 사용하면 컨버팅하는것도 좋을거 같다. 그리되면 퀄리티 옵션도 필요할 것이다. (avif,webp)
-# TODO: 리사이즈 옵션까지는 과한거 같다.
-# TODO: 참고링크: https://grok.com/share/bGVnYWN5_5f6210f7-c511-4b50-be37-92cbd89b4133
-
-# TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
+from . import __libs__ as file_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
-    path_file = ''
+    file = { 'content': None, 'path': '', 'name': '', 'mime': '', 'ext': '' }
 
     try:
         # set params
@@ -31,12 +24,12 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         json_data = json_parse(params.json_data) if params.json_data else {}
 
         # read file
-        file_content = await params.file.read() if params.file else None
-        if not file_content: raise Exception('File not found.', 400)
+        file['content'] = await params.file.read() if params.file else None
+        if not file['content']: raise Exception('File not found.', 400)
 
         # print('filename:', params.file.filename)
         # print('mime:', params.file.content_type)
-        # print('file_content:', len(file_content))
+        # print('file[content]:', len(file['content']))
 
         # TODO: 파일 사이즈 제한 검사
         # TODO: 파일 타입 검사
@@ -55,26 +48,36 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         )
         if not (count > 0): raise Exception('Module item not found.', 400)
 
-        # make path
-        path_file = f'{get_dir_path()}/{get_unique_name(8)}'
+        # set file info
+        file['name'] = params.file.filename
+        file['mime'] = params.file.content_type
+        file['ext'] = file.get('mime').split('/')[1]
+
+        # convert file format
+        if file_libs.use_convert_image_format(file.get('mime'), params.file_format):
+            file = file_libs.convert_image_format(
+                file=file,
+                mime=params.file_format,
+                quality=params.file_quality,
+            )
+
+        # set path
+        file['path'] = f'{file_libs.get_dir_path()}/{file_libs.get_unique_name(8)}.{file['ext']}'
 
         # copy file
-        write_file(file_content, path_file)
+        file_libs.write_file(file['content'], file['path'])
 
         # set image size
-        if params.file.content_type.startswith('image/'):
-            image = Image.open(path_file)
-            width, height = image.size
-            json_data['width'] = width
-            json_data['height'] = height
+        if file['mime'].startswith('image/'):
+            json_data = file_libs.update_image_size(json=json_data, path=file['path'])
 
         # set values
         values = {
-            'name': params.file.filename,
+            'name': file['name'],
             'code': create_random_string(12),
-            'path': path_file,
-            'mime': params.file.content_type,
-            'size': len(file_content),
+            'path': file['path'],
+            'mime': file['mime'],
+            'size': len(file['content']),
             'json': json_stringify(json_data),
             'module': params.module,
             'module_srl': params.module_srl,
@@ -106,7 +109,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             'data': data,
         })
     except Exception as e:
-        if path_file: delete_file(path_file)
+        if file['path']: file_libs.delete_file(file['path'])
         result = output.exc(e)
     finally:
         if not _db and db: db.disconnect()

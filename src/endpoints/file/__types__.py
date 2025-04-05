@@ -22,6 +22,8 @@ class PutItem(BaseModel):
     module_srl: int
     file: UploadFile
     json_data: Optional[str] = None
+    file_format: Optional[str] = None
+    file_quality: Optional[int] = 95
 
 class PatchItem(BaseModel):
     srl: int
@@ -29,6 +31,8 @@ class PatchItem(BaseModel):
     module_srl: Optional[int] = None
     json_data: Optional[str] = None
     file: Optional[UploadFile] = None
+    file_format: Optional[str] = None
+    file_quality: Optional[int] = 95
 
 class DeleteItem(BaseModel):
     srl: int

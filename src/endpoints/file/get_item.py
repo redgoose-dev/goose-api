@@ -51,6 +51,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         })
         # TODO: VERSION #1 END #############################
 
+        # TODO: VERSION #2 START ###########################
         # TODO: 2차 개발(완성)
         # TODO: 코드가 있다면 캐시파일 사용
             # TODO: YES? 캐시파일 json 데이터 가져오기:
@@ -78,6 +79,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         # TODO: 헤더는 `Content-Type`, `Content-Length` 설정하기
         # TODO: prod 모드라면 `Cache-Control` 설정하기
         # TODO: content 값은 `data.buffer`로 설정하기
+        # TODO: VERSION #2 END ###########################
 
     except Exception as e:
         result = output.exc(e)

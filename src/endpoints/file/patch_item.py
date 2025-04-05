@@ -1,19 +1,17 @@
-from PIL import Image
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
-
-# TODO: 이미지 파일 컨버트. webp,avif 포맷 지원, 퀄리티 조절가능, 리사이즈는 고민 필요함
+from . import __libs__ as file_libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
-    path_file = ''
+    file = {'content': None, 'path': '', 'name': '', 'mime': '', 'ext': ''}
 
     try:
         # set params
@@ -60,23 +58,37 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             if params.module: values['module'] = params.module
             if params.module_srl: values['module_srl'] = params.module_srl
 
-        # set file
+        # change file
         _changed_file = False
         if params.file:
-            file_content = await params.file.read() if params.file else None
-            if not file_content: raise Exception('File not found.', 400)
-            path_file = f'{get_dir_path()}/{get_unique_name(8)}'
-            write_file(file_content, path_file)
-            values['name'] = params.file.filename
-            values['path'] = path_file
-            values['mime'] = params.file.content_type
-            values['size'] = len(file_content)
-            if params.file.content_type.startswith('image/'):
-                image = Image.open(path_file)
-                width, height = image.size
+            # read file
+            file['content'] = await params.file.read() if params.file else None
+            if not file['content']: raise Exception('File not found.', 400)
+            # TODO: 파일 사이즈 제한 검사
+            # TODO: 파일 타입 검사
+            # set file info
+            file['name'] = params.file.filename
+            file['mime'] = params.file.content_type
+            file['ext'] = file.get('mime').split('/')[1]
+            # convert file format
+            if file_libs.use_convert_image_format(file.get('mime'), params.file_format):
+                file = file_libs.convert_image_format(
+                    file=file,
+                    mime=params.file_format,
+                    quality=params.file_quality,
+                )
+            # set path
+            file['path'] = f'{get_dir_path()}/{get_unique_name(8)}.{file['ext']}'
+            # copy file
+            write_file(file['content'], file['path'])
+            values['name'] = file['name']
+            values['path'] = file['path']
+            values['mime'] = file['mime']
+            values['size'] = len(file['content'])
+            # set image size
+            if values['mime'].startswith('image/'):
                 if not _json: _json = json_parse(item['json']) or {}
-                _json['width'] = width
-                _json['height'] = height
+                _json = file_libs.update_image_size(json=_json, path=file['path'])
             _changed_file = True
 
         # stringify json
@@ -118,7 +130,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             'message': 'Complete update File.',
         })
     except Exception as e:
-        if path_file: delete_file(path_file)
+        if file.get('path'): delete_file(file['path'])
         result = output.exc(e)
     finally:
         if not _db and db: db.disconnect()
