@@ -88,6 +88,10 @@ api.include_router(tag, prefix='/tag')
 from .endpoints.auth import router as auth
 api.include_router(auth, prefix='/auth')
 
+# preference
+from .endpoints.preference import router as preference
+api.include_router(preference, prefix='/preference')
+
 # mix request
 from .endpoints.mix import router as mix
 api.include_router(mix, prefix='/mix')

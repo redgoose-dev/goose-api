@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Request, Form, Query
 from src.libs.resource import Patterns
-from . import __types__ as types
 
 # set router
 router = APIRouter()
