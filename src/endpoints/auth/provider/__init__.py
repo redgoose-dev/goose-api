@@ -1,3 +1,4 @@
+import os
 from . import discord
 from . import github
 from . import password
@@ -39,6 +40,24 @@ class Provider:
                 self.__class__ = ProviderPassword
             case _:
                 raise Exception('Provider not found.')
+
+    @staticmethod
+    def get_providers():
+        return [
+            Provider.code_discord,
+            Provider.code_github,
+            Provider.code_google,
+            Provider.code_password,
+        ]
+
+    @staticmethod
+    def get_authorize_url(provider: str, callback_url: str = '') -> str:
+        if not (provider and callback_url):
+            raise Exception('Provider and callback_url are required.')
+        url = os.getenv('PATH_URL')
+        return f'{url}/auth/redirect/{provider}/?redirect_uri={callback_url}'
+
+    # PUBLIC METHODS
 
     def create_authorize_url(self, state: str): pass
 

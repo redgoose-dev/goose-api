@@ -54,10 +54,15 @@ async def _renew(
     }, req=req)
 
 # 로그인 준비
-@router.get('/login/')
-async def _get_login(req: Request):
-    from .get_login import get_login
-    return await get_login(req=req)
+@router.post('/ready-login/')
+async def _post_ready_login(
+    req: Request,
+    redirect_uri: str = Form(..., pattern=Patterns.url),
+):
+    from .post_ready_login import post_ready_login
+    return await post_ready_login({
+        'redirect_uri': redirect_uri,
+    }, req=req)
 
 # 패스워드 타입의 프로바이더 로그인
 @router.post('/login/')
@@ -79,14 +84,14 @@ async def _post_logout(req: Request):
     return await post_logout(req=req)
 
 # 프로바이더 목록
-@router.get('/provider/')
-async def _get_providers(
+@router.post('/provider-index/')
+async def _post_provider_index(
     req: Request,
-    fields: str = Query(None, pattern=Patterns.fields),
+    redirect_uri: str = Form(..., pattern=Patterns.url),
 ):
-    from .get_providers import get_providers
-    return await get_providers({
-        'fields': fields,
+    from .post_provider_index import post_provider_index
+    return await post_provider_index({
+        'redirect_uri': redirect_uri,
     }, req=req)
 
 # 패스워드 타입의 프로바이더 등록

@@ -12,7 +12,7 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
 
     try:
         # set params
-        params = types.PatchItem(**params)
+        params = types.PatchProviderItem(**params)
 
         # checking token
         if _check_token: checking_token(req, db)

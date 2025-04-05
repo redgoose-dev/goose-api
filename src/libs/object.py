@@ -39,3 +39,8 @@ def compare_list(a: list, b: list) -> dict:
         'duplicate': [x for x in b if x and _filter(x) in a],
         'removed': [x for x in a if x and _filter(x) not in b],
     }
+
+# 객체가 들어있는 리스트를 딕셔너리로 변환한다.
+def list_to_dict(data: list, key: str) -> dict:
+    if not data: return {}
+    return { item[key]: item for item in data if key in item }

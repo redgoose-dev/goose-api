@@ -1,9 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
 
-class GetIndex(BaseModel):
-    fields: Optional[str] = None
-
 class GetRedirect(BaseModel):
     provider: str
     redirect_uri: str
@@ -18,18 +15,26 @@ class PostRenew(BaseModel):
     access_token: str
     refresh_token: str
 
-class PutRegister(BaseModel):
+
+class PostReadyLogin(BaseModel):
+    redirect_uri: str
+
+class PostLogin(BaseModel):
+    user_id: str
+    user_password: str
+
+
+class PutProvider(BaseModel):
     user_id: str
     user_name: Optional[str] = None
     user_avatar: Optional[str] = None
     user_email: str
     user_password: str
 
-class PostLogin(BaseModel):
-    user_id: str
-    user_password: str
+class PostProviderIndex(BaseModel):
+    redirect_uri: str
 
-class PatchItem(BaseModel):
+class PatchProviderItem(BaseModel):
     srl: int
     user_id: Optional[str] = None
     user_name: Optional[str] = None
@@ -37,5 +42,5 @@ class PatchItem(BaseModel):
     user_email: Optional[str] = None
     user_password: Optional[str] = None
 
-class DeleteItem(BaseModel):
+class DeleteProviderItem(BaseModel):
     srl: int

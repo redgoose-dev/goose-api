@@ -10,7 +10,7 @@
 - `password`: ID/PW 인증 (OAuth 없이 사용합니다.)
 
 
-## 인증 프로바이더 추가하기
+## 외부 OAuth 인증 서비스 이용하기
 
 ### 리다이렉트로 OAuth 추가하기
 
@@ -44,26 +44,7 @@ API 서비스에서 페이지 리로드없이 비동기로 인증하기 위하�
 
 테스트 html 코드는 `./get_test_websocket.html` 파일을 참고하거나 개발모드에서 `/auth/test_websocket/` 주소를 열어서 확인할 수 있습니다.
 
-### ID/PW로 인증 추가하기
-
-OAuth 없이 ID/PW로 인증을 추가하기 위해서는 다음과 같은 과정을 거칩니다.
-
-요청은 다음과 같이 합니다.
-
-```
-PUT /auth/
-
-data = {
-  "id": "{USER_ID}",
-  "name": "{USER_NAME}",
-  "avatar": "{USER_AVATAR}"
-  "email": "{USER_EMAIL}"
-  "password": "{USER_PASSWORD}"
-}
-```
-
-
-## 인증 검사하기
+### 인증 검사하기
 
 엑세스 토큰이 올바른지 확인하기 위해서는 다음과 같은 요청을 보냅니다.
 
@@ -76,9 +57,60 @@ headers = {
 ```
 
 
-## 패스워드로 로그인하기
+## 프로바이더
 
-패스워드 방식의 프로바이더로 로그인하기 위하여 다음과 같이 요청을 보냅니다.
+프로바이더 관리에 대한 API 입니다.
+
+### 목록 가져오기
+
+```
+GET /auth/provider/
+```
+
+### 패스워드 타입의 프로바이더 만들기
+
+OAuth 없이 ID/PW로 인증을 추가하기 위해서 이용합니다.
+
+```
+PUT /auth/provider/
+
+data = {
+  "id": "{USER_ID}",
+  "name": "{USER_NAME}",
+  "avatar": "{USER_AVATAR}"
+  "email": "{USER_EMAIL}"
+  "password": "{USER_PASSWORD}"
+}
+```
+
+### 수정하기
+
+```
+PATCH /auth/provider/{SRL}/
+```
+
+### 제거하기
+
+```
+DELETE /auth/provider/{SRL}/
+```
+
+
+## 패스워드 타입의 프로바이더
+
+패스워드 방식의 프로바이더에 관한 API 입니다.
+
+### 로그인 준비
+
+```
+POST /auth/ready-login/
+
+data = {
+  "redirect_uri": "{REDIRECT_URI}",
+}
+```
+
+### 로그인
 
 ```
 POST /auth/login/
@@ -89,8 +121,7 @@ data = {
 }
 ```
 
-
-## 로그아웃
+### 로그아웃
 
 ```
 POST /auth/logout/
@@ -99,30 +130,6 @@ headers = {
   "Authorization": "{ACCESS_TOKEN}"
 }
 ```
-
-
-## 인증 목록 가져오기
-
-다음과 같은 요청으로 프로바이더 목록을 가져옵니다.
-
-```
-GET /auth/
-```
-
-
-## 프로바이더 수정하기
-
-```
-PATCH /auth/{SRL}/
-```
-
-
-## 프로바이더, 토큰 제거하기
-
-```
-DELETE /auth/{SRL}/
-```
-
 
 
 ## 프로바이더 설정 페이지 링크

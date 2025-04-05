@@ -11,7 +11,7 @@ async def delete_provider(params: dict = {}, req = None, _db: DB = None, _check_
 
     try:
         # set params
-        params = types.DeleteItem(**params)
+        params = types.DeleteProviderItem(**params)
 
         # checking token
         if _check_token: checking_token(req, db)

@@ -12,7 +12,7 @@ async def put_provider(params: dict = {}, _db: DB = None):
 
     try:
         # set params
-        params = types.PutRegister(**params)
+        params = types.PutProvider(**params)
 
         # set provider instance
         _provider_ = Provider(Provider.code_password)
