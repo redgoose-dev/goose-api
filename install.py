@@ -13,8 +13,8 @@ resource_path = {
     'data/log': './data/log',
     'resource/seed.sql': './resource/seed.sql',
     'data/db.sqlite': './data/db.sqlite',
-    'resource/setting.json': './resource/setting.json',
-    'data/setting.json': './data/setting.json',
+    'resource/preference.json': './resource/preference.json',
+    'data/preference.json': './data/preference.json',
 }
 
 # checking install
@@ -30,7 +30,7 @@ def checking_install() -> str|None:
         file.exist_dir(resource_path['data/cache'], True)
         file.exist_dir(resource_path['data/log'], True)
         file.exist_file(resource_path['data/db.sqlite'], True)
-        file.exist_file(resource_path['data/setting.json'], True)
+        file.exist_file(resource_path['data/preference.json'], True)
     except Exception as e:
         print(string.color_text(f'⚠️ {e}', 'red'))
         return 'ERROR'
@@ -47,7 +47,7 @@ def install_resource():
     file.create_dir(resource_path['data/upload/cover'])
     file.create_dir(resource_path['data/cache'])
     file.create_dir(resource_path['data/log'])
-    file.copy_file(resource_path['resource/setting.json'], resource_path['data/setting.json'])
+    file.copy_file(resource_path['resource/preference.json'], resource_path['data/preference.json'])
     print('✅ Setup resource complete!')
 
 def destroy_resource():

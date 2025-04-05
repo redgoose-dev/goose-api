@@ -4,6 +4,7 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
+from src.modules.preference import Preference
 from . import __libs__ as file_libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
@@ -26,6 +27,9 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             where = [ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Item not found.', 204)
+
+        # set preference
+        pref = Preference()
 
         # set values
         values = {}
@@ -64,8 +68,9 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             # read file
             file['content'] = await params.file.read() if params.file else None
             if not file['content']: raise Exception('File not found.', 400)
-            # TODO: 파일 사이즈 제한 검사
-            # TODO: 파일 타입 검사
+            # check file size
+            if pref.get('file.limitSize') < len(file['content']):
+                raise Exception('File size limit exceeded.', 400)
             # set file info
             file['name'] = params.file.filename
             file['mime'] = params.file.content_type

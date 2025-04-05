@@ -1,9 +1,11 @@
 from . import __types__ as types
+from fastapi import UploadFile
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.libs.string import create_random_string
 from src.modules.verify import checking_token
+from src.modules.preference import Preference
 from . import __libs__ as file_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
@@ -24,15 +26,16 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         json_data = json_parse(params.json_data) if params.json_data else {}
 
         # read file
-        file['content'] = await params.file.read() if params.file else None
+        _file: UploadFile = params.file
+        file['content'] = await _file.read() if _file else None
         if not file['content']: raise Exception('File not found.', 400)
 
-        # print('filename:', params.file.filename)
-        # print('mime:', params.file.content_type)
-        # print('file[content]:', len(file['content']))
+        # set preference
+        pref = Preference()
 
-        # TODO: 파일 사이즈 제한 검사
-        # TODO: 파일 타입 검사
+        # check file size
+        if pref.get('file.limitSize') < len(file['content']):
+            raise Exception('File size limit exceeded.', 400)
 
         # check exist module item
         match params.module:
@@ -49,8 +52,8 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         if not (count > 0): raise Exception('Module item not found.', 400)
 
         # set file info
-        file['name'] = params.file.filename
-        file['mime'] = params.file.content_type
+        file['name'] = _file.filename
+        file['mime'] = _file.content_type
         file['ext'] = file.get('mime').split('/')[1]
 
         # convert file format
