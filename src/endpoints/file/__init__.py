@@ -38,11 +38,19 @@ async def _get_index(
 @router.get('/{srl}/')
 async def _get_item(
     req: Request,
-    srl: int|str,
+    srl: int|str, # srl or code
+    w: int = Query(None), # width
+    h: int = Query(None), # height
+    t: str = Query(None), # fit
+    q: int = Query(None), # quality
 ):
     from .get_item import get_item
     return await get_item({
         'srl': srl,
+        'w': w,
+        'h': h,
+        't': t,
+        'q': q,
     }, req=req)
 
 # add file

@@ -16,6 +16,10 @@ class GetIndex(BaseModel):
 
 class GetItem(BaseModel):
     srl: int|str
+    w: Optional[int] = None
+    h: Optional[int] = None
+    t: Optional[str] = None
+    q: Optional[int] = None
 
 class PutItem(BaseModel):
     module: str

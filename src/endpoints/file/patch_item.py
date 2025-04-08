@@ -3,7 +3,6 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
-from .__libs__ import get_unique_name, get_dir_path, write_file, delete_file
 from src.modules.preference import Preference
 from . import __libs__ as file_libs
 
@@ -83,9 +82,9 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                     quality=params.file_quality,
                 )
             # set path
-            file['path'] = f'{get_dir_path()}/{get_unique_name(8)}.{file['ext']}'
+            file['path'] = f'{file_libs.get_dir_path('origin')}/{file_libs.get_unique_name(8)}.{file['ext']}'
             # copy file
-            write_file(file['content'], file['path'])
+            file_libs.write_file(file['content'], file['path'])
             values['name'] = file['name']
             values['path'] = file['path']
             values['mime'] = file['mime']
@@ -128,14 +127,14 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         )
 
         # delete legacy file
-        if _changed_file and item['path']: delete_file(item['path'])
+        if _changed_file and item['path']: file_libs.delete_file(item['path'])
 
         # set result
         result = output.success({
             'message': 'Complete update File.',
         })
     except Exception as e:
-        if file.get('path'): delete_file(file['path'])
+        if file.get('path'): file_libs.delete_file(file['path'])
         result = output.exc(e)
     finally:
         if not _db and db: db.disconnect()

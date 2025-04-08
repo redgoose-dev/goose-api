@@ -1,8 +1,9 @@
 import os, json
+from src import libs
 
 class Preference:
 
-    path = f'{os.getenv('PATH_ROOT')}data/preference.json'
+    path = f'{libs.data_path}/preference.json'
 
     def __init__(self):
         with open(self.path, 'r') as file:

@@ -1,4 +1,5 @@
 import os
+from src import libs
 from . import discord
 from . import github
 from . import password
@@ -54,7 +55,7 @@ class Provider:
     def get_authorize_url(provider: str, callback_url: str = '') -> str:
         if not (provider and callback_url):
             raise Exception('Provider and callback_url are required.')
-        url = os.getenv('PATH_URL')
+        url = libs.url_path
         return f'{url}/auth/redirect/{provider}/?redirect_uri={callback_url}'
 
     # PUBLIC METHODS

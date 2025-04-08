@@ -76,12 +76,6 @@ def get_status_message(code: int) -> str:
         case _:
             return 'Service Error'
 
-def get_path(path: str = '') -> str:
-    return f'{os.getenv('PATH_ROOT')}{path}'
-
-def get_url(path: str = '') -> str:
-    return f'{os.getenv('PATH_URL')}{path}'
-
 def uri_encode(data: dict|list = None) -> str:
     if not data: return ''
     try: return base64.urlsafe_b64encode(json.dumps(data).encode()).decode()

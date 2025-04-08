@@ -17,3 +17,8 @@ def jprint(data: dict|list|str):
         data = json_parse(data)
     data = json.dumps(data, indent=2, ensure_ascii=False)
     if data: print(data)
+
+# 쿼리스트링을 딕셔너리로 변환한다.
+def query_to_dict(query: str) -> dict|None:
+    if not query: return None
+    return { k: v for k, v in [item.split('=') for item in query.split('&')] }

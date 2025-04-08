@@ -65,7 +65,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             )
 
         # set path
-        file['path'] = f'{file_libs.get_dir_path()}/{file_libs.get_unique_name(8)}.{file['ext']}'
+        file['path'] = f'{file_libs.get_dir_path('origin')}/{file_libs.get_unique_name(8)}.{file['ext']}'
 
         # copy file
         file_libs.write_file(file['content'], file['path'])
