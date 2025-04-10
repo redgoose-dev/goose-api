@@ -46,9 +46,9 @@ async def post_main(params: list = [], req = None, _check_token = True):
                     response[key]['error-code'] = res.headers['error-code']
             except Exception as e:
                 raise Exception(f'[{key}] {e}', 400)
-        response = output.success(response)
+        response = output.success(response, _req=req)
     except Exception as e:
-        response = output.exc(e)
+        response = output.exc(e, _req=req)
     finally:
         db.disconnect()
         return response

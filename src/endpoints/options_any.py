@@ -1,8 +1,8 @@
 from starlette.responses import Response
-from ..output import empty
+from .. import output
 
 async def preflight(path_str: str) -> Response:
-    return empty({
+    return output.empty({
         'headers': {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -10,4 +10,4 @@ async def preflight(path_str: str) -> Response:
             'Access-Control-Allow-Credentials': 'true',
             'Access-Control-Max-Age': '86400',
         }
-    })
+    }, _log=False)

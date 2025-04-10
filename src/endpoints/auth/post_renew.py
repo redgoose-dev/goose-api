@@ -72,9 +72,9 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
                 'refresh': new_token['refresh'],
                 'expires': new_token['expires'],
             }
-        })
+        }, _req=req)
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
         return result

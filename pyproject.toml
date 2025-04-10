@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.115.11",
     "httpx>=0.28.1",
+    "loguru>=0.7.3",
     "pillow>=11.1.0",
     "pillow-avif-plugin>=1.5.1",
     "pydantic>=2.10.6",

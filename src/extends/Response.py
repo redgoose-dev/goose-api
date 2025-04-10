@@ -1,6 +1,6 @@
 import json
 from typing import Any
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 class LocalJSONResponse(JSONResponse):
     def __init__(
@@ -12,9 +12,9 @@ class LocalJSONResponse(JSONResponse):
     ):
         self.indent = indent or None
         super().__init__(
-            content = content,
-            status_code = status_code,
-            headers = headers,
+            content=content,
+            status_code=status_code,
+            headers=headers,
         )
     def render(self, content: Any) -> bytes:
         return json.dumps(

@@ -31,9 +31,9 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         result = output.success({
             'message': 'Complete get comment item.',
             'data': data,
-        })
+        }, _req=req)
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
         return result

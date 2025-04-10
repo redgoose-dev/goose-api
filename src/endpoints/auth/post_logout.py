@@ -31,9 +31,9 @@ async def post_logout(req = None, _db: DB = None, _check_token = True):
         # set result
         result = output.success({
             'message': 'Complete logout.',
-        })
+        }, _req=req)
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
         return result

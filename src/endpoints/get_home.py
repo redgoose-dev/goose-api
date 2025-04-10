@@ -1,8 +1,7 @@
 from fastapi import Request
-from src import output
-from src import __version__, __dev__
+from src import output, __VERSION__, __DEV__
 
-async def home(params = None, req: Request = None, _db = None):
+async def get_home(req: Request = None, _db = None):
 
     # set values
     result = None
@@ -10,10 +9,10 @@ async def home(params = None, req: Request = None, _db = None):
     try:
         result = output.success({
             'message': 'Hello goose-api',
-            'version': __version__,
-            'dev': __dev__,
-        })
+            'version': __VERSION__,
+            'dev': __DEV__,
+        }, _req=req)
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         return result

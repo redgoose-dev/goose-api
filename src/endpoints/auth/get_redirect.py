@@ -27,9 +27,9 @@ async def get_redirect(params: dict = {}):
         url = _provider_.create_authorize_url(state = state)
 
         # set result
-        result = output.redirect(url)
+        result = output.redirect(url, _req=req)
         pass
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         return result

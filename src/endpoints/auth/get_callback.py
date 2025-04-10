@@ -98,17 +98,17 @@ async def get_callback(params: dict = {}, _db: DB = None):
             }))
             # close websocket
             asyncio.create_task(close_websocket_after_delay(state['socket_id'], 2))
-            result = output.text('Complete auth. Please close this window.')
+            result = output.text('Complete auth. Please close this window.', _req=req)
         elif 'redirect_uri' in state:
             qs = urlencode(data)
-            result = output.redirect(f'{state['redirect_uri']}?{qs}')
+            result = output.redirect(f'{state['redirect_uri']}?{qs}', _req=req)
         else:
             result = output.success({
                 'message': 'Complete auth.',
                 **data,
-            })
+            }, _req=req)
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
         if 'socket_id' in state:
             asyncio.create_task(close_websocket_after_delay(state['socket_id'], 1))
             result = 'Failed auth. Please close this window.'
@@ -116,7 +116,7 @@ async def get_callback(params: dict = {}, _db: DB = None):
             qs = {}
             if 'error-code' in result.headers:
                 qs['error'] = result.headers['error-code']
-            result = output.redirect(f'{state['redirect_uri']}?{urlencode(qs)}')
+            result = output.redirect(f'{state['redirect_uri']}?{urlencode(qs)}', _req=req)
     finally:
         if not _db: db.disconnect()
         return result

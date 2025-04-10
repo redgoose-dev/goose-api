@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Query, Path, WebSocket, Form, Header
-from src import __dev__
+from src import __DEV__
 from src.libs.resource import Patterns
 from . import __types__ as types
 
@@ -151,7 +151,7 @@ async def _ws_index(ws: WebSocket, socket_id: str = Path(...)):
     return await ws_index(ws, socket_id)
 
 # for DEV
-if __dev__:
+if __DEV__:
     # 웹소켓 테스트
     @router.get('/test_websocket/')
     async def _test_websocket():

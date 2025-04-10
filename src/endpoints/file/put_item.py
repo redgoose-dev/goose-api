@@ -110,10 +110,10 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         result = output.success({
             'message': 'Complete add file.',
             'data': data,
-        })
+        }, _req=req)
     except Exception as e:
         if file['path']: file_libs.delete_file(file['path'])
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
         return result

@@ -4,8 +4,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from .libs.string import color_text
-from .output import error, exc
+from src import __DEBUG__
+from src.libs.string import color_text
+from src.modules import logger
+from src.output import error
 
 # docs
 # - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
@@ -13,27 +15,24 @@ from .output import error, exc
 # set router
 api = FastAPI()
 
-# debug
-__DEBUG__ = os.getenv('DEBUG', '').lower() == 'true'
+# setup logger
+logger.setup()
 
 # middleware - checking process time
 @api.middleware('http')
 async def _http(req: Request, call_next):
     now = None
     # start time record
-    start_time = time.time()
+    req.state.start_time = time.time()
     # print start debug
     if __DEBUG__:
         now = datetime.now().strftime('%H:%M:%S')
-        print(color_text(f'\n***** | START | {now} | [{req.method}] {req.url} | *****', 'cyan'))
+        print(color_text(f'\n<===== {now} | START | [{req.method}] {req.url} =====>', 'cyan'))
     # action endpoint
     response = await call_next(req)
-    # end time record
-    process_time = (time.time() - start_time) * 1000
-    response.headers['X-Process-Time'] = f'{process_time:.2f} ms'
     # print end debug
     if __DEBUG__:
-        print(color_text(f'***** | END | {now} | *****', 'cyan'))
+        print(color_text(f'<===== {now} | END =====>', 'cyan'))
     return response
 
 # preflight
@@ -44,9 +43,9 @@ async def _options(path_str: str) -> Response:
 
 # home
 @api.get('/')
-async def _home() -> JSONResponse:
-    from .endpoints.get_home import home
-    return await home()
+async def _home(req: Request) -> JSONResponse:
+    from .endpoints.get_home import get_home
+    return await get_home(req=req)
 
 # app
 from .endpoints.app import router as app
@@ -98,29 +97,29 @@ api.include_router(mix, prefix='/mix')
 
 # 404 error
 @api.exception_handler(StarletteHTTPException)
-async def _custom_exception_handler(req: Request, exc: StarletteHTTPException):
+async def _custom_exception_handler(req: Request, e: StarletteHTTPException):
     options = {
-        'code': exc.status_code,
+        'code': e.status_code,
         'method': req.method,
         'path': req.url.path,
     }
-    if exc.status_code == 405:
+    if e.status_code == 405:
         message = 'Not Found'
         options['code'] = 404
         options['message'] = 'router error'
     else:
         message = 'Invalid Error'
-        options['message'] = exc.detail
-    return error(message, options)
+        options['message'] = e.detail
+    return error(message, options=options, _req=req)
 
 # validation error
 @api.exception_handler(RequestValidationError)
-async def _validation_exception_handler(req: Request, exc: RequestValidationError):
+async def _validation_exception_handler(req: Request, e: RequestValidationError):
     return error('Validation Error', {
         'code': 400,
         'method': req.method,
         'path': req.url.path,
-        'error': exc.errors(),
+        'error': e.errors(),
     })
 
 # 예외 처리 핸들러 추가

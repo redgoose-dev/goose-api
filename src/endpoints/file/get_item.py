@@ -1,12 +1,10 @@
 import os, io, json, pillow_avif
 from typing import Optional
 from PIL import Image, ImageOps
-from . import __types__ as types
-from src import output, __dev__
-from src import libs
+from src import libs, output, __DEV__
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from . import __libs__ as file_libs
+from . import __types__ as types, __libs__ as file_libs
 
 __VER__ = 'v2'
 
@@ -134,14 +132,16 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
             'Content-Type': data.get('mime'),
             'Content-Length': str(len(data.get('buffer'))),
         }
-        if not __dev__: headers['Cache-Control'] = 'public, max-age=2592000'
-        result = output.buffer(data.get('buffer'), {
-            'headers': headers,
-            'log': False,
-        })
+        if not __DEV__: headers['Cache-Control'] = 'public, max-age=2592000'
+        result = output.buffer(
+            data.get('buffer'),
+            options={ 'headers': headers, 'log': False },
+            _req=req,
+            _log=False,
+        )
 
     except Exception as e:
-        result = output.exc(e)
+        result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
         return result
