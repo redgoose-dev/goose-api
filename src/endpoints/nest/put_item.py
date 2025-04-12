@@ -18,21 +18,22 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         if _check_token: checking_token(req, db)
 
         # check parse json
-        json_data = json_parse(params.json_data) if params.json_data else {}
+        json_data = json_parse(params.json_data) if params.json_data else None
+        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
 
         # check app_srl
         count = db.get_count(
-            table_name = Table.APP.value,
-            where = [ f'srl = {params.app_srl}' ],
+            table_name=Table.APP.value,
+            where=[ f'srl = {params.app_srl}' ],
         )
-        if count <= 0: raise Exception('Not found App', 400)
+        if count <= 0: raise Exception('Not found app.', 400)
 
         # check code
         count = db.get_count(
-            table_name = Table.NEST.value,
-            where = [ f'code LIKE "{params.code}"' ],
+            table_name=Table.NEST.value,
+            where=[ f'code LIKE "{params.code}"' ],
         )
-        if count > 0: raise Exception('Exist code in Nest.', 400)
+        if count > 0: raise Exception('Exist code in nest.', 400)
 
         # set values
         values = {
@@ -55,9 +56,9 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # add item
         data = db.add_item(
-            table_name = Table.NEST.value,
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.NEST.value,
+            placeholders=placeholders,
+            values=values,
         )
 
         # set result

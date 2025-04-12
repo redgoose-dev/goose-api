@@ -4,10 +4,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from src import __DEBUG__
+from src import __DEBUG__, output
 from src.libs.string import color_text
 from src.modules import logger
-from src.output import error
 
 # docs
 # - Request Class: https://fastapi.tiangolo.com/ko/reference/request/?h=request#fastapi.Request
@@ -110,24 +109,24 @@ async def _custom_exception_handler(req: Request, e: StarletteHTTPException):
     else:
         message = 'Invalid Error'
         options['message'] = e.detail
-    return error(message, options=options, _req=req)
+    return output.error(message, options=options, _req=req)
 
 # validation error
 @api.exception_handler(RequestValidationError)
 async def _validation_exception_handler(req: Request, e: RequestValidationError):
-    return error('Validation Error', {
+    return output.error('Validation Error', {
         'code': 400,
         'method': req.method,
         'path': req.url.path,
         'error': e.errors(),
-    })
+    }, _req=req)
 
 # 예외 처리 핸들러 추가
 @api.exception_handler(Exception)
 async def _exception_handler(req: Request, e: Exception):
-    return error('Exception Error', {
+    return output.error('Exception Error', {
         'code': 500,
         'method': req.method,
         'path': req.url.path,
         'error': e.errors() if hasattr(e, 'errors') else None,
-    })
+    }, _req=req)

@@ -15,16 +15,16 @@ async def put_item(req = None, _db: DB = None, _check_token = True):
         # check ready mode item
         item = db.get_item(
             table_name = Table.ARTICLE.value,
-            fields = [ 'srl' ],
-            where = [ f'mode LIKE "ready"' ],
+            fields=[ 'srl' ],
+            where=[ f'mode LIKE "ready"' ],
         )
         if item:
-            data = item['srl']
+            data = item.get('srl')
         else:
             data = db.add_item(
-                table_name = Table.ARTICLE.value,
-                placeholders = [ { 'key': 'mode', 'value': ':mode' } ],
-                values = { 'mode': 'ready' },
+                table_name=Table.ARTICLE.value,
+                placeholders=[ { 'key': 'mode', 'value': ':mode' } ],
+                values={ 'mode': 'ready' },
             )
 
         # set result

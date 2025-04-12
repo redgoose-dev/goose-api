@@ -40,7 +40,7 @@ async def get_callback(params: dict = {}, _db: DB = None):
         # check exist provider
         if provider:
             if not _provider_.check_user_id(provider['user_id'], user):
-                raise Exception('Invalid user id.', 403)
+                raise Exception('Invalid user id.', 401)
             provider_srl = provider['srl']
         else:
             provider_srl = db.add_item(

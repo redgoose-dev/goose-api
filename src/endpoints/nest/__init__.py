@@ -8,10 +8,10 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
-    fields: str = Query(None, pattern=Patterns.fields),
     app_srl: int = Query(None, alias='app'),
     code: str = Query(None, pattern=Patterns.code),
     name: str = Query(None),
+    fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),

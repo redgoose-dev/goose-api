@@ -25,7 +25,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             fields = [ 'srl', 'mode', 'regdate', 'hit', 'star' ],
             where = [ f'srl={params.srl}' ],
         )
-        if not item: raise Exception('Not found Article', 204)
+        if not item: raise Exception('Not found article.', 204)
 
         # set regdate
         if not params.regdate and not item['regdate']:
@@ -37,7 +37,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                 table_name = Table.APP.value,
                 where = [ f'srl={params.app_srl}' ],
             )
-            if count <= 0: raise Exception('Not found App', 400)
+            if count <= 0: raise Exception('Not found app.', 400)
 
         # check nest
         if params.nest_srl is not None:
@@ -45,7 +45,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                 table_name = Table.NEST.value,
                 where = [ f'srl={params.nest_srl}' ],
             )
-            if count <= 0: raise Exception('Not found Nest', 400)
+            if count <= 0: raise Exception('Not found nest', 400)
 
         # check category
         if params.category_srl is not None:
@@ -53,7 +53,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                 table_name = Table.CATEGORY.value,
                 where = [ f'srl={params.category_srl}' ],
             )
-            if count <= 0: raise Exception('Not found Category', 400)
+            if count <= 0: raise Exception('Not found category.', 400)
 
         # filtering text content
         if params.title:

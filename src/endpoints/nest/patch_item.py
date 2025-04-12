@@ -19,29 +19,30 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # check item
         count = db.get_count(
-            table_name = Table.NEST.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.NEST.value,
+            where=[ f'srl = {params.srl}' ],
         )
         if count <= 0: raise Exception('Item not found.', 204)
 
         # check app_srl
         if params.app_srl:
             count = db.get_count(
-                table_name = Table.APP.value,
-                where = [ f'srl = {params.app_srl}' ],
+                table_name=Table.APP.value,
+                where=[ f'srl = {params.app_srl}' ],
             )
-            if count <= 0: raise Exception('Not found App', 400)
+            if count <= 0: raise Exception('Not found app.', 400)
 
         # check code
         if params.code:
             count = db.get_count(
-                table_name = Table.NEST.value,
-                where = [ f'code LIKE "{params.code}"' ],
+                table_name=Table.NEST.value,
+                where=[ f'code LIKE "{params.code}"' ],
             )
-            if count > 0: raise Exception('Exist code in Nest.', 400)
+            if count > 0: raise Exception('Exist code in nest.', 400)
 
         # check json_data
         json_data = json_parse(params.json_data) if params.json_data else None
+        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
 
         # set values
         values = {}
@@ -74,10 +75,10 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # update item
         db.update_item(
-            table_name = Table.NEST.value,
-            where = [ f'srl = {params.srl}' ],
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.NEST.value,
+            where=[ f'srl = {params.srl}' ],
+            placeholders=placeholders,
+            values=values,
         )
 
         # set result

@@ -34,24 +34,19 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # get total
         total = db.get_count(
-            table_name = Table.APP.value,
-            where = where,
+            table_name=Table.APP.value,
+            where=where,
         )
         if total == 0: raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = Table.APP.value,
-            fields = fields,
-            where = where,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': params.order,
-                'sort': params.sort,
-            },
+            table_name=Table.APP.value,
+            fields=fields,
+            where=where,
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': params.order, 'sort': params.sort },
+            unlimited=params.unlimited,
         )
 
         # transform items

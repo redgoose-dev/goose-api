@@ -77,10 +77,10 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # get total
         total = db.get_count(
-            table_name = Table.ARTICLE.value,
-            where = where,
-            join = join,
-            values = values,
+            table_name=Table.ARTICLE.value,
+            where=where,
+            join=join,
+            values=values,
         )
         if not (total > 0): raise Exception('No data', 204)
 
@@ -98,20 +98,14 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # get index
         index = db.get_items(
-            table_name = Table.ARTICLE.value,
-            fields = fields,
-            where = where,
-            join = join,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': order,
-                'sort': sort,
-            },
-            values = values,
-            unlimited = params.unlimited,
+            table_name=Table.ARTICLE.value,
+            fields=fields,
+            where=where,
+            join=join,
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': order, 'sort': sort },
+            values=values,
+            unlimited=params.unlimited,
         )
 
         # transform items
@@ -121,30 +115,30 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             # MOD / app
             if mod.check('app') and item.get('app_srl'):
                 item['app'] = app_libs.get_item(
-                    _db = db,
-                    srl = item.get('app_srl'),
-                    fields = [ 'srl', 'code', 'name' ],
+                    _db=db,
+                    srl=item.get('app_srl'),
+                    fields=[ 'srl', 'code', 'name' ],
                 )
             # MOD / nest
             if mod.check('nest') and item.get('nest_srl'):
                 item['nest'] = nest_libs.get_item(
-                    _db = db,
-                    srl = item.get('nest_srl'),
-                    fields = [ 'srl', 'code', 'name' ],
+                    _db=db,
+                    srl=item.get('nest_srl'),
+                    fields=[ 'srl', 'code', 'name' ],
                 )
             # MOD / category
             if mod.check('category') and item.get('category_srl'):
                 item['category'] = category_libs.get_item(
-                    _db = db,
-                    srl = item.get('category_srl'),
-                    fields = [ 'srl', 'name' ],
+                    _db=db,
+                    srl=item.get('category_srl'),
+                    fields=[ 'srl', 'name' ],
                 )
             # MOD / tag
             if mod.check('tag'):
                 item['tag'] = tag_libs.get_index(
-                    _db = db,
-                    module = tag_libs.Module.ARTICLE,
-                    module_srl = item.get('srl'),
+                    _db=db,
+                    module=tag_libs.Module.ARTICLE,
+                    module_srl=item.get('srl'),
                 )
             return item
         index = [ transform_item(item) for item in index ]

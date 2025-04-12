@@ -37,9 +37,9 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # get item
         data = db.get_item(
-            table_name = Table.APP.value,
-            where = where,
-            fields = fields,
+            table_name=Table.APP.value,
+            where=where,
+            fields=fields,
         )
         if not data: raise Exception('Item not found', 204)
 

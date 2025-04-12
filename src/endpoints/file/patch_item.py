@@ -131,7 +131,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # set result
         result = output.success({
-            'message': 'Complete update File.',
+            'message': 'Complete update file.',
         }, _req=req)
     except Exception as e:
         if file.get('path'): file_libs.delete_file(file['path'])

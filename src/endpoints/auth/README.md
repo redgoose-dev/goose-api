@@ -132,6 +132,15 @@ headers = {
 ```
 
 
+## 엑세스 토큰
+
+### 엑세스 토큰 재발급받기
+
+```
+POST /auth/renew/
+```
+
+
 ## 프로바이더 설정 페이지 링크
 
 - 디스코드: https://discord.com/developers/applications

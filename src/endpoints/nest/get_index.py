@@ -37,25 +37,19 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # get total
         total = db.get_count(
-            table_name = Table.NEST.value,
-            where = where,
+            table_name=Table.NEST.value,
+            where=where,
         )
         if not (total > 0): raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = Table.NEST.value,
-            fields = fields,
-            where = where,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': params.order,
-                'sort': params.sort,
-            },
-            unlimited = params.unlimited,
+            table_name=Table.NEST.value,
+            fields=fields,
+            where=where,
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': params.order, 'sort': params.sort },
+            unlimited=params.unlimited,
         )
 
         # transform items
@@ -65,15 +59,15 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             # MOD / app
             if mod.check('app') and item.get('app_srl'):
                 item['app'] = app_libs.get_item(
-                    _db = db,
-                    srl = item.get('app_srl'),
-                    fields = [ 'srl', 'code', 'name' ],
+                    _db=db,
+                    srl=item.get('app_srl'),
+                    fields=[ 'srl', 'code', 'name' ],
                 )
             # MOD / count-article
             if mod.check('count-article'):
                 item['count_article'] = article_libs.get_count(
-                    _db = db,
-                    where = [ f'nest_srl = {item['srl']}' ],
+                    _db=db,
+                    where=[ f'nest_srl = {item['srl']}' ],
                 )
             return item
         index = [ transform_item(item) for item in index ]

@@ -79,11 +79,12 @@ def error(
     url: str,
     method: str = 'GET',
     error_code: str = None,
+    module: str = None,
     **options
 ):
     if not __USE_LOG__: return
     # get caller module name
-    caller_module = inspect.stack()[2].frame.f_globals['__name__']
+    module = module if module else inspect.stack()[1].frame.f_globals['__name__']
     # set stack
     stack = options.get('stack').rstrip() if options.get('stack') else None
     # call logger
@@ -92,9 +93,9 @@ def error(
         method=method,
         url=url,
         error_code=error_code,
-        stack=f'\n{stack}' if stack else None,
+        stack=f'\n{stack}' if stack else '',
         options={
-            'module': caller_module,
+            'module': module,
             'status_code': options.get('status_code', 500),
             'ip': options.get('ip', None),
             'user_agent': options.get('user_agent', 'Unknown'),
@@ -104,7 +105,7 @@ def error(
 
 def cmd(
     message: str,
-    **options
+    **options,
 ):
     if not __USE_LOG__: return
     _options = {}

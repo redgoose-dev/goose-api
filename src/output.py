@@ -1,4 +1,4 @@
-import time, traceback
+import time, traceback, inspect
 from typing import Dict, Any
 from fastapi import Request
 from pydantic import BaseModel
@@ -37,11 +37,6 @@ def __process_time__(req: Request, headers: dict) -> str:
     return headers
 
 ### PUBLIC FUNCTIONS ###
-
-class ResponseModel(BaseModel):
-    code: int = 200,
-    headers: Dict[str, str] = {}
-    content: Dict[str, Any] = None
 
 # simple text
 def text(content: str = '', status_code: int = 200, _req: Request = None):
@@ -95,7 +90,7 @@ def buffer(
     # write log
     if _log:
         logger.success(
-            'Open File',
+            'Open file',
             url=_req.url,
             method=_req.method,
             status_code=status_code,
@@ -117,6 +112,7 @@ def redirect(path: str, code: int = 302, _req: Request = None):
 def empty(
     options: Dict[str, any] = None,
     _req: Request = None,
+    _module: str = None,
     _log: bool = True,
 ) -> Response:
     status_code = options.get('code', 204) if options else 204
@@ -126,7 +122,7 @@ def empty(
     # write log
     if _log:
         logger.success(
-            content.get('message', 'Unknown Message'),
+            'No Content',
             url=_req.url,
             method=_req.method,
             status_code=status_code,
@@ -144,6 +140,7 @@ def error(
     content: str|None,
     options: Dict[str, any] = None,
     _req: Request = None,
+    _module: str = None,
     _log: bool = True,
 ) -> Response:
     # set code
@@ -160,6 +157,7 @@ def error(
         if _req: headers = __process_time__(_req, headers)
         # write log
         if _log:
+            _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
             logger.error(
                 content or 'Unknown Error',
                 error_code=headers.get('Error-Code', None),
@@ -169,6 +167,7 @@ def error(
                 user_agent=_req.headers.get('User-Agent', None),
                 ip=_req.client.host,
                 run_time=headers.get('X-Process-Time', None),
+                module=_module,
                 stack=options.get('stack', None),
             )
     # return
@@ -179,7 +178,7 @@ def error(
     )
 
 # exception
-def exc(e: Exception, _req: Request = None, _log: bool = True) -> Response:
+def exc(e: Exception, _req: Request = None, _module: str = None, _log: bool = True) -> Response:
     match e.args[1] if len(e.args) > 1 else 500:
         case 204:
             return empty(
@@ -188,6 +187,7 @@ def exc(e: Exception, _req: Request = None, _log: bool = True) -> Response:
                 _log=_log,
             )
         case _:
+            _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
             return error(
                 None,
                 options={
@@ -195,5 +195,6 @@ def exc(e: Exception, _req: Request = None, _log: bool = True) -> Response:
                     'stack': str(traceback.format_exc()),
                 },
                 _req=_req,
+                _module=_module,
                 _log=_log,
             )

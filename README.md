@@ -6,7 +6,7 @@ redgoose 컨텐츠 API 프로젝트
 ## Usage
 
 로컬 개발 환경에서 구동하기 위하여 다음과 같이 실행합니다.
-패키지 매니저는 `UV`가 필요합니다.
+패키지 매니저는 [UV](https://docs.astral.sh/uv/)가 필요합니다.
 
 ```shell
 # clone repo
@@ -27,11 +27,19 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ./scripts/util.sh dev # run shell script
 ```
 
-서버 스크립트 실행은 `/main.py`파일에서 시작합니다.
+서버 스크립트 실행은 [main.py](main.py)파일에서 시작합니다.
 
 ## Tech Stack
 
-TODO: 프로젝트에서 사용된 기술 스택입니다.
+주요 테크스택은 다음과 같습니다.
+
+- [Python 3](https://www.python.org)
+- [UV](https://docs.astral.sh/uv/)
+- [FastAPI](https://fastapi.tiangolo.com)
+- [SQLite](https://sqlite.org)
+
+자세한 구성은 [pyproject.toml](pyproject.toml)파일을 참고하세요.
+
 
 ## Docker
 

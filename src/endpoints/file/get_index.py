@@ -60,7 +60,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set result
         result = output.success({
-            'message': 'Complete get File index.',
+            'message': 'Complete get file index.',
             'data': {
                 'total': total,
                 'index': index,
