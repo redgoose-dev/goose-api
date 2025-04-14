@@ -1,6 +1,7 @@
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from .__libs__ import Status
 
 async def put_item(req = None, _db: DB = None, _check_token = True):
 
@@ -16,7 +17,7 @@ async def put_item(req = None, _db: DB = None, _check_token = True):
         item = db.get_item(
             table_name = Table.ARTICLE.value,
             fields=[ 'srl' ],
-            where=[ f'mode LIKE "ready"' ],
+            where=[ f'mode LIKE "{Status.READY}"' ],
         )
         if item:
             data = item.get('srl')
@@ -24,7 +25,7 @@ async def put_item(req = None, _db: DB = None, _check_token = True):
             data = db.add_item(
                 table_name=Table.ARTICLE.value,
                 placeholders=[ { 'key': 'mode', 'value': ':mode' } ],
-                values={ 'mode': 'ready' },
+                values={ 'mode': Status.READY },
             )
 
         # set result

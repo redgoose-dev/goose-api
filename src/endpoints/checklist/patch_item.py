@@ -41,23 +41,24 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('content = :content')
         if 'percent' in values:
             placeholders.append('percent = :percent')
+        placeholders.append('updated_at = DATETIME("now", "localtime")')
 
         # add item
         db.update_item(
-            table_name = Table.CHECKLIST.value,
-            where = [ f'srl = {params.srl}' ],
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.CHECKLIST.value,
+            where=[ f'srl = {params.srl}' ],
+            placeholders=placeholders,
+            values=values,
         )
 
         # update tag
         if params.tag:
             from ..tag import __libs__ as tag_libs
             tag_libs.update(
-                _db = db,
-                new_tags = params.tag,
-                module = tag_libs.Module.CHECKLIST,
-                module_srl = params.srl,
+                _db=db,
+                module=tag_libs.Module.CHECKLIST,
+                module_srl=params.srl,
+                new_tags=params.tag,
             )
 
         # set result

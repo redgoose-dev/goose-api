@@ -70,10 +70,10 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             duration_range = range_maps.get(duration[2], '1 day')
             values['duration_date'] = sp_date
             match duration[0]:
-                case 'new':
-                    where.append(f'AND {duration_field} BETWEEN DATE(:duration_date, "-{duration_range}", "localtime") AND :duration_date')
                 case 'old':
-                    where.append(f'AND {duration_field} BETWEEN :duration_date AND DATE(:duration_date, "+{duration_range}", "localtime")')
+                    where.append(f'AND ({duration_field} BETWEEN DATETIME(:duration_date, "-{duration_range}", "localtime") AND DATETIME(:duration_date, "-1 day", "localtime"))')
+                case 'new':
+                    where.append(f'AND ({duration_field} BETWEEN DATETIME(:duration_date, "+1 day", "localtime") AND DATETIME(:duration_date, "+{duration_range}", "localtime"))')
 
         # get total
         total = db.get_count(

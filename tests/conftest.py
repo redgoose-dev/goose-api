@@ -5,4 +5,5 @@ def pytest_collection_modifyitems(config, items):
     pass
 
 def pytest_addoption(parser):
-    parser.addoption('--foo', action='store', default='', help='Anything use value')
+    parser.addoption('--custom', action='store', default='', help='Anything use value')
+    parser.addoption('--count', action='store', default=0, help='count value')

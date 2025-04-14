@@ -69,8 +69,8 @@ GET /article/
 @query {int} nest / 둥지 srl 번호
 @query {int} category / 카테고리 srl 번호
 @query {str} q / 제목과 내용의 키워드 검색
-@query {str} mode / 모드 (ready,public,private)
-@query {str} duration / 기간 ex) {new|old},{regdate|created_at},{day|week|month|year}
+@query {str} mode / 모드 (public,private)
+@query {str} duration / 기간 / ex) {new|old},{regdate},{day|week|month|year}
 @query {str} random / 랜덤의 시드값 ex) 20240422
 @query {str} fields / 조회할 필드
 @query {int} page / 페이지 번호
@@ -81,6 +81,9 @@ GET /article/
 @query {str} tag / 태그 / ex) tag1,tag2,tag3
 @query {str} mod / MOD (app,nest,category,tag)
 ```
+
+- `duration`: 데이터 조회범위 `{시기},{필드}`
+- `random`: 데이터 순서를 섞습니다. 순서를 고정시키기 위하여 시드값을 사용합니다. ex) 20240422
 
 ### Response
 
@@ -103,7 +106,7 @@ GET /article/{srl:int}/
 @headers {str} Authorization / [required] 액세스 토큰
 @query {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
-@query {str} mod / MOD (up-hit,up-star)
+@query {str} mod / MOD (up-hit,up-star,app,nest,category,tag)
 ```
 
 ### Response
@@ -125,6 +128,27 @@ DELETE /article/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
 @query {int} srl / [required] 아티클 srl 번호
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+```
+
+
+## patch_change_srl.py
+
+아티클의 앱, 둥지의 srl 번호를 변경합니다.
+
+### Request
+
+```
+PATCH /article/{srl:int}/change-srl/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@query {int} srl / 아티클 srl 번호
+@data {int} nest / 둥지 srl 번호
 ```
 
 ### Response

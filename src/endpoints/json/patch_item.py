@@ -66,6 +66,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('json = :json')
         if 'path' in values and values['path']:
             placeholders.append('path = :path')
+        placeholders.append('updated_at = DATETIME("now", "localtime")')
 
         # update item
         db.update_item(

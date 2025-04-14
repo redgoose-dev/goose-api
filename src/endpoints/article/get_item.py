@@ -4,6 +4,7 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
+from .__libs__ import Status
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -27,9 +28,12 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # set data
         data = db.get_item(
-            table_name = Table.ARTICLE.value,
-            fields = fields,
-            where = [ f'and srl = {params.srl}' ],
+            table_name=Table.ARTICLE.value,
+            fields=fields,
+            where=[
+                f'AND srl = {params.srl}',
+                f'AND mode NOT LIKE "{Status.READY}"'
+            ],
         )
         if not data: raise Exception('no data', 204)
         if data and isinstance(data, dict):

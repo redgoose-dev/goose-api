@@ -39,3 +39,8 @@ class PatchItem(BaseModel):
 
 class DeleteItem(BaseModel):
     srl: int
+
+class PatchChangeSrl(BaseModel):
+    srl: int
+    app_srl: Optional[int] = None
+    nest_srl: Optional[int] = None

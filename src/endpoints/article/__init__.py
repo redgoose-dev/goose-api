@@ -78,9 +78,9 @@ async def _patch_item(
     hit: bool = Form(False, convert=lambda v: bool(int(v))),
     star: bool = Form(False, convert=lambda v: bool(int(v))),
     json_data: str = Form(None, alias='json'),
-    tag: str = Form(None, pattern=Patterns.tags),
     mode: str = Form(None, pattern=Patterns.article_mode),
     regdate: str = Form(None, pattern=Patterns.date),
+    tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .patch_item import patch_item
     return await patch_item({
@@ -93,20 +93,33 @@ async def _patch_item(
         'hit': hit,
         'star': star,
         'json_data': json_data,
-        'tag': tag,
         'mode': mode,
         'regdate': regdate,
+        'tag': tag,
     }, req=req)
 
 # delete article
 @router.delete('/{srl:int}/')
 async def _delete_item(
     req: Request,
-    srl: int
+    srl: int,
 ):
     from .delete_item import delete_item
     return await delete_item({
         'srl': srl,
     }, req=req)
 
-# TODO: change nest
+# change nest
+@router.patch('/{srl:int}/change-srl/')
+async def _patch_change_srl(
+    req: Request,
+    srl: int,
+    app_srl: int = Form(None, alias='app'),
+    nest_srl: int = Form(None, alias='nest'),
+):
+    from .patch_change_srl import patch_change_srl
+    return await patch_change_srl({
+        'srl': srl,
+        'app_srl': app_srl,
+        'nest_srl': nest_srl,
+    }, req=req)

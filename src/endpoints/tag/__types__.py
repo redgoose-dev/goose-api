@@ -11,14 +11,16 @@ class GetIndex(BaseModel):
     sort: Optional[str] = 'desc'
     unlimited: Optional[bool] = True
 
-class GetItem(BaseModel):
-    pass
-
 class PutItem(BaseModel):
-    pass
+    module: str
+    module_srl: int
+    tags: str
 
 class PatchItem(BaseModel):
-    pass
+    module: str
+    module_srl: int
+    tags: str
 
 class DeleteItem(BaseModel):
-    pass
+    module: str
+    module_srl: int

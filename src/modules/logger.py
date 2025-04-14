@@ -55,18 +55,19 @@ def success(
     message: str,
     url: str,
     method: str = 'GET',
+    module: str = None,
     **options
 ):
     if not __USE_LOG__: return
     # get caller module name
-    caller_module = inspect.stack()[2].frame.f_globals['__name__']
+    module = module if module else inspect.stack()[1].frame.f_globals['__name__']
     # call logger
     logger.success(
         message,
         method=method,
         url=url,
         options={
-            'module': caller_module,
+            'module': module,
             'status_code': options.get('status_code', 200),
             'ip': options.get('ip', None),
             'user_agent': options.get('user_agent', 'Unknown'),

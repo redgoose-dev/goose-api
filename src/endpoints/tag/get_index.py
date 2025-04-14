@@ -38,6 +38,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             join=join,
             values=values,
         )
+        if not (total > 0): raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
@@ -45,14 +46,8 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             fields=fields,
             where=where,
             join=join,
-            limit={
-                'size': params.size,
-                'page': params.page,
-            },
-            order={
-                'order': params.order,
-                'sort': params.sort,
-            },
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': params.order, 'sort': params.sort },
             values=values,
             unlimited=params.unlimited,
         )

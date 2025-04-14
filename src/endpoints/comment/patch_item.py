@@ -44,6 +44,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('module = :module')
         if 'module_srl' in values and values['module_srl']:
             placeholders.append('module_srl = :module_srl')
+        placeholders.append('updated_at = DATETIME("now", "localtime")')
 
         # update data
         db.update_item(

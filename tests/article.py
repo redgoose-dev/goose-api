@@ -7,14 +7,6 @@ from src.endpoints.file.__libs__ import get_mime_type, get_file_name
 
 client = TestClient(app)
 
-def pytest_addoption(parser):
-    parser.addoption(
-        '--custom',
-        action = 'store',
-        default = 'default_value',
-        help = 'custom parameter',
-    )
-
 def get_index(params: dict = {}) -> list:
     res = client.get(
         url = '/article/',
@@ -92,18 +84,21 @@ def test_add_update_delete_item():
     # delete item
     delete_item(srl)
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_get_items():
     index = get_index()
     assert isinstance(index, list) and len(index) > 0
     get_item(index[0]['srl'])
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_add_items(request):
-    count: int = int(request.config.getoption('--custom') or 10)
+    try: count: int = int(request.config.getoption('--count'))
+    except ValueError: count = 0
+    count = count if count > 0 else 60
+    tomorrow = True
     date = get_date()
     for i in range(count):
-        new_date = date_format(date_shift(date, tomorrow=False, day=i), '%Y-%m-%d')
+        new_date = date_format(date_shift(date, tomorrow=tomorrow, day=i), '%Y-%m-%d')
         srl = put_item()
         patch_item(srl, {
             # 'app': 1,
@@ -111,9 +106,9 @@ def test_add_items(request):
             # 'category': 1,
             'title': create_random_string(10),
             'content': create_random_string(20),
-            'hit': True,
-            'star': True,
-            'json': '{"FOO":"BAR"}',
+            'hit': False,
+            'star': False,
+            'json': '{"apple":"red"}',
             'mode': 'public',
             'regdate': new_date,
         })

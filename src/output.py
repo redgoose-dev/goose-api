@@ -50,6 +50,7 @@ def success(
     data: Dict|None,
     options: Dict[str, any] = None,
     _req: Request = None,
+    _module: str = None,
     _log: bool = True,
 ) -> LocalJSONResponse:
     status_code = options.get('code', 200) if options else 200
@@ -60,10 +61,12 @@ def success(
         headers = __process_time__(_req, headers)
     # write log
     if _log:
+        _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
         logger.success(
             content.get('message', 'Unknown Message'),
             url=_req.url,
             method=_req.method,
+            module=_module,
             status_code=status_code,
             user_agent=_req.headers.get('User-Agent', None),
             ip=_req.client.host,
@@ -121,6 +124,7 @@ def empty(
     if _req: headers = __process_time__(_req, headers)
     # write log
     if _log:
+        _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
         logger.success(
             'No Content',
             url=_req.url,
@@ -129,6 +133,7 @@ def empty(
             user_agent=_req.headers.get('User-Agent', None),
             ip=_req.client.host,
             run_time=headers.get('X-Process-Time', None),
+            module=_module,
         )
     return Response(
         status_code=status_code,
@@ -179,15 +184,16 @@ def error(
 
 # exception
 def exc(e: Exception, _req: Request = None, _module: str = None, _log: bool = True) -> Response:
+    _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
     match e.args[1] if len(e.args) > 1 else 500:
         case 204:
             return empty(
                 options={ 'message': e.args[0] },
                 _req=_req,
+                _module=_module,
                 _log=_log,
             )
         case _:
-            _module = _module if _module else inspect.stack()[1].frame.f_globals['__name__']
             return error(
                 None,
                 options={

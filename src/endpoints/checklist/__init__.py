@@ -75,7 +75,7 @@ async def _patch_item(
         'tag': tag,
     }, req=req)
 
-# get checklist
+# delete checklist
 @router.delete('/{srl:int}/')
 async def _delete_item(
     req: Request,

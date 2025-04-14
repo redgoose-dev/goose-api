@@ -8,6 +8,14 @@ class Module:
     JSON = 'json'
     CHECKLIST = 'checklist'
 
+    @staticmethod
+    def get_table_name(key: str) -> str:
+        match key:
+            case Module.ARTICLE: return Table.ARTICLE.value
+            case Module.JSON: return Table.JSON.value
+            case Module.CHECKLIST: return Table.CHECKLIST.value
+            case _: return None
+
 def __check_module_name__ (module: str):
     if not re.match(Patterns.tag_module, module):
         raise Exception('Invalid module name.')
@@ -93,9 +101,13 @@ def add(_db: DB, tags: str|list, module: str, module_srl: int):
     __check_module_name__(module)
     # get tags
     tags = __get_tags__(tags)
+    # set result
+    result = []
     # action
     for tag in tags:
-        __add_tag__(tag=tag, module=module, module_srl=module_srl, _db=_db)
+        srl = __add_tag__(tag=tag, module=module, module_srl=module_srl, _db=_db)
+        result.append(srl)
+    return result
 
 def update(_db: DB, new_tags: str|list, module: str, module_srl: int):
     # check module

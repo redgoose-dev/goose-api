@@ -38,19 +38,19 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # add item
         data = db.add_item(
-            table_name = Table.CHECKLIST.value,
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.CHECKLIST.value,
+            placeholders=placeholders,
+            values=values,
         )
 
         # add tag
         if params.tag:
             from ..tag import __libs__ as tag_libs
             tag_libs.add(
-                _db = db,
-                tags = params.tag,
-                module = tag_libs.Module.CHECKLIST,
-                module_srl = data,
+                _db=db,
+                tags=params.tag,
+                module=tag_libs.Module.CHECKLIST,
+                module_srl=data,
             )
 
         # set result

@@ -30,7 +30,8 @@ CREATE TABLE `checklist` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- checklist srl
     `content` TEXT NULL, -- markdown content
     `percent` INTEGER NOT NULL DEFAULT 0, -- progress
-    `created_at` TEXT NOT NULL -- created date
+    `created_at` TEXT NOT NULL, -- created date
+    `updated_at` TEXT NOT NULL -- updated date
 );
 
 -- table `json`
@@ -42,6 +43,7 @@ CREATE TABLE `json` (
     `json` TEXT NOT NULL DEFAULT '{}', -- json data
     `path` TEXT NULL, -- json path
     `created_at` TEXT NOT NULL, -- created date
+    `updated_at` TEXT NOT NULL, -- updated date
     FOREIGN KEY (`category_srl`) REFERENCES `category`(`srl`)
 );
 
@@ -93,6 +95,7 @@ CREATE TABLE `comment` (
     `module` TEXT NOT NULL, -- article
     `module_srl` INTEGER NOT NULL, -- module srl
     `created_at` TEXT NOT NULL, -- created date
+    `updated_at` TEXT NOT NULL, -- updated date
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `article`)
 );
 

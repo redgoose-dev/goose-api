@@ -5,6 +5,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
+from .__libs__ import Status
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -21,9 +22,9 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # get item
         item = db.get_item(
-            table_name = Table.ARTICLE.value,
-            fields = [ 'srl', 'mode', 'regdate', 'hit', 'star' ],
-            where = [ f'srl={params.srl}' ],
+            table_name=Table.ARTICLE.value,
+            fields=[ 'srl', 'mode', 'regdate', 'hit', 'star' ],
+            where=[ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Not found article.', 204)
 
@@ -34,24 +35,24 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         # check app
         if params.app_srl is not None:
             count = db.get_count(
-                table_name = Table.APP.value,
-                where = [ f'srl={params.app_srl}' ],
+                table_name=Table.APP.value,
+                where=[ f'srl = {params.app_srl}' ],
             )
             if count <= 0: raise Exception('Not found app.', 400)
 
         # check nest
         if params.nest_srl is not None:
             count = db.get_count(
-                table_name = Table.NEST.value,
-                where = [ f'srl={params.nest_srl}' ],
+                table_name=Table.NEST.value,
+                where=[ f'srl = {params.nest_srl}' ],
             )
             if count <= 0: raise Exception('Not found nest', 400)
 
         # check category
         if params.category_srl is not None:
             count = db.get_count(
-                table_name = Table.CATEGORY.value,
-                where = [ f'srl={params.category_srl}' ],
+                table_name=Table.CATEGORY.value,
+                where=[ f'srl = {params.category_srl}' ],
             )
             if count <= 0: raise Exception('Not found category.', 400)
 
@@ -64,6 +65,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # check json data
         json_data = json_parse(params.json_data) if params.json_data else None
+        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
 
         # set values
         values = {}
@@ -84,14 +86,15 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if json_data:
             values['json'] = json_stringify(json_data)
         if params.mode:
+            if not Status.check(params.mode): raise Exception('Invalid mode.', 400)
             values['mode'] = params.mode
-        elif item['mode'] == 'ready':
-            values['mode'] = 'public'
+        elif item['mode'] == Status.READY:
+            values['mode'] = Status.PUBLIC
         if params.regdate:
             values['regdate'] = params.regdate
 
         # check values
-        if not bool(values): raise Exception('No values to update.', 400)
+        if not (bool(values) or params.tag): raise Exception('No values to update.', 400)
 
         # set placeholders
         placeholders = []
@@ -115,26 +118,27 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('mode = :mode')
         if 'regdate' in values:
             placeholders.append('regdate = :regdate')
-        if item['mode'] == 'ready':
+        if item['mode'] == Status.READY:
             placeholders.append(f'created_at = DATETIME("now", "localtime")')
-        placeholders.append(f'updated_at = DATETIME("now", "localtime")')
+        placeholders.append('updated_at = DATETIME("now", "localtime")')
 
         # update item
-        db.update_item(
-            table_name = Table.ARTICLE.value,
-            where = [ f'srl = {params.srl}' ],
-            placeholders = placeholders,
-            values = values,
-        )
+        if bool(values):
+            db.update_item(
+                table_name=Table.ARTICLE.value,
+                where=[ f'srl = {params.srl}' ],
+                placeholders=placeholders,
+                values=values,
+            )
 
         # update tag
         if params.tag:
             from ..tag import __libs__ as tag_libs
             tag_libs.update(
-                _db = db,
-                new_tags = params.tag,
-                module = tag_libs.Module.ARTICLE,
-                module_srl = params.srl,
+                _db=db,
+                new_tags=params.tag,
+                module=tag_libs.Module.ARTICLE,
+                module_srl=params.srl,
             )
 
         # set result

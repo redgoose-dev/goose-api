@@ -3,6 +3,14 @@ from ..file import __libs__ as file_libs
 from ..comment import __libs__ as comment_libs
 from ..tag import __libs__ as tag_libs
 
+class Status:
+    READY = 'ready'
+    PUBLIC = 'public'
+    PRIVATE = 'private'
+    @staticmethod
+    def check(value):
+        return value in [ Status.PUBLIC, Status.PRIVATE ]
+
 def get_count(_db: DB, where: list = []) -> int:
     count = _db.get_count(
         table_name = Table.ARTICLE.value,
