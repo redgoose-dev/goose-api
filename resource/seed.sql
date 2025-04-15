@@ -91,9 +91,9 @@ CREATE TABLE `file` (
 -- table `comment`
 CREATE TABLE `comment` (
     `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- comment srl
-    `content` TEXT NOT NULL, -- markdown content
     `module` TEXT NOT NULL, -- article
     `module_srl` INTEGER NOT NULL, -- module srl
+    `content` TEXT NOT NULL, -- markdown content
     `created_at` TEXT NOT NULL, -- created date
     `updated_at` TEXT NOT NULL, -- updated date
     FOREIGN KEY (`module_srl`, `module`) REFERENCES `article`(`srl`, `article`)

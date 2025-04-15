@@ -11,7 +11,7 @@ async def _get_index(
     req: Request,
     module: str = Query(None, pattern=Patterns.comment_module),
     module_srl: int = Query(None),
-    content: str = Query(None),
+    q: str = Query(None),
     fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
@@ -23,7 +23,7 @@ async def _get_index(
     return await get_index({
         'module': module,
         'module_srl': module_srl,
-        'content': content,
+        'q': q,
         'fields': fields,
         'page': page,
         'size': size,
@@ -49,15 +49,15 @@ async def _get_item(
 @router.put('/')
 async def _put_item(
     req: Request,
-    content: str = Form(...),
     module: str = Form(..., pattern=Patterns.comment_module),
     module_srl: int = Form(...),
+    content: str = Form(...),
 ):
     from .put_item import put_item
     return await put_item({
-        'content': content,
         'module': module,
         'module_srl': module_srl,
+        'content': content,
     }, req=req)
 
 # edit comment
@@ -65,16 +65,16 @@ async def _put_item(
 async def _patch_item(
     req: Request,
     srl: int,
-    content: str = Form(None),
     module: str = Form(None, pattern=Patterns.comment_module),
     module_srl: int = Form(None),
+    content: str = Form(None),
 ):
     from .patch_item import patch_item
     return await patch_item({
         'srl': srl,
-        'content': content,
         'module': module,
         'module_srl': module_srl,
+        'content': content,
     }, req=req)
 
 # delete comment

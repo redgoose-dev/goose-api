@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class GetIndex(BaseModel):
     module: Optional[str] = None
     module_srl: Optional[int] = None
-    content: Optional[str] = None
+    q: Optional[str] = None
     fields: Optional[str] = None
     page: Optional[int] = 1
     size: Optional[int] = None

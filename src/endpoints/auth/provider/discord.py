@@ -1,7 +1,6 @@
 import os, httpx
 from urllib.parse import urlencode
 from src import libs
-from src.libs.string import get_url
 
 class ProviderDiscord:
 

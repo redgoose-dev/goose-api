@@ -1,6 +1,6 @@
 from . import __types__ as types
 from src import output
-from src.libs.string import uri_encode, get_url
+from src.libs.string import uri_encode
 from .provider import Provider
 
 """

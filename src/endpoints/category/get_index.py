@@ -31,34 +31,28 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
         if params.module:
-            where.append(f'and module="{params.module}"')
+            where.append(f'and module LIKE "{params.module}"')
         if params.module_srl is not None:
             if params.module_srl > 0:
-                where.append(f'and module_srl={params.module_srl}')
+                where.append(f'and module_srl = {params.module_srl}')
             else:
                 where.append(f'and module_srl IS NULL')
 
         # get total
         total = db.get_count(
-            table_name = Table.CATEGORY.value,
-            where = where,
+            table_name=Table.CATEGORY.value,
+            where=where,
         )
         if total == 0: raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = Table.CATEGORY.value,
-            fields = fields,
-            where = where,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': params.order,
-                'sort': params.sort,
-            },
-            unlimited = params.unlimited,
+            table_name=Table.CATEGORY.value,
+            fields=fields,
+            where=where,
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': params.order, 'sort': params.sort },
+            unlimited=params.unlimited,
         )
 
         # set where for module

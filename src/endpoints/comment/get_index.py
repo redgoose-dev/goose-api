@@ -25,8 +25,8 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             where.append(f'and module LIKE "{params.module}"')
         if params.module_srl:
             where.append(f'and module_srl = {params.module_srl}')
-        if params.content:
-            where.append(f'and content LIKE "%{params.content}%"')
+        if params.q:
+            where.append(f'and content LIKE "%{params.q}%"')
 
         # set values
         values = {}

@@ -34,7 +34,7 @@ PUT /article/
 PATCH /article/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / [required] 아티클 srl 번호
+@param {int} srl / [required] 아티클 srl 번호
 @data {int} app / 앱 srl 번호
 @data {int} nest / 둥지 srl 번호
 @data {int} category / 카테고리 srl 번호
@@ -104,7 +104,7 @@ GET /article/
 GET /article/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / [required] 아티클 srl 번호
+@param {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
 @query {str} mod / MOD (up-hit,up-star,app,nest,category,tag)
 ```
@@ -127,7 +127,7 @@ GET /article/{srl:int}/
 DELETE /article/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / [required] 아티클 srl 번호
+@param {int} srl / [required] 아티클 srl 번호
 ```
 
 ### Response
@@ -147,7 +147,7 @@ DELETE /article/{srl:int}/
 PATCH /article/{srl:int}/change-srl/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / 아티클 srl 번호
+@param {int} srl / 아티클 srl 번호
 @data {int} nest / 둥지 srl 번호
 ```
 

@@ -19,15 +19,15 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
 
         # get item
         item = db.get_item(
-            table_name = Table.COMMENT.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.COMMENT.value,
+            where=[ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Item not found', 204)
 
         # delete item
         db.delete_item(
-            table_name = Table.COMMENT.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.COMMENT.value,
+            where=[ f'srl = {params.srl}' ],
         )
 
         # delete files

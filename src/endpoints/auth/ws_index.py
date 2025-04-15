@@ -2,7 +2,7 @@ import json, asyncio
 from urllib.parse import urlencode
 from fastapi import WebSocket
 from src.libs.object import json_parse
-from src.libs.string import get_url, uri_encode
+from src.libs.string import uri_encode
 from .provider import Provider
 
 ws_clients: dict = {}

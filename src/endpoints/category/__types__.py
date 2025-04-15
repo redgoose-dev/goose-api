@@ -19,15 +19,13 @@ class GetItem(BaseModel):
     fields: Optional[str] = None
 
 class PutItem(BaseModel):
-    name: str
     module: str
     module_srl: Optional[int] = None
+    name: str
 
 class PatchItem(BaseModel):
     srl: int
     name: Optional[str] = None
-    module: Optional[str] = None
-    module_srl: Optional[int] = None
 
 class PatchChangeOrder(BaseModel):
     module: str

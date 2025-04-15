@@ -9,31 +9,31 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
-    fields: str = Query(None, pattern=Patterns.fields),
-    name: str = Query(None),
     module: str = Query(None, pattern=Patterns.category_module),
     module_srl: int = Query(None),
+    name: str = Query(None),
+    q: str = Query(None),
+    fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
     mod: str = Query(None, pattern=Patterns.mod),
-    q: str = Query(None),
 ):
     from .get_index import get_index
     return await get_index({
-        'fields': fields,
-        'name': name,
         'module': module,
         'module_srl': module_srl,
+        'name': name,
+        'q': q,
+        'fields': fields,
         'page': page,
         'size': size,
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
         'mod': mod,
-        'q': q,
     }, req=req)
 
 # get category
@@ -53,15 +53,15 @@ async def _get_item(
 @router.put('/')
 async def _put_item(
     req: Request,
-    name: str = Form(...),
     module: str = Form(..., pattern=Patterns.category_module),
     module_srl: int = Form(None),
+    name: str = Form(...),
 ):
     from .put_item import put_item
     return await put_item({
-        'name': name,
         'module': module,
         'module_srl': module_srl,
+        'name': name,
     }, req=req)
 
 # edit category
@@ -70,15 +70,11 @@ async def _patch_item(
     req: Request,
     srl: int,
     name: str = Form(None),
-    module: str = Form(None, pattern=Patterns.category_module),
-    module_srl: int = Form(None),
 ):
     from .patch_item import patch_item
     return await patch_item({
         'srl': srl,
         'name': name,
-        'module': module,
-        'module_srl': module_srl,
     }, req=req)
 
 # change order

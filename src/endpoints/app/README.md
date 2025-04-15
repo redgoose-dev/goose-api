@@ -36,7 +36,7 @@ PUT /app/
 PATCH /app/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / [required] 앱 srl 번호
+@param {int} srl / [required] 앱 srl 번호
 @data {str} code / 앱 코드 (UNIQUE)
 @data {str} name / 앱 이름
 @data {str} description / 앱 설명
@@ -89,7 +89,7 @@ GET /app/
 GET /app/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int|str} srl / [required] 앱 srl 번호나 코드
+@param {int|str} srl / [required] 앱 srl 번호나 코드
 @query {str} fields / 조회할 필드
 @query {str} mod / MOD (count-nest,count-article)
 ```
@@ -113,7 +113,7 @@ GET /app/{srl:int}/
 DELETE /app/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@query {int} srl / [required] 앱 srl 번호
+@param {int} srl / [required] 앱 srl 번호
 ```
 
 ### Response

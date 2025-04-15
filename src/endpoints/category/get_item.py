@@ -21,9 +21,9 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # get data
         data = db.get_item(
-            table_name = Table.CATEGORY.value,
-            fields = fields,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.CATEGORY.value,
+            fields=fields,
+            where=[ f'srl = {params.srl}' ],
         )
         if not data: raise Exception('Item not found', 204)
 

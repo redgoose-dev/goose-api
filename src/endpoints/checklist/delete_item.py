@@ -19,8 +19,8 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
 
         # check data
         count = db.get_count(
-            table_name = Table.CHECKLIST.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.CHECKLIST.value,
+            where=[ f'srl = {params.srl}' ],
         )
         if count == 0: raise Exception('Item not found.', 204)
 

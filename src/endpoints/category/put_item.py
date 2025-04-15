@@ -1,8 +1,8 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .__libs__ import check_module
 from src.modules.verify import checking_token
+from . import __libs__ as category_libs
 
 async def put_item(params: dict, req = None, _db: DB = None, _check_token = True):
 
@@ -18,17 +18,21 @@ async def put_item(params: dict, req = None, _db: DB = None, _check_token = True
         if _check_token: checking_token(req, db)
 
         # check module
-        check_module(db, params.module, params.module_srl)
+        category_libs.check_module(db, params.module, params.module_srl)
 
         # check module and get max turn
-        where = [ f'and module LIKE "{params.module}"' ]
-        if params.module_srl:
-            where.append(f'and module_srl = {params.module_srl}')
-        else:
-            where.append(f'and module_srl IS NULL')
+        where = [ f'AND module LIKE "{params.module}"' ]
+        match params.module:
+            case category_libs.Module.NEST:
+                if params.module_srl:
+                    where.append(f'AND module_srl = {params.module_srl}')
+                else:
+                    where.append(f'AND module_srl IS NULL')
+            case category_libs.Module.JSON:
+                where.append(f'AND module_srl IS NULL')
         count = db.get_count(
-            table_name = Table.CATEGORY.value,
-            where = where,
+            table_name=Table.CATEGORY.value,
+            where=where,
         )
 
         # set values
@@ -37,8 +41,9 @@ async def put_item(params: dict, req = None, _db: DB = None, _check_token = True
             'module': params.module,
             'turn': count + 1,
         }
-        if params.module_srl:
-            values['module_srl'] = params.module_srl
+        match params.module:
+            case category_libs.Module.NEST:
+                if params.module_srl: values['module_srl'] = params.module_srl
 
         # set placeholders
         placeholders = [
@@ -52,9 +57,9 @@ async def put_item(params: dict, req = None, _db: DB = None, _check_token = True
 
         # add item
         data = db.add_item(
-            table_name = Table.CATEGORY.value,
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.CATEGORY.value,
+            placeholders=placeholders,
+            values=values,
         )
 
         # set result

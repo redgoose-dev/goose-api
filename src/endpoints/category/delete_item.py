@@ -21,15 +21,15 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
 
         # check item
         count = db.get_count(
-            table_name = Table.CATEGORY.value,
-            where = where,
+            table_name=Table.CATEGORY.value,
+            where=where,
         )
         if count == 0: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = Table.CATEGORY.value,
-            where = where,
+            table_name=Table.CATEGORY.value,
+            where=where,
         )
 
         # set result

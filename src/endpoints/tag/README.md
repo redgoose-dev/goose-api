@@ -1,31 +1,6 @@
 # tag
 
-아티클, JSON, 체크리스트 컨텐츠를 태깅하는 데이터를 다룹니다.  
-데이터를 추가하거나 수정, 삭제하는 기능들을 
-
-
-## get_index.py
-
-태그 목록을 조회합니다.
-
-### Request
-
-```
-GET /tag/
-
-@headers {str} Authorization / [required] 액세스 토큰
-@query {str} module / 모듈 이름
-@query {int} module_srl / 모듈 srl 번호
-@query {str} name / 태그 이름
-```
-
-### Response
-
-```
-@content {str} message / 메시지
-@content {int} data.total / 전체 데이터 수
-@content {list} data.index / 데이터 목록
-```
+아티클, JSON, 체크리스트 컨텐츠를 태깅하는 데이터를 다룹니다.
 
 
 ## put_item.py
@@ -69,6 +44,30 @@ PATCH /tag/
 
 ```
 @content {str} message / 메시지
+```
+
+
+## get_index.py
+
+태그 목록을 조회합니다.
+
+### Request
+
+```
+GET /tag/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@query {str} module / 모듈 이름
+@query {int} module_srl / 모듈 srl 번호
+@query {str} name / 태그 이름
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+@content {int} data.total / 전체 데이터 수
+@content {list} data.index / 데이터 목록
 ```
 
 

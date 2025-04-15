@@ -1,8 +1,8 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .__libs__ import check_module
 from src.modules.verify import checking_token
+from . import __libs__ as category_libs
 
 async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -18,7 +18,7 @@ async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _che
         if _check_token: checking_token(req, db)
 
         # check module
-        check_module(db, params.module, params.module_srl)
+        category_libs.check_module(db, params.module, params.module_srl)
 
         # get srls
         srls = params.srls.split(',')
@@ -26,10 +26,10 @@ async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _che
         # update items
         for key, srl in enumerate(srls):
             db.update_item(
-                table_name = Table.CATEGORY.value,
-                placeholders = [ 'turn = :turn' ],
-                where = [ f'srl = {srl}' ],
-                values = { 'turn': key + 1 },
+                table_name=Table.CATEGORY.value,
+                placeholders=[ 'turn = :turn' ],
+                where=[ f'srl = {srl}' ],
+                values={ 'turn': key + 1 },
             )
 
         # set result

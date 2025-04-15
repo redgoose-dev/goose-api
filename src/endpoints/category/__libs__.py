@@ -6,14 +6,14 @@ class Module:
 
 def check_module(db: DB, module: str, srl: int|None = None):
     match module:
-        case 'nest':
+        case Module.NEST:
             if srl is None: return
             count = db.get_count(
                 table_name = Table.NEST.value,
                 where = [ f'srl = {srl}' ] if srl else [ f'srl IS NULL' ],
             )
             if not (count > 0): raise Exception('Module not found.', 400)
-        case 'json':
+        case Module.JSON:
             pass
         case _:
             raise Exception('Module not found.', 400)
