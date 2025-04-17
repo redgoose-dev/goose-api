@@ -31,7 +31,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
         if params.module:
-            where.append(f'and module LIKE "{params.module}"')
+            where.append(f'and module LIKE \'{params.module}\'')
         if params.module_srl is not None:
             if params.module_srl > 0:
                 where.append(f'and module_srl = {params.module_srl}')

@@ -1,9 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from ..file import __libs__ as file_libs
-from ..tag import __libs__ as tag_libs
+from . import __types__ as types, __libs__ as json_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -23,22 +21,13 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
 
         # check item
         count = db.get_count(
-            table_name = Table.JSON.value,
-            where = where,
+            table_name=Table.JSON.value,
+            where=where,
         )
-        if count == 0: raise Exception('no data', 204)
+        if count == 0: raise Exception('No data', 204)
 
-        # delete item
-        db.delete_item(
-            table_name = Table.JSON.value,
-            where = where,
-        )
-
-        # delete files
-        file_libs.delete(db, file_libs.Module.JSON, params.srl)
-
-        # delete tag
-        tag_libs.delete(db, tag_libs.Module.JSON, params.srl)
+        # delete data
+        json_libs.delete(db, params.srl)
 
         # set result
         result = output.success({

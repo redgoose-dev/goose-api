@@ -24,7 +24,7 @@ def delete(db: DB, srl: int):
     # file data
     file_libs.delete(db, file_libs.Module.ARTICLE, srl)
     # comment data
-    comment_libs.delete(db, comment_libs.Module.ARTICLE, srl)
+    comment_libs.delete_with_module(db, comment_libs.Module.ARTICLE, srl)
     # tag data
     tag_libs.delete(db, tag_libs.Module.ARTICLE, srl)
     # article data

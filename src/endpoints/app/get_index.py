@@ -1,8 +1,8 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
+from . import __types__ as types
 from ..nest import __libs__ as nest_libs
 from ..article import __libs__ as article_libs
 
@@ -28,7 +28,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set where
         where = []
         if params.code:
-            where.append(f'and code LIKE "{params.code}"')
+            where.append(f'and code LIKE \'{params.code}\'')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
 

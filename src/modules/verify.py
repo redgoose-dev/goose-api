@@ -11,7 +11,7 @@ def checking_token(req: Request, db: DB) -> dict:
     # get token
     token = db.get_item(
         table_name = Table.TOKEN.value,
-        where = [ f'access LIKE "{authorization}"' ],
+        where = [ f'access LIKE \'{authorization}\'' ],
     )
     if not token: raise Exception('Token not found.', 401)
 

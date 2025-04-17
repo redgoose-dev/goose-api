@@ -21,8 +21,8 @@ async def post_login(params: dict = {}, req = None, _db: DB = None):
         provider = db.get_item(
             table_name = Table.PROVIDER.value,
             where = [
-                f'and user_id LIKE "{params.user_id}"',
-                f'and code LIKE "{_provider_.name}"'
+                f'and user_id LIKE \'{params.user_id}\'',
+                f'and code LIKE \'{_provider_.name}\'',
             ],
         )
         if not provider: raise Exception('Provider not found.', 401)

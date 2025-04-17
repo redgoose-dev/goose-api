@@ -32,7 +32,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             fields=fields,
             where=[
                 f'AND srl = {params.srl}',
-                f'AND mode NOT LIKE "{Status.READY}"'
+                f'AND mode NOT LIKE \'{Status.READY}\''
             ],
         )
         if not data: raise Exception('no data', 204)

@@ -17,7 +17,7 @@ async def put_item(req = None, _db: DB = None, _check_token = True):
         item = db.get_item(
             table_name = Table.ARTICLE.value,
             fields=[ 'srl' ],
-            where=[ f'mode LIKE "{Status.READY}"' ],
+            where=[ f'mode LIKE \'{Status.READY}\'' ],
         )
         if item:
             data = item.get('srl')

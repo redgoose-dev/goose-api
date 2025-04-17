@@ -1,7 +1,9 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from . import __types__ as types
+from ..nest import __libs__ as nest_libs
+from ..article import __libs__ as article_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -24,28 +26,30 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
             table_name = Table.APP.value,
             where = where,
         )
-        if count == 0: raise Exception('Item not found.', 204)
+        if count <= 0: raise Exception('Item not found.', 204)
+
+        # delete articles
+        articles = db.get_items(
+            table_name=Table.ARTICLE.value,
+            fields=[ 'srl' ],
+            where=[ f'app_srl = {params.srl}' ],
+        )
+        if articles and len(articles) > 0:
+            for article in articles: article_libs.delete(db, article.get('srl'))
+
+        # delete nests
+        nests = db.get_items(
+            table_name=Table.NEST.value,
+            fields=[ 'srl' ],
+            where=[ f'app_srl = {params.srl}' ],
+        )
+        if nests and len(nests) > 0:
+            for nest in nests: nest_libs.delete(db, nest.get('srl'))
 
         # delete item
         db.delete_item(
-            table_name = Table.APP.value,
-            where = where,
-        )
-
-        # update nest
-        db.update_item(
-            table_name = Table.NEST.value,
-            where = [ f'app_srl = {params.srl}' ],
-            placeholders = ['app_srl = :app_srl'],
-            values = { 'app_srl': None },
-        )
-
-        # update article
-        db.update_item(
-            table_name = Table.ARTICLE.value,
-            where = [ f'app_srl = {params.srl}' ],
-            placeholders = [ 'app_srl = :app_srl' ],
-            values = { 'app_srl': None },
+            table_name=Table.APP.value,
+            where=where,
         )
 
         # set result

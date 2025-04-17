@@ -23,7 +23,6 @@ class PutItem(BaseModel):
     name: str
     description: Optional[str] = None
     json_data: str
-    path: Optional[str] = None
     tag: Optional[str] = None
 
 class PatchItem(BaseModel):
@@ -32,7 +31,6 @@ class PatchItem(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     json_data: Optional[str] = None
-    path: Optional[str] = None
     tag: Optional[str] = None
 
 class DeleteItem(BaseModel):

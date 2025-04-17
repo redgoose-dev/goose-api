@@ -44,7 +44,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         if params.q:
             where.append(f'AND (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
         if params.mode:
-            where.append(f'AND mode LIKE "{params.mode}"')
+            where.append(f'AND mode LIKE \'{params.mode}\'')
 
         # set tag
         if params.tag:

@@ -27,7 +27,7 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
         # check exist id
         count = db.get_count(
             table_name = Table.PROVIDER.value,
-            where = [ f'user_id LIKE "{params.user_id}"' ],
+            where = [ f'user_id LIKE \'{params.user_id}\'' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
 

@@ -42,35 +42,29 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set tag
         if params.tag:
             from ..tag import __libs__ as tag_lib
-            _tag = ','.join(params.tag.split(','))
-            where.append(f'AND json.srl IN (SELECT map_tag.module_srl FROM map_tag WHERE map_tag.module LIKE :module AND map_tag.tag_srl IN ({_tag}))')
+            _tags = ','.join(params.tag.split(','))
+            where.append(f'AND json.srl IN (SELECT map_tag.module_srl FROM map_tag WHERE map_tag.module LIKE :module AND map_tag.tag_srl IN ({_tags}))')
             values['module'] = tag_lib.Module.JSON
 
         # get total
         total = db.get_count(
-            table_name = Table.JSON.value,
-            where = where,
-            join = join,
-            values = values,
+            table_name=Table.JSON.value,
+            where=where,
+            join=join,
+            values=values,
         )
         if total == 0: raise Exception('No data', 204)
 
         # get index
         index = db.get_items(
-            table_name = Table.JSON.value,
-            fields = fields,
-            where = where,
-            join = join,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': params.order,
-                'sort': params.sort,
-            },
-            values = values,
-            unlimited = params.unlimited,
+            table_name=Table.JSON.value,
+            fields=fields,
+            where=where,
+            join=join,
+            limit={ 'size': params.size, 'page': params.page },
+            order={ 'order': params.order, 'sort': params.sort },
+            values=values,
+            unlimited=params.unlimited,
         )
         def transform_item(item: dict) -> dict:
             if 'json' in item:
@@ -78,9 +72,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             # MOD / category
             if mod.check('category'):
                 item['category'] = category_libs.get_item(
-                    _db = db,
-                    srl = item.get('category_srl', 0),
-                    fields = [ 'srl', 'name' ],
+                    _db=db,
+                    srl=item.get('category_srl', 0),
+                    fields=[ 'srl', 'name' ],
                 )
             return item
         index = [ transform_item(item) for item in index ]

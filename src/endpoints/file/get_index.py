@@ -22,8 +22,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # ser where
         where = []
+        if params.module:
+            where.append(f'and module LIKE \'{params.module}\'')
         if params.module and params.module_srl:
-            where.append(f'and module LIKE "{params.module}"')
             where.append(f'and module_srl = {params.module_srl}')
         if params.name:
             where.append(f'and name LIKE "%{params.name}%"')
@@ -39,24 +40,18 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # get index
         index = db.get_items(
-            table_name = Table.FILE.value,
-            fields = fields,
-            where = where,
-            limit = {
-                'size': params.size,
-                'page': params.page,
-            },
-            order = {
-                'order': params.order,
-                'sort': params.sort,
-            },
+            table_name=Table.FILE.value,
+            fields=fields,
+            where=where,
+            limit={ 'size': params.size, 'page': params.page },
+            order = { 'order': params.order, 'sort': params.sort },
             unlimited = params.unlimited,
         )
         def transform_item(item: dict) -> dict:
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
             return item
-        index = [transform_item(item) for item in index]
+        index = [ transform_item(item) for item in index ]
 
         # set result
         result = output.success({

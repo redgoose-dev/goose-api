@@ -6,8 +6,6 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from . import __types__ as types, __libs__ as file_libs
 
-__VER__ = 'v2'
-
 async def get_item(params: dict = {}, req = None, _db: DB = None):
 
     # set values
@@ -26,7 +24,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
 
         # set local values
         use_cache = code is not None
-        tail = make_tail(_w = params.w, _h = params.h, _t = params.t, _q = params.q)
+        tail = make_tail(_w=params.w, _h=params.h, _t=params.t, _q=params.q)
 
         # set where
         if code is not None:
@@ -73,7 +71,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
             module = file_libs.get_module(db, file.get('module'), file.get('module_srl'))
             if not module: raise Exception('Not found module data.', 404)
             # set status
-            status = file_libs.Status.filter(module['mode'])
+            status = file_libs.Status.filter(module.get('mode', None))
             # switching status
             match status:
                 case file_libs.Status.PRIVATE | file_libs.Status.PUBLIC:
@@ -94,17 +92,18 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
                             'mime': file.get('mime'),
                         }
                     # create cache file
-                    cache_file = get_cache_filename(file.get('code'), tail)
-                    await make_cache(cache_file, {
-                        'code': file.get('code'),
-                        'module': file.get('module'),
-                        'module_srl': file.get('module_srl'),
-                        'private': status == file_libs.Status.PRIVATE,
-                        'path': file.get('path'),
-                        'cache_path': new_data.get('cache_path') if new_data.get('cache_path') else None,
-                        'name': file_libs.change_file_extension(file.get('name'), new_data.get('mime').split('/')[-1]),
-                        'mime': new_data.get('mime'),
-                    })
+                    if use_cache:
+                        cache_file = get_cache_filename(file.get('code'), tail)
+                        await make_cache(cache_file, {
+                            'code': file.get('code'),
+                            'module': file.get('module'),
+                            'module_srl': file.get('module_srl'),
+                            'private': status == file_libs.Status.PRIVATE,
+                            'path': file.get('path'),
+                            'cache_path': new_data.get('cache_path') if new_data.get('cache_path') else None,
+                            'name': file_libs.change_file_extension(file.get('name'), new_data.get('mime').split('/')[-1]),
+                            'mime': new_data.get('mime'),
+                        })
                     # retry set data
                     data['path'] = new_data.get('cache_path') if new_data.get('cache_path') else new_data.get('path')
                     data['mime'] = new_data.get('mime')
@@ -188,7 +187,7 @@ async def resize_image(path: str, code: str, tail: dict, mime: str) -> dict:
         _w = tail_options.get('w')
         _h = tail_options.get('h')
         _t = tail_options.get('t') or 'contain'
-        _q = tail_options.get('q')
+        _q = tail_options.get('q') or 85
         _resample = Image.Resampling.LANCZOS
         match _t:
             case 'contain':
@@ -196,12 +195,12 @@ async def resize_image(path: str, code: str, tail: dict, mime: str) -> dict:
                     image.thumbnail((_w, _h), _resample)
                 elif _w:
                     ratio = _w / float(image.size[0])
-                    _h = int((float(image.size[1]) * float(ratio)))
+                    _h = round(image.size[1] * ratio)
                     image.thumbnail((_w, _h), _resample)
                 elif _h:
                     ratio = _h / float(image.size[1])
-                    _w = int((float(image.size[0]) * float(ratio)))
-                    image = image.resize((_w, _h), _resample)
+                    _w = round(image.size[0] * ratio)
+                    image.thumbnail((_w, _h), _resample)
             case 'stretch':
                 if not _w: _w = _h
                 if not _h: _h = _w

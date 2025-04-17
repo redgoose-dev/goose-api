@@ -1,8 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from . import __libs__ as file_libs
+from . import __types__ as types, __libs__ as file_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -22,20 +21,23 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
 
         # get item
         item = db.get_item(
-            table_name = Table.FILE.value,
-            fields = [ 'srl', 'path' ],
-            where = where,
+            table_name=Table.FILE.value,
+            fields=[ 'srl', 'code', 'path' ],
+            where=where,
         )
         if not item: raise Exception('Item not found.', 204)
 
         # delete item
         db.delete_item(
-            table_name = Table.FILE.value,
-            where = where,
+            table_name=Table.FILE.value,
+            where=where,
         )
 
         # delete file
         file_libs.delete_file(item['path'])
+
+        # delete cache files
+        file_libs.delete_cache_files(item.get('code'))
 
         # set result
         result = output.success({

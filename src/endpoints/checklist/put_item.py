@@ -1,8 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__libs__ import filtering_content, get_percent_into_checkboxes
+from . import __types__ as types, __libs__ as checklist_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -18,10 +17,10 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         if _check_token: checking_token(req, db)
 
         # adjust content
-        content = filtering_content(params.content)
+        content = checklist_libs.filtering_content(params.content)
 
         # get percent into content
-        percent = get_percent_into_checkboxes(content)
+        percent = checklist_libs.get_percent_into_checkboxes(content)
 
         # set values
         values = {
@@ -34,9 +33,10 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             { 'key': 'content', 'value': ':content' },
             { 'key': 'percent', 'value': ':percent' },
             { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
+            { 'key': 'updated_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
-        # add item
+        # add data
         data = db.add_item(
             table_name=Table.CHECKLIST.value,
             placeholders=placeholders,

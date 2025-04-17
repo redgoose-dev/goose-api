@@ -28,7 +28,7 @@ async def get_callback(params: dict = {}, _db: DB = None):
         # get exist provider
         provider = db.get_item(
             table_name = Table.PROVIDER.value,
-            where = [ f'code LIKE "{_provider_.name}"' ],
+            where = [ f'code LIKE \'{_provider_.name}\'' ],
         )
 
         # get tokens

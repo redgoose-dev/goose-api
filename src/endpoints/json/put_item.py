@@ -4,7 +4,6 @@ from src.libs.db import DB, Table
 from src.libs.check import check_url
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
-from ..category import __libs__ as category_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -24,17 +23,15 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # check category_srl
         if params.category_srl:
+            from ..category import __libs__ as category_libs
             count = db.get_count(
                 table_name = Table.CATEGORY.value,
                 where = [
-                    f'and module LIKE "{category_libs.Module.JSON}"',
-                    f'and srl = {params.category_srl}',
+                    f'AND module LIKE \'{category_libs.Module.JSON}\'',
+                    f'AND srl = {params.category_srl}',
                 ],
             )
             if not (count > 0): raise Exception('Invalid category_srl', 400)
-
-        # check path
-        if params.path: check_url(params.path)
 
         # set values
         values = {
@@ -42,7 +39,6 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             'name': params.name,
             'description': params.description or None,
             'json': json_stringify(json_data, None) or '{}',
-            'path': params.path or None,
         }
 
         # set placeholders
@@ -51,8 +47,8 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             { 'key': 'name', 'value': ':name' },
             { 'key': 'description', 'value': ':description' },
             { 'key': 'json', 'value': ':json' },
-            { 'key': 'path', 'value': ':path' },
             { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
+            { 'key': 'updated_at', 'value': 'DATETIME("now", "localtime")' },
         ]
 
         # add item

@@ -23,19 +23,19 @@ def get_count(_db: DB, where: list = []) -> int:
 
 # PUBLIC MODULES
 
-def delete(db: DB, srl: int):
+def delete(db: DB, nest_srl: int):
     # category data
-    category_libs.delete(db, category_libs.Module.NEST, srl)
+    category_libs.delete(db, category_libs.Module.NEST, nest_srl)
     # article data
     articles = db.get_items(
         table_name=Table.ARTICLE.value,
         fields=[ 'srl' ],
-        where=[ f'nest_srl = {srl}' ],
+        where=[ f'nest_srl = {nest_srl}' ],
     )
     for article in articles:
         article_libs.delete(db, article.get('srl'))
     # nest data
     db.delete_item(
         table_name=Table.NEST.value,
-        where=[ f'srl = {srl}' ],
+        where=[ f'srl = {nest_srl}' ],
     )

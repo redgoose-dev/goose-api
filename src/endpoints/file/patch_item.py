@@ -1,17 +1,22 @@
-from . import __types__ as types
+from . import __types__ as types, __libs__ as file_libs
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
 from src.modules.preference import Preference
-from . import __libs__ as file_libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
-    file = {'content': None, 'path': '', 'name': '', 'mime': '', 'ext': ''}
+    file = {
+        'content': None,
+        'path': '',
+        'name': '',
+        'mime': '',
+        'ext': '',
+    }
 
     try:
         # set params
@@ -22,8 +27,8 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # check item
         item = db.get_item(
-            table_name = Table.FILE.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.FILE.value,
+            where=[ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Item not found.', 204)
 
@@ -42,30 +47,11 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                 if 'width' in old_json: _json['width'] = old_json['width']
                 if 'height' in old_json: _json['height'] = old_json['height']
 
-        # set module ot module_srl
-        if params.module or params.module_srl:
-            _module = params.module or item['module']
-            _module_srl = params.module_srl or item['module_srl']
-            match _module:
-                case 'article': table_name = Table.ARTICLE.value
-                case 'json': table_name = Table.JSON.value
-                case 'checklist': table_name = Table.CHECKLIST.value
-                case 'comment': table_name = Table.COMMENT.value
-                case _: table_name = ''
-            if not table_name: raise Exception('Module item not found.', 400)
-            count = db.get_count(
-                table_name = table_name,
-                where = [ f'srl = {_module_srl}' ],
-            )
-            if not (count > 0): raise Exception('Module item not found.', 400)
-            if params.module: values['module'] = params.module
-            if params.module_srl: values['module_srl'] = params.module_srl
-
         # change file
         _changed_file = False
         if params.file:
             # read file
-            file['content'] = await params.file.read() if params.file else None
+            file['content'] = await params.file.read()
             if not file['content']: raise Exception('File not found.', 400)
             # check file size
             if pref.get('file.limitSize') < len(file['content']):
@@ -82,7 +68,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                     quality=params.file_quality,
                 )
             # set path
-            file['path'] = f'{file_libs.get_dir_path('origin')}/{file_libs.get_unique_name(8)}.{file['ext']}'
+            file['path'] = f'{file_libs.get_dir_path(params.dir_name)}/{file_libs.get_unique_name(8)}.{file['ext']}'
             # copy file
             file_libs.write_file(file['content'], file['path'])
             values['name'] = file['name']
@@ -103,10 +89,6 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # set placeholder
         placeholders = []
-        if 'module' in values and values['module']:
-            placeholders.append('module = :module')
-        if 'module_srl' in values and values['module_srl']:
-            placeholders.append('module_srl = :module_srl')
         if 'name' in values and values['name']:
             placeholders.append('name = :name')
         if 'path' in values and values['path']:
@@ -120,10 +102,10 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # update item
         db.update_item(
-            table_name = Table.FILE.value,
-            where = [ f'srl = {params.srl}' ],
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.FILE.value,
+            where=[ f'srl = {params.srl}' ],
+            placeholders=placeholders,
+            values=values,
         )
 
         # delete legacy file

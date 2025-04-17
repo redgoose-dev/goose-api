@@ -36,7 +36,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set where
         where = []
         if srl: where.append(f'and srl = {srl}')
-        if code: where.append(f'and code LIKE "{code}"')
+        if code: where.append(f'and code LIKE \'{code}\'')
 
         # get data
         data = db.get_item(

@@ -44,7 +44,7 @@ def __add_tag__(tag: str, module: str, module_srl: int, _db: DB) -> int|None:
         table_name = Table.MAP_TAG.value,
         where = [
             f'and tag_srl = {tag_id}',
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {module_srl}',
         ],
     )
@@ -78,7 +78,7 @@ def __delete_tag__(tag: str, module: str, module_srl: int, _db: DB):
         table_name = Table.MAP_TAG.value,
         where = [
             f'and tag_srl = {tag_id}',
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {module_srl}',
         ],
     )
@@ -122,7 +122,7 @@ def update(_db: DB, new_tags: str|list, module: str, module_srl: int):
             f'JOIN {Table.MAP_TAG.value} ON {Table.MAP_TAG.value}.tag_srl = {Table.TAG.value}.srl',
         ],
         where = [
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {module_srl}',
         ],
     )
@@ -149,7 +149,7 @@ def delete(_db: DB, module: str, module_srl: int):
             f'JOIN {Table.MAP_TAG.value} ON {Table.MAP_TAG.value}.tag_srl = {Table.TAG.value}.srl',
         ],
         where = [
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {module_srl}',
         ],
     )
@@ -172,7 +172,7 @@ def get_index(_db: DB, module: str, module_srl: int) -> list:
             f'JOIN {Table.MAP_TAG.value} ON {Table.MAP_TAG.value}.tag_srl = {Table.TAG.value}.srl',
         ],
         where = [
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {module_srl}',
         ],
     )

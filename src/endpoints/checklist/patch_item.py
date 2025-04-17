@@ -1,8 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__libs__ import filtering_content, get_percent_into_checkboxes
+from . import __types__ as types, __libs__ as checklist_libs
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -19,8 +18,8 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # adjust content
         if params.content:
-            content = filtering_content(params.content)
-            percent = get_percent_into_checkboxes(content)
+            content = checklist_libs.filtering_content(params.content)
+            percent = checklist_libs.get_percent_into_checkboxes(content)
         else:
             content = None
             percent = None

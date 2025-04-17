@@ -36,7 +36,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if params.code:
             count = db.get_count(
                 table_name=Table.NEST.value,
-                where=[ f'code LIKE "{params.code}"' ],
+                where=[ f'code LIKE \'{params.code}\'' ],
             )
             if count > 0: raise Exception('Exist code in nest.', 400)
 

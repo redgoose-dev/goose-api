@@ -24,6 +24,7 @@ class GetItem(BaseModel):
 class PutItem(BaseModel):
     module: str
     module_srl: int
+    dir_name: str = 'origin'
     file: UploadFile
     json_data: Optional[str] = None
     file_format: Optional[str] = None
@@ -31,8 +32,7 @@ class PutItem(BaseModel):
 
 class PatchItem(BaseModel):
     srl: int
-    module: Optional[str] = None
-    module_srl: Optional[int] = None
+    dir_name: str = 'origin'
     json_data: Optional[str] = None
     file: Optional[UploadFile] = None
     file_format: Optional[str] = None

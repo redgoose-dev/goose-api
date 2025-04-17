@@ -28,7 +28,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         if params.module and params.module_srl:
             fields = [ f'{Table.TAG.value}.*' ]
             join.append(f'JOIN {Table.MAP_TAG.value} ON {Table.MAP_TAG.value}.tag_srl = {Table.TAG.value}.srl')
-            where.append(f'and module LIKE "{params.module}"')
+            where.append(f'and module LIKE \'{params.module}\'')
             where.append(f'and module_srl = {params.module_srl}')
 
         # get total

@@ -1,9 +1,9 @@
 from typing import Optional
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
+from . import __types__ as types
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -33,7 +33,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set where
         where = []
         if srl: where.append(f'and srl={srl}')
-        if code: where.append(f'and code LIKE "{code}"')
+        if code: where.append(f'and code LIKE \'{code}\'')
 
         # get item
         data = db.get_item(

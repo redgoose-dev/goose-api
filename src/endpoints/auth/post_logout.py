@@ -18,7 +18,7 @@ async def post_logout(req = None, _db: DB = None, _check_token = True):
         # get data
         count = db.get_count(
             table_name = Table.TOKEN.value,
-            where = [ f'access LIKE "{authorization}"' ],
+            where = [ f'access LIKE \'{authorization}\'' ],
         )
         if not (count > 0): raise Exception('Token not found.', 204)
 
@@ -26,7 +26,7 @@ async def post_logout(req = None, _db: DB = None, _check_token = True):
         # TODO: 삭제하는것보다 만료시간을 0으로 바꾸는게 좋지 않을까?
         db.delete_item(
             table_name = Table.TOKEN.value,
-            where = [ f'access LIKE "{authorization}"' ],
+            where = [ f'access LIKE \'{authorization}\'' ],
         )
 
         # set result

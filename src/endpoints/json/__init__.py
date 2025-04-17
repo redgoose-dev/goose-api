@@ -9,8 +9,8 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
-    name: str = Query(None),
     category_srl: int = Query(None, alias='category'),
+    name: str = Query(None),
     fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(1, gt=0),
     size: int = Query(None, gt=0),
@@ -22,8 +22,8 @@ async def _get_index(
 ):
     from .get_index import get_index
     return await get_index({
-        'name': name,
         'category_srl': category_srl,
+        'name': name,
         'fields': fields,
         'page': page,
         'size': size,
@@ -57,7 +57,6 @@ async def _put_item(
     name: str = Form(...),
     description: str = Form(None),
     json_data: str = Form(..., alias='json'),
-    path: str = Form(None),
     tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .put_item import put_item
@@ -66,7 +65,6 @@ async def _put_item(
         'name': name,
         'description': description,
         'json_data': json_data,
-        'path': path,
         'tag': tag,
     }, req=req)
 
@@ -79,7 +77,6 @@ async def _patch_item(
     name: str = Form(None),
     description: str = Form(None),
     json_data: str = Form(None, alias='json'),
-    path: str = Form(None),
     tag: str = Form(None, pattern=Patterns.tags),
 ):
     from .patch_item import patch_item
@@ -89,7 +86,6 @@ async def _patch_item(
         'name': name,
         'description': description,
         'json_data': json_data,
-        'path': path,
         'tag': tag,
     }, req=req)
 

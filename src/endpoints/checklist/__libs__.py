@@ -20,6 +20,6 @@ def delete(db: DB, srl: int):
     tag_libs.delete(db, tag_libs.Module.CHECKLIST, srl)
     # checklist data
     db.delete_item(
-        table_name = Table.CHECKLIST.value,
-        where = [ f'srl = {srl}' ],
+        table_name=Table.CHECKLIST.value,
+        where=[ f'srl = {srl}' ],
     )

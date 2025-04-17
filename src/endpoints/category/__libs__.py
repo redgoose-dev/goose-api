@@ -24,7 +24,7 @@ def delete(db: DB, module: str, srl: int):
     db.delete_item(
         table_name = Table.CATEGORY.value,
         where = [
-            f'and module LIKE "{module}"',
+            f'and module LIKE \'{module}\'',
             f'and module_srl = {srl}',
         ],
     )

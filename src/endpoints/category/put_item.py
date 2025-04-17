@@ -21,7 +21,7 @@ async def put_item(params: dict, req = None, _db: DB = None, _check_token = True
         category_libs.check_module(db, params.module, params.module_srl)
 
         # check module and get max turn
-        where = [ f'AND module LIKE "{params.module}"' ]
+        where = [ f'AND module LIKE \'{params.module}\'' ]
         match params.module:
             case category_libs.Module.NEST:
                 if params.module_srl:

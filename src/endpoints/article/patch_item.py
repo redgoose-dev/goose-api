@@ -1,11 +1,10 @@
 import re
 from datetime import datetime
-from . import __types__ as types
+from . import __types__ as types, __libs__ as article_libs
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse, json_stringify
 from src.modules.verify import checking_token
-from .__libs__ import Status
 
 async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -33,28 +32,29 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             params.regdate = datetime.now().strftime('%Y-%m-%d')
 
         # check app
-        if params.app_srl is not None:
+        if params.app_srl:
             count = db.get_count(
                 table_name=Table.APP.value,
                 where=[ f'srl = {params.app_srl}' ],
             )
             if count <= 0: raise Exception('Not found app.', 400)
 
-        # check nest
-        if params.nest_srl is not None:
-            count = db.get_count(
-                table_name=Table.NEST.value,
-                where=[ f'srl = {params.nest_srl}' ],
-            )
-            if count <= 0: raise Exception('Not found nest', 400)
-
         # check category
-        if params.category_srl is not None:
+        if params.category_srl:
             count = db.get_count(
                 table_name=Table.CATEGORY.value,
                 where=[ f'srl = {params.category_srl}' ],
             )
             if count <= 0: raise Exception('Not found category.', 400)
+
+        # check nest
+        if params.nest_srl:
+            count = db.get_count(
+                table_name=Table.NEST.value,
+                where=[f'srl = {params.nest_srl}'],
+            )
+            if count <= 0: raise Exception('Not found nest', 400)
+            params.category_srl = 0
 
         # filtering text content
         if params.title:
@@ -73,8 +73,8 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             values['app_srl'] = params.app_srl
         if params.nest_srl:
             values['nest_srl'] = params.nest_srl
-        if params.category_srl:
-            values['category_srl'] = params.category_srl
+        if params.category_srl is not None:
+            values['category_srl'] = params.category_srl or 0
         if params.title:
             values['title'] = params.title
         if params.content:
@@ -86,10 +86,10 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if json_data:
             values['json'] = json_stringify(json_data)
         if params.mode:
-            if not Status.check(params.mode): raise Exception('Invalid mode.', 400)
+            if not article_libs.Status.check(params.mode): raise Exception('Invalid mode.', 400)
             values['mode'] = params.mode
-        elif item['mode'] == Status.READY:
-            values['mode'] = Status.PUBLIC
+        elif item['mode'] == article_libs.Status.READY:
+            values['mode'] = article_libs.Status.PUBLIC
         if params.regdate:
             values['regdate'] = params.regdate
 
@@ -103,7 +103,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if 'nest_srl' in values:
             placeholders.append('nest_srl = :nest_srl')
         if 'category_srl' in values:
-            placeholders.append('category_srl = :category_srl')
+            placeholders.append(f'category_srl = {':category_srl' if values['category_srl'] > 0 else 'NULL'}')
         if 'title' in values:
             placeholders.append('title = :title')
         if 'content' in values:
@@ -118,7 +118,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('mode = :mode')
         if 'regdate' in values:
             placeholders.append('regdate = :regdate')
-        if item['mode'] == Status.READY:
+        if item['mode'] == article_libs.Status.READY:
             placeholders.append(f'created_at = DATETIME("now", "localtime")')
         placeholders.append('updated_at = DATETIME("now", "localtime")')
 

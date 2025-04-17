@@ -28,28 +28,29 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # get data
         data = db.get_item(
-            table_name = Table.JSON.value,
-            fields = fields,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.JSON.value,
+            fields=fields,
+            where=[ f'srl = {params.srl}' ],
         )
         if not data: raise Exception('no data', 204)
-        if data and isinstance(data, dict):
+        if isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
 
-        # get tag
-        tag_index = tag_libs.get_index(
-            _db = db,
-            module = tag_libs.Module.JSON,
-            module_srl = params.srl,
-        )
-        if tag_index and len(tag_index) > 0: data['tag'] = tag_index
+        # MOD / tag
+        if mod.check('tag'):
+            tag_index = tag_libs.get_index(
+                _db=db,
+                module=tag_libs.Module.JSON,
+                module_srl=params.srl,
+            )
+            data['tag'] = tag_index if tag_index and len(tag_index) > 0 else None
 
         # MOD / category
         if mod.check('category'):
             data['category'] = category_libs.get_item(
-                _db = db,
-                srl = data.get('category_srl', 0),
-                fields = [ 'srl', 'name' ],
+                _db=db,
+                srl=data.get('category_srl', 0),
+                fields=[ 'srl', 'name' ],
             )
 
         # set result

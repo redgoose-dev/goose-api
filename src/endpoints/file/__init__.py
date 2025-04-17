@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Form, Query, File, UploadFile
 from src.libs.resource import Patterns
-from . import __types__ as types
+from . import __types__ as types, __libs__ as file_libs
 
 # set router
 router = APIRouter()
@@ -9,11 +9,11 @@ router = APIRouter()
 @router.get('/')
 async def _get_index(
     req: Request,
-    fields: str = Query(None, pattern=Patterns.fields),
     module: str = Query(None, pattern=Patterns.file_modules),
     module_srl: int = Query(None),
     name: str = Query(None),
     mime: str = Query(None, pattern=Patterns.file_mime),
+    fields: str = Query(None, pattern=Patterns.fields),
     page: int = Query(default=1, gt=0),
     size: int = Query(None, gt=0),
     order: str = Query(default='srl'),
@@ -22,11 +22,11 @@ async def _get_index(
 ):
     from .get_index import get_index
     return await get_index({
-        'fields': fields,
         'module': module,
         'module_srl': module_srl,
         'name': name,
         'mime': mime,
+        'fields': fields,
         'page': page,
         'size': size,
         'order': order,
@@ -59,6 +59,7 @@ async def _put_item(
     req: Request,
     module: str = Form(..., pattern=Patterns.file_modules),
     module_srl: int = Form(...),
+    dir_name: str = Form(default='origin'),
     file: UploadFile = File(...),
     json_data: str = Form(default='{}', alias='json'),
     file_format: str = Form(None, alias='format'), # image/webp,image/avif
@@ -68,6 +69,7 @@ async def _put_item(
     return await put_item({
         'module': module,
         'module_srl': module_srl,
+        'dir_name': dir_name,
         'file': file,
         'json_data': json_data,
         'file_format': file_format,
@@ -79,18 +81,16 @@ async def _put_item(
 async def _patch_item(
     req: Request,
     srl: int,
-    module: str = Form(None, pattern=Patterns.file_modules),
-    module_srl: int = Form(None),
-    json_data: str = Form(None, alias='json'),
+    dir_name: str = Form(default='origin'),
     file: UploadFile = File(None),
+    json_data: str = Form(None, alias='json'),
     file_format: str = Form(None, alias='format'), # image/webp,image/avif
     file_quality: int = Form(95, gt=1, le=100, alias='quality'), # 0 ~ 100
 ):
     from .patch_item import patch_item
     return await patch_item({
         'srl': srl,
-        'module': module,
-        'module_srl': module_srl,
+        'dir_name': dir_name,
         'json_data': json_data,
         'file': file,
         'file_format': file_format,

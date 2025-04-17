@@ -1,4 +1,4 @@
-from . import __types__ as types
+from . import __types__ as types, __libs__ as file_libs
 from fastapi import UploadFile
 from src import output
 from src.libs.db import DB, Table
@@ -6,14 +6,19 @@ from src.libs.object import json_parse, json_stringify
 from src.libs.string import create_random_string
 from src.modules.verify import checking_token
 from src.modules.preference import Preference
-from . import __libs__ as file_libs
 
 async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     db = _db if _db else DB().connect()
-    file = { 'content': None, 'path': '', 'name': '', 'mime': '', 'ext': '' }
+    file = {
+        'content': None,
+        'path': '',
+        'name': '',
+        'mime': '',
+        'ext': '',
+    }
 
     try:
         # set params
@@ -46,8 +51,8 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             case _: table_name = ''
         if not table_name: raise Exception('Module item not found.', 400)
         count = db.get_count(
-            table_name = table_name,
-            where = [ f'srl = {params.module_srl}' ],
+            table_name=table_name,
+            where=[ f'srl = {params.module_srl}' ],
         )
         if not (count > 0): raise Exception('Module item not found.', 400)
 
@@ -65,7 +70,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             )
 
         # set path
-        file['path'] = f'{file_libs.get_dir_path('origin')}/{file_libs.get_unique_name(8)}.{file['ext']}'
+        file['path'] = f'{file_libs.get_dir_path(params.dir_name)}/{file_libs.get_unique_name(8)}.{file['ext']}'
 
         # copy file
         file_libs.write_file(file['content'], file['path'])

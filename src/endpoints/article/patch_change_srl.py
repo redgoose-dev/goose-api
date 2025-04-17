@@ -1,8 +1,7 @@
-from . import __types__ as types
+from . import __types__ as types, __libs__ as article_libs
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from .__libs__ import Status
 
 async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -23,7 +22,7 @@ async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _check
             fields=[ 'srl', 'app_srl', 'nest_srl' ],
             where=[
                 f'AND srl={params.srl}',
-                f'AND mode NOT LIKE "{Status.READY}"'
+                f'AND mode NOT LIKE \'{article_libs.Status.READY}\''
             ],
         )
         if not item: raise Exception('Not found article.', 204)
@@ -55,6 +54,7 @@ async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _check
             if count <= 0: raise Exception('Not found nest.', 400)
             values['nest_srl'] = params.nest_srl
             placeholders.append('nest_srl = :nest_srl')
+            placeholders.append('category_srl = NULL')
 
         # check values
         if not bool(values): raise Exception('No values to update.', 400)

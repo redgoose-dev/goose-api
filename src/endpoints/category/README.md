@@ -1,6 +1,6 @@
 # category
 
-둥지,JSON 데이터를 분류하는 데이터를 관리합니다.
+둥지,JSON 데이터를 분류하는 데이터
 
 
 ## put_item.py

@@ -41,7 +41,6 @@ CREATE TABLE `json` (
     `name` TEXT NOT NULL, -- json name
     `description` TEXT NULL, -- json description
     `json` TEXT NOT NULL DEFAULT '{}', -- json data
-    `path` TEXT NULL, -- json path
     `created_at` TEXT NOT NULL, -- created date
     `updated_at` TEXT NOT NULL, -- updated date
     FOREIGN KEY (`category_srl`) REFERENCES `category`(`srl`)

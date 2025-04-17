@@ -16,7 +16,7 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
         # get token
         token = db.get_item(
             table_name = Table.TOKEN.value,
-            where = [ f'access LIKE "{params.access_token}"' ],
+            where = [ f'access LIKE \'{params.access_token}\'' ],
         )
 
         # get provider

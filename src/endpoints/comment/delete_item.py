@@ -1,7 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from . import __types__ as types, __libs__ as comment_libs
 from ..file import __libs__ as file_libs
 
 async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
@@ -24,14 +24,8 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         )
         if not item: raise Exception('Item not found', 204)
 
-        # delete item
-        db.delete_item(
-            table_name=Table.COMMENT.value,
-            where=[ f'srl = {params.srl}' ],
-        )
-
-        # delete files
-        file_libs.delete(db, file_libs.Module.COMMENT, params.srl)
+        # delete
+        comment_libs.delete(db, params.srl)
 
         # set result
         result = output.success({

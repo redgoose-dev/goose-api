@@ -20,7 +20,7 @@ async def put_provider(params: dict = {}, _db: DB = None):
         # check exist provider
         count = db.get_count(
             table_name = Table.PROVIDER.value,
-            where = [ f'code like "{_provider_.name}"' ],
+            where = [ f'code like \'{_provider_.name}\'' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
 

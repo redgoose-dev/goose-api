@@ -1,6 +1,7 @@
 import os, io, json, mimetypes, pillow_avif
 from PIL import Image
 from datetime import datetime
+from pathlib import Path
 from src import libs
 from src.libs.db import DB, Table
 from src.libs.string import create_random_string
@@ -66,6 +67,14 @@ def write_file(content: bytes, path: str):
 
 def delete_file(path: str):
     if os.path.isfile(path): os.remove(path)
+
+# 캐시 파일 삭제
+def delete_cache_files(code: str):
+    pattern = f'**/{code}*'
+    for path in Path(libs.cache_path).glob(pattern):
+        if path.is_file():
+            try: path.unlink()
+            except Exception as _: pass
 
 def convert_path_to_buffer(path: str) -> bytes|None:
     if not os.path.isfile(path): return None
@@ -137,24 +146,28 @@ def get_module(db: DB, module: str, srl: int):
     )
     return data
 
+
 # PUBLIC MODULES
 
 def delete(db: DB, module: str, srl: int):
     files = db.get_items(
         table_name = Table.FILE.value,
-        fields = ['srl', 'path'],
-        where = [
-            f'and module LIKE "{module}"',
-            f'and module_srl = {srl}',
+        fields=['srl', 'code', 'path'],
+        where=[
+            f'AND module LIKE \'{module}\'',
+            f'AND module_srl = {srl}',
         ],
     )
     if files and len(files) > 0:
-        paths = [file['path'] for file in files]
-        for path in paths: delete_file(path)
+        # delete files
+        for file in files:
+            if file.get('path'): delete_file(file.get('path'))
+            if file.get('code'): delete_cache_files(file.get('code'))
+        # delete data
         db.delete_item(
             table_name = Table.FILE.value,
             where = [
-                f'and module LIKE "{module}"',
-                f'and module_srl = {srl}',
+                f'AND module LIKE \'{module}\'',
+                f'AND module_srl = {srl}',
             ],
         )
