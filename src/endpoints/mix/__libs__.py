@@ -5,8 +5,8 @@ def get_router(path: str) -> callable:
     match path:
         # home
         case 'get /':
-            from ..get_home import home
-            return home
+            from ..get_home import get_home
+            return get_home
         # app
         case 'get /app/':
             from ..app.get_index import get_index

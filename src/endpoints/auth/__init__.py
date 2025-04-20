@@ -9,18 +9,22 @@ router = APIRouter()
 # OAuth 인증요청으로 가기위한 경유지
 @router.get('/redirect/{provider:str}/')
 async def _get_redirect(
+    req: Request,
     provider: str = Path(..., pattern=Patterns.auth_provider),
     redirect_uri: str = Query(..., pattern=Patterns.url),
+    access_token: str = Query(None, alias='token'),
 ):
     from .get_redirect import get_redirect
     return await get_redirect({
         'provider': provider,
         'redirect_uri': redirect_uri,
-    })
+        'access_token': access_token,
+    }, req=req)
 
 # OAuth 에서 리다이렉트 콜백
 @router.get('/callback/{provider:str}/')
 async def _get_callback(
+    req: Request,
     provider: str = Path(..., pattern=Patterns.auth_provider),
     code: str = Query(...),
     state: str = Query(...),
@@ -30,7 +34,7 @@ async def _get_callback(
         'provider': provider,
         'code': code,
         'state': state,
-    })
+    }, req=req)
 
 # 인증 검사하기
 @router.post('/checking/')
@@ -42,13 +46,11 @@ async def _checking(req: Request):
 @router.post('/renew/')
 async def _renew(
     req: Request,
-    provider: str = Form(..., pattern=Patterns.auth_provider),
     access_token: str = Header(..., alias='authorization'),
     refresh_token: str = Form('...', alias='refresh'),
 ):
     from .post_renew import post_renew
     return await post_renew({
-        'provider': provider,
         'access_token': access_token,
         'refresh_token': refresh_token,
     }, req=req)
@@ -84,19 +86,20 @@ async def _post_logout(req: Request):
     return await post_logout(req=req)
 
 # 프로바이더 목록
-@router.post('/provider-index/')
-async def _post_provider_index(
+@router.post('/providers/')
+async def _post_providers(
     req: Request,
     redirect_uri: str = Form(..., pattern=Patterns.url),
 ):
-    from .post_provider_index import post_provider_index
-    return await post_provider_index({
+    from .post_providers import post_providers
+    return await post_providers({
         'redirect_uri': redirect_uri,
     }, req=req)
 
 # 패스워드 타입의 프로바이더 등록
 @router.put('/provider/')
 async def _put_provider(
+    req: Request,
     user_id: str = Form(..., alias='id', pattern=Patterns.code),
     user_name: str = Form(None, alias='name'),
     user_avatar: str = Form(None, alias='avatar', pattern=Patterns.url),
@@ -110,7 +113,7 @@ async def _put_provider(
         'user_avatar': user_avatar,
         'user_email': user_email,
         'user_password': user_password,
-    })
+    }, req=req)
 
 # 프로바이더 수정
 @router.patch('/provider/{srl:int}/')

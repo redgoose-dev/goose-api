@@ -1,21 +1,19 @@
 import asyncio, json
 from urllib.parse import urlencode
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.libs.string import uri_decode
+from src.modules.verify import checking_token
+from . import __types__ as types
 from .provider import Provider
 from .ws_index import close_websocket_after_delay, ws_clients
 
-async def get_callback(params: dict = {}, _db: DB = None):
+async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
     state = {}
-
-    # connect db
-    if _db and isinstance(_db, DB): db = _db
-    else: db = DB().connect()
+    db = _db if _db else DB().connect()
 
     try:
         # set params
@@ -24,6 +22,15 @@ async def get_callback(params: dict = {}, _db: DB = None):
 
         # set provider instance
         _provider_ = Provider(params.provider)
+
+        # check provider count
+        count = db.get_count(table_name=Table.PROVIDER.value)
+        if count > 0 and _check_token:
+            checking_token(
+                req=req,
+                db=db,
+                access_token=state.get('access_token', ''),
+            )
 
         # get exist provider
         provider = db.get_item(
@@ -110,13 +117,24 @@ async def get_callback(params: dict = {}, _db: DB = None):
     except Exception as e:
         result = output.exc(e, _req=req)
         if 'socket_id' in state:
+            ws = ws_clients[state['socket_id']]
+            data = {
+                'status_code': result.status_code,
+                'message': 'Failed auth.',
+            }
+            if 'error-code' in result.headers:
+                data['error_code'] = result.headers['error-code']
+            await ws.send_text(json.dumps({
+                'mode': 'auth-error',
+                **data,
+            }))
             asyncio.create_task(close_websocket_after_delay(state['socket_id'], 1))
             result = 'Failed auth. Please close this window.'
         elif 'redirect_uri' in state:
             qs = {}
             if 'error-code' in result.headers:
-                qs['error'] = result.headers['error-code']
+                qs['error_code'] = result.headers['error-code']
             result = output.redirect(f'{state['redirect_uri']}?{urlencode(qs)}', _req=req)
     finally:
-        if not _db: db.disconnect()
+        if not _db and db: db.disconnect()
         return result

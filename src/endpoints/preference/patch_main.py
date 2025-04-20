@@ -1,9 +1,9 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB
 from src.modules.verify import checking_token
 from src.modules.preference import Preference
 from src.libs.object import json_parse
+from . import __types__ as types
 
 async def patch_main(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -22,7 +22,9 @@ async def patch_main(params: dict = {}, req = None, _db: DB = None, _check_token
         pref = Preference()
 
         # update preference
-        pref.update(json_parse(params.json_data), params.change_data)
+        new_json = json_parse(params.json_data)
+        if not new_json: raise Exception('Invalid JSON data.', 400)
+        pref.update(new_json, params.change_data)
 
         # get data
         data = pref.get_all()

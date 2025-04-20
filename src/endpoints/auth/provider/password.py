@@ -43,7 +43,7 @@ class ProviderPassword:
             'refresh': refresh_token,
         }
 
-    async def renew_access_token(self) -> dict|None:
+    async def renew_access_token(self, refresh_token = None) -> dict|None:
         token = self.create_token()
         return {
             'access': token['access'],

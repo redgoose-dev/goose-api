@@ -19,7 +19,7 @@ class ProviderGithub:
     def create_authorize_url(self, state: str):
         qs = urlencode({
             'client_id': self.client_id,
-            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
             'scope': self.scope,
             'state': state,
         })
@@ -34,7 +34,7 @@ class ProviderGithub:
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
                     'code': code,
-                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
                 },
             )
             if res.status_code != 200: raise Exception(res.text)

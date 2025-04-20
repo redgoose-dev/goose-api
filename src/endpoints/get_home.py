@@ -1,7 +1,7 @@
 from fastapi import Request
 from src import output, __VERSION__, __DEV__
 
-async def get_home(req: Request = None, _db = None):
+async def get_home(req: Request = None, **kwargs):
 
     # set values
     result = None

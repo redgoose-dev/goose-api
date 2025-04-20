@@ -1,7 +1,7 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from . import __types__ as types
 
 async def delete_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -18,21 +18,21 @@ async def delete_provider(params: dict = {}, req = None, _db: DB = None, _check_
 
         # check data
         count = db.get_count(
-            table_name = Table.PROVIDER.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'srl = {params.srl}' ],
         )
-        if not (count > 0): raise Exception('Item not found.', 204)
+        if count <= 0: raise Exception('Item not found.', 204)
 
         # delete data
         db.delete_item(
-            table_name = Table.PROVIDER.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'srl = {params.srl}' ],
         )
 
         # delete tokens
         db.delete_item(
-            table_name = Table.TOKEN.value,
-            where = [ f'provider_srl = {params.srl}' ],
+            table_name=Table.TOKEN.value,
+            where=[ f'provider_srl = {params.srl}' ],
         )
 
         # set result

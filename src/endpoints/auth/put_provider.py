@@ -1,10 +1,11 @@
 from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from src.modules.verify import checking_token
 from .provider.password import ProviderPassword
 from .provider import Provider
 
-async def put_provider(params: dict = {}, _db: DB = None):
+async def put_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -19,10 +20,16 @@ async def put_provider(params: dict = {}, _db: DB = None):
 
         # check exist provider
         count = db.get_count(
-            table_name = Table.PROVIDER.value,
-            where = [ f'code like \'{_provider_.name}\'' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'code LIKE \'{_provider_.name}\'' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
+
+        # check provider
+        count = db.get_count(
+            table_name=Table.PROVIDER.value,
+        )
+        if count > 0 and _check_token: checking_token(req, db)
 
         # set password
         password = ProviderPassword.hash_password(params.user_password)

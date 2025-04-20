@@ -19,7 +19,7 @@ class ProviderGoogle:
     def create_authorize_url(self, state: str):
         qs = urlencode({
             'client_id': self.client_id,
-            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
             'response_type': 'code',
             'scope': self.scope,
             'prompt': 'consent',
@@ -38,7 +38,7 @@ class ProviderGoogle:
                     'client_secret': self.client_secret,
                     'code': code,
                     'grant_type': 'authorization_code',
-                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
                 },
             )
             if res.status_code != 200: raise Exception(res.text)

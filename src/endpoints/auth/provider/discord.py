@@ -31,7 +31,7 @@ class ProviderDiscord:
     def create_authorize_url(self, state: str):
         qs = urlencode({
             'client_id': self.client_id,
-            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+            'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
             'response_type': 'code',
             'scope': self.scope,
             'state': state,
@@ -47,7 +47,7 @@ class ProviderDiscord:
                     'client_secret': self.client_secret,
                     'grant_type': 'authorization_code',
                     'code': code,
-                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}',
+                    'redirect_uri': f'{libs.url_path}/auth/callback/{self.name}/',
                 },
             )
             if res.status_code != 200: raise Exception(res.text)

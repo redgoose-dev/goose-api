@@ -1,12 +1,12 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import list_to_dict
 from src.libs.util import jprint
 from src.modules.verify import checking_token
+from . import __types__ as types
 from .provider import Provider
 
-async def post_provider_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def post_providers(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -19,7 +19,7 @@ async def post_provider_index(params: dict = {}, req = None, _db: DB = None, _ch
         # checking token
         if _check_token: checking_token(req, db)
 
-        # set providers
+        # get providers
         providers = Provider.get_providers()
 
         # get index
@@ -32,12 +32,13 @@ async def post_provider_index(params: dict = {}, req = None, _db: DB = None, _ch
 
         # transform items
         def transform_item(provider: str) -> dict:
-            _item = { 'code': provider }
             account = data.get(provider)
+            _item = { 'code': provider }
             if account:
                 if 'user_password' in account: del account['user_password']
                 _item['account'] = account
             else:
+                _item['account'] = None
                 _item['auth_url'] = Provider.get_authorize_url(provider, params.redirect_uri)
             return _item
         index = [ transform_item(provider) for provider in providers ]

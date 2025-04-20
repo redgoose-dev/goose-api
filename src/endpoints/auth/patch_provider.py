@@ -1,8 +1,8 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
-from .provider.password import ProviderPassword
 from src.modules.verify import checking_token
+from . import __types__ as types
+from .provider.password import ProviderPassword
 
 async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -19,15 +19,15 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
 
         # check data
         count = db.get_count(
-            table_name = Table.PROVIDER.value,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'srl = {params.srl}' ],
         )
         if not (count > 0): raise Exception('Data not found.', 204)
 
         # check exist id
         count = db.get_count(
-            table_name = Table.PROVIDER.value,
-            where = [ f'user_id LIKE \'{params.user_id}\'' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'user_id LIKE \'{params.user_id}\'' ],
         )
         if count > 0: raise Exception('Exist provider data', 400)
 
@@ -62,10 +62,10 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
 
         # update data
         db.update_item(
-            table_name = Table.PROVIDER.value,
-            placeholders = placeholders,
-            values = values,
-            where = [ f'srl = {params.srl}' ],
+            table_name=Table.PROVIDER.value,
+            placeholders=placeholders,
+            values=values,
+            where=[ f'srl = {params.srl}' ],
         )
 
         # set result

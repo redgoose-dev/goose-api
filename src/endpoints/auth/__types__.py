@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class GetRedirect(BaseModel):
     provider: str
     redirect_uri: str
+    access_token: Optional[str] = None
 
 class GetCallback(BaseModel):
     provider: str
@@ -11,7 +12,7 @@ class GetCallback(BaseModel):
     state: str
 
 class PostRenew(BaseModel):
-    provider: str
+    # provider: str
     access_token: str
     refresh_token: str
 

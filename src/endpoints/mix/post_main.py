@@ -42,8 +42,8 @@ async def post_main(params: list = [], req = None, _check_token = True):
                 else:
                     response[key] = { 'message': res.body.decode() }
                 response[key]['status_code'] = res.status_code
-                if 'error-code' in res.headers:
-                    response[key]['error-code'] = res.headers['error-code']
+                if 'error_code' in res.headers:
+                    response[key]['error_code'] = res.headers['error_code']
             except Exception as e:
                 raise Exception(f'[{key}] {e}', 400)
         response = output.success(response, _req=req)

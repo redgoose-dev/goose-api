@@ -27,6 +27,9 @@ h1 { font-weight: 900; }
   <pre id="status"></pre>
 </main>
 <script>
+const REDIRECT_HOST = 'http://localhost:8000/'
+const ACCESS_CODE = ''
+
 const $status = document.getElementById('status')
 const $confirmLink = document.getElementById('confirm-link')
 
@@ -49,16 +52,23 @@ function startAuthDiscord()
     ws.send(JSON.stringify({
       mode: 'start-auth',
       provider: 'discord',
-      redirect_uri: 'http://localhost:8000/',
+      redirect_uri: REDIRECT_HOST,
+      access_token: ACCESS_CODE, // 엑세스 토큰
     }))
   })
   ws.addEventListener('message', (e) => {
     const data = JSON.parse(e.data)
-    console.log('MESSAGE: ', data.mode)
+    console.log('DATA: ', data)
     switch (data.mode)
     {
       case 'auth-link':
         makeAuthLink(data.url, '디스코드')
+        break
+      case 'auth-error':
+        printMessage('[디스코드] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
         break
       case 'auth-complete':
         printMessage('[디스코드] 인증 성공했어요~')
@@ -82,15 +92,23 @@ function startAuthGithub()
     ws.send(JSON.stringify({
       mode: 'start-auth',
       provider: 'github',
-      redirect_uri: 'http://localhost:8000/',
+      redirect_uri: REDIRECT_HOST,
+      access_token: ACCESS_CODE, // 엑세스 토큰
     }))
   })
   ws.addEventListener('message', (e) => {
     const data = JSON.parse(e.data)
+    console.log('DATA: ', data)
     switch (data.mode)
     {
       case 'auth-link':
         makeAuthLink(data.url, '깃허브')
+        break
+      case 'auth-error':
+        printMessage('[깃허브] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
         break
       case 'auth-complete':
         printMessage('[깃허브] 인증 성공했어요~')
@@ -114,15 +132,23 @@ function startAuthGoogle()
     ws.send(JSON.stringify({
       mode: 'start-auth',
       provider: 'google',
-      redirect_uri: 'http://localhost:8000/',
+      redirect_uri: REDIRECT_HOST,
+      access_token: ACCESS_CODE, // 엑세스 토큰
     }))
   })
   ws.addEventListener('message', (e) => {
     const data = JSON.parse(e.data)
+    console.log('DATA: ', data)
     switch (data.mode)
     {
       case 'auth-link':
         makeAuthLink(data.url, '구글')
+        break
+      case 'auth-error':
+        printMessage('[구글] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
         break
       case 'auth-complete':
         printMessage('[구글] 인증 성공했어요~')

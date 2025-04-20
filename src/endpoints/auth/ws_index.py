@@ -8,7 +8,7 @@ from .provider import Provider
 ws_clients: dict = {}
 ws_timeout: int = 30 # seconds
 
-def make_auth_link(provider: str, socket_id: str):
+def make_auth_link(provider: str, socket_id: str, access_token: str = None):
     # set provider instance
     _provider_ = Provider(provider)
     # check values
@@ -19,7 +19,9 @@ def make_auth_link(provider: str, socket_id: str):
     if not socket_id:
         raise Exception('Can\'t get socket_id.', 400)
     # set query string
-    url = _provider_.create_authorize_url(uri_encode({'socket_id': socket_id}))
+    data = { 'socket_id': socket_id }
+    if access_token: data['access_token'] = access_token
+    url = _provider_.create_authorize_url(uri_encode(data))
     return url
 
 async def ws_index(ws: WebSocket, socket_id: str):
@@ -33,7 +35,11 @@ async def ws_index(ws: WebSocket, socket_id: str):
             if not ('mode' in data): continue
             match data['mode']:
                 case 'start-auth':
-                    path = make_auth_link(data['provider'], socket_id)
+                    path = make_auth_link(
+                        provider=data.get('provider'),
+                        socket_id=socket_id,
+                        access_token=data.get('access_token', None),
+                    )
                     await ws.send_text(json.dumps({
                         'mode': 'auth-link',
                         'url': path,

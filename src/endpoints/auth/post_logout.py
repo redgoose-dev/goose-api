@@ -15,18 +15,12 @@ async def post_logout(req = None, _db: DB = None, _check_token = True):
         # get authorization
         authorization = req.headers.get('authorization')
 
-        # get data
-        count = db.get_count(
-            table_name = Table.TOKEN.value,
-            where = [ f'access LIKE \'{authorization}\'' ],
-        )
-        if not (count > 0): raise Exception('Token not found.', 204)
-
-        # delete token
-        # TODO: 삭제하는것보다 만료시간을 0으로 바꾸는게 좋지 않을까?
-        db.delete_item(
-            table_name = Table.TOKEN.value,
-            where = [ f'access LIKE \'{authorization}\'' ],
+        # update expires to 0
+        db.update_item(
+            table_name=Table.TOKEN.value,
+            placeholders=[ 'expires = :expires' ],
+            values={ 'expires': 0 },
+            where=[ f'access LIKE \'{authorization}\'' ],
         )
 
         # set result

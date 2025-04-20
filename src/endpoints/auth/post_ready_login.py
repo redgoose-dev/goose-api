@@ -1,13 +1,12 @@
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
+from . import __types__ as types
 from .provider import Provider
 
-async def post_ready_login(params: dict = {}, req = None, _db: DB = None):
+async def post_ready_login(params: dict = {}, req = None):
 
     # set values
     result = None
-    db = _db if _db else DB().connect()
 
     try:
         # set params
@@ -34,5 +33,4 @@ async def post_ready_login(params: dict = {}, req = None, _db: DB = None):
     except Exception as e:
         result = output.exc(e, _req=req)
     finally:
-        if not _db and db: db.disconnect()
         return result

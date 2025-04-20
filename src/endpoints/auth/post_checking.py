@@ -2,7 +2,6 @@ from fastapi import Request
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
-from src.modules.preference import Preference
 from .provider import Provider
 
 async def post_checking(req: Request, _db: DB = None):
@@ -15,32 +14,28 @@ async def post_checking(req: Request, _db: DB = None):
         # checking token
         token = checking_token(req, db)
 
-        # set preference
-        pref = Preference()
-
         # get provider
         provider = db.get_item(
-            table_name = Table.PROVIDER.value,
-            where = [ f'srl = {token['provider_srl']}' ],
+            table_name=Table.PROVIDER.value,
+            where=[ f'srl = {token.get('provider_srl')}' ],
         )
-        if not provider: raise Exception('No provider', 401)
+        if not provider: raise Exception('No provider', 204)
 
         # set provider instance
-        _provider_ = Provider(provider['code'])
+        _provider_ = Provider(provider.get('code'))
 
         # set result
         result = output.success({
             'message': 'Complete checking auth.',
             'data': {
                 'provider': {
-                    'srl': provider['srl'],
+                    'srl': provider.get('srl'),
                     'name': _provider_.name,
-                    'user_id': provider['user_id'],
-                    'user_name': provider['user_name'],
-                    'user_avatar': provider['user_avatar'],
-                    'user_email': provider['user_email'],
+                    'user_id': provider.get('user_id'),
+                    'user_name': provider.get('user_name'),
+                    'user_avatar': provider.get('user_avatar'),
+                    'user_email': provider.get('user_email'),
                 },
-                'preference': pref.get_all(),
             },
         }, _req=req)
     except Exception as e:
