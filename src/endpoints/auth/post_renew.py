@@ -15,7 +15,7 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
         params = types.PostRenew(**params)
 
         # checking token
-        token = checking_token(req, db, access_token=params.access_token, check_expires=False)
+        token = checking_token(req, db, access_token=params.authorization, check_expires=False)
 
         # check refresh token
         if token.get('refresh') != params.refresh_token:

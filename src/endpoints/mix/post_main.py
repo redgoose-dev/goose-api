@@ -23,7 +23,9 @@ async def post_main(params: list = [], req = None, _check_token = True):
             key = keys.pop(0)
             try:
                 request = requests[key]
-                if 'func' not in request: continue
+                if not (request and 'func' in request):
+                    response[key] = None
+                    continue
                 params = parse_params(request.get('params', None), response)
                 res = await request['func'](
                     params = params,
@@ -36,9 +38,7 @@ async def post_main(params: list = [], req = None, _check_token = True):
                         decoded = res.body.decode()
                         response[key] = json_parse(decoded) or {'message': decoded}
                     else:
-                        response[key] = {
-                            'message': 'Skipped because it is not of JSON type.',
-                        }
+                        response[key] = { 'message': 'Skipped because it is not of JSON type.' }
                 else:
                     response[key] = { 'message': res.body.decode() }
                 response[key]['status_code'] = res.status_code

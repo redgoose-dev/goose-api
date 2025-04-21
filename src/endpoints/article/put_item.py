@@ -3,7 +3,7 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from .__libs__ import Status
 
-async def put_item(req = None, _db: DB = None, _check_token = True):
+async def put_item(req = None, _db: DB = None, _check_token = True, **kwargs):
 
     # set values
     result = None

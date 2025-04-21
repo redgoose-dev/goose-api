@@ -69,13 +69,13 @@ def parse_requests(data: list) -> dict:
         if not check_keys_exist(item, ['key','url']): continue
         method = item['method'].lower() if 'method' in item else 'get'
         route = get_router(f'{method} {item['url']}')
-        if not route: continue
-        result[item['key']] = {}
-        result[item['key']]['func'] = route
-        params = item['params'] if 'params' in item else {}
-        result[item['key']]['params'] = {
-            **params,
-        }
+        if route:
+            result[item['key']] = {}
+            result[item['key']]['func'] = route
+            params = item['params'] if 'params' in item else {}
+            result[item['key']]['params'] = { **params }
+        else:
+            result[item['key']] = None
     return result
 
 def parse_params(params: dict, data: dict = {}) -> dict:

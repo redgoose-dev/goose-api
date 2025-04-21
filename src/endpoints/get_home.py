@@ -1,5 +1,5 @@
 from fastapi import Request
-from src import output, __VERSION__, __DEV__
+from src import output, __NAME__, __VERSION__, __DEV__
 
 async def get_home(req: Request = None, **kwargs):
 
@@ -8,7 +8,7 @@ async def get_home(req: Request = None, **kwargs):
 
     try:
         result = output.success({
-            'message': 'Hello goose-api',
+            'message': f'Hello! {__NAME__}',
             'version': __VERSION__,
             'dev': __DEV__,
         }, _req=req)

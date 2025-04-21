@@ -16,6 +16,8 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         # set params
         params = types.PatchItem(**params)
 
+        print('PARAMS: ', params)
+
         # checking token
         if _check_token: checking_token(req, db)
 

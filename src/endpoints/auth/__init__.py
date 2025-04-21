@@ -46,12 +46,12 @@ async def _checking(req: Request):
 @router.post('/renew/')
 async def _renew(
     req: Request,
-    access_token: str = Header(..., alias='authorization'),
+    authorization: str = Header(...),
     refresh_token: str = Form('...', alias='refresh'),
 ):
     from .post_renew import post_renew
     return await post_renew({
-        'access_token': access_token,
+        'authorization': authorization,
         'refresh_token': refresh_token,
     }, req=req)
 
