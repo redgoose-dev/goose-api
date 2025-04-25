@@ -1,14 +1,10 @@
 import re
-from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
-from ..app import __libs__ as app_libs
-from ..nest import __libs__ as nest_libs
-from ..category import __libs__ as category_libs
-from ..tag import __libs__ as tag_libs
+from . import __types__ as types
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -113,31 +109,52 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
             # MOD / app
-            if mod.check('app') and item.get('app_srl'):
-                item['app'] = app_libs.get_item(
-                    _db=db,
-                    srl=item.get('app_srl'),
-                    fields=[ 'srl', 'code', 'name' ],
-                )
+            if mod.check('app'):
+                if item.get('app_srl'):
+                    from ..app import __libs__ as app_libs
+                    item['app'] = app_libs.get_item(
+                        _db=db,
+                        srl=item.get('app_srl'),
+                        fields=[ 'srl', 'code', 'name' ],
+                    )
+                else:
+                    item['app'] = None
             # MOD / nest
-            if mod.check('nest') and item.get('nest_srl'):
-                item['nest'] = nest_libs.get_item(
-                    _db=db,
-                    srl=item.get('nest_srl'),
-                    fields=[ 'srl', 'code', 'name' ],
-                )
+            if mod.check('nest'):
+                if item.get('nest_srl'):
+                    from ..nest import __libs__ as nest_libs
+                    item['nest'] = nest_libs.get_item(
+                        _db=db,
+                        srl=item.get('nest_srl'),
+                        fields=[ 'srl', 'code', 'name' ],
+                    )
+                else:
+                    item['nest'] = None
             # MOD / category
-            if mod.check('category') and item.get('category_srl'):
-                item['category'] = category_libs.get_item(
-                    _db=db,
-                    srl=item.get('category_srl'),
-                    fields=[ 'srl', 'name' ],
-                )
+            if mod.check('category'):
+                if item.get('category_srl'):
+                    from ..category import __libs__ as category_libs
+                    item['category'] = category_libs.get_item(
+                        _db=db,
+                        srl=item.get('category_srl'),
+                        fields=[ 'srl', 'name' ],
+                    )
+                else:
+                    item['category'] = None
             # MOD / tag
             if mod.check('tag'):
+                from ..tag import __libs__ as tag_libs
                 item['tag'] = tag_libs.get_index(
                     _db=db,
                     module=tag_libs.Module.ARTICLE,
+                    module_srl=item.get('srl'),
+                )
+            # MOD / file
+            if mod.check('file'):
+                from ..file import __libs__ as file_libs
+                item['file'] = file_libs.get_index(
+                    _db=db,
+                    module=file_libs.Module.ARTICLE,
                     module_srl=item.get('srl'),
                 )
             return item

@@ -149,6 +149,16 @@ def get_module(db: DB, module: str, srl: int):
 
 # PUBLIC MODULES
 
+def get_index(_db: DB, module: str, module_srl: int) -> list:
+    return _db.get_items(
+        table_name = Table.FILE.value,
+        fields=[ 'srl', 'code', 'mime' ],
+        where=[
+            f'AND module LIKE \'{module}\'',
+            f'AND module_srl = {module_srl}',
+        ],
+    )
+
 def delete(db: DB, module: str, srl: int):
     files = db.get_items(
         table_name = Table.FILE.value,

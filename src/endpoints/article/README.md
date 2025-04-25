@@ -79,7 +79,7 @@ GET /article/
 @query {str} sort='desc' / 정렬 방식 (asc,desc)
 @query {bool} unlimited=False / 무제한 조회 여부 (1=무제한, 0=제한)
 @query {str} tag / 태그 / ex) tag1,tag2,tag3
-@query {str} mod / MOD (app,nest,category,tag)
+@query {str} mod / MOD (app,nest,category,tag,file)
 ```
 
 - `duration`: 데이터 조회범위 `{시기},{필드}`
@@ -106,7 +106,7 @@ GET /article/{srl:int}/
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
-@query {str} mod / MOD (up-hit,up-star,app,nest,category,tag)
+@query {str} mod / MOD (up-hit,up-star)
 ```
 
 ### Response

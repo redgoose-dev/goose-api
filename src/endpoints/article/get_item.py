@@ -3,8 +3,8 @@ from src.libs.db import DB, Table
 from src.libs.object import json_parse
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
-from . import __types__ as types
-from .__libs__ import Status
+from . import __types__ as types, __libs__ as article_libs
+from ..tag import __libs__ as tag_libs
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -32,7 +32,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             fields=fields,
             where=[
                 f'AND srl = {params.srl}',
-                f'AND mode NOT LIKE \'{Status.READY}\''
+                f'AND mode NOT LIKE \'{article_libs.Status.READY}\''
             ],
         )
         if not data: raise Exception('no data', 204)
@@ -44,9 +44,6 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             placeholder = []
             if mod.check('up-hit'): placeholder.append('hit = hit + 1')
             if mod.check('up-star'): placeholder.append('star = star + 1')
-
-        # TODO: count-comment
-        # TODO: count-file
 
         # update data
         if len(placeholder):
