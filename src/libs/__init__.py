@@ -1,4 +1,8 @@
 import os
+from .util import setup_env
+
+# setup env
+setup_env()
 
 # dir name
 dir_upload = 'upload'

@@ -5,8 +5,11 @@
 data/
 .AppleDouble/
 __pycache__/
+scripts/
 
 # files
 .DS_Store
 ._.DS_Store
 .env.local
+cmd.sh
+docker-compose.yml

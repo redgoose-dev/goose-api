@@ -1,8 +1,10 @@
-import sqlite3
+import sys, sqlite3
 from src.libs import file
 from src.libs import string
 
 # set values
+args = sys.argv[1:]
+skip = True if '-y' in args else False
 installed = False
 resource_path = {
     'data': './data',
@@ -21,22 +23,25 @@ resource_path = {
 def checking_install() -> str|None:
     print('⏳ Checking Install.')
     is_data_dir = file.exist_dir('./data', False)
-    if not is_data_dir: return 'NOT'
-    try:
-        file.exist_dir(resource_path['data'], True)
-        file.exist_dir(resource_path['data/upload'], True)
-        file.exist_dir(resource_path['data/upload/origin'], True)
-        file.exist_dir(resource_path['data/upload/cover'], True)
-        file.exist_dir(resource_path['data/cache'], True)
-        file.exist_dir(resource_path['data/log'], True)
-        file.exist_file(resource_path['data/db.sqlite'], True)
-        file.exist_file(resource_path['data/preference.json'], True)
-    except Exception as e:
-        print(string.color_text(f'⚠️ {e}', 'red'))
-        return 'ERROR'
-    finally:
-        print('✅ Checking Install Complete!')
-    return 'OK'
+    status = None
+    if not is_data_dir:
+        status = 'NOT'
+    else:
+        try:
+            file.exist_dir(resource_path['data'], True)
+            file.exist_dir(resource_path['data/upload'], True)
+            file.exist_dir(resource_path['data/upload/origin'], True)
+            file.exist_dir(resource_path['data/upload/cover'], True)
+            file.exist_dir(resource_path['data/cache'], True)
+            file.exist_dir(resource_path['data/log'], True)
+            file.exist_file(resource_path['data/db.sqlite'], True)
+            file.exist_file(resource_path['data/preference.json'], True)
+            status = 'OK'
+        except Exception as e:
+            print(string.color_text(f'⚠️ {e}', 'red'))
+            status = 'ERROR'
+    print(f'✅ Checking Install Complete! "{status}"')
+    return status or 'OK'
 
 # install resource
 def install_resource():
@@ -52,7 +57,7 @@ def install_resource():
 
 def destroy_resource():
     print('🚧 Destroying resource...')
-    file.delete_dir(resource_path['data'])
+    file.delete_dir(resource_path['data'], True)
     print('✅ Destroying resource complete!')
 
 # install db
@@ -82,20 +87,20 @@ check_install = checking_install()
 
 # setup resource
 if check_install == 'NOT':
-    answer = input('⭐ Do you want to install? (Y/n): ')
+    answer = 'y' if skip else input('⭐ Do you want to install? (Y/n): ')
     if answer.lower() != 'n':
         install_resource()
         install_db()
         installed = True
 elif check_install == 'ERROR':
-    answer = input('⭐ Broken resource. Do you want to reinstall? (Y/n): ')
+    answer = 'y' if skip else input('⭐ Broken resource. Do you want to reinstall? (Y/n): ')
     if answer.lower() != 'n':
         destroy_resource()
         install_resource()
         install_db()
         installed = True
 elif check_install == 'OK':
-    answer = input('⭐ It\'s currently installed. Do you want to reinstall? (y/N): ')
+    answer = 'n' if skip else input('⭐ It\'s currently installed. Do you want to reinstall? (y/N): ')
     if answer.lower() == 'y':
         destroy_resource()
         install_resource()
