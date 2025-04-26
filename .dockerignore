@@ -1,1 +1,1 @@
-pycache*.pyc *.pyo *.pyd .Python env/ venv/ .git .gitignore cmd.sh
+pycache*.pyc *.pyo *.pyd .Python env/ venv/ .git .gitignore .DS_Store cmd.sh

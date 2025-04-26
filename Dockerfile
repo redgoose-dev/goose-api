@@ -28,8 +28,11 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application files
 COPY src ./src
 COPY resource ./resource
+COPY pyproject.toml .
 COPY install.py .
 COPY main.py .
+
+EXPOSE ${PORT:-80}
 
 # run entrypoint
 RUN chmod +x resource/docker-entrypoint.sh
