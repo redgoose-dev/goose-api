@@ -1,0 +1,12 @@
+services:
+  goose-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+#    volumes:
+#      - ./app:/app
+    environment:
+      - PORT=8888
+      - PYTHONUNBUFFERED=1
