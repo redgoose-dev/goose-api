@@ -1,16 +1,15 @@
-# DIRECTORY
+# directories
 .idea/
-vendor/
+.run/
+.venv/
 data/
 .AppleDouble/
+__pycache__/
+scripts/
 
-# FILES
+# files
 .DS_Store
 ._.DS_Store
-.env
-composer.lock
-action.sh
-
-# ETC
-usr/
-controller/external
+.env.local
+cmd.sh
+docker-compose.yml

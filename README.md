@@ -1,58 +1,46 @@
 # goose-api
 
-이것은 개인용 CMS [Goose](https://github.com/redgoose-dev/goose) 프로젝트에서 API 기능에 집중한 프로젝트입니다.  
-[goose manager](https://github.com/redgoose-dev/goose-manager) 에서 컨텐츠를 제작하고 API를 활용하여 다른 플랫폼에서 사용하기 위한 용도로 만들어진 `Micro CMS API`라고 볼 수 있습니다.
+redgoose 컨텐츠 API 프로젝트
+이 API 프로그램은 [Goose](https://github.com/redgoose-dev/goose)에서 시작된 개인용 CMS 중 하나의 프로젝트입니다.
 
-## 함께 사용할 수 있는 프로그램
+## Usage
 
-- goose-manager: https://github.com/redgoose-dev/goose-manager
-- goose-app: https://github.com/redgoose-dev/goose-app
-
-## 사용을 위한 환경
-
-다음과 같은 환경을 구성하기 위하여 필요한 패키지들을 설치할 필요가 있습니다.
-
-- apache or nginx
-- php 8.x or higher version
-- mysql
-- composer
-
-## Documentation
-
-goose-api 설치에 관란 자세한 내용은 [wiki](https://github.com/redgoose-dev/goose-api/wiki)에서 확인할 수 있습니다.
-
-## docker
-
-### build
+로컬 개발 환경에서 구동하기 위하여 다음과 같이 실행합니다.
+패키지 매니저는 [UV](https://docs.astral.sh/uv/)가 필요합니다.
 
 ```shell
-# mac / intel
-docker build -t redgoose/goose-api:latest .
-# mac / m1 / linux
-docker buildx build --platform=linux/amd64 -t redgoose/goose-api:latest .
-# mac / m1 / local
-docker buildx build --platform=linux/arm64/v8 -t redgoose/goose-api:latest .
+# clone repo
+git clone https://github.com/redgoose-dev/goose-api.git
+cd goose-api
+
+# install uv (if not installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# activate virtualenv
+uv sync
+
+# install app
+./scripts/util.sh install
+
+# run server
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+./scripts/util.sh dev # run shell script
 ```
 
-### docker-composer
+서버 스크립트 실행은 [main.py](main.py)파일에서 시작합니다.
 
-다음 코드를 참고해주세요.
+## Tech Stack
 
-```shell
-version: "3.9"
+주요 테크스택은 다음과 같습니다.
 
-services:
-  goose:
-    image: redgoose/goose-api:latest
-    container_name: goose
-    restart: unless-stopped
-    volumes:
-      - ./config/nginx.conf:/etc/nginx/nginx.conf
-      - ./config/fpm-pool.conf:/etc/php81/php-fpm.d/www.conf
-      - ./config/php.ini:/etc/php81/conf.d/custom.ini
-      - ./config/supervisord.conf:/etc/supervisord.conf
-      - ./.env:/app/.env
-      - ./data:/app/data
-    environment:
-      - TZ=Asia/Seoul
-```
+- [Python 3](https://www.python.org)
+- [UV](https://docs.astral.sh/uv/)
+- [FastAPI](https://fastapi.tiangolo.com)
+- [SQLite](https://sqlite.org)
+
+자세한 구성은 [pyproject.toml](pyproject.toml)파일을 참고하세요.
+
+
+## Docker
+
+TODO: 도커 환경에서 구동하기 가이드

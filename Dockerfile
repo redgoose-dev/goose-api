@@ -1,66 +1,39 @@
-ARG ALPINE_VERSION=3.18.4
-FROM alpine:${ALPINE_VERSION}
-MAINTAINER redgoose <scripter@me.com>, original by <https://github.com/TrafeX/docker-php-nginx>
+ARG PYTHON_VERSION="3.13"
 
+# Builder stage
+FROM python:${PYTHON_VERSION}-alpine AS builder
+ARG PYTHON_VERSION
 WORKDIR /app
 
-ENV PORT=5050
+# Install UV
+RUN apk add --no-cache curl && curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install packages and remove default server definition
-RUN apk add --no-cache \
-  curl \
-  nginx \
-  php81 \
-  php81-ctype \
-  php81-curl \
-  php81-dom \
-  php81-fpm \
-  php81-pdo \
-  php81-pdo_mysql \
-  php81-gd \
-  php81-intl \
-  php81-mbstring \
-  php81-opcache \
-  php81-openssl \
-  php81-phar \
-  php81-session \
-  php81-xml \
-  php81-xmlreader \
-  php81-xmlwriter \
-  php81-fileinfo \
-  supervisor
+# Install dependencies
+COPY pyproject.toml .
+RUN uv sync
+RUN uv pip compile pyproject.toml -o requirements.txt
+RUN uv pip install --system -r requirements.txt
 
-# Create symlink so programs depending on `php` still function
-#RUN ln -s /usr/bin/php82 /usr/bin/php
 
-# Configure nginx
-COPY resource/docker/nginx.conf /etc/nginx/nginx.conf
+# Runtime stage
+FROM python:${PYTHON_VERSION}-alpine
+ARG PYTHON_VERSION
+WORKDIR /app
 
-# Configure PHP-FPM
-COPY resource/docker/fpm-pool.conf /etc/php81/php-fpm.d/www.conf
-COPY resource/docker/php.ini /etc/php81/conf.d/custom.ini
+# Copy dependencies from builder stage
+COPY --from=builder /usr/local/lib/python${PYTHON_VERSION}/site-packages /usr/local/lib/python${PYTHON_VERSION}/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Configure supervisord
-COPY resource/docker/supervisord.conf /etc/supervisord.conf
+# Copy application files
+COPY src ./src
+COPY resource ./resource
+COPY pyproject.toml .
+COPY install.py .
+COPY main.py .
 
-# Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /app /run /var/lib/nginx /var/log/nginx
+EXPOSE ${PORT:-80}
 
-# Switch to use a non-root user from here on
-USER nobody
-
-# Add application
-COPY --chown=nobody ./ /app
-
-# composer install
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
-
-# Expose the port nginx is reachable on
-EXPOSE $PORT
-
-# Let supervisord start nginx & php-fpm
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
-
-# Configure a healthcheck to validate that everything is up&running
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:$PORT/fpm-ping
+# run entrypoint
+RUN chmod +x resource/docker-entrypoint.sh
+ENTRYPOINT [ "resource/docker-entrypoint.sh" ]

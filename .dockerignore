@@ -1,15 +1,1 @@
-.idea/
-.AppleDouble/
-controller/external/
-data/
-.git/
-vendor/
-
-.DS_Store
-.env
-.gitignore
-LICENSE
-README.md
-.htaccess
-cmd.sh
-action.sh
+pycache*.pyc *.pyo *.pyd .Python env/ venv/ .git .gitignore .DS_Store cmd.sh
