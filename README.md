@@ -43,4 +43,21 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 ## Docker
 
-TODO: 도커 환경에서 구동하기 가이드
+> docker hub: https://hub.docker.com/r/redgoose/goose-api
+
+### docker-compose
+
+```docker-compose.yml
+services:
+  goose-api:
+    container_name: slideshow-local
+    image: redgoose/goose-api:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+      - ./.env.local:/app/.env.local
+    environment:
+      - PYTHONUNBUFFERED=1
+```
