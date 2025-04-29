@@ -10,6 +10,6 @@ scripts/
 # files
 .DS_Store
 ._.DS_Store
-.env.local
+.env.*
 cmd.sh
 docker-compose.yml

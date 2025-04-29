@@ -1,6 +1,6 @@
 import inspect, sys, json, time
 from loguru import logger
-from src import libs, __USE_LOG__, __RECORD_LOG__
+from src import libs, __USE_LOG__, __RECORD_LOG__, __PRINT_LOG__
 
 def setup():
     if not __USE_LOG__: return
@@ -28,7 +28,7 @@ def setup():
             level='ERROR',
             encoding='utf-8',
         )
-    else:
+    if __PRINT_LOG__:
         # success
         logger.add(
             sys.stderr,
