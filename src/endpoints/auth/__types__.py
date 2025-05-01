@@ -13,7 +13,7 @@ class GetCallback(BaseModel):
 
 class PostRenew(BaseModel):
     # provider: str
-    access_token: str
+    authorization: str
     refresh_token: str
 
 

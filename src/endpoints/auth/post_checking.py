@@ -41,7 +41,7 @@ async def post_checking(req: Request, _db: DB = None):
     except Exception as e:
         result = output.exc(e, _req=req)
         if result.status_code == 401:
-            result = output.empty({ 'code': 401 }, _req=req, _log=True)
+            result = output.empty({ 'code': 401 }, _req=req, _log=False)
     finally:
         if not _db and db: db.disconnect()
         return result

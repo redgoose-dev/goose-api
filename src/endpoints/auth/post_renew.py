@@ -15,7 +15,8 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
         params = types.PostRenew(**params)
 
         # checking token
-        token = checking_token(req, db, access_token=params.authorization, check_expires=False)
+        # 이미 만료된 엑세스토큰을 재발급받는 목적으로 사용하기 때문에 만료시간 검사를 하면 안된다.
+        token = checking_token(req, db, access_token=params.authorization, check_expires=True)
 
         # check refresh token
         if token.get('refresh') != params.refresh_token:

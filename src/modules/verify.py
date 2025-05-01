@@ -15,6 +15,7 @@ def checking_token(req: Request, db: DB, access_token: str = None, check_expires
         where = [ f'access LIKE \'{authorization}\'' ],
     )
     if not token: raise Exception('Token not found.', 401)
+    if token.get('expires') <= 0: raise Exception('The token is unavailable.', 401)
 
     # 만료시간 검사하기
     if check_expires:
