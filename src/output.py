@@ -10,15 +10,16 @@ from src.libs.string import create_random_string, color_text, get_status_message
 # base headers
 baseHeaders = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Authorization, Accept',
     'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Origin': '*',
 }
 
 ### PRIVATE FUNCTIONS ###
 
 # get header
 def __get_header__(src: Dict[str, str]) -> Dict[str, str]:
-    return {**baseHeaders, **src}
+    return { **baseHeaders, **src }
 
 # get code
 def __get_code__(options: dict) -> int:
