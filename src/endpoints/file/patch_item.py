@@ -111,9 +111,26 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         # delete legacy file
         if _changed_file and item['path']: file_libs.delete_file(item['path'])
 
+        # get new item
+        new_item = db.get_item(
+            table_name=Table.FILE.value,
+            where=[ f'srl = {params.srl}' ],
+        )
+
         # set result
         result = output.success({
             'message': 'Complete update file.',
+            'data': {
+                'srl': new_item['srl'],
+                'code': new_item['code'],
+                'name': new_item['name'],
+                'mime': new_item['mime'],
+                'size': new_item['size'],
+                'json': json_parse(new_item['json']) if new_item.get('json') else None,
+                'module': new_item['module'],
+                'module_srl': new_item['module_srl'],
+                'created_at': new_item['created_at'],
+            },
         }, _req=req)
     except Exception as e:
         if file.get('path'): file_libs.delete_file(file['path'])

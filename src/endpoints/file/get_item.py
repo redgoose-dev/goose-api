@@ -23,7 +23,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         except ValueError: code = str(params.srl)
 
         # set local values
-        use_cache = code is not None
+        use_cache = code is not None # 코드값으로 사용하면 캐시 사용
         tail = make_tail(_w=params.w, _h=params.h, _t=params.t, _q=params.q)
 
         # set where
