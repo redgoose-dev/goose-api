@@ -23,36 +23,39 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_tok
         # set provider instance
         _provider_ = Provider(params.provider)
 
-        # check provider count
-        count = db.get_count(table_name=Table.PROVIDER.value)
-        if count > 0 and _check_token:
-            checking_token(
-                req=req,
-                db=db,
-                access_token=state.get('access_token', ''),
-            )
-
-        # get exist provider
-        provider = db.get_item(
-            table_name = Table.PROVIDER.value,
-            where = [ f'code LIKE \'{_provider_.name}\'' ],
-        )
-
         # get tokens
         token = await _provider_.get_token(params.code)
 
         # get user info
         user = await _provider_.get_user(token['access'])
 
-        # check exist provider
-        if provider:
-            if not _provider_.check_user_id(provider['user_id'], user):
+        # check provider count
+        count = db.get_count(table_name=Table.PROVIDER.value)
+        if count > 0:
+            # 프로바이더가 하나 이상일때
+            # checking access token
+            if state.get('access_token'):
+                checking_token(
+                    req=req,
+                    db=db,
+                    access_token=state.get('access_token', ''),
+                )
+            # get provider
+            provider = db.get_item(
+                table_name=Table.PROVIDER.value,
+                where=[
+                    f'and code LIKE \'{params.provider}\'',
+                    f'and user_id LIKE \'{user.get('id')}\'',
+                ],
+            )
+            if not provider:
                 raise Exception('Invalid user id.', 401)
-            provider_srl = provider['srl']
+            provider_srl = provider.get('srl')
         else:
+            # 프로바이더가 하나도 없을때
             provider_srl = db.add_item(
-                table_name = Table.PROVIDER.value,
-                values = {
+                table_name=Table.PROVIDER.value,
+                values={
                     'code': _provider_.name,
                     'user_id': user['id'],
                     'user_name': user['name'],
@@ -69,19 +72,22 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_tok
                     { 'key': 'user_password', 'value': ':user_password' },
                     { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
                 ],
-
             )
+
+        # check provider_srl
+        if not provider_srl:
+            raise Exception('Not found provider_srl.', 401)
 
         # add data from token
         db.add_item(
-            table_name = Table.TOKEN.value,
-            values = {
+            table_name=Table.TOKEN.value,
+            values={
                 'provider_srl': provider_srl,
                 'access': token['access'],
                 'expires': token['expires'],
                 'refresh': token['refresh'] or None,
             },
-            placeholders = [
+            placeholders=[
                 { 'key': 'provider_srl', 'value': ':provider_srl' },
                 { 'key': 'access', 'value': ':access' },
                 { 'key': 'expires', 'value': ':expires' },

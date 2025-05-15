@@ -22,17 +22,6 @@ async def get_redirect(params: dict = {}, req = None, _db: DB = None, _check_tok
         # set params
         params = types.GetRedirect(**params)
 
-        # get provider count
-        count = db.get_count(
-            table_name=Table.PROVIDER.value,
-        )
-        if count > 0 and _check_token:
-            checking_token(
-                req=req,
-                db=db,
-                access_token=params.access_token,
-            )
-
         # set state
         state = uri_encode({
             'redirect_uri': params.redirect_uri,

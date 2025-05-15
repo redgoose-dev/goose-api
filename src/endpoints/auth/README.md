@@ -94,10 +94,19 @@ PATCH /auth/provider/{srl:int}/
 ### 목록 가져오기
 
 ```
-POST /auth/provider-index/
+POST /auth/providers/
 
 @headers {str} Authorization / [required] 액세스 토큰
 @data {str} redirect_uri / [required] 인증을 끝내고 돌아올 클라이언트 URL 주소입니다.
+```
+
+### 상세정보 가져오기
+
+```
+POST /auth/provider/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@data {int} srl / 프로바이더 srl 번호
 ```
 
 ### 제거하기

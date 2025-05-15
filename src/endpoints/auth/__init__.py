@@ -96,6 +96,17 @@ async def _post_providers(
         'redirect_uri': redirect_uri,
     }, req=req)
 
+# 프로바이더 상세정보
+@router.post('/provider/')
+async def _post_provider(
+    req: Request,
+    srl: int = Form(None),
+):
+    from .post_provider import post_provider
+    return await post_provider({
+        'srl': srl,
+    }, req=req)
+
 # 패스워드 타입의 프로바이더 등록
 @router.put('/provider/')
 async def _put_provider(

@@ -30,7 +30,7 @@ async def post_checking(req: Request, _db: DB = None):
             'data': {
                 'provider': {
                     'srl': provider.get('srl'),
-                    'name': _provider_.name,
+                    'code': provider.get('code'),
                     'user_id': provider.get('user_id'),
                     'user_name': provider.get('user_name'),
                     'user_avatar': provider.get('user_avatar'),

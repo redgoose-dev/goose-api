@@ -35,6 +35,9 @@ class PutProvider(BaseModel):
 class PostProviderIndex(BaseModel):
     redirect_uri: str
 
+class PostProviderItem(BaseModel):
+    srl: Optional[int] = None
+
 class PatchProviderItem(BaseModel):
     srl: int
     user_id: Optional[str] = None
