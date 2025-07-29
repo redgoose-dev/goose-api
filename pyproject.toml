@@ -1,14 +1,14 @@
 [project]
 name = "goose-api"
-version = "2.0.3"
+version = "2.0.4"
 description = "Goose CMS API service"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.115.12",
+    "fastapi>=0.116.1",
     "httpx>=0.28.1",
     "loguru>=0.7.3",
-    "pillow>=11.2.1",
+    "pillow>=11.3.0",
     "pillow-avif-plugin>=1.5.2",
     "pydantic>=2.11.3",
     "pytest>=8.3.5",

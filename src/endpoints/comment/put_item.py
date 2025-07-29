@@ -45,10 +45,14 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         ]
 
         # add data
-        data = db.add_item(
+        srl = db.add_item(
             table_name=Table.COMMENT.value,
             placeholders=placeholders,
             values=values,
+        )
+        data = db.get_item(
+            table_name=Table.COMMENT.value,
+            where=[ f'AND srl = {srl}' ],
         )
 
         # set result

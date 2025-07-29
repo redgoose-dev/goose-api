@@ -42,10 +42,12 @@ async def post_main(params: list = [], req = None, _check_token = True):
                 else:
                     response[key] = { 'message': res.body.decode() }
                 response[key]['status_code'] = res.status_code
-                if 'error_code' in res.headers:
-                    response[key]['error_code'] = res.headers['error_code']
+                if 'error-code' in res.headers:
+                    response[key]['error-code'] = res.headers.get('error-code')
             except Exception as e:
                 raise Exception(f'[{key}] {e}', 400)
+        keys = ','.join(response.keys())
+        response['message'] = f'Complete "{keys}" requests.'
         response = output.success(response, _req=req)
     except Exception as e:
         response = output.exc(e, _req=req)

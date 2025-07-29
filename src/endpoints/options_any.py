@@ -3,10 +3,10 @@ from .. import output
 
 async def preflight(path_str: str) -> Response:
     return output.empty({
-        'code': 204,
+        'code': 200,
         'headers': {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
+            'Access-Control-Allow-Methods': '*',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Access-Control-Max-Age': '86400',
         }

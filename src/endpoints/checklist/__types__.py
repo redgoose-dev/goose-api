@@ -22,6 +22,7 @@ class GetItem(BaseModel):
 class PutItem(BaseModel):
     content: Optional[str] = None
     tag: Optional[str] = None
+    regdate: Optional[str] = None
 
 class PatchItem(BaseModel):
     srl: int

@@ -35,8 +35,11 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             where.append(f'AND app_srl = {params.app_srl}')
         if params.nest_srl:
             where.append(f'AND nest_srl = {params.nest_srl}')
-        if params.category_srl:
-            where.append(f'AND category_srl = {params.category_srl}')
+        if params.category_srl is not None:
+            if params.category_srl > 0:
+                where.append(f'AND category_srl = {params.category_srl}')
+            else:
+                where.append(f'AND category_srl IS NULL')
         if params.q:
             where.append(f'AND (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
         if params.mode:
@@ -74,6 +77,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # get total
         total = db.get_count(
             table_name=Table.ARTICLE.value,
+            column_name=f'DISTINCT {Table.ARTICLE.value}.srl',
             where=where,
             join=join,
             values=values,
@@ -102,6 +106,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             order={ 'order': order, 'sort': sort },
             values=values,
             unlimited=params.unlimited,
+            duplicate=False,
         )
 
         # transform items

@@ -103,6 +103,7 @@ GET /file/{srl:int|str}/
 @query {int} h / 이미지 height
 @query {int} t / 이미지 리사이즈 방식 (contain,stretch,cover)
 @query {int} q / 이미지 품질 (0~100)
+@query {str} _a / 엑세스 토큰 (비공개 파일 접근용)
 ```
 
 ### Response

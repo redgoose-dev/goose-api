@@ -113,7 +113,7 @@ async def _put_provider(
     req: Request,
     user_id: str = Form(..., alias='id', pattern=Patterns.code),
     user_name: str = Form(None, alias='name'),
-    user_avatar: str = Form(None, alias='avatar', pattern=Patterns.url),
+    user_avatar: str = Form('', alias='avatar', pattern=Patterns.url),
     user_email: str = Form(..., alias='email', pattern=Patterns.email),
     user_password: str = Form(..., alias='password'),
 ):

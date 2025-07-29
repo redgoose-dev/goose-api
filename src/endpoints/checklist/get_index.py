@@ -45,6 +45,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # get total
         total = db.get_count(
             table_name=Table.CHECKLIST.value,
+            column_name=f'DISTINCT {Table.CHECKLIST.value}.srl',
             where=where,
             join=join,
             values=values,
@@ -61,6 +62,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             order={ 'order': params.order, 'sort': params.sort },
             values=values,
             unlimited=params.unlimited,
+            duplicate=False,
         )
         def transform_item(item: dict) -> dict:
             # MOD / tag

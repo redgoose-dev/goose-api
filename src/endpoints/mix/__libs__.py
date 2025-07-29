@@ -21,6 +21,9 @@ def get_router(path: str) -> callable:
         case 'get /article/{srl}/':
             from ..article.get_item import get_item
             return get_item
+        case 'put /article/':
+            from ..article.put_item import put_item
+            return put_item
         # category
         case 'get /category/':
             from ..category.get_index import get_index
@@ -60,6 +63,10 @@ def get_router(path: str) -> callable:
         case 'get /nest/{srl}/':
             from ..nest.get_item import get_item
             return get_item
+        # tag
+        case 'get /tag/':
+            from ..tag.get_index import get_index
+            return get_index
         case _:
             return None
 

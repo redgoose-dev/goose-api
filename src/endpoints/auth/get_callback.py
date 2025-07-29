@@ -34,8 +34,9 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_tok
         if count > 0:
             # 프로바이더가 하나 이상일때
             # checking access token
+            account = None
             if state.get('access_token'):
-                checking_token(
+                account = checking_token(
                     req=req,
                     db=db,
                     access_token=state.get('access_token', ''),
@@ -48,9 +49,33 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_tok
                     f'and user_id LIKE \'{user.get('id')}\'',
                 ],
             )
-            if not provider:
+            if provider:
+                provider_srl = provider.get('srl')
+            elif account:
+                # 만들어진 프로바이더가 없으니 새로운 프로바이더를 만든다.
+                provider_srl = db.add_item(
+                    table_name=Table.PROVIDER.value,
+                    values={
+                        'code': _provider_.name,
+                        'user_id': user['id'],
+                        'user_name': user['name'],
+                        'user_avatar': user['avatar'],
+                        'user_email': user['email'],
+                        'user_password': None,
+                    },
+                    placeholders=[
+                        {'key': 'code', 'value': ':code'},
+                        {'key': 'user_id', 'value': ':user_id'},
+                        {'key': 'user_name', 'value': ':user_name'},
+                        {'key': 'user_avatar', 'value': ':user_avatar'},
+                        {'key': 'user_email', 'value': ':user_email'},
+                        {'key': 'user_password', 'value': ':user_password'},
+                        {'key': 'created_at', 'value': 'DATETIME("now", "localtime")'},
+                    ],
+                )
+            else:
                 raise Exception('Invalid user id.', 401)
-            provider_srl = provider.get('srl')
+
         else:
             # 프로바이더가 하나도 없을때
             provider_srl = db.add_item(
@@ -98,6 +123,7 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_tok
 
         # result
         data = {
+            'provider_srl': provider_srl,
             'access': token['access'],
             'expires': token['expires'],
             'refresh': token['refresh'],

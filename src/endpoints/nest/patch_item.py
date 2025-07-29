@@ -18,11 +18,11 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if _check_token: checking_token(req, db)
 
         # check item
-        count = db.get_count(
+        data = db.get_item(
             table_name=Table.NEST.value,
             where=[ f'srl = {params.srl}' ],
         )
-        if count <= 0: raise Exception('Item not found.', 204)
+        if not data: raise Exception('Item not found.', 204)
 
         # check app_srl
         if params.app_srl:
@@ -32,23 +32,15 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             )
             if count <= 0: raise Exception('Not found app.', 400)
 
-        # check code
-        if params.code:
-            count = db.get_count(
-                table_name=Table.NEST.value,
-                where=[ f'code LIKE \'{params.code}\'' ],
-            )
-            if count > 0: raise Exception('Exist code in nest.', 400)
-
         # check json_data
         json_data = json_parse(params.json_data) if params.json_data else None
-        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
+        if params.json_data and json_data is None: raise Exception('Invalid JSON data.', 400)
 
         # set values
         values = {}
         if params.app_srl:
             values['app_srl'] = params.app_srl
-        if params.code:
+        if params.code and data.get('code') != params.code:
             values['code'] = params.code
         if params.name:
             values['name'] = params.name
@@ -72,6 +64,15 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('description = :description')
         if 'json' in values:
             placeholders.append('json = :json')
+
+        # check exist code
+        if 'code' in values and values['code']:
+            count = db.get_count(
+                table_name=Table.NEST.value,
+                where=[ 'code LIKE :code' ],
+                values={ 'code': values['code'] }
+            )
+            if count > 0: raise Exception('"code" already exists.', 400)
 
         # update item
         db.update_item(

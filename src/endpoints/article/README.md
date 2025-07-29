@@ -6,7 +6,7 @@
 ## put_item.py
 
 새로운 `ready` 모드의 아티클을 만듭니다.  
-이미 `ready` 모드의 데이터가 존재한다면 그 데이터의 srl 번호를 반환합니다.
+이미 `ready` 모드의 데이터가 존재한다면 그 데이터의 데이터를 반환합니다.
 
 ### Request
 
@@ -20,7 +20,7 @@ PUT /article/
 
 ```
 @content {str} message / 메시지
-@content {int} data / 아티클 srl 번호
+@content {dict} data / 아티클 데이터
 ```
 
 
@@ -106,7 +106,7 @@ GET /article/{srl:int}/
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
-@query {str} mod / MOD (up-hit,up-star)
+@query {str} mod / MOD (up-hit,up-star,count-file)
 ```
 
 ### Response

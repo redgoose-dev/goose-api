@@ -87,7 +87,11 @@ def error(
     # get caller module name
     module = module if module else inspect.stack()[1].frame.f_globals['__name__']
     # set stack
-    stack = options.get('stack').rstrip() if options.get('stack') else None
+    stack = options.get('stack', None)
+    if stack and isinstance(stack, str):
+        stack = stack.rstrip()
+    elif stack and isinstance(stack, list):
+        stack = '\n'.join(map(lambda x: str(x).rstrip(), stack))
     # call logger
     logger.error(
         message,

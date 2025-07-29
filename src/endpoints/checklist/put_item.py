@@ -26,14 +26,21 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         values = {
             'content': params.content,
             'percent': percent,
+            'regdate': params.regdate if params.regdate else None,
         }
 
         # set placeholders
         placeholders = [
             { 'key': 'content', 'value': ':content' },
             { 'key': 'percent', 'value': ':percent' },
-            { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
-            { 'key': 'updated_at', 'value': 'DATETIME("now", "localtime")' },
+            {
+                'key': 'created_at',
+                'value': ':regdate' if values['regdate'] else 'DATETIME("now", "localtime")',
+            },
+            {
+                'key': 'updated_at',
+                'value': ':regdate' if values['regdate'] else 'DATETIME("now", "localtime")',
+            },
         ]
 
         # add data

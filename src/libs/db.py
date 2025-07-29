@@ -85,6 +85,7 @@ class DB:
         order: dict = None,
         unlimited: bool = False,
         values: dict = {},
+        duplicate: bool = True,
     ) -> list:
         # check table name
         self.__check_table_name__(table_name)
@@ -95,7 +96,8 @@ class DB:
         _where = self.__where_list_to_str__(where) if where else ''
         _limit = self.__get_limit__(limit) if not unlimited else ''
         _order = self.__get_order__(order)
-        query = f'SELECT {fields} FROM {table_name} {_join} {_where} {_order} {_limit}'
+        _distinct = '' if duplicate else 'DISTINCT'
+        query = f'SELECT {_distinct} {fields} FROM {table_name} {_join} {_where} {_order} {_limit}'
         query = self.__optimize_query__(query)
         if self.debug:
             print_debug('get_items', {
@@ -140,16 +142,20 @@ class DB:
     def get_count(
         self,
         table_name: str = None,
+        column_name: str = None,
         join: list = None,
         where: list = None,
         values: dict = {},
+        duplicate: bool = True,
     ) -> int:
         # check table name
         self.__check_table_name__(table_name)
         # set query
         _join = ' '.join(join) if join else ''
         _where = self.__where_list_to_str__(where) if where else ''
-        query = f'SELECT COUNT(*) FROM {table_name} {_join} {_where}'
+        _distinct = '' if duplicate else 'DISTINCT'
+        _column = column_name if column_name else '*'
+        query = f'SELECT COUNT({_column}) FROM {table_name} {_join} {_where}'
         query = self.__optimize_query__(query)
         # print debug
         if self.debug:
@@ -285,6 +291,7 @@ class DB:
         return cursor
 
 def print_debug(method: str, data: dict):
-    print(color_text(f'[DB_METHOD] {method}:', 'magenta'))
+    print(color_text(f'\n[DB_METHOD] {method}:', 'cyan'))
     for key, value in data.items():
-        if value: print(color_text(f'  [{key}] {value}', 'magenta'))
+        if value:
+            print(f'{color_text(f'  [{key}]', 'yellow')} {color_text(f'{value}', 'green')}')

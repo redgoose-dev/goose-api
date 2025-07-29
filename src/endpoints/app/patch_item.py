@@ -20,15 +20,15 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         where = [ f'and srl={params.srl}' ]
 
         # check item
-        count = db.get_count(
+        data = db.get_item(
             table_name = Table.APP.value,
             where = where,
         )
-        if count == 0: raise Exception('Item not found.', 204)
+        if not data: raise Exception('Item not found.', 204)
 
         # set values
         values = {}
-        if params.code:
+        if params.code and data.get('code') != params.code:
             values['code'] = params.code
         if params.name:
             values['name'] = params.name
@@ -51,17 +51,17 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if 'code' in values and values['code']:
             count = db.get_count(
                 table_name = Table.APP.value,
-                where = [ f'code LIKE :code' ],
-                values = { 'code': values['code'] },
+                where=[ 'code LIKE :code' ],
+                values={ 'code': values['code'] },
             )
-            if count > 0: raise Exception('"code" already exists.')
+            if count > 0: raise Exception('"code" already exists.', 400)
 
         # update item
         db.update_item(
-            table_name = Table.APP.value,
-            where = where,
-            placeholders = placeholders,
-            values = values,
+            table_name=Table.APP.value,
+            where=where,
+            placeholders=placeholders,
+            values=values,
         )
 
         # set result

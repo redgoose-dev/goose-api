@@ -13,9 +13,10 @@ class GetIndex(BaseModel):
     unlimited: Optional[bool] = False
     mod: Optional[str] = None
     q: Optional[str] = None
+    tag: Optional[str] = None
 
 class GetItem(BaseModel):
-    srl: int
+    srl: Optional[int] = None
     fields: Optional[str] = None
 
 class PutItem(BaseModel):
@@ -29,7 +30,7 @@ class PatchItem(BaseModel):
 
 class PatchChangeOrder(BaseModel):
     module: str
-    module_srl: int
+    module_srl: Optional[int] = None
     srls: str
 
 class DeleteItem(BaseModel):

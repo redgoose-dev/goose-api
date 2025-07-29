@@ -16,8 +16,6 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         # set params
         params = types.PatchItem(**params)
 
-        print('PARAMS: ', params)
-
         # checking token
         if _check_token: checking_token(req, db)
 
@@ -42,7 +40,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             if count <= 0: raise Exception('Not found app.', 400)
 
         # check category
-        if params.category_srl:
+        if params.category_srl is not None and params.category_srl > 0:
             count = db.get_count(
                 table_name=Table.CATEGORY.value,
                 where=[ f'srl = {params.category_srl}' ],
@@ -53,21 +51,17 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         if params.nest_srl:
             count = db.get_count(
                 table_name=Table.NEST.value,
-                where=[f'srl = {params.nest_srl}'],
+                where=[ f'srl = {params.nest_srl}' ],
             )
             if count <= 0: raise Exception('Not found nest', 400)
-            params.category_srl = 0
 
         # filtering text content
         if params.title:
             params.title = re.sub(r'\s+', ' ', params.title.strip())
-            params.title = params.title.replace("'", "\\'").replace('"', '\\"')
-        if params.content:
-            params.content = params.content.replace("'", "\\'").replace('"', '\\"')
 
         # check json data
         json_data = json_parse(params.json_data) if params.json_data else None
-        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
+        if params.json_data and json_data is None: raise Exception('Invalid JSON data.', 400)
 
         # set values
         values = {}
@@ -142,6 +136,18 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
                 module=tag_libs.Module.ARTICLE,
                 module_srl=params.srl,
             )
+
+        # clear file cache
+        if item['mode'] != values.get('mode'):
+            from ..file import __libs__ as file_libs
+            files = file_libs.get_index(
+                _db=db,
+                module='article',
+                module_srl=params.srl,
+            )
+            if files and len(files) > 0:
+                for file in files:
+                    if file.get('code'): file_libs.delete_cache_files(file.get('code'))
 
         # set result
         result = output.success({

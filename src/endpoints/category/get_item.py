@@ -13,6 +13,10 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set params
         params = types.GetItem(**params)
 
+        # check srl
+        if params.srl is None:
+            raise Exception('Item not found', 204)
+
         # checking token
         if _check_token: checking_token(req, db)
 

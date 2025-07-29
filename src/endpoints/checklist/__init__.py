@@ -57,11 +57,13 @@ async def _put_item(
     req: Request,
     content: str = Form(None),
     tag: str = Form(None, pattern=Patterns.tags),
+    regdate: str = Form(None),
 ):
     from .put_item import put_item
     return await put_item({
         'content': content,
         'tag': tag,
+        'regdate': regdate,
     }, req=req)
 
 # update checklist

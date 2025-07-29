@@ -24,14 +24,14 @@ async def _http(req: Request, call_next):
     # start time record
     req.state.start_time = time.time()
     # print start debug
-    if __DEBUG__:
+    if __DEBUG__ and req.method != 'OPTIONS':
         now = datetime.now().strftime('%H:%M:%S')
         print(color_text(f'\n<===== {now} | START | [{req.method}] {req.url} =====>', 'cyan'))
     # action endpoint
     response = await call_next(req)
     # print end debug
-    if __DEBUG__:
-        print(color_text(f'<===== {now} | END =====>', 'cyan'))
+    if __DEBUG__ and req.method != 'OPTIONS':
+        print(color_text(f'<===== {now} | END =====>\n', 'cyan'))
     return response
 
 # preflight
@@ -118,7 +118,7 @@ async def _validation_exception_handler(req: Request, e: RequestValidationError)
         'code': 400,
         'method': req.method,
         'path': req.url.path,
-        'error': e.errors(),
+        'stack': e.errors() if hasattr(e, 'errors') else None,
     }, _req=req)
 
 # 예외 처리 핸들러 추가

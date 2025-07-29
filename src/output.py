@@ -152,7 +152,7 @@ def error(
     # set code
     code = __get_code__(options)
     # set headers
-    headers = options.get('headers', {}) if options else {}
+    headers = __get_header__(options.get('headers', {}) if options else {})
     # set content
     if not content: content = get_status_message(code)
     # set extra

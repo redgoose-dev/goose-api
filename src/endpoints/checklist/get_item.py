@@ -32,6 +32,17 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         )
         if not data: raise Exception('Item not found', 204)
 
+        # MOD / count-file
+        if mod.check('count-file'):
+            count = db.get_count(
+                table_name=Table.FILE.value,
+                where=[
+                    f'AND module=\'checklist\'',
+                    f'AND module_srl = {params.srl}',
+                ]
+            )
+            data['count_file'] = count or 0
+
         # MOD / tag
         if mod.check('tag'):
             _tags = tag_libs.get_index(

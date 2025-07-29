@@ -17,6 +17,8 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set params
         params = types.GetIndex(**params)
 
+        print('@@@@@@@@@@@@@@@@@@@', params)
+
         # checking token
         if _check_token: checking_token(req, db)
 
@@ -25,6 +27,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # set mod
         mod = MOD(params.mod or '')
+
+        # set tag
+        tags = ','.join(params.tag.split(',')) if params.tag and params.module else None
 
         # set where
         where = []
@@ -71,6 +76,8 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
                 item_where.extend(where)
                 # MOD / count
                 if mod.check('count'):
+                    if tags:
+                        item_where.append(get_tag_count_query(params.module, tags))
                     match params.module:
                         case category_libs.Module.NEST:
                             item['count'] = article_libs.get_count(db, item_where)
@@ -85,12 +92,16 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             _where = [ f'and category_srl IS NULL' ]
             _where.extend(where)
             if mod.check('count'):
+                if tags:
+                    _where.append(get_tag_count_query(params.module, tags))
                 match params.module:
                     case category_libs.Module.NEST:
+                        if params.module_srl:
+                            _where.append(f'and nest_srl = {params.module_srl}')
                         new_item['count'] = article_libs.get_count(db, _where)
                     case category_libs.Module.JSON:
                         new_item['count'] = json_libs.get_count(db, _where)
-            index.insert(0, new_item)
+            index.append(new_item)
 
         # MOD / all
         if mod.check('all'):
@@ -98,12 +109,16 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             _where = []
             _where.extend(where)
             if mod.check('count'):
+                if tags:
+                    _where.append(get_tag_count_query(params.module, tags))
                 match params.module:
                     case category_libs.Module.NEST:
+                        if params.module_srl:
+                            _where.append(f'and nest_srl = {params.module_srl}')
                         new_item['count'] = article_libs.get_count(db, _where)
                     case category_libs.Module.JSON:
                         new_item['count'] = json_libs.get_count(db, _where)
-            index.append(new_item)
+            index.insert(0, new_item)
 
         # set result
         result = output.success({
@@ -118,3 +133,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
     finally:
         if not _db and db: db.disconnect()
         return result
+
+def get_tag_count_query(module: str, tag: str) -> str:
+    if not module or not tag: return ''
+    return f'AND json.srl IN (SELECT map_tag.module_srl FROM map_tag WHERE map_tag.module LIKE \'{module}\' AND map_tag.tag_srl IN ({tag}))'

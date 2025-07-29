@@ -48,7 +48,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
                 cache = file_libs.open_file(cache_file, 'json')
                 if file_libs.exist_file(cache.get('path')):
                     # check auth
-                    if cache.get('private'): checking_token(req, db)
+                    if cache.get('private'): checking_token(req, db, allow_query=True)
                     # set data
                     data['path'] = cache.get('cache_path') or cache.get('path')
                     data['mime'] = cache.get('mime')
@@ -69,14 +69,14 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
                 raise Exception('Not found file.', 404)
             # get module
             module = file_libs.get_module(db, file.get('module'), file.get('module_srl'))
-            if not module: raise Exception('Not found module data.', 404)
+            if not module: raise Exception('Not found module data.', 500)
             # set status
             status = file_libs.Status.filter(module.get('mode', None))
             # switching status
             match status:
                 case file_libs.Status.PRIVATE | file_libs.Status.PUBLIC:
                     # check auth
-                    if status == file_libs.Status.PRIVATE: checking_token(req, db)
+                    if status == file_libs.Status.PRIVATE: checking_token(req, db, allow_query=True)
                     # get new data
                     if file.get('mime').startswith('image/') and tail:
                         new_data = await resize_image(
@@ -146,7 +146,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         return result
 
 def make_tail(_w: int, _h: int, _t: str, _q: int) -> dict|None:
-    min_size = 100
+    min_size = 50
     min_quality = 0
     if not ((_w and _w > min_size) or (_h and _h > min_size)): return None
     arr = []

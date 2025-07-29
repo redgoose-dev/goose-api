@@ -23,7 +23,7 @@ async def patch_main(params: dict = {}, req = None, _db: DB = None, _check_token
 
         # update preference
         new_json = json_parse(params.json_data)
-        if not new_json: raise Exception('Invalid JSON data.', 400)
+        if json_data is None: raise Exception('Invalid JSON data.', 400)
         pref.update(new_json, params.change_data)
 
         # get data

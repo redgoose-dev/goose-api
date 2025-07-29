@@ -19,6 +19,7 @@ async def _get_index(
     order: str = Query('srl'),
     sort: str = Query('desc', pattern=Patterns.sort),
     unlimited: bool = Query(False, convert=lambda v: bool(int(v)) if v else False),
+    tag: str = Query(None, pattern=Patterns.tags),
     mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_index import get_index
@@ -33,6 +34,7 @@ async def _get_index(
         'order': order,
         'sort': sort,
         'unlimited': unlimited,
+        'tag': tag,
         'mod': mod,
     }, req=req)
 
@@ -82,7 +84,7 @@ async def _patch_item(
 async def _patch_change_order(
     req: Request,
     module: str = Form(..., pattern=Patterns.category_module),
-    module_srl: int = Form(...),
+    module_srl: int = Form(None),
     srls: str = Form(..., pattern=Patterns.srls), # 1,2,3
 ):
     from .patch_change_order import patch_change_order

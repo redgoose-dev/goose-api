@@ -45,6 +45,17 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
             if mod.check('up-hit'): placeholder.append('hit = hit + 1')
             if mod.check('up-star'): placeholder.append('star = star + 1')
 
+        # MOD / count-file
+        if mod.check('count-file'):
+            count = db.get_count(
+                table_name=Table.FILE.value,
+                where=[
+                    f'AND module=\'article\'',
+                    f'AND module_srl = {params.srl}',
+                ]
+            )
+            data['count_file'] = count or 0
+
         # update data
         if len(placeholder):
             db.update_item(

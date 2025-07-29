@@ -37,7 +37,7 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
             values['user_id'] = params.user_id
         if params.user_name:
             values['user_name'] = params.user_name
-        if params.user_avatar:
+        if params.user_avatar is not None:
             values['user_avatar'] = params.user_avatar
         if params.user_email:
             values['user_email'] = params.user_email
@@ -53,7 +53,7 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
             placeholders.append('user_id = :user_id')
         if 'user_name' in values and values['user_name']:
             placeholders.append('user_name = :user_name')
-        if 'user_avatar' in values and values['user_avatar']:
+        if 'user_avatar' in values and values['user_avatar'] is not None:
             placeholders.append('user_avatar = :user_avatar')
         if 'user_email' in values and values['user_email']:
             placeholders.append('user_email = :user_email')

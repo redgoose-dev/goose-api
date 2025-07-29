@@ -6,7 +6,10 @@ def setup_env():
     load_dotenv('.env')
     load_dotenv('.env.local', override=True)
 
-def get_authorization(req: Request):
+def get_authorization(req: Request, allow_query: bool = False) -> str|None:
+    if allow_query:
+        query = dict(req.query_params)
+        if query.get('_a'): return query['_a']
     return req.headers.get('authorization')
 
 def jprint(data: dict|list|str):

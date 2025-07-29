@@ -49,6 +49,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # get total
         total = db.get_count(
             table_name=Table.JSON.value,
+            column_name=f'DISTINCT {Table.JSON.value}.srl',
             where=where,
             join=join,
             values=values,
@@ -65,6 +66,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             order={ 'order': params.order, 'sort': params.sort },
             values=values,
             unlimited=params.unlimited,
+            duplicate=False,
         )
         def transform_item(item: dict) -> dict:
             if 'json' in item:

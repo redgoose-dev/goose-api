@@ -4,8 +4,6 @@ from src.libs.object import json_parse
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
 from . import __types__ as types
-from ..tag import __libs__ as tag_libs
-from ..category import __libs__ as category_libs
 
 async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -36,22 +34,16 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         if isinstance(data, dict):
             if 'json' in data: data['json'] = json_parse(data['json'])
 
-        # MOD / tag
-        if mod.check('tag'):
-            tag_index = tag_libs.get_index(
-                _db=db,
-                module=tag_libs.Module.JSON,
-                module_srl=params.srl,
+        # MOD / count-file
+        if mod.check('count-file'):
+            count = db.get_count(
+                table_name=Table.FILE.value,
+                where=[
+                    f'AND module=\'json\'',
+                    f'AND module_srl = {params.srl}',
+                ]
             )
-            data['tag'] = tag_index if tag_index and len(tag_index) > 0 else None
-
-        # MOD / category
-        if mod.check('category'):
-            data['category'] = category_libs.get_item(
-                _db=db,
-                srl=data.get('category_srl', 0),
-                fields=[ 'srl', 'name' ],
-            )
+            data['count_file'] = count or 0
 
         # set result
         result = output.success({

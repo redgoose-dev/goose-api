@@ -44,12 +44,14 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             fields=fields,
             where=where,
             limit={ 'size': params.size, 'page': params.page },
-            order = { 'order': params.order, 'sort': params.sort },
-            unlimited = params.unlimited,
+            order={ 'order': params.order, 'sort': params.sort },
+            unlimited=params.unlimited,
         )
         def transform_item(item: dict) -> dict:
             if 'json' in item:
                 item['json'] = json_parse(item['json'])
+            if 'path' in item:
+                del item['path']
             return item
         index = [ transform_item(item) for item in index ]
 

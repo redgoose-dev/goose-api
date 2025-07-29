@@ -82,7 +82,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set values
         values = {
             'name': file['name'],
-            'code': create_random_string(12),
+            'code': create_random_string(16),
             'path': file['path'],
             'mime': file['mime'],
             'size': len(file['content']),

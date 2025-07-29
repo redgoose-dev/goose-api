@@ -6,7 +6,7 @@ class Module:
 
 def check_module(db: DB, module: str, srl: int):
     match module:
-        case 'article':
+        case Module.ARTICLE:
             count = db.get_count(
                 table_name=Table.ARTICLE.value,
                 where=[ f'srl = {srl}' ],

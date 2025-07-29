@@ -22,7 +22,7 @@ PUT /comment/
 
 ```
 @content {str} message / 메시지
-@content {int} data / 댓글 srl 번호
+@content {dict} data / 댓글 데이터
 ```
 
 

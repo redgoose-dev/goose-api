@@ -15,23 +15,24 @@ async def put_item(req = None, _db: DB = None, _check_token = True, **kwargs):
 
         # check ready mode item
         item = db.get_item(
-            table_name = Table.ARTICLE.value,
-            fields=[ 'srl' ],
+            table_name=Table.ARTICLE.value,
             where=[ f'mode LIKE \'{Status.READY}\'' ],
         )
-        if item:
-            data = item.get('srl')
-        else:
+        if not item:
             data = db.add_item(
                 table_name=Table.ARTICLE.value,
                 placeholders=[ { 'key': 'mode', 'value': ':mode' } ],
                 values={ 'mode': Status.READY },
             )
+            item = db.get_item(
+                table_name=Table.ARTICLE.value,
+                where=[ f'AND srl = {data}' ],
+            )
 
         # set result
         result = output.success({
             'message': 'Complete add article.',
-            'data': data,
+            'data': item,
         }, _req=req)
     except Exception as e:
         result = output.exc(e, _req=req)

@@ -88,6 +88,7 @@ GET /checklist/{srl:int}/
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int} srl / [required] 체크리스트 srl 번호
 @query {str} fields / 조회할 필드
+@query {str} mod / MOD (tag,count-file)
 ```
 
 ### Response

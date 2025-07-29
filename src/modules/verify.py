@@ -3,10 +3,22 @@ from datetime import datetime, timedelta
 from src.libs.db import DB, Table
 from src.libs.util import get_authorization
 
-def checking_token(req: Request, db: DB, access_token: str = None, check_expires: bool = True) -> dict:
+
+def checking_token(req: Request, db: DB, access_token: str = None, check_expires: bool = True, allow_query: bool = False) -> dict:
+
+    """토큰을 검사한다.
+
+    :param req: 리퀘스트 객체
+    :param db: 데이터베이스 인스턴스 객체
+    :param access_token: 사용자 엑세스 토큰
+    :param check_expires: 만료시간 검사여부
+    :param allow_query: url 쿼리스트링에서 토큰을 허용할지 여부. ex) `/?_a=your_token`
+    :return: 엑세스 토큰 정보
+    :rtype: dict
+    """
 
     # set authorization and check exists
-    authorization = access_token or get_authorization(req)
+    authorization = access_token or get_authorization(req, allow_query)
     if not authorization: raise Exception('Authorization header not found.', 401)
 
     # get token

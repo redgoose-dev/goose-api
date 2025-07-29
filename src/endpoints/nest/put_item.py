@@ -19,7 +19,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # check parse json
         json_data = json_parse(params.json_data) if params.json_data else None
-        if params.json_data and not json_data: raise Exception('Invalid JSON data.', 400)
+        if params.json_data and json_data is None: raise Exception('Invalid JSON data.', 400)
 
         # check app_srl
         count = db.get_count(

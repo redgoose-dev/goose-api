@@ -36,6 +36,7 @@ POST /mix/
 | GET    | /app/{srl}/       | 앱 상세 데이터 조회     |
 | GET    | /article/         | 아티클 목록 조회       |
 | GET    | /article/{srl}/   | 아티클 상세 데이터 조회   |
+| PUT    | /article/         | 빈 아티클 만들거나 가져오기 |
 | GET    | /category/        | 카테고리 목록 조회      |
 | GET    | /category/{srl}/  | 카테고리 상세 데이터 조회  |
 | GET    | /checklist/       | 체크리스트 목록 조회     |
@@ -47,6 +48,7 @@ POST /mix/
 | GET    | /json/{srl}/      | JSON 상세 데이터 조회  |
 | GET    | /nest/            | 둥지 목록 조회        |
 | GET    | /nest/{srl}/      | 둥지 상세 데이터 조회    |
+| GET    | /tag/             | 태그 목록 조회        |
 
 
 ## 요청 JSON 예제
