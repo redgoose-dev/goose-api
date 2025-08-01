@@ -1,1 +1,13 @@
-pycache*.pyc *.pyo *.pyd .Python env/ venv/ .git .gitignore .DS_Store cmd.sh
+pycache*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.git
+.gitignore
+.DS_Store
+
+cmd.sh
+docker-compose.yml
+podman-compose.yml

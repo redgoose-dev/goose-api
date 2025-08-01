@@ -13,3 +13,4 @@ scripts/
 .env.*
 cmd.sh
 docker-compose.yml
+podman-compose.yml
