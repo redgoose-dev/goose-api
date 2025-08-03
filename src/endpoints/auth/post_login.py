@@ -42,12 +42,14 @@ async def post_login(params: dict = {}, req = None, _db: DB = None):
                 'access': new_token.get('access'),
                 'expires': new_token.get('expires'),
                 'refresh': new_token.get('refresh'),
+                'description': 'Password login',
             },
             placeholders=[
                 { 'key': 'provider_srl', 'value': ':provider_srl' },
                 { 'key': 'access', 'value': ':access' },
                 { 'key': 'expires', 'value': ':expires' },
                 { 'key': 'refresh', 'value': ':refresh' },
+                { 'key': 'description', 'value': ':description' },
                 { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
             ],
         )

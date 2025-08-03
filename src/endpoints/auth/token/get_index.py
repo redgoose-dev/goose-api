@@ -14,51 +14,44 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         params = types.GetIndex(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
-
-        # set fields
-        fields = params.fields.split(',') if params.fields else None
+        if _check_token: checking_token(req, db)
 
         # set where
-        where = []
-        if params.module:
-            where.append(f'and module LIKE \'{params.module}\'')
-        if params.module_srl:
-            where.append(f'and module_srl = {params.module_srl}')
-        if params.q:
-            where.append(f'and content LIKE "%{params.q}%"')
+        where = [ f'AND expires IS NULL' ]
+        if params.token: where.append(f'AND access LIKE :access')
 
         # set values
         values = {}
+        if params.token: values['access'] = params.token
 
         # get total
         total = db.get_count(
-            table_name=Table.COMMENT.value,
+            table_name=Table.TOKEN.value,
             where=where,
             values=values,
         )
-        if not (total > 0): raise Exception('No data', 204)
 
         # get data
         index = db.get_items(
-            table_name=Table.COMMENT.value,
-            fields=fields,
+            table_name=Table.TOKEN.value,
             where=where,
-            limit={
-                'size': params.size,
-                'page': params.page,
-            },
-            order={
-                'order': params.order,
-                'sort': params.sort,
-            },
             values=values,
-            unlimited=params.unlimited,
         )
+
+        # transform items
+        def transform_item(item: dict) -> dict:
+            return {
+                'srl': item['srl'],
+                'provider_srl': item['provider_srl'],
+                'access': item['access'],
+                'description': item['description'],
+                'created_at': item['created_at'],
+            }
+        index = [transform_item(item) for item in index]
 
         # set result
         result = output.success({
-            'message': 'Complete get comment index.',
+            'message': 'Complete get public tokens.',
             'data': {
                 'total': total,
                 'index': index,

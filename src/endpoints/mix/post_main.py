@@ -12,7 +12,7 @@ async def post_main(params: list = [], req = None, _check_token = True):
 
     try:
         # checking token
-        if _check_token: checking_token(req, db)
+        if _check_token: checking_token(req, db, use_public=True)
 
         # parsing requests
         requests = parse_requests(params)

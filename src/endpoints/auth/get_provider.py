@@ -6,7 +6,7 @@ from src.modules.verify import checking_token
 from . import __types__ as types
 from .provider import Provider
 
-async def post_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
     # set values
     result = None
@@ -14,7 +14,7 @@ async def post_provider(params: dict = {}, req = None, _db: DB = None, _check_to
 
     try:
         # set params
-        params = types.PostProviderItem(**params)
+        params = types.GetProviderItem(**params)
 
         # checking token
         token = checking_token(req, db) if _check_token else None

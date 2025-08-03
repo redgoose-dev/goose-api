@@ -6,6 +6,7 @@ class ProviderGoogle:
 
     # set values
     name = 'google'
+    type = 'OAuth'
     scope = 'openid email profile'
     header_type = 'Bearer'
     client_id = os.getenv('AUTH_GOOGLE_CLIENT_ID')

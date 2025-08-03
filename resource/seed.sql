@@ -134,6 +134,7 @@ CREATE TABLE `token` (
     `access` TEXT NOT NULL UNIQUE, -- access token
     `expires` INTEGER NOT NULL, -- expires_in timestamp
     `refresh` TEXT NULL, -- refresh token
+    `description` TEXT NULL, -- description
     `created_at` TEXT NOT NULL, -- created date
     FOREIGN KEY (`provider_srl`) REFERENCES `provider`(`srl`)
 );

@@ -32,10 +32,10 @@ class PutProvider(BaseModel):
     user_email: str
     user_password: str
 
-class PostProviderIndex(BaseModel):
+class GetProviderIndex(BaseModel):
     redirect_uri: str
 
-class PostProviderItem(BaseModel):
+class GetProviderItem(BaseModel):
     srl: Optional[int] = None
 
 class PatchProviderItem(BaseModel):

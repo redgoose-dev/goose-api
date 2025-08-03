@@ -47,6 +47,13 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
         )
 
         # add token
+        match _provider_.type:
+            case 'OAuth':
+                description = f'OAuth by {_provider_.name}'
+            case 'Password':
+                description = 'Password login'
+            case _:
+                description = None
         db.add_item(
             table_name=Table.TOKEN.value,
             values={
@@ -54,12 +61,14 @@ async def post_renew(params: dict = {}, req = None, _db: DB = None):
                 'access': new_token['access'],
                 'expires': new_token['expires'],
                 'refresh': new_token['refresh'],
+                'description': description,
             },
             placeholders=[
                 { 'key': 'provider_srl', 'value': ':provider_srl' },
                 { 'key': 'access', 'value': ':access' },
                 { 'key': 'expires', 'value': ':expires' },
                 { 'key': 'refresh', 'value': ':refresh' },
+                { 'key': 'description', 'value': ':description' },
                 { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
             ],
         )

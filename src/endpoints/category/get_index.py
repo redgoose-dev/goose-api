@@ -17,10 +17,8 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         # set params
         params = types.GetIndex(**params)
 
-        print('@@@@@@@@@@@@@@@@@@@', params)
-
         # checking token
-        if _check_token: checking_token(req, db)
+        if _check_token: checking_token(req, db, use_public=True)
 
         # set fields
         fields = params.fields.split(',') if params.fields else None

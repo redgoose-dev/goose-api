@@ -5,6 +5,7 @@ class ProviderPassword:
 
     # set values
     name = 'password'
+    type = 'Password'
 
     @staticmethod
     def hash_password(pw: str, salt: bytes = None) -> str:
@@ -26,11 +27,11 @@ class ProviderPassword:
         return stored_hash == hash_object
 
     @staticmethod
-    def new_token(mode: str) -> str:
+    def new_token(mode: str, side_keyword: str = 'xx') -> str:
         current_time = str(int(time.time()))
         token_data = mode + current_time + mode
         token_hash = hashlib.sha256(token_data.encode('utf-8')).hexdigest()
-        return 'xx' + token_hash[4:28] + 'xx' if mode == 'access' else token_hash
+        return side_keyword + token_hash[4:28] + side_keyword if mode == 'access' else token_hash
 
     @staticmethod
     def create_token() -> dict:

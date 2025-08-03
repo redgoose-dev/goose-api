@@ -29,6 +29,6 @@ def delete(db: DB, srl: int):
     tag_libs.delete(db, tag_libs.Module.ARTICLE, srl)
     # article data
     db.delete_item(
-        table_name = Table.ARTICLE.value,
-        where = [ f'srl = {srl}' ],
+        table_name=Table.ARTICLE.value,
+        where=[ f'srl = {srl}' ],
     )

@@ -85,25 +85,26 @@ async def _post_logout(req: Request):
     from .post_logout import post_logout
     return await post_logout(req=req)
 
+
 # 프로바이더 목록
-@router.post('/providers/')
-async def _post_providers(
+@router.get('/providers/')
+async def _get_providers(
     req: Request,
-    redirect_uri: str = Form(..., pattern=Patterns.url),
+    redirect_uri: str = Query(..., pattern=Patterns.url),
 ):
-    from .post_providers import post_providers
-    return await post_providers({
+    from .get_providers import get_providers
+    return await get_providers({
         'redirect_uri': redirect_uri,
     }, req=req)
 
 # 프로바이더 상세정보
-@router.post('/provider/')
-async def _post_provider(
+@router.get('/provider/{srl:int}/')
+async def _get_provider(
     req: Request,
-    srl: int = Form(None),
+    srl: int,
 ):
-    from .post_provider import post_provider
-    return await post_provider({
+    from .get_provider import get_provider
+    return await get_provider({
         'srl': srl,
     }, req=req)
 
@@ -126,7 +127,7 @@ async def _put_provider(
         'user_password': user_password,
     }, req=req)
 
-# 프로바이더 수정
+# 패스워드 타입의 프로바이더 수정
 @router.patch('/provider/{srl:int}/')
 async def _patch_provider(
     req: Request,
@@ -151,12 +152,60 @@ async def _patch_provider(
 @router.delete('/provider/{srl:int}/')
 async def _delete_provider(
     req: Request,
-    srl: int
+    srl: int,
 ):
     from .delete_provider import delete_provider
     return await delete_provider({
         'srl': srl,
     }, req=req)
+
+
+# 공개용 토큰 만들기
+@router.put('/token/')
+async def _put_token(
+    req: Request,
+    description: str = Form(None),
+):
+    from .token.put_item import put_item as put_token
+    return await put_token({
+        'description': description,
+    }, req=req)
+
+# 공개용 토큰 목록
+@router.get('/token/')
+async def _get_tokens(
+    req: Request,
+    token: str = Query(None),
+):
+    from .token.get_index import get_index as get_tokens
+    return await get_tokens({
+        'token': token,
+    }, req=req)
+
+# 공개용 토큰 수정하기
+@router.patch('/token/{srl:int}/')
+async def _delete_token(
+    req: Request,
+    srl: int,
+    description: str = Form(None),
+):
+    from .token.patch_item import patch_item as patch_token
+    return await patch_token({
+        'srl': srl,
+        'description': description,
+    }, req=req)
+
+# 공개용 토큰 만료시키기
+@router.delete('/token/{srl:int}/')
+async def _delete_token(
+    req: Request,
+    srl: int,
+):
+    from .token.delete_item import delete_item as delete_token
+    return await delete_token({
+        'srl': srl,
+    }, req=req)
+
 
 # 프로바이더 인증 웹소켓
 @router.websocket('/ws/{socket_id:str}/')

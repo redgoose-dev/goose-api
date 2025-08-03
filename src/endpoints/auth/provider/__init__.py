@@ -14,6 +14,7 @@ class Provider:
 
     # set values
     name = ''
+    type = ''
     scope = ''
     header_type = ''
     client_id = ''

@@ -6,6 +6,7 @@ class ProviderDiscord:
 
     # set values
     name = 'discord'
+    type = 'OAuth'
     scope = 'identify email'
     header_type = 'Bearer'
     client_id = os.getenv('AUTH_DISCORD_CLIENT_ID')

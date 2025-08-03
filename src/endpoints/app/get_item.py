@@ -16,7 +16,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.GetItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        if _check_token: checking_token(req, db, use_public=True)
 
         # set srl
         srl: Optional[int] = None

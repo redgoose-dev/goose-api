@@ -73,12 +73,14 @@ async def put_provider(params: dict = {}, req = None, _db: DB = None, _check_tok
                 'access': new_token['access'],
                 'expires': new_token['expires'],
                 'refresh': new_token['refresh'],
+                'description': 'Password login',
             },
             placeholders = [
                 { 'key': 'provider_srl', 'value': ':provider_srl' },
                 { 'key': 'access', 'value': ':access' },
                 { 'key': 'expires', 'value': ':expires' },
                 { 'key': 'refresh', 'value': ':refresh' },
+                { 'key': 'description', 'value': ':description' },
                 { 'key': 'created_at', 'value': 'DATETIME("now", "localtime")' },
             ],
         )

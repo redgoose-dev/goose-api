@@ -6,6 +6,7 @@ class ProviderGithub:
 
     # set values
     name = 'github'
+    type = 'OAuth'
     scope = 'user'
     header_type = 'Bearer'
     client_id = os.getenv('AUTH_GITHUB_CLIENT_ID')

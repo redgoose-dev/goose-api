@@ -94,19 +94,19 @@ PATCH /auth/provider/{srl:int}/
 ### 목록 가져오기
 
 ```
-POST /auth/providers/
+GET /auth/providers/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@data {str} redirect_uri / [required] 인증을 끝내고 돌아올 클라이언트 URL 주소입니다.
+@query {str} redirect_uri / [required] 인증을 끝내고 돌아올 클라이언트 URL 주소입니다.
 ```
 
 ### 상세정보 가져오기
 
 ```
-POST /auth/provider/
+GET /auth/provider/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
-@data {int} srl / 프로바이더 srl 번호
+@param {int} srl / 프로바이더 srl 번호
 ```
 
 ### 제거하기
@@ -161,6 +161,46 @@ POST /auth/renew/
 @headers {str} Authorization / [required] 액세스 토큰
 @data {str} provider / [required] 프로바이더 코드
 @data {str} refresh / [required] 리프레시 토큰
+```
+
+### 공개용 엑세스 토큰
+
+공개 영역에서 사용할 수 있는 엑세스 토큰을 관리합니다.
+이 토큰은 인증이 필요하지 않으며 일부 기능만 이용할 수 있습니다.
+
+#### 만들기
+
+```
+PUT /auth/token/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@data {str} description / 토큰 설명
+```
+
+#### 조회
+
+```
+GET /auth/token/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@query {str} token / 토큰
+```
+
+#### 설명 업데이트
+
+```
+PATCH /auth/token/{srl:int}/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@data {str} description / 토큰 설명
+```
+
+#### 만료시키기
+
+```
+DELETE /auth/token/{srl:int}/
+
+@headers {str} Authorization / [required] 액세스 토큰
 ```
 
 
