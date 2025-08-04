@@ -175,11 +175,17 @@ async def _put_token(
 @router.get('/token/')
 async def _get_tokens(
     req: Request,
+    order: str = Query('srl'),
+    sort: str = Query('desc', pattern=Patterns.fields),
     token: str = Query(None),
+    mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .token.get_index import get_index as get_tokens
     return await get_tokens({
+        'order': order,
+        'sort': sort,
         'token': token,
+        'mod': mod,
     }, req=req)
 
 # 공개용 토큰 수정하기

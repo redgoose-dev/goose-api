@@ -183,7 +183,10 @@ PUT /auth/token/
 GET /auth/token/
 
 @headers {str} Authorization / [required] 액세스 토큰
+@query {str} order='srl' / 정렬 기준 필드
+@query {str} sort='desc' / 정렬 방식 (asc,desc)
 @query {str} token / 토큰
+@query {str} mod / 모드 (provider)
 ```
 
 #### 설명 업데이트

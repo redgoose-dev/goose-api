@@ -2,6 +2,7 @@ from . import __types__ as types
 from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
+from src.modules.mod import MOD
 
 async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
 
@@ -15,6 +16,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
 
         # checking token
         if _check_token: checking_token(req, db)
+
+        # set mod
+        mod = MOD(params.mod or '')
 
         # set where
         where = [ f'AND expires IS NULL' ]
@@ -36,18 +40,29 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
             table_name=Table.TOKEN.value,
             where=where,
             values=values,
+            limit={ 'size': 24, 'page': 1 },
+            order={ 'order': params.order, 'sort': params.sort },
+            unlimited=True,
         )
 
         # transform items
         def transform_item(item: dict) -> dict:
-            return {
+            _item = {
                 'srl': item['srl'],
                 'provider_srl': item['provider_srl'],
                 'access': item['access'],
                 'description': item['description'],
                 'created_at': item['created_at'],
             }
-        index = [transform_item(item) for item in index]
+            # MOD / provider
+            if mod.check('provider'):
+                _item['provider'] = db.get_item(
+                    table_name=Table.PROVIDER.value,
+                    where=[ f'AND srl = {item.get('provider_srl')}' ]
+                )
+                del _item['provider']['user_password']
+            return _item
+        index = [ transform_item(item) for item in index ]
 
         # set result
         result = output.success({
