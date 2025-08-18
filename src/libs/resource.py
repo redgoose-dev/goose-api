@@ -16,6 +16,7 @@ class Patterns:
     article_mode = r'^(ready|public|private)$'
     article_duration = r'^(new|old),(regdate|created_at|updated_at),(day|week|month|year)'
     article_random = r'^\d{8}$'
+    article_up_mode = r'^(hit|star)$'
     # category
     category_module = r'^(nest|json)$'
     # comment

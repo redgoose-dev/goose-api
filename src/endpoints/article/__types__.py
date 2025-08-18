@@ -30,8 +30,6 @@ class PatchItem(BaseModel):
     category_srl: Optional[int] = None
     title: Optional[str] = None
     content: Optional[str] = None
-    hit: Optional[bool] = False
-    star: Optional[bool] = False
     json_data: Optional[str] = None
     tag: Optional[str] = None
     mode: Optional[str] = None
@@ -44,3 +42,7 @@ class PatchChangeSrl(BaseModel):
     srl: int
     app_srl: Optional[int] = None
     nest_srl: Optional[int] = None
+
+class PatchUp(BaseModel):
+    srl: int
+    mode: Optional[str] = None # 'hit' or 'star'

@@ -40,8 +40,6 @@ PATCH /article/{srl:int}/
 @data {int} category / 카테고리 srl 번호
 @data {str} title / 제목
 @data {str} content / 내용. 마크다운 형식으로 작성
-@data {bool} hit=False / 조회수를 증가시킬지의 여부 (1,0)
-@data {bool} star=False / 좋아요 수를 증가시킬지의 여부 (1,0)
 @data {str} json / JSON 데이터
 @data {str} tag / 태그 / ex) tag1,tag2,tag3
 @data {str} mode / 모드 (public,private)
@@ -155,4 +153,25 @@ PATCH /article/{srl:int}/change-srl/
 
 ```
 @content {str} message / 메시지
+```
+
+
+## patch_up.py
+
+조회수(hit), 좋아요(star) 수를 증가시킵니다.
+
+### Request
+
+```
+PATCH /article/{srl:int}/up/
+
+@param {int} srl / 아티클 srl 번호
+@data {str} mode / 필드이름 / ex) hit,star
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+@content {int} count / 증가된 수
 ```

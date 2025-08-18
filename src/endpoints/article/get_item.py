@@ -42,8 +42,12 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # MOD / hit or star
         if mod.check('up-hit') or mod.check('up-star'):
             placeholder = []
-            if mod.check('up-hit'): placeholder.append('hit = hit + 1')
-            if mod.check('up-star'): placeholder.append('star = star + 1')
+            if mod.check('up-hit'):
+                placeholder.append('hit = hit + 1')
+                if data.get('hit'): data['hit'] += 1
+            if mod.check('up-star'):
+                placeholder.append('star = star + 1')
+                if data.get('star'): data['star'] += 1
 
         # MOD / count-file
         if mod.check('count-file'):

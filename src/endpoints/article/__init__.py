@@ -75,8 +75,6 @@ async def _patch_item(
     category_srl: int = Form(None, alias='category'),
     title: str = Form(None),
     content: str = Form(None),
-    hit: bool = Form(False, convert=lambda v: bool(int(v))),
-    star: bool = Form(False, convert=lambda v: bool(int(v))),
     json_data: str = Form(None, alias='json'),
     mode: str = Form(None, pattern=Patterns.article_mode),
     regdate: str = Form(None, pattern=Patterns.date),
@@ -90,8 +88,6 @@ async def _patch_item(
         'category_srl': category_srl,
         'title': title,
         'content': content,
-        'hit': hit,
-        'star': star,
         'json_data': json_data,
         'mode': mode,
         'regdate': regdate,
@@ -122,4 +118,17 @@ async def _patch_change_srl(
         'srl': srl,
         'app_srl': app_srl,
         'nest_srl': nest_srl,
+    }, req=req)
+
+# update up count
+@router.patch('/{srl:int}/up/')
+async def _patch_up(
+    req: Request,
+    srl: int,
+    mode: str = Form(None, pattern=Patterns.article_up_mode),
+):
+    from .patch_up import patch_up
+    return await patch_up({
+        'srl': srl,
+        'mode': mode,
     }, req=req)

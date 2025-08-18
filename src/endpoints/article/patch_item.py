@@ -22,7 +22,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         # get item
         item = db.get_item(
             table_name=Table.ARTICLE.value,
-            fields=[ 'srl', 'mode', 'regdate', 'hit', 'star' ],
+            fields=[ 'srl', 'mode', 'regdate' ],
             where=[ f'srl = {params.srl}' ],
         )
         if not item: raise Exception('Not found article.', 204)
@@ -75,10 +75,6 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             values['title'] = params.title
         if params.content:
             values['content'] = params.content
-        if params.hit:
-            values['hit'] = item['hit'] + 1
-        if params.star:
-            values['star'] = item['star'] + 1
         if json_data:
             values['json'] = json_stringify(json_data)
         if params.mode:
@@ -104,10 +100,6 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
             placeholders.append('title = :title')
         if 'content' in values:
             placeholders.append('content = :content')
-        if 'hit' in values:
-            placeholders.append('hit = :hit')
-        if 'star' in values:
-            placeholders.append('star = :star')
         if 'json' in values:
             placeholders.append('json = :json')
         if 'mode' in values:
