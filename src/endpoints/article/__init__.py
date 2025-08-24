@@ -50,12 +50,14 @@ async def _get_item(
     req: Request,
     srl: int,
     fields: str = Query(None, pattern=Patterns.fields),
+    app_srl: int = Query(None, alias='app'),
     mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_item import get_item
     return await get_item({
         'srl': srl,
         'fields': fields,
+        'app_srl': app_srl,
         'mod': mod,
     }, req=req)
 

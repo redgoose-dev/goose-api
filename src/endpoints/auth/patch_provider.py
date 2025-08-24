@@ -4,7 +4,7 @@ from src.modules.verify import checking_token
 from . import __types__ as types
 from .provider.password import ProviderPassword
 
-async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_provider(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _check_t
         params = types.PatchProviderItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # check data
         count = db.get_count(

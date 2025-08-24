@@ -9,7 +9,7 @@ hit, star 값을 증가한다.
 @param {int} params.srl
 @param {'hit'|'star'} params.mode
 """
-async def patch_up(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_up(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -20,7 +20,7 @@ async def patch_up(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.PatchUp(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # get item
         item = db.get_item(

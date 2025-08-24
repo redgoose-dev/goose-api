@@ -79,6 +79,7 @@ def parse_requests(data: list) -> dict:
         if route:
             result[item['key']] = {}
             result[item['key']]['func'] = route
+            result[item['key']]['if'] = item.get('if', None)
             params = item['params'] if 'params' in item else {}
             result[item['key']]['params'] = { **params }
         else:
@@ -98,3 +99,15 @@ def parse_params(params: dict, data: dict = {}) -> dict:
             elif value is None:
                 del params[key]
     return params
+
+def check_if(condition: str, data: dict = {}) -> bool:
+    if not condition: return False
+    match condition.lower():
+        case 'true':
+            return False
+        case 'false':
+            return True
+        case _:
+            pattern = re.compile(r'^\{\{(.*)\}\}$')
+            match = pattern.match(condition) if isinstance(condition, str) else None
+            return get_value_dict(data, match.group(1)) is None

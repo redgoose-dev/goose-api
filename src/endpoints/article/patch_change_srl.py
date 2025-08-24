@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -14,7 +14,7 @@ async def patch_change_srl(params: dict = {}, req = None, _db: DB = None, _check
         params = types.PatchChangeSrl(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # get article
         item = db.get_item(

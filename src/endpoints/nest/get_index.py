@@ -7,7 +7,7 @@ from src.modules.mod import MOD
 from ..app import __libs__ as app_libs
 from ..article import __libs__ as article_libs
 
-async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_index(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -18,7 +18,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         params = types.GetIndex(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # set fields
         fields = params.fields.split(',') if params.fields else None

@@ -2,7 +2,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def post_logout(req = None, _db: DB = None, _check_token = True):
+async def post_logout(req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -10,7 +10,7 @@ async def post_logout(req = None, _db: DB = None, _check_token = True):
 
     try:
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # get authorization
         authorization = req.headers.get('authorization')

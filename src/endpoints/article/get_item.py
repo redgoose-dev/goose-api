@@ -4,9 +4,8 @@ from src.libs.object import json_parse
 from src.modules.verify import checking_token
 from src.modules.mod import MOD
 from . import __types__ as types, __libs__ as article_libs
-from ..tag import __libs__ as tag_libs
 
-async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -18,7 +17,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         placeholder = []
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
@@ -26,14 +25,20 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         # set mod
         mod = MOD(params.mod or '')
 
-        # set data
+        # set data assets
+        where = [ f'AND srl = {params.srl}' ]
+        if params.app_srl:
+            where.append(f'AND app_srl = {params.app_srl}')
+        if token['public']:
+            where.append(f'AND mode LIKE \'public\'')
+        else:
+            where.append(f'AND mode NOT LIKE \'{article_libs.Status.READY}\'')
+
+        # get data
         data = db.get_item(
             table_name=Table.ARTICLE.value,
             fields=fields,
-            where=[
-                f'AND srl = {params.srl}',
-                f'AND mode NOT LIKE \'{article_libs.Status.READY}\''
-            ],
+            where=where,
         )
         if not data: raise Exception('no data', 204)
         if data and isinstance(data, dict):

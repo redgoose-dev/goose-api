@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from ..provider.password import ProviderPassword
 
-async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def put_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.PutItem(**params)
 
         # checking token
-        token = checking_token(req, db) if _check_token else None
+        token = checking_token(req, db) if not _token else _token
 
         # check provider_srl
         if not (token and token.get('provider_srl')):

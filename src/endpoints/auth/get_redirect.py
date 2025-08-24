@@ -12,7 +12,7 @@ OAuth 서비스로 리다이렉트한다.
 GET /auth/redirect/discord/?redirect_uri={CLIENT_REDIRECT_URI}
 """
 
-async def get_redirect(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_redirect(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None

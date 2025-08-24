@@ -8,7 +8,7 @@ from . import __types__ as types
 from .provider import Provider
 from .ws_index import close_websocket_after_delay, ws_clients
 
-async def get_callback(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_callback(params: dict = {}, req = None, _db: DB = None):
 
     # set values
     result = None

@@ -35,9 +35,12 @@ def checking_token(
     )
     if not token: raise Exception('Token not found.', 401)
 
+    # set public token flag
+    token['public'] = token.get('expires') is None
+
     # 만료시간 검사하기
     if check_expires:
-        if token.get('expires') is 0: raise Exception('Expired token.', 401)
+        if token.get('expires') == 0: raise Exception('Expired token.', 401)
         if not use_public:
             expires = token.get('expires') or 0
             exp_time = datetime.strptime(token['created_at'], '%Y-%m-%d %H:%M:%S') + timedelta(seconds = expires)

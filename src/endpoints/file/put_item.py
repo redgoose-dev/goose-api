@@ -7,7 +7,7 @@ from src.libs.string import create_random_string
 from src.modules.verify import checking_token
 from src.modules.preference import Preference
 
-async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def put_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -25,7 +25,7 @@ async def put_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.PutItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # check parse json
         json_data = json_parse(params.json_data) if params.json_data else {}

@@ -104,6 +104,7 @@ GET /article/{srl:int}/
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
+@query {int} app / 앱 srl 번호
 @query {str} mod / MOD (up-hit,up-star,count-file)
 ```
 

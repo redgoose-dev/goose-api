@@ -6,7 +6,7 @@ from src.modules.verify import checking_token
 from . import __types__ as types
 from .provider import Provider
 
-async def get_providers(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_providers(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -17,7 +17,7 @@ async def get_providers(params: dict = {}, req = None, _db: DB = None, _check_to
         params = types.GetProviderIndex(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # get providers
         providers = Provider.get_providers()

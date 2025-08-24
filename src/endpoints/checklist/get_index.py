@@ -5,7 +5,7 @@ from src.modules.mod import MOD
 from . import __types__ as types
 from ..tag import __libs__ as tag_libs
 
-async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_index(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -16,7 +16,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         params = types.GetIndex(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # set fields
         fields = params.fields.split(',') if params.fields else None

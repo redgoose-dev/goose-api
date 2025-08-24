@@ -3,7 +3,7 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from .__libs__ import Status
 
-async def put_item(req = None, _db: DB = None, _check_token = True, **kwargs):
+async def put_item(req = None, _db: DB = None, _token = None, **kwargs):
 
     # set values
     result = None
@@ -11,7 +11,7 @@ async def put_item(req = None, _db: DB = None, _check_token = True, **kwargs):
 
     try:
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # check ready mode item
         item = db.get_item(

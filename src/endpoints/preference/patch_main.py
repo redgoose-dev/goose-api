@@ -5,7 +5,7 @@ from src.modules.preference import Preference
 from src.libs.object import json_parse
 from . import __types__ as types
 
-async def patch_main(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_main(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -16,7 +16,7 @@ async def patch_main(params: dict = {}, req = None, _db: DB = None, _check_token
         params = types.PatchMain(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # set preference
         pref = Preference()

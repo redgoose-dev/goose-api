@@ -15,6 +15,7 @@ class GetIndex(BaseModel):
 
 class GetItem(BaseModel):
     srl: int|str
+    app_srl: Optional[int] = None
     fields: Optional[str] = None
     mod: Optional[str] = None
 

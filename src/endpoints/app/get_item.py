@@ -5,7 +5,7 @@ from src.modules.verify import checking_token
 from src.modules.mod import MOD
 from . import __types__ as types
 
-async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -16,7 +16,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.GetItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # set srl
         srl: Optional[int] = None

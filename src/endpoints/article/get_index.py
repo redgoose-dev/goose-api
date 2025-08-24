@@ -6,7 +6,7 @@ from src.modules.verify import checking_token
 from src.modules.mod import MOD
 from . import __types__ as types
 
-async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_index(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -17,7 +17,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
         params = types.GetIndex(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # set fields
         fields = params.fields.split(',') if params.fields else None
@@ -42,7 +42,9 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _check_token 
                 where.append(f'AND category_srl IS NULL')
         if params.q:
             where.append(f'AND (title LIKE "%{params.q}%" OR content LIKE "%{params.q}%")')
-        if params.mode:
+        if token['public']:
+            where.append(f'AND mode LIKE \'public\'')
+        elif params.mode:
             where.append(f'AND mode LIKE \'{params.mode}\'')
 
         # set tag

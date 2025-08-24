@@ -4,7 +4,7 @@ from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 from . import __libs__ as category_libs
 
-async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def patch_change_order(params: dict = {}, req = None, _db: DB = None, _che
         params = types.PatchChangeOrder(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # check module
         category_libs.check_module(db, params.module, params.module_srl)

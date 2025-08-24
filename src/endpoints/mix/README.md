@@ -184,6 +184,32 @@ Response
 }
 ```
 
+### 예제 4) 블록 실행을 막기
+
+특정 조건으로 블록 실행을 막고 싶다면 조건문을 사용할 수 있습니다.
+`true`, `false` 값으로 사용할 수 있으며 이전에 실행되었던 블록에서 값이 존재하는지에 따라 조건문을 `{{home.message}}` 형식으로 사용할 수 있습니다.
+
+```json
+[
+  {
+    "key": "home",
+    "url": "/"
+  },
+  {
+    "key": "home-true",
+    "if": "true"
+  },
+  {
+    "key": "home-false",
+    "if": "false"
+  },
+  {
+    "key": "home-field",
+    "if": "{{home.message}}"
+  }
+]
+```
+
 
 ## 파라메터 키값 ALIAS
 

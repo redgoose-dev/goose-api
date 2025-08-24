@@ -95,6 +95,7 @@ GET /nest/{srl:int}/
 
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int|str} srl / [required] 둥지 srl 번호나 코드
+@query {int} app / 앱 srl 번호
 @query {str} fields / 조회할 필드
 @query {str} mod / MOD ()
 ```

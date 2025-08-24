@@ -4,7 +4,7 @@ from src.modules.verify import checking_token
 from . import __types__ as types, __libs__ as comment_libs
 from ..file import __libs__ as file_libs
 
-async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def delete_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -15,7 +15,7 @@ async def delete_item(params: dict = {}, req = None, _db: DB = None, _check_toke
         params = types.DeleteItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # get item
         item = db.get_item(

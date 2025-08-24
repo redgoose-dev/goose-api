@@ -3,7 +3,7 @@ from src import output
 from src.libs.db import DB, Table
 from src.modules.verify import checking_token
 
-async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def patch_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -14,7 +14,7 @@ async def patch_item(params: dict = {}, req = None, _db: DB = None, _check_token
         params = types.PatchItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db)
+        token = checking_token(req, db) if not _token else _token
 
         # get token count
         count = db.get_count(

@@ -38,12 +38,14 @@ async def _get_index(
 async def _get_item(
     req: Request,
     srl: int|str,
+    app_srl: int = Query(None, alias='app'),
     fields: str = Query(None, pattern=Patterns.fields),
     mod: str = Query(None, pattern=Patterns.mod),
 ):
     from .get_item import get_item
     return await get_item({
         'srl': srl,
+        'app_srl': app_srl,
         'fields': fields,
         'mod': mod,
     }, req=req)

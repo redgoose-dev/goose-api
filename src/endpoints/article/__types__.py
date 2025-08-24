@@ -21,6 +21,7 @@ class GetIndex(BaseModel):
 class GetItem(BaseModel):
     srl: int
     fields: Optional[str] = None
+    app_srl: Optional[int] = None
     mod: Optional[str] = None
 
 class PatchItem(BaseModel):

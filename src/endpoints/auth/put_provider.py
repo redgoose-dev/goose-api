@@ -5,7 +5,7 @@ from src.modules.verify import checking_token
 from .provider.password import ProviderPassword
 from .provider import Provider
 
-async def put_provider(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def put_provider(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -29,7 +29,7 @@ async def put_provider(params: dict = {}, req = None, _db: DB = None, _check_tok
         count = db.get_count(
             table_name=Table.PROVIDER.value,
         )
-        if count > 0 and _check_token: checking_token(req, db)
+        if count > 0 and not _token: checking_token(req, db)
 
         # set password
         password = ProviderPassword.hash_password(params.user_password)

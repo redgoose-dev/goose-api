@@ -8,7 +8,7 @@ from src.modules.mod import MOD
 from ..app import __libs__ as app_libs
 from ..article import __libs__ as article_libs
 
-async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token = True):
+async def get_item(params: dict = {}, req = None, _db: DB = None, _token = None):
 
     # set values
     result = None
@@ -19,7 +19,7 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
         params = types.GetItem(**params)
 
         # checking token
-        if _check_token: checking_token(req, db, use_public=True)
+        token = checking_token(req, db, use_public=True) if not _token else _token
 
         # set srl
         srl: Optional[int] = None
@@ -35,8 +35,12 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _check_token =
 
         # set where
         where = []
-        if srl: where.append(f'and srl = {srl}')
-        if code: where.append(f'and code LIKE \'{code}\'')
+        if srl:
+            where.append(f'and srl = {srl}')
+        if code:
+            where.append(f'and code LIKE \'{code}\'')
+        if params.app_srl:
+            where.append(f'and app_srl = {params.app_srl}')
 
         # get data
         data = db.get_item(
