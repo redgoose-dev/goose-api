@@ -26,7 +26,10 @@ async def get_item(params: dict = {}, req = None, _db: DB = None, _token = None)
         mod = MOD(params.mod or '')
 
         # set data assets
-        where = [ f'AND srl = {params.srl}' ]
+        where = [
+            f'AND srl = {params.srl}',
+            'AND mode NOT LIKE \'ready\''
+        ]
         if params.app_srl:
             where.append(f'AND app_srl = {params.app_srl}')
         if token['public']:

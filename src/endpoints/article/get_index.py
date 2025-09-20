@@ -31,6 +31,7 @@ async def get_index(params: dict = {}, req = None, _db: DB = None, _token = None
         join = []
 
         # set base params
+        where.append('AND mode NOT LIKE \'ready\'')
         if params.app_srl:
             where.append(f'AND app_srl = {params.app_srl}')
         if params.nest_srl:
