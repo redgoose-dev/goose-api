@@ -1,4 +1,4 @@
-import os, io, json, mimetypes, pillow_avif
+import os, io, json, mimetypes
 from PIL import Image
 from datetime import datetime
 from pathlib import Path

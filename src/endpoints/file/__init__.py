@@ -62,7 +62,7 @@ async def _put_item(
     dir_name: str = Form(default='origin'),
     file: UploadFile = File(...),
     json_data: str = Form(default='{}', alias='json'),
-    file_format: str = Form(None, alias='format'), # image/webp,image/avif
+    file_format: str = Form(None, alias='format'), # image/webp
     file_quality: int = Form(90, gt=1, le=100, alias='quality'), # 0 ~ 100
 ):
     from .put_item import put_item
@@ -84,7 +84,7 @@ async def _patch_item(
     dir_name: str = Form(default='origin'),
     file: UploadFile = File(None),
     json_data: str = Form(None, alias='json'),
-    file_format: str = Form(None, alias='format'), # image/webp,image/avif
+    file_format: str = Form(None, alias='format'), # image/webp
     file_quality: int = Form(95, gt=1, le=100, alias='quality'), # 0 ~ 100
 ):
     from .patch_item import patch_item

@@ -18,7 +18,7 @@ PUT /file/
 @data {str} dir_name='origin' / 업로드 디렉토리 이름
 @data {File} file / [required] 파일
 @data {str} json / JSON 데이터
-@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp,image/avif)
+@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp)
 @data {int} quality=90 / 이미지 품질 (0~100)
 ```
 
@@ -46,7 +46,7 @@ PATCH /file/{srl:int}/
 @data {str} dir_name='origin' / 업로드 디렉토리 이름
 @data {File} file / 파일
 @data {str} json / JSON 데이터
-@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp,image/avif)
+@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp)
 @data {int} quality=90 / 이미지 품질 (0~100)
 ```
 

@@ -1,4 +1,4 @@
-import os, io, json, pillow_avif
+import os, io, json
 from typing import Optional
 from PIL import Image, ImageOps
 from src import libs, output, __DEV__
@@ -209,7 +209,7 @@ async def resize_image(path: str, code: str, tail: dict, mime: str) -> dict:
                 if not _w: _w = _h
                 if not _h: _h = _w
                 image = ImageOps.fit(image, (_w, _h), method=_resample)
-        _format = 'webp' if _q > 85 else 'avif'
+        _format = 'webp' if _q > 85 else 'jpeg'
         # save buffer
         output_io = io.BytesIO()
         image.save(output_io, format=_format, quality=_q)
