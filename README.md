@@ -20,14 +20,28 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 
 # install app
-./scripts/util.sh install
+uv run install.py
 
 # run server
 uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
-./scripts/util.sh dev # run shell script
 ```
 
 서버 스크립트 실행은 [main.py](main.py)파일에서 시작합니다.
+
+
+## Add password provider
+
+API를 설치하고 계정이 하나도 없어서 로그인을 할 수 없습니다.
+OAuth로 프로바이더를 등록하는 방법도 있지만 서버를 띄우고 curl로 요청을 보내서 비밀번호 프로바이더를 만들 수 있습니다.
+
+먼저 로컬서버를 띄우고 다음과 같이 명령어 내용을 수정하고 실행합니다.
+
+```shell
+curl -X PUT "http://localhost:{PORT}/auth/provider/" \
+     -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
+     -d "id={ID}&name={NAME}&password={PASSWORD}&email={EMAIL}"
+```
+
 
 ## Tech Stack
 
