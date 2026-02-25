@@ -76,4 +76,5 @@ async def patch_provider(params: dict = {}, req = None, _db: DB = None, _token =
         result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
-        return result
+
+    return result

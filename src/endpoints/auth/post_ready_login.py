@@ -47,4 +47,5 @@ async def post_ready_login(params: dict = {}, req = None, _db: DB = None):
         result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
-        return result
+
+    return result

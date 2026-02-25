@@ -171,4 +171,5 @@ async def get_callback(params: dict = {}, req = None, _db: DB = None):
             result = output.redirect(f'{state['redirect_uri']}?{urlencode(qs)}', _req=req)
     finally:
         if not _db and db: db.disconnect()
-        return result
+
+    return result

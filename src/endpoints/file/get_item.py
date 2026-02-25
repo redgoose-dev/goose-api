@@ -143,7 +143,8 @@ async def get_item(params: dict = {}, req = None, _db: DB = None):
         result = output.exc(e, _req=req)
     finally:
         if not _db and db: db.disconnect()
-        return result
+
+    return result
 
 def make_tail(_w: int, _h: int, _t: str, _q: int) -> dict|None:
     min_size = 50

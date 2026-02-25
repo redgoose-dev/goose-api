@@ -44,4 +44,5 @@ async def post_checking(req: Request, _db: DB = None):
             result = output.empty({ 'code': 401 }, _req=req, _log=False)
     finally:
         if not _db and db: db.disconnect()
-        return result
+
+    return result
