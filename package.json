@@ -1,0 +1,18 @@
+{
+  "name": "goose-api",
+  "version": "2.1.0",
+  "module": "src/main.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --bun src/main.ts",
+    "preview": "NODE_ENV=production bun run --bun dist/main.js"
+  },
+  "dependencies": {
+    "elysia": "^1.4.28"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^6.0.3"
+  }
+}
