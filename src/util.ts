@@ -1,9 +1,10 @@
 import { rm, mkdir, exists, readdir, cp } from 'node:fs/promises'
 import { Database } from 'bun:sqlite'
 import minimist from 'minimist'
+import ProviderPassword from '@/classes/provider/Password'
 import { PROVIDER_CODE } from '@/libs/provider'
 import { prompt, message } from '@/libs/cli'
-import ProviderPassword from '@/classes/provider/Password'
+import { verifyEmail, verifyId } from '@/libs/verify'
 
 /**
  * Command Guide
@@ -27,9 +28,21 @@ const paths = {
   db: `${PATH_DATA}/db.sqlite`,
 }
 
-async function checkInstall()
+/**
+ * Check install
+ * @return {boolean} 검사 요소가 하나라도 없으면 false
+ */
+async function checkInstall(): Promise<boolean>
 {
-  // TODO
+  const list = await Promise.all([
+    exists(`${paths.data}/upload/origin`),
+    exists(`${paths.data}/upload/cover`),
+    exists(`${paths.data}/cache`),
+    exists(`${paths.data}/logs`),
+    exists(`${paths.data}/db.sqlite`),
+    exists(`${paths.data}/preference.json`),
+  ])
+  return list.includes(true)
 }
 
 async function createAssets()
@@ -53,6 +66,7 @@ async function createAssets()
 
 async function clearAssets()
 {
+  if (!(await exists(paths.data))) return
   const items = await readdir(paths.data)
   await Promise.all(items.map((name) => {
     return rm(`${paths.data}/${name}`, {
@@ -62,11 +76,16 @@ async function clearAssets()
   }))
 }
 
+function connectDatabase(op: ZZ = { readwrite: true })
+{
+  return new Database(paths.db, op)
+}
+
 async function createDatabase()
 {
   try
   {
-    const db = new Database(paths.db, { create: true })
+    const db = connectDatabase({ create: true })
     const seed = Bun.file(paths.seed)
     const seedText = await seed.text()
     db.run(seedText)
@@ -77,6 +96,58 @@ async function createDatabase()
   {
     exit(_e.message, true)
   }
+}
+
+/**
+ * 계정 정보를 입력받고 그 값들을 리턴한다.
+ */
+async function inputAccount(): Promise<ZZ>
+{
+  message('run', '계정정보를 입력해주세요.')
+  const id = await inputField({
+    ask: '✏️ ID:',
+    type: 'id',
+    error: 'Invalid ID.',
+  })
+  const name = await inputField({
+    ask: '✏️ Name:',
+    error: 'Invalid name.',
+  })
+  const password = await inputField({
+    ask: '✏️ Password:',
+    error: 'Invalid password.',
+  })
+  return { id, name, password }
+}
+function inputField(op: ZZ): Promise<string>
+{
+  const { ask, type, error } = op
+  return new Promise(async (resolve) => {
+    const answer = await prompt(ask)
+    if (!answer)
+    {
+      if (error) message('error', error)
+      return resolve(inputField(op))
+    }
+    switch (type)
+    {
+      case 'email':
+        if (!verifyEmail(answer))
+        {
+          if (error) message('error', error)
+          return resolve(inputField(op))
+        }
+        break
+      case 'id':
+        if (!verifyId(answer))
+        {
+          if (error) message('error', error)
+          return resolve(inputField(op))
+        }
+        break
+    }
+    resolve(answer)
+  })
 }
 
 function addAccount(db: Database, account: ZZ)
@@ -91,7 +162,7 @@ function addAccount(db: Database, account: ZZ)
       name, // user_name
       '', // user_email
       '', // user_avatar
-      ProviderPassword.prototype.hashPassword(String(password)), // user_password
+      ProviderPassword.prototype.hashPassword(password), // user_password
     ])
     message('run', '계정을 추가했습니다.')
   }
@@ -107,13 +178,11 @@ function exit(msg: string, error = false)
   process.exit(error ? 1 : 0)
 }
 
-// Start install
-message('start', `Starting install ${SERVICE_NAME}!`)
-
 // ACTION
 switch (argv._[0])
 {
   case METHOD.INSTALL:
+    message('start', `Starting install ${SERVICE_NAME}!`)
     // check argv
     if (argv.id && argv.name && argv.password)
     {
@@ -132,23 +201,55 @@ switch (argv._[0])
     }
     else
     {
-      // TODO: 정말로 인스톨할건지 물어보기
-      // TODO: 인스톨 검사 ? 언인스톨
-      // TODO: 계정정보 입력받기
-      // TODO: 에셋 만들기
-      // TODO: 데이터베이스 만들기
-      // TODO: 계정 만들기
+      let answer = ''
+      answer = await prompt('정말 인스톨을 진행할까요? [y/N]')
+      if (answer.toLowerCase() !== 'y') exit('인스톨 취소', true)
+      const installed = await checkInstall()
+      if (installed)
+      {
+        message('warning', `이미 "${SERVICE_NAME}"가 설치되어 있습니다.`)
+        answer = await prompt('설치되어있는 데이터를 삭제할까요? [y/N]')
+        if (answer.toLowerCase() === 'y') await clearAssets()
+        else exit('언인스톨을 취소했습니다.', false)
+      }
+      const account = await inputAccount()
+      await createAssets()
+      const db = await createDatabase()
+      if (db)
+      {
+        addAccount(db, account)
+        db.close()
+      }
     }
+    exit('인스톨 완료.', false)
     break
   case METHOD.UNINSTALL:
-    // TODO: 언인스톨
+    message('start', `Starting uninstall ${SERVICE_NAME}!`)
+    if (!argv.y)
+    {
+      let answer = await prompt('정말 언인스톨을 진행할까요? [y/N]')
+      if (answer.toLowerCase() !== 'y') exit('언인스톨 취소', true)
+    }
+    await clearAssets()
+    await rm(paths.data, { recursive: true, force: true })
+    exit('언인스톨 완료.', false)
     break
   case METHOD.RESET_PASSWORD:
-    // TODO: 비밀번호 리셋
+    message('start', `Reset password for ${SERVICE_NAME}!`)
+    message('run', '새로운 비밀번호를 입력하세요.')
+    const newPassword = await inputField({
+      ask: '✏️ Password:',
+      error: 'Invalid password.',
+    })
+    const db = connectDatabase()
+    const query = db.query(`UPDATE provider SET user_password = $password WHERE code LIKE $code`)
+    query.run({
+      '$code': PROVIDER_CODE.PASSWORD,
+      '$password': ProviderPassword.prototype.hashPassword(newPassword),
+    })
+    if (db) db.close()
+    exit('비밀번호 재설정 완료.', false)
     break
   default:
     exit('메서드가 없습니다.', true)
 }
-
-// Exit install
-exit('Complete install.', false)

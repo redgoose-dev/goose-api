@@ -14,7 +14,8 @@ export async function prompt(message: string): Promise<string>
 /**
  * message
  */
-export function message(type: 'start'|'error'|'exit'|'run'|'', msg: string)
+type MessageType = 'start' | 'error' | 'exit' | 'run' | 'warning' | ''
+export function message(type: MessageType, msg: string)
 {
   switch (type)
   {
@@ -22,6 +23,9 @@ export function message(type: 'start'|'error'|'exit'|'run'|'', msg: string)
       console.log('='.repeat(42))
       console.log('🪴', msg)
       console.log('='.repeat(42))
+      break
+    case 'warning':
+      console.warn('⚠️', msg)
       break
     case 'error':
       console.error('❌', msg)
