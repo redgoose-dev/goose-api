@@ -10,7 +10,7 @@ const PASSWORD_HASH_ROUND = 9
 
 class ProviderPassword extends Provider {
 
-  constructor(_ctx: Context)
+  constructor(_ctx: any)
   {
     super()
   }
