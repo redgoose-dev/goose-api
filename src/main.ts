@@ -2,6 +2,7 @@ import { Elysia } from 'elysia'
 import Service from '@/classes/Service'
 import { openServer } from '@/libs/server'
 import { onRequest, onResponse, onError } from '@/libs/service'
+import logging from '@/libs/logging'
 import * as routes from '@/routes'
 
 const { HOST, PORT } = Bun.env
@@ -19,7 +20,12 @@ const server = {
 
 // set server instance
 const app = new Elysia()
-  .state('service', service)
+
+// set state
+app.state('service', service)
+
+// set logging
+app.use(logging)
 
 // set hooks
 app.onRequest(onRequest)

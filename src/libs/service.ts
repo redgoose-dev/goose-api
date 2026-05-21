@@ -1,17 +1,17 @@
 
-export async function onRequest(ctx: Context): Promise<void>
+export async function onRequest(ctx: any): Promise<void>
 {
-  console.log('call onRequest()', ctx)
+  // console.log('call onRequest()')
 }
 
 export function onResponse(_ctx: any): void
 {
-  console.log('call onResponse()')
+  // console.log('call onResponse()')
 }
 
 export function onError(_ctx: any): Response
 {
-  console.error('call onError()')
+  // console.error('call onError()')
   return new Response('error', {
     status: 500,
   })

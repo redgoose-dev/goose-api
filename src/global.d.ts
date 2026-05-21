@@ -1,4 +1,5 @@
 import type * as Elysia from 'elysia'
+import type { Logger } from 'logixlysia'
 import type Service from '@/classes/Service'
 
 declare global {
@@ -8,8 +9,11 @@ declare global {
   export type Context = Elysia.Context & {
     store: Elysia.Context['store'] & {
       service?: Service
+      logger: Logger
     }
   } & ZZ
+
+  export type ENV = Bun.env & ZZ
 
 }
 

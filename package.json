@@ -8,17 +8,18 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev:util": "bun run --bun src/util.ts",
-    "dev:preview": "bun run --bun src/main.ts",
+    "dev:util": "NODE_ENV=development bun run --bun src/util.ts",
+    "dev:preview": "NODE_ENV=development bun run --bun src/main.ts",
     "prebuild": "rm -rf ./dist",
     "build": "bun run --bun ./src/build.ts",
-    "prod:util": "bun run --bun dist/util.js",
+    "prod:util": "NODE_ENV=production bun run --bun dist/util.js",
     "prod:preview": "NODE_ENV=production bun run --bun dist/main.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "elysia": "^1.4.28",
     "jsonwebtoken": "^9.0.3",
+    "logixlysia": "^6.5.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {

@@ -24,6 +24,7 @@ await Bun.build({
     'elysia',
     'jsonwebtoken',
     'sharp',
+    'logixlysia',
   ],
   naming: {
     entry: '[name].[ext]',

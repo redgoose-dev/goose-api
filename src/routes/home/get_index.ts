@@ -6,10 +6,14 @@
 
 export default async (ctx: Context) => {
 
-  const { service } = ctx.store
+  const { request, store } = ctx
+
+  store.logger.info(request, 'Hello, World!', {
+    now: Date.now(),
+  })
 
   return {
-    message: `Hello! ${service.serviceName}`,
+    message: `Hello! ${store.service.serviceName}`,
     foo: 'bar',
   }
 

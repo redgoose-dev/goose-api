@@ -3,7 +3,7 @@ import { colorText } from './strings'
 /**
  * 서버 오픈 메시지 출력
  */
-export function openServer(_app: Pick<Context, 'server'|'store'>): void
+export function openServer(_app: any): void
 {
   const { server, store } = _app
   if (!server) return
@@ -32,7 +32,7 @@ export function openServer(_app: Pick<Context, 'server'|'store'>): void
   }
   // print server info
   console.log(assets.line)
-  console.log(`${assets.intent}${colorText(serviceName, 'green')} ${mode}`)
+  console.log(`${assets.intent}🪴 ${colorText(serviceName, 'green')} ${mode}`)
   console.log(`${assets.intent}➜ Local: ${colorText(`${hostname}:${port}`, 'cyan')}`)
   console.log(assets.line)
 }

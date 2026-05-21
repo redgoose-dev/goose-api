@@ -1,16 +1,17 @@
 import { exists } from 'node:fs/promises'
 import { message } from '@/libs/cli'
+import { IS_DEV } from '@/libs/assets'
 import pkg from '@/../package.json'
 import preference from '@/../resource/preference.json'
 
-const { SERVICE_NAME, PATH_DATA, NODE_ENV } = Bun.env
+const { SERVICE_NAME, PATH_DATA } = Bun.env
 
 class Service<T extends ZZ> {
 
   public serviceName: string = SERVICE_NAME as string
   public version: string = pkg.version
   // 개발모드 여부
-  public dev: boolean = NODE_ENV === 'development'
+  public dev: boolean = IS_DEV
   // 빌드모드 여부
   public build: boolean = !!Bun.env.USE_BUILD
   // 설치되었는지 여부
