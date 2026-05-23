@@ -1,10 +1,17 @@
 import { Elysia } from 'elysia'
-import getIndex from './get_index'
+import { Home } from './service'
+import { HomeModel } from './model'
 
 const routes = new Elysia({
   prefix: '/',
 })
 
-routes.get('/', getIndex)
+// 🌻 Service info
+routes.get('/', (ctx) => {
+  const { store } = ctx as Context
+  return Home.getInfo(store.service)
+}, {
+  response: HomeModel.response,
+})
 
 export default routes

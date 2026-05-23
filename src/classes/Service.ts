@@ -6,7 +6,7 @@ import preference from '@/../resource/preference.json'
 
 const { SERVICE_NAME, PATH_DATA } = Bun.env
 
-class Service<T extends ZZ> {
+class Service<T extends ZZ = ZZ> {
 
   public serviceName: string = SERVICE_NAME as string
   public version: string = pkg.version
@@ -70,4 +70,5 @@ class Service<T extends ZZ> {
 
 }
 
+export type { Service }
 export default Service

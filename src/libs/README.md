@@ -12,7 +12,7 @@
 `logger.info()` 메서드를 호출할때마다 로그가 기록됩니다.
 
 ```typescript
-export default async (ctx: Context) => {
+export default async (ctx) => {
   const { request, store } = ctx
   store.logger.info(request, 'Hello, World!', {
     foo: 'bar',
