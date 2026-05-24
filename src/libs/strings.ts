@@ -80,3 +80,21 @@ export function dateFormatter(date: Date, options: ZZ = {}): string
   })
   return formatter.format(date)
 }
+
+/**
+ * @example
+ * ```ts
+ * const str = printf('Hello {0} {1}', 'World', '!')
+ * console.log(str) // Hello World !
+ * ```
+ */
+export function printf(str: string, ...values: any[]): string
+{
+  for (let i = 0; i < values.length; i++)
+  {
+    let pattern = `\\{${i}\\}`
+    let replace = new RegExp(pattern, 'g')
+    str = str.replace(replace, values[i])
+  }
+  return str
+}

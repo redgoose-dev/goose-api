@@ -1,6 +1,11 @@
-const { NODE_ENV } = Bun.env
+const { NODE_ENV, PATH_BASE, PATH_DATA } = Bun.env as ENV
 
 export const IS_DEV = NODE_ENV !== 'production'
+
+export const PATHS = {
+  BASE: PATH_BASE || '.',
+  DATA: PATH_DATA || './data',
+}
 
 export const HEADERS_KEYS = {
   PROCESS_TIME: 'X-Process-Time',
