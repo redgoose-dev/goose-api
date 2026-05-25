@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite'
-import type {ParamAddData, ParamGetCount, ReturnData} from './DB.types'
+import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit } from './DB.types'
 import { PATHS } from '@/libs/assets'
 
 /**
@@ -62,39 +62,113 @@ class DB {
     return ''
   }
 
-  #getWhere(str: string): string
+  #getField(src?: string | string[]): string
   {
-    return str.trim().replace(/^(and|or|AND|OR)/, ' ')
+    if (Array.isArray(src))
+    {
+      return src.map(x => (x)).join(',') || '*'
+    }
+    else if (typeof src === 'string')
+    {
+      return src || '*'
+    }
+    return '*'
+  }
+
+  #getWhere(str?: string | string[]): string
+  {
+    if (!str) return ''
+    let _str = Array.isArray(str) ? str.join(' ') : str
+    _str = _str.trim().replace(/^(and|or|AND|OR)/, '').trim()
+    return _str ? `WHERE ${_str}` : ''
+  }
+
+  #getLimit(op: ParamLimit = {}): string
+  {
+    if (op.page === undefined || op.size === undefined) return ''
+    let _size = op.size || 24
+    let _offset = ((op.page || 1) - 1) * _size
+    return `LIMIT ${_size} OFFSET ${_offset}`
+  }
+
+  #getOrder(order?: string, sort?: string): string
+  {
+    if (!(order && sort)) return ''
+    const _order = order || 'srl'
+    const _sort = sort || 'desc'
+    return `ORDER BY ${_order} ${_sort}`
+  }
+
+  #debug(name: string, sql?: string, values?: ZZ)
+  {
+    console.group(name)
+    if (sql) console.warn('SQL:', sql)
+    if (values) console.warn('VALUES:', values)
+    console.groupEnd()
   }
 
   getCount(op: ParamGetCount): ReturnData
   {
-    let field = op.field || 'COUNT(*) AS count'
-    const sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${field} FROM ${op.table} ${this.#parseJoin(op.join)} ${op.where ? `WHERE ${this.#getWhere(op.where)}` : ''} ${op.after || ''}`)
-    if (op.debug) console.warn('DB.getCount():', sql)
-    let data = 0
+    const _field = op.field ? this.#getField(op.field) : 'COUNT(*) AS count'
+    const _join = this.#parseJoin(op.join)
+    const _where = this.#getWhere(op.where)
+    const _sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${_field} FROM ${op.table} ${_join} ${_where} ${op.after || ''}`)
+    if (op.debug) this.#debug('DB.getCount()', _sql, op.values)
+    let _data = 0
     if (op.run !== false)
     {
-      const query = this.#connect().query(sql)
-      const result: any = query.get(op.values)
-      data = Number(result['count'] || 0)
+      const _query = this.#connect().query(_sql)
+      const result = _query.get(op.values) as ZZ
+      _data = Number(result['count'] || 0)
     }
     return {
-      sql,
-      data,
+      sql: _sql,
+      values: op.values,
+      data: _data,
     }
   }
 
-  getIndex(): ReturnData
+  getIndex(op: ParamGetIndex): ReturnData
   {
+    const _field = this.#getField(op.field)
+    const _join = this.#parseJoin(op.join)
+    const _where = this.#getWhere(op.where)
+    const _limit = this.#getLimit({ page: op.page, size: op.size })
+    const _order = this.#getOrder(op.order, op.sort)
+    const _sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${_field} FROM ${op.table} ${_join} ${_where} ${_order} ${_limit}`)
+    if (op.debug) this.#debug('DB.getIndex()', _sql, op.values)
+    let _data
+    if (op.run !== false)
+    {
+      const _query = this.#connect().query(_sql)
+      _data = _query.all(op.values)
+    }
     return {
-      sql: '',
-      data: {},
+      sql: _sql,
+      values: op.values,
+      data: _data,
     }
   }
 
-  getData()
-  {}
+  getData(op: ParamGetData): ReturnData
+  {
+    const _field = this.#getField(op.field)
+    const _join = this.#parseJoin(op.join)
+    const _where = this.#getWhere(op.where)
+    const _sql = this.#optimizeSql(`SELECT ${_field} FROM ${op.table} ${_join} ${_where}`)
+    if (op.debug) this.#debug('DB.getData()', _sql, op.values)
+    let _data
+    if (op.run !== false)
+    {
+      const _query = this.#connect().query(_sql)
+      _data = _query.get(op.values) as ZZ
+    }
+    return {
+      sql: _sql,
+      values: op.values,
+      data: _data,
+    }
+  }
 
   addData(op: ParamAddData): ReturnData
   {
@@ -109,15 +183,18 @@ class DB {
       }
       if (item.value) values.push(item.value)
     })
-    const sql = this.#optimizeSql(`INSERT INTO ${op.table} (${fields.join(', ')}) VALUES (${valueNames.join(', ')})`)
-    if (op.debug) console.warn('DB.addData():', sql)
+    const _sql = this.#optimizeSql(`INSERT INTO ${op.table} (${fields.join(', ')}) VALUES (${valueNames.join(', ')})`)
+    if (op.debug) this.#debug('DB.addData()', _sql, op.values)
+    let _data
     if (op.run !== false)
     {
-      this.#connect().run(sql, values)
+      this.#connect().run(_sql, values)
+      _data = this.getLastKey(op.table)
     }
     return {
-      sql,
-      data: this.getLastKey(op.table),
+      sql: _sql,
+      values: op.values,
+      data: _data,
     }
   }
 

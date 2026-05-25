@@ -55,3 +55,15 @@ export function onErrorAfter({ request, set, store, error }: any): Response
       })
   }
 }
+
+type TypeClassifySrlCode = {
+  srl?: number
+  code?: string
+}
+export function classifySrlCode(value: number | string): TypeClassifySrlCode
+{
+  return {
+    srl: Number.isFinite(value) ? Number(value) : undefined,
+    code: typeof value === 'string' ? value : undefined,
+  }
+}
