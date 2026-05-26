@@ -1,6 +1,7 @@
 import { createCode } from '@/libs/strings'
 import { DEFAULT_HEADERS, HEADERS_KEYS } from './assets'
 import { getElapsedTime, setHeaders } from './server'
+import {status} from "elysia";
 
 export function onRequest({ request, set, store }: any)
 {
@@ -48,6 +49,10 @@ export function onErrorAfter({ request, set, store, error }: any): Response
     case 301:
     case 302:
       return Response.redirect(error?.message || '', _status)
+    case 422:
+      return new Response('Invalid request data.', {
+        status: _status,
+      })
     default:
       set.headers[HEADERS_KEYS.CONTENT_TYPE] = 'text/plain'
       return new Response(error?.message || 'Invalid Error', {

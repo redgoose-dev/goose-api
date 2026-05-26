@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { BooleanLike, PATTERN_FIELD, PATTERN_MOD } from '@/libs/validation'
+import { PATTERN_FIELD, PATTERN_MOD } from '@/libs/validation'
 
 export const AppModel = {
 
@@ -26,6 +26,12 @@ export const AppModel = {
   putItemBody: t.Object({
     code: t.String(),
     name: t.String(),
+    description: t.Optional(t.String()),
+  }),
+
+  patchItemBody: t.Object({
+    code: t.Optional(t.String()),
+    name: t.Optional(t.String()),
     description: t.Optional(t.String()),
   }),
 

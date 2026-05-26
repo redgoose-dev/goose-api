@@ -47,7 +47,7 @@ route.get('/:srl/', async (ctx) => {
 route.put('/', async (ctx) => {
   const { request, body } = ctx
   // TODO: 토큰 검사
-  const addedSrl = await App.putItem({ request, body })
+  const addedSrl = await App.putItem({ body })
   return {
     message: 'Success add App.',
     data: addedSrl,
@@ -56,12 +56,19 @@ route.put('/', async (ctx) => {
   body: AppModel.putItemBody,
 })
 
-// 🌳 Update app
+// 🌳 Patch app data
 route.patch('/:srl/', async (ctx) => {
-  // TODO
+  const { request, params, body } = ctx
+  // TODO: 토큰 검사
+  // patch item
+  await App.patchItem({
+    ...classifySrlCode(params.srl),
+    body,
+  })
+  return 'Success update App.'
 }, {
-  // params,
-  // body,
+  params: AppModel.getItemParams,
+  body: AppModel.patchItemBody,
 })
 
 // 🍄 Delete app

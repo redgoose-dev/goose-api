@@ -7,6 +7,7 @@ import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import * as messages from '@/libs/messages'
 import { printf } from '@/libs/strings'
+import { checkExistValueInObject } from '@/libs/objects'
 import type { AppModel } from './model'
 
 type GetIndexParams = {
@@ -19,8 +20,12 @@ type GetItemParams = {
   mod?: string
 }
 type PutItemParams = {
-  request: Request
   body: AppModel['putItemBody']
+}
+type PatchItemParams = {
+  srl?: number
+  code?: string
+  body: AppModel['patchItemBody']
 }
 
 export abstract class App {
@@ -168,10 +173,59 @@ export abstract class App {
     }
   }
 
-  static async patchItem()
+  static async patchItem({ srl, code, body }: PatchItemParams)
   {
-    return {
-      message: `PATCH /app/:srl/`,
+    // set where
+    let _where = ''
+    if (srl) _where = `srl = ${srl}`
+    else if (code) _where = `code LIKE \'${code}\'`
+    // get item
+    const item = db.getData({
+      table: DB.TABLE.APP,
+      where: _where,
+    })
+    if (!item.data)
+    {
+      throw new ServiceError('App data not found.', { status: 204 })
+    }
+    // set ready update
+    let readyUpdate: ZZ = {
+      code: undefined,
+      name: undefined,
+      description: undefined,
+    }
+    if (body.code !== undefined) readyUpdate['code'] = body.code
+    if (body.name !== undefined) readyUpdate['name'] = body.name
+    if (body.description !== undefined) readyUpdate['description'] = body.description
+    // check exist code
+    if (readyUpdate['code'])
+    {
+      const _count = db.getCount({
+        table: DB.TABLE.APP,
+        where: `code LIKE \'${readyUpdate['code']}\'`,
+      })
+      if (_count.data > 0)
+      {
+        throw new ServiceError(`"code" already exists.`, { status: 400 })
+      }
+    }
+    // update data
+    if (checkExistValueInObject(readyUpdate, Object.keys(readyUpdate)))
+    {
+      db.editData({
+        table: DB.TABLE.APP,
+        where: _where,
+        set: [
+          readyUpdate.code !== undefined && 'code = $code',
+          readyUpdate.name !== undefined && 'name = $name',
+          readyUpdate.description !== undefined && 'description = $description',
+        ],
+        values: {
+          '$code': readyUpdate.code,
+          '$name': readyUpdate.name,
+          '$description': readyUpdate.description,
+        },
+      })
     }
   }
 

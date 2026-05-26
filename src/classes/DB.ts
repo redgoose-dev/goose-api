@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite'
-import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit } from './DB.types'
+import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit, ParamRunValues, ParamPatchData } from './DB.types'
 import { PATHS } from '@/libs/assets'
 
 /**
@@ -99,15 +99,49 @@ class DB {
     return `ORDER BY ${_order} ${_sort}`
   }
 
+  #getSet(arr: Array<string | boolean>): string
+  {
+    return (arr?.length > 0) ? arr.filter(Boolean).join(', ') : ''
+  }
+
   #debug(name: string, sql?: string, values?: ZZ)
   {
-    console.group(name)
+    // TODO: 로거를 사용하는게 좋을거 같은데 방법을 찾아봐야한다.
+    console.group(`<DEBUG / ${name}>`)
     if (sql) console.warn('SQL:', sql)
     if (values) console.warn('VALUES:', values)
     console.groupEnd()
   }
 
-  getCount(op: ParamGetCount): ReturnData
+  run(sql: string, values?: ParamRunValues)
+  {
+    if (values === undefined)
+    {
+      this.#connect().run(sql)
+    }
+    else
+    {
+      this.#connect().run(sql, values)
+    }
+  }
+
+  transaction(mode: 'begin'|'commit'|'rollback')
+  {
+    switch (mode)
+    {
+      case 'begin':
+        this.run('BEGIN TRANSACTION')
+        break
+      case 'commit':
+        this.run('COMMIT')
+        break
+      case 'rollback':
+        this.run('ROLLBACK')
+        break
+    }
+  }
+
+  getCount(op: ParamGetCount): { data: number } & ReturnData
   {
     const _field = op.field ? this.#getField(op.field) : 'COUNT(*) AS count'
     const _join = this.#parseJoin(op.join)
@@ -128,7 +162,7 @@ class DB {
     }
   }
 
-  getIndex(op: ParamGetIndex): ReturnData
+  getIndex(op: ParamGetIndex): { data: ZZ[] } & ReturnData
   {
     const _field = this.#getField(op.field)
     const _join = this.#parseJoin(op.join)
@@ -137,11 +171,11 @@ class DB {
     const _order = this.#getOrder(op.order, op.sort)
     const _sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${_field} FROM ${op.table} ${_join} ${_where} ${_order} ${_limit}`)
     if (op.debug) this.#debug('DB.getIndex()', _sql, op.values)
-    let _data
+    let _data: ZZ[] = []
     if (op.run !== false)
     {
       const _query = this.#connect().query(_sql)
-      _data = _query.all(op.values)
+      _data = _query.all(op.values) as ZZ[]
     }
     return {
       sql: _sql,
@@ -150,7 +184,7 @@ class DB {
     }
   }
 
-  getData(op: ParamGetData): ReturnData
+  getData(op: ParamGetData): { data: ZZ } & ReturnData
   {
     const _field = this.#getField(op.field)
     const _join = this.#parseJoin(op.join)
@@ -161,12 +195,12 @@ class DB {
     if (op.run !== false)
     {
       const _query = this.#connect().query(_sql)
-      _data = _query.get(op.values) as ZZ
+      _data = _query.get(op.values)
     }
     return {
       sql: _sql,
       values: op.values,
-      data: _data,
+      data: _data as ZZ,
     }
   }
 
@@ -198,9 +232,17 @@ class DB {
     }
   }
 
-  editData()
+  editData(op: ParamPatchData): ReturnData
   {
-    // TODO
+    const _set = this.#getSet(op.set)
+    const _where = this.#getWhere(op.where)
+    let _sql = this.#optimizeSql(`UPDATE ${op.table} SET ${_set} ${_where}`)
+    if (op.debug) this.#debug('DB.editData()', _sql, op.values)
+    if (op.run !== false) this.#connect().run(_sql, op.values)
+    return {
+      sql: _sql,
+      values: op.values,
+    }
   }
 
   removeData()

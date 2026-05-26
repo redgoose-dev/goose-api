@@ -35,8 +35,13 @@ export interface ParamAddData extends ParamBase {
   //
 }
 
+export interface ParamPatchData extends ParamBase {
+  where: string | string[]
+  set: Array<string | boolean>
+}
+
 export type ReturnData = {
-  data?: number | string | ZZ
+  data?: any
   sql?: string
   values?: ZZ
 }
@@ -45,3 +50,5 @@ export type ParamLimit = {
   page?: number
   size?: number
 }
+
+export type ParamRunValues = ZZ & ParamsType
