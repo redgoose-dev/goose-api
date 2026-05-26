@@ -60,7 +60,7 @@ route.put('/', async (ctx) => {
 route.patch('/:srl/', async (ctx) => {
   const { request, params, body } = ctx
   // TODO: 토큰 검사
-  // patch item
+  // patch data
   await App.patchItem({
     ...classifySrlCode(params.srl),
     body,
@@ -73,9 +73,13 @@ route.patch('/:srl/', async (ctx) => {
 
 // 🍄 Delete app
 route.delete('/:srl/', async (ctx) => {
-  // TODO
+  const { request, params } = ctx
+  // TODO: 토큰 검사
+  // delete data
+  await App.deleteItem(classifySrlCode(params.srl))
+  return 'Success delete App.'
 }, {
-  // params,
+  params: AppModel.getItemParams,
 })
 
 export default route

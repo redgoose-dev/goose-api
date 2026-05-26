@@ -27,6 +27,10 @@ type PatchItemParams = {
   code?: string
   body: AppModel['patchItemBody']
 }
+type DeleteItemParams = {
+  srl?: number
+  code?: string
+}
 
 export abstract class App {
 
@@ -175,67 +179,108 @@ export abstract class App {
 
   static async patchItem({ srl, code, body }: PatchItemParams)
   {
-    // set where
-    let _where = ''
-    if (srl) _where = `srl = ${srl}`
-    else if (code) _where = `code LIKE \'${code}\'`
-    // get item
-    const item = db.getData({
-      table: DB.TABLE.APP,
-      where: _where,
-    })
-    if (!item.data)
+    try
     {
-      throw new ServiceError('App data not found.', { status: 204 })
-    }
-    // set ready update
-    let readyUpdate: ZZ = {
-      code: undefined,
-      name: undefined,
-      description: undefined,
-    }
-    if (body.code !== undefined) readyUpdate['code'] = body.code
-    if (body.name !== undefined) readyUpdate['name'] = body.name
-    if (body.description !== undefined) readyUpdate['description'] = body.description
-    // check exist code
-    if (readyUpdate['code'])
-    {
-      const _count = db.getCount({
-        table: DB.TABLE.APP,
-        where: `code LIKE \'${readyUpdate['code']}\'`,
-      })
-      if (_count.data > 0)
-      {
-        throw new ServiceError(`"code" already exists.`, { status: 400 })
-      }
-    }
-    // update data
-    if (checkExistValueInObject(readyUpdate, Object.keys(readyUpdate)))
-    {
-      db.editData({
+      // set where
+      let _where = ''
+      if (srl) _where = `srl = ${srl}`
+      else if (code) _where = `code LIKE \'${code}\'`
+      // get item
+      const item = db.getData({
         table: DB.TABLE.APP,
         where: _where,
-        set: [
-          readyUpdate.code !== undefined && 'code = $code',
-          readyUpdate.name !== undefined && 'name = $name',
-          readyUpdate.description !== undefined && 'description = $description',
-        ],
-        values: {
-          '$code': readyUpdate.code,
-          '$name': readyUpdate.name,
-          '$description': readyUpdate.description,
-        },
+      })
+      if (!item.data)
+      {
+        throw new ServiceError('App data not found.', { status: 204 })
+      }
+      // set ready update
+      let readyUpdate: ZZ = {
+        code: undefined,
+        name: undefined,
+        description: undefined,
+      }
+      if (body.code !== undefined) readyUpdate['code'] = body.code
+      if (body.name !== undefined) readyUpdate['name'] = body.name
+      if (body.description !== undefined) readyUpdate['description'] = body.description
+      // check exist code
+      if (readyUpdate['code'])
+      {
+        const _count = db.getCount({
+          table: DB.TABLE.APP,
+          where: `code LIKE \'${readyUpdate['code']}\'`,
+        })
+        if (_count.data > 0)
+        {
+          throw new ServiceError(`"code" already exists.`, { status: 400 })
+        }
+      }
+      // update data
+      if (checkExistValueInObject(readyUpdate, Object.keys(readyUpdate)))
+      {
+        db.editData({
+          table: DB.TABLE.APP,
+          where: _where,
+          set: [
+            readyUpdate.code !== undefined && 'code = $code',
+            readyUpdate.name !== undefined && 'name = $name',
+            readyUpdate.description !== undefined && 'description = $description',
+          ],
+          values: {
+            '$code': readyUpdate.code,
+            '$name': readyUpdate.name,
+            '$description': readyUpdate.description,
+          },
+        })
+      }
+    }
+    catch (_e: any)
+    {
+      throw new ServiceError('Failed to edit App.', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
       })
     }
   }
 
-  static async deleteItem()
+  static async deleteItem({ srl, code }: DeleteItemParams)
   {
-    // TODO: Article 데이터 삭제 (파일, 댓글, 태그)
-    // TODO: Nest 데이터 삭제 (카테고리)
-    // TODO: App 데이터 삭제
-    return {
-      message: `DELETE /app/:srl/`,
+    let _transction = false
+    try
+    {
+      // set where
+      let _where = ''
+      if (srl) _where = `srl = ${srl}`
+      else if (code) _where = `code LIKE \'${code}\'`
+      // check exist data
+      const _count = db.getCount({
+        table: DB.TABLE.APP,
+        where: _where,
+      })
+      if (!(_count.data > 0))
+      {
+        throw new ServiceError('App data not found.', { status: 204 })
+      }
+      _transction = db.transaction('begin')
+      // TODO: Article 데이터 삭제 (파일, 댓글, 태그)
+      // TODO: Nest 데이터 삭제 (카테고리)
+      // delete app data
+      db.deleteData({
+        table: DB.TABLE.APP,
+        where: _where,
+        debug: true,
+      })
+      _transction = db.transaction('commit')
+    }
+    catch (_e: any)
+    {
+      db.transaction('rollback', _transction)
+      throw new ServiceError('Failed to delete App.', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
+      })
     }
   }
 

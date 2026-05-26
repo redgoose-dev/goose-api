@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite'
-import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit, ParamRunValues, ParamPatchData } from './DB.types'
+import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit, ParamRunValues, ParamPatchData, ParamDeleteData } from './DB.types'
 import { PATHS } from '@/libs/assets'
 
 /**
@@ -121,23 +121,33 @@ class DB {
     }
     else
     {
-      this.#connect().run(sql, values)
+      this.#connect().run(sql, values || {})
     }
   }
 
-  transaction(mode: 'begin'|'commit'|'rollback')
+  transaction(mode: 'begin'|'commit'|'rollback', inTransaction?: boolean): boolean
   {
     switch (mode)
     {
       case 'begin':
         this.run('BEGIN TRANSACTION')
-        break
+        return true
       case 'commit':
         this.run('COMMIT')
-        break
+        return false
       case 'rollback':
-        this.run('ROLLBACK')
-        break
+        if (inTransaction)
+        {
+          try
+          {
+            this.run('ROLLBACK')
+          }
+          catch(_e)
+          {
+            // TODO: 어떻게 처리할지 고민해보자
+          }
+        }
+        return false
     }
   }
 
@@ -222,7 +232,7 @@ class DB {
     let _data
     if (op.run !== false)
     {
-      this.#connect().run(_sql, values)
+      this.#connect().run(_sql, values || {})
       _data = this.getLastKey(op.table)
     }
     return {
@@ -245,9 +255,16 @@ class DB {
     }
   }
 
-  removeData()
+  deleteData(op: ParamDeleteData): ReturnData
   {
-    // TODO
+    const _where = this.#getWhere(op.where)
+    let _sql = this.#optimizeSql(`DELETE FROM ${op.table} ${_where}`)
+    if (op.debug) this.#debug('DB.deleteData()', _sql, op.values)
+    if (op.run !== false) this.#connect().run(_sql, op.values || {})
+    return {
+      sql: _sql,
+      values: op.values,
+    }
   }
 
   getLastKey(table: string): number
@@ -277,7 +294,6 @@ function getPragmaValues()
   }
   return _pragmaCache
 }
-
 
 export default DB
 export const db: InstanceType<typeof DB> = new DB()

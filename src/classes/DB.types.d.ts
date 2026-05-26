@@ -40,6 +40,10 @@ export interface ParamPatchData extends ParamBase {
   set: Array<string | boolean>
 }
 
+export interface ParamDeleteData extends ParamBase {
+  where: string | string[]
+}
+
 export type ReturnData = {
   data?: any
   sql?: string
