@@ -1,7 +1,8 @@
-import { Elysia, t } from 'elysia'
+import { Elysia } from 'elysia'
 import { App } from './service'
 import { AppModel } from './model'
 import { classifySrlCode } from '@/libs/service'
+import { checkingToken } from '@/libs/verify'
 
 const route = new Elysia({
   prefix: '/app',
@@ -10,7 +11,8 @@ const route = new Elysia({
 // 🌿 Index
 route.get('/', async (ctx) => {
   const { request, query } = ctx
-  // TODO: 토큰 검사
+  // checking token
+  const token = checkingToken(ctx)
   // TODO: query.size - 기본값은 환경설정에서 값 가져오기
   // set query
   if (query.page === undefined) query.page = 1

@@ -2,6 +2,11 @@ import { t } from 'elysia'
 
 export const PATTERN_FIELD = '^[A-Za-z0-9_]+(?:,[A-Za-z0-9_]+)*$'
 export const PATTERN_MOD = '^[A-Za-z0-9_-]+(?:,[A-Za-z0-9_-]+)*$'
+export const PATTERN_CODE = '^[a-zA-Z0-9_-]+$'
+
+export const ModelAuthQuery = {
+  '_a': t.Optional(t.String()),
+}
 
 export const BooleanLike = t.Transform(t.Union([
   t.Boolean(),
@@ -12,4 +17,3 @@ export const BooleanLike = t.Transform(t.Union([
 ]))
   .Decode((value) => Boolean(value))
   .Encode((value) => value)
-

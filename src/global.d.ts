@@ -12,6 +12,7 @@ declare global {
 
   // Module store in context
   export type Store = Elysia.Context['store'] & {
+    beforeTime?: bigint
     service: Service_
     logger: Logger
   }

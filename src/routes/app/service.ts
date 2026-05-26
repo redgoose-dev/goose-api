@@ -1,7 +1,3 @@
-/**
- * Service || App
- */
-
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'

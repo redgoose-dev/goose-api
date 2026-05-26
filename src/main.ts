@@ -39,6 +39,7 @@ app.onError(onErrorAfter)
 app.use(routes.home)
 app.use(routes.app)
 app.use(routes.article)
+app.use(routes.auth)
 app.use(routes.options)
 
 // set listen server

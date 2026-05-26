@@ -1,6 +1,7 @@
 import { Database } from 'bun:sqlite'
 import type { ParamAddData, ParamGetCount, ParamGetIndex, ParamGetData, ReturnData, ParamLimit, ParamRunValues, ParamPatchData, ParamDeleteData } from './DB.types'
 import { PATHS } from '@/libs/assets'
+import debug from '@/libs/debug'
 
 /**
  * DB 파일 크기 기반 PRAGMA 값 캐시
@@ -106,11 +107,7 @@ class DB {
 
   #debug(name: string, sql?: string, values?: ZZ)
   {
-    // TODO: 로거를 사용하는게 좋을거 같은데 방법을 찾아봐야한다.
-    console.group(`<DEBUG / ${name}>`)
-    if (sql) console.warn('SQL:', sql)
-    if (values) console.warn('VALUES:', values)
-    console.groupEnd()
+    debug(`DB.method:${name}`, { sql, values })
   }
 
   run(sql: string, values?: ParamRunValues)
@@ -180,7 +177,7 @@ class DB {
     const _limit = this.#getLimit({ page: op.page, size: op.size })
     const _order = this.#getOrder(op.order, op.sort)
     const _sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${_field} FROM ${op.table} ${_join} ${_where} ${_order} ${_limit}`)
-    if (op.debug) this.#debug('DB.getIndex()', _sql, op.values)
+    if (op.debug) this.#debug('getIndex()', _sql, op.values)
     let _data: ZZ[] = []
     if (op.run !== false)
     {

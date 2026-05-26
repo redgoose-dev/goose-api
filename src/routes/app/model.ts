@@ -1,10 +1,11 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_FIELD, PATTERN_MOD } from '@/libs/validation'
+import { PATTERN_FIELD, PATTERN_MOD, ModelAuthQuery } from '@/libs/validation'
 
 export const AppModel = {
 
   getIndexQuery: t.Object({
+    ...ModelAuthQuery,
     code: t.Optional(t.String()),
     name: t.Optional(t.String()),
     field: t.Optional(t.String({ pattern: PATTERN_FIELD })),

@@ -1,10 +1,11 @@
 import { exists } from 'node:fs/promises'
 import { message } from '@/libs/cli'
+import { setupDebug } from '@/libs/debug'
 import { IS_DEV } from '@/libs/assets'
 import pkg from '@/../package.json'
-import preference from '@/../resource/preference.json'
+import originPreference from '@/../resource/preference.json'
 
-const { SERVICE_NAME, PATH_DATA } = Bun.env
+const { SERVICE_NAME, PATH_DATA, DEBUG } = Bun.env
 
 class Service<T extends ZZ = ZZ> {
 
@@ -12,12 +13,14 @@ class Service<T extends ZZ = ZZ> {
   public version: string = pkg.version
   // 개발모드 여부
   public dev: boolean = IS_DEV
+  // 디버그 출력 여부
+  public useDebug: boolean = DEBUG?.toLowerCase() === 'true'
   // 빌드모드 여부
   public build: boolean = !!Bun.env.USE_BUILD
   // 설치되었는지 여부
   public installed: boolean = false
   // 환경설정
-  public preference: ZZ = preference
+  public preference: ZZ = originPreference
   // 실행중에 사용되는 커스텀 데이터 공간
   public data = {} as T
 
@@ -43,9 +46,12 @@ class Service<T extends ZZ = ZZ> {
 
   async setup()
   {
+    setupDebug({
+      enabled: this.useDebug,
+    })
     // checking install
-    const installed = await this.#checkInstall()
-    if (!installed)
+    this.installed = await this.#checkInstall()
+    if (!this.installed)
     {
       message('error', 'Not Installed')
       process.exit(1)

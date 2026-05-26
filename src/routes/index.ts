@@ -1,4 +1,5 @@
 export { default as home } from './home'
 export { default as app } from './app'
 export { default as article } from './article'
+export { default as auth } from './auth'
 export { default as options } from './options_all'

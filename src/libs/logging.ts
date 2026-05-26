@@ -1,4 +1,5 @@
-import logixlysia, {type Transport} from 'logixlysia'
+import logixlysia from 'logixlysia'
+import type { Transport } from 'logixlysia'
 import { IS_DEV } from '@/libs/assets'
 
 /**
