@@ -8,6 +8,14 @@ const route = new Elysia({
   prefix: '/auth',
 })
 
+// 🌵 인증 검사하기
+// TODO: 레거시에는
+route.post('/checkin/', async (ctx) => {
+  const { request, body } = ctx
+  // TODO
+  return {}
+})
+
 // 🌵 패스워드 타입의 프로바이더 로그인
 route.post('/login/', async (ctx) => {
   const { request, body } = ctx

@@ -12,7 +12,7 @@ const route = new Elysia({
 route.get('/', async (ctx) => {
   const { request, query } = ctx
   // checking token
-  const token = checkingToken(ctx)
+  checkingToken(ctx)
   // TODO: query.size - 기본값은 환경설정에서 값 가져오기
   // set query
   if (query.page === undefined) query.page = 1
@@ -31,7 +31,8 @@ route.get('/', async (ctx) => {
 // 🌻 Detail app
 route.get('/:srl/', async (ctx) => {
   const { params, query } = ctx
-  // TODO: 토큰 검사
+  // checking token
+  checkingToken(ctx)
   const data = await App.getItem({
     ...classifySrlCode(params.srl),
     ...query,
@@ -47,8 +48,9 @@ route.get('/:srl/', async (ctx) => {
 
 // 🌱 Create app
 route.put('/', async (ctx) => {
-  const { request, body } = ctx
-  // TODO: 토큰 검사
+  const { body } = ctx
+  // checking token
+  checkingToken(ctx)
   const addedSrl = await App.putItem({ body })
   return {
     message: 'Success add App.',
@@ -60,8 +62,9 @@ route.put('/', async (ctx) => {
 
 // 🌳 Patch app data
 route.patch('/:srl/', async (ctx) => {
-  const { request, params, body } = ctx
-  // TODO: 토큰 검사
+  const { params, body } = ctx
+  // checking token
+  checkingToken(ctx)
   // patch data
   await App.patchItem({
     ...classifySrlCode(params.srl),
@@ -75,8 +78,9 @@ route.patch('/:srl/', async (ctx) => {
 
 // 🍄 Delete app
 route.delete('/:srl/', async (ctx) => {
-  const { request, params } = ctx
-  // TODO: 토큰 검사
+  const { params } = ctx
+  // checking token
+  checkingToken(ctx)
   // delete data
   await App.deleteItem(classifySrlCode(params.srl))
   return 'Success delete App.'
