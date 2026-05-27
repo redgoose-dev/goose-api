@@ -162,7 +162,7 @@ function addAccount(db: Database, account: ZZ)
       name, // user_name
       '', // user_email
       '', // user_avatar
-      ProviderPassword.prototype.hashPassword(password), // user_password
+      ProviderPassword.hashPassword(password), // user_password
     ])
     message('run', '계정을 추가했습니다.')
   }
@@ -245,7 +245,7 @@ switch (argv._[0])
     const query = db.query(`UPDATE provider SET user_password = $password WHERE code LIKE $code`)
     query.run({
       '$code': PROVIDER_CODE.PASSWORD,
-      '$password': ProviderPassword.prototype.hashPassword(newPassword),
+      '$password': ProviderPassword.hashPassword(newPassword),
     })
     if (db) db.close()
     exit('비밀번호 재설정 완료.', false)

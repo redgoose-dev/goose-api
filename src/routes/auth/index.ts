@@ -8,7 +8,6 @@ const route = new Elysia({
   prefix: '/auth',
 })
 
-
 // 🌵 패스워드 타입의 프로바이더 로그인
 route.post('/login/', async (ctx) => {
   const { request, body } = ctx

@@ -32,55 +32,66 @@ export abstract class App {
 
   static async getIndex(op: GetIndexParams)
   {
-    // set where, values
-    let _where = []
-    let _values: ZZ = {}
-    if (op.code)
+    try
     {
-      _where.push(`AND code LIKE $code`)
-      _values['$code'] = op.code
+      // set where, values
+      let _where = []
+      let _values: ZZ = {}
+      if (op.code)
+      {
+        _where.push(`AND code LIKE $code`)
+        _values['$code'] = op.code
+      }
+      if (op.name)
+      {
+        _where.push(`AND name LIKE '%' || $name || '%'`)
+        _values['$name'] = op.name
+      }
+      // get total
+      const total = db.getCount({
+        table: DB.TABLE.APP,
+        where: _where,
+        values: _values,
+      })
+      if (!(total.data as number > 0))
+      {
+        throw new ServiceError('No data', { status: 204 })
+      }
+      // set field
+      const _field = op.field ? op.field.split(',') : ''
+      // get index data
+      let index = db.getIndex({
+        table: DB.TABLE.APP,
+        field: _field,
+        where: _where,
+        values: _values,
+        order: Boolean(op.order || op.sort) ? op.order : 'srl',
+        sort: Boolean(op.order || op.sort) ? op.sort : 'desc',
+      })
+      // set mod
+      const _mod: MOD = new MOD(op.mod)
+      // MOD / count-nest
+      if (_mod.check('count-nest'))
+      {
+        // TODO: Nest 데이터 쌓이면 만들자
+      }
+      // MOD / count-article
+      if (_mod.check('count-article'))
+      {
+        // TODO: Article 데이터 쌓이면 만들자
+      }
+      return {
+        total: total.data,
+        index: index.data,
+      }
     }
-    if (op.name)
+    catch (_e: any)
     {
-      _where.push(`AND name LIKE '%' || $name || '%'`)
-      _values['$name'] = op.name
-    }
-    // get total
-    const total = db.getCount({
-      table: DB.TABLE.APP,
-      where: _where,
-      values: _values,
-    })
-    if (!(total.data as number > 0))
-    {
-      throw new ServiceError('No data', { status: 204 })
-    }
-    // set field
-    const _field = op.field ? op.field.split(',') : ''
-    // get index data
-    let index = db.getIndex({
-      table: DB.TABLE.APP,
-      field: _field,
-      where: _where,
-      values: _values,
-      order: Boolean(op.order || op.sort) ? op.order : 'srl',
-      sort: Boolean(op.order || op.sort) ? op.sort : 'desc',
-    })
-    // set mod
-    const _mod: MOD = new MOD(op.mod)
-    // MOD / count-nest
-    if (_mod.check('count-nest'))
-    {
-      // TODO: Nest 데이터 쌓이면 만들자
-    }
-    // MOD / count-article
-    if (_mod.check('count-article'))
-    {
-      // TODO: Article 데이터 쌓이면 만들자
-    }
-    return {
-      total: total.data,
-      index: index.data,
+      throw new ServiceError('Failed to get App index.', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
+      })
     }
   }
 
