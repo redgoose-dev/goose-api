@@ -4,6 +4,10 @@ import { PATTERN_CODE, ModelAuthQuery } from '@/libs/validation'
 
 export const AuthModel = {
 
+  postRenewBody: t.Object({
+    refresh: t.String(),
+  }),
+
   postLoginBody: t.Object({
     id: t.String({ pattern: PATTERN_CODE }),
     password: t.String(),

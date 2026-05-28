@@ -4,11 +4,13 @@
  */
 
 import Provider from './Provider'
+import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
 
 export default abstract class ProviderDiscord extends Provider {
 
-  static code = 'discord'
-  static type = 'OAuth'
+  static code = PROVIDER_CODE.DISCORD
+  static type = PROVIDER_TYPE.OAUTH
+  static description = `oAuth by ${PROVIDER_CODE.DISCORD}`
   static scope = 'user'
   static headerType = 'Bearer'
   static clientId = Bun.env.AUTH_DISCORD_CLIENT_ID
@@ -26,7 +28,7 @@ export default abstract class ProviderDiscord extends Provider {
   static checkUserId()
   {}
 
-  static async renewAccessToken()
+  static async renewToken()
   {}
 
 }

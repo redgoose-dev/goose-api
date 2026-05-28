@@ -1,11 +1,108 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import ProviderPassword from '@/classes/provider/Password'
+import { getProviderClass, type ProviderClass } from '@/classes/provider'
+import { PROVIDER_TYPE } from '@/classes/provider/assets'
+import type { CheckinToken } from '@/libs/verify'
 import type { AuthModel } from './model'
 
 export abstract class Auth {
 
-  static postLogin(op: AuthModel['postLoginBody'])
+  static postCheckin(token: CheckinToken)
+  {
+    try
+    {
+      const provider = db.getData({
+        table: DB.TABLE.PROVIDER,
+        where: `srl = ${token.provider_srl}`,
+      })
+      return {
+        provider: {
+          'srl': provider.data.srl,
+          'code': provider.data.code,
+          'user_id': provider.data.user_id,
+          'user_name': provider.data.user_name,
+          'user_avatar': provider.data.user_avatar,
+          'user_email': provider.data.user_email,
+        },
+      }
+    }
+    catch (_e: any)
+    {
+      throw new ServiceError('Failed checkin', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
+      })
+    }
+  }
+
+  static async postRenew(token: CheckinToken, refreshToken: string)
+  {
+    let _transction = false
+    try
+    {
+      // check refresh token
+      if (token.refresh !== refreshToken)
+      {
+        throw new ServiceError('Invalid refresh token.', { status: 400 })
+      }
+      // 프로바이더 데이터 가져오기
+      const provider = db.getData({
+        table: DB.TABLE.PROVIDER,
+        where: `srl = ${token.provider_srl}`,
+      })
+      // 프로바이더 클래스 가져오기
+      const ProviderClass = getProviderClass(provider.data.code)
+      // 새로운 엑세스 토큰 만들기
+      // TODO: type 에서 password는 provider값이 필요하고 oauth는 refreshToken 값이 필요하다.
+      const newToken = await ProviderClass.renewToken({
+        provider: provider.data,
+      })
+      if (!newToken)
+      {
+        throw new ServiceError('Failed to renew access token.', { status: 400 })
+      }
+      _transction = db.transaction('begin')
+      // 이전 토큰의 만료시간을 0으로 변경
+      db.editData({
+        table: DB.TABLE.TOKEN,
+        where: `srl = ${token.srl}`,
+        set: [ 'expires = $expires' ],
+        values: { '$expires': 0 },
+      })
+      // 토큰 데이터 추가
+      db.addData({
+        table: DB.TABLE.TOKEN,
+        values: [
+          { key: 'provider_srl', value: provider.data.srl },
+          { key: 'access', value: newToken.access },
+          { key: 'expires', value: newToken.expires },
+          { key: 'refresh', value: newToken.refresh },
+          { key: 'description', value: ProviderClass.description },
+          { key: 'created_at', valueName: DB.DATE_TIME },
+        ],
+        debug: true,
+      })
+      _transction = db.transaction('commit')
+      return {
+        access: newToken.accessPublic,
+        refresh: newToken.refresh,
+        expires: newToken.expires,
+      }
+    }
+    catch (_e: any)
+    {
+      db.transaction('rollback', _transction)
+      throw new ServiceError('Failed renew token.', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
+      })
+    }
+  }
+
+  static async postLogin(op: AuthModel['postLoginBody'])
   {
     try
     {
@@ -32,34 +129,25 @@ export abstract class Auth {
         throw new ServiceError('Failed to verify password.', { status: 401 })
       }
       // create new token
-      const accessToken = ProviderPassword.createToken('access', {
-        srl: provider.data.srl,
-        user_id: provider.data.user_id,
+      const newToken = await ProviderPassword.renewToken({
+        provider: provider.data,
       })
-      const refreshToken = ProviderPassword.createToken('refresh', {
-        srl: provider.data.srl,
-      })
-      if (!(accessToken && refreshToken))
-      {
-        throw new ServiceError('Failed create token.', { status: 401 })
-      }
-      const accessTokenMaxAge = ProviderPassword.convertExpToRemainTime(accessToken.parsed.exp)
       // add data
       db.addData({
         table: DB.TABLE.TOKEN,
         values: [
           { key: 'provider_srl', value: provider.data.srl },
-          { key: 'access', value: accessToken.code },
-          { key: 'expires', value: accessTokenMaxAge },
-          { key: 'refresh', value: refreshToken.code },
-          { key: 'description', value: 'password login' },
+          { key: 'access', value: newToken.access },
+          { key: 'expires', value: newToken.expires },
+          { key: 'refresh', value: newToken.refresh },
+          { key: 'description', value: ProviderPassword.description },
           { key: 'created_at', valueName: DB.DATE_TIME },
-        ].filter(Boolean),
+        ],
       })
       return {
-        access: ProviderPassword.getPublicToken(accessToken.code),
-        expires: accessTokenMaxAge,
-        refresh: refreshToken.code,
+        access: newToken.accessPublic,
+        expires: newToken.expires,
+        refresh: newToken.refresh,
       }
     }
     catch (_e: any)

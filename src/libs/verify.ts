@@ -27,7 +27,7 @@ type CheckingTokenOptions = {
   checkExpires: boolean // 만료시간 검사여부
   usePublic?: boolean // 공개용 토큰 사용 여부
 }
-type CheckingTokenReturn = {
+export type CheckinToken = {
   srl: number
   provider_srl: number
   access: string
@@ -42,7 +42,7 @@ const defaultCheckingToken = {
   checkExpires: true,
   usePublic: undefined,
 }
-export function checkingToken(ctx: any, op: Partial<CheckingTokenOptions> = {}): CheckingTokenReturn
+export function checkingToken(ctx: any, op: Partial<CheckingTokenOptions> = {}): CheckinToken
 {
   const _op = { ...defaultCheckingToken, ...op }
   // get access token

@@ -4,11 +4,13 @@
  */
 
 import Provider from './Provider'
+import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
 
 export default abstract class ProviderGoogle extends Provider {
 
-  static code = 'google'
-  static type = 'OAuth'
+  static code = PROVIDER_CODE.GOOGLE
+  static type = PROVIDER_TYPE.OAUTH
+  static description = `oAuth by ${PROVIDER_CODE.GOOGLE}`
   static scope = 'user'
   static headerType = 'Bearer'
   static clientId = Bun.env.AUTH_GOOGLE_CLIENT_ID
@@ -26,7 +28,7 @@ export default abstract class ProviderGoogle extends Provider {
   static checkUserId()
   {}
 
-  static async renewAccessToken()
+  static async renewToken()
   {}
 
 }

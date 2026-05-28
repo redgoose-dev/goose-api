@@ -4,11 +4,13 @@
  */
 
 import Provider from './Provider'
+import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
 
 export default abstract class ProviderGithub extends Provider {
 
-  static code = 'github'
-  static type = 'OAuth'
+  static code = PROVIDER_CODE.GITHUB
+  static type = PROVIDER_TYPE.OAUTH
+  static description = `oAuth by ${PROVIDER_CODE.GITHUB}`
   static scope = 'user'
   static headerType = 'Bearer'
   static clientId = Bun.env.AUTH_GITHUB_CLIENT_ID
@@ -26,7 +28,7 @@ export default abstract class ProviderGithub extends Provider {
   static checkUserId()
   {}
 
-  static async renewAccessToken()
+  static async renewToken()
   {}
 
 }

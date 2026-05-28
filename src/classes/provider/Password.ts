@@ -4,16 +4,29 @@
  */
 
 import { hashSync, genSaltSync, compareSync } from 'bcryptjs'
-import {sign, verify} from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 import type { SignOptions } from 'jsonwebtoken'
 import Provider from './Provider'
+import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
+
+type RenewTokenParams = {
+  refreshToken?: string
+  provider?: ZZ
+}
+type RenewTokenReturn = {
+  access: string
+  accessPublic: string
+  refresh: string
+  expires: number
+}
 
 const PASSWORD_HASH_ROUND = 9
 
 export default abstract class ProviderPassword extends Provider {
 
-  static code = 'password'
-  static type = 'Password'
+  static code = PROVIDER_CODE.PASSWORD
+  static type = PROVIDER_TYPE.PASSWORD
+  static description = 'password login'
   static accessSecret = Bun.env.AUTH_PASSWORD_ACCESS_SECRET as string
   static accessExpires = Bun.env.AUTH_PASSWORD_ACCESS_EXPIRES as SignOptions['expiresIn']
   static refreshSecret = Bun.env.AUTH_PASSWORD_REFRESH_SECRET as string
@@ -31,7 +44,7 @@ export default abstract class ProviderPassword extends Provider {
   }
 
   // 새로운 토큰 제작
-  static createToken(type: 'access'|'refresh', payload: ZZ = {}): ZZ | undefined
+  static newToken(type: 'access'|'refresh', payload: ZZ = {}): ZZ
   {
     let code: string
     switch (type)
@@ -53,9 +66,26 @@ export default abstract class ProviderPassword extends Provider {
     }
   }
 
-  static renewAccessToken()
+  static async renewToken(op: RenewTokenParams): Promise<RenewTokenReturn>
   {
-    // TODO
+    if (!op.provider)
+    {
+      throw new Error('Not found provider data.')
+    }
+    const _access = this.newToken('access', {
+      srl: op.provider.srl,
+      user_id: op.provider.user_id,
+    })
+    const _refresh = this.newToken('refresh', {
+      srl: op.provider.srl,
+    })
+    const _expires = this.convertExpToRemainTime(_access.parsed.exp)
+    return {
+      access: _access.code,
+      accessPublic: this.getPublicToken(_access.code),
+      refresh: _refresh.code,
+      expires: _expires,
+    }
   }
 
 }
