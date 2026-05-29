@@ -1,5 +1,6 @@
 import logixlysia from 'logixlysia'
 import type { Transport } from 'logixlysia'
+import ServiceError from '@/classes/ServiceError'
 import { IS_DEV } from '@/libs/assets'
 
 /**
@@ -13,12 +14,14 @@ import { IS_DEV } from '@/libs/assets'
 
 const { SERVICE_NAME, PATH_DATA }: ENV = Bun.env
 
-const customLogFile: Transport = {
-  async log(level, message, meta = {})
-  {
-    // console.log('customLogFile.log()', level, message, meta)
-  },
-}
+// const customLogFile: Transport = {
+//   async log(level, message, meta = {})
+//   {
+//     // console.log('customLogFile.log()', level, message, meta)
+//     // console.log(meta.error.message)
+//     // console.error(meta.error.stack)
+//   },
+// }
 
 const logging = logixlysia({
   // preset: 'prod',

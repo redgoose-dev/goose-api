@@ -34,3 +34,4 @@ export default async (ctx) => {
 - 🌳: 업데이트
 - 🍄: 삭제
 - 🌵: 처리
+- 🍁: 웹소켓

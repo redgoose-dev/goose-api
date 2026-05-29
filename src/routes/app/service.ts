@@ -90,7 +90,7 @@ export abstract class App {
       throw new ServiceError('Failed to get App index.', {
         status: _e.status,
         text: _e.message,
-        err: _e,
+        cause: _e,
       })
     }
   }
@@ -139,7 +139,7 @@ export abstract class App {
       throw new ServiceError('Failed to get App.', {
         status: _e.status,
         text: _e.message,
-        err: _e,
+        cause: _e,
       })
     }
   }
@@ -179,7 +179,7 @@ export abstract class App {
       throw new ServiceError('Failed to add App.', {
         status: _e.status,
         text: _e.message,
-        err: _e,
+        cause: _e,
       })
     }
   }
@@ -202,20 +202,20 @@ export abstract class App {
         throw new ServiceError('App data not found.', { status: 204 })
       }
       // set ready update
-      let readyUpdate: ZZ = {
+      let _ready: ZZ = {
         code: undefined,
         name: undefined,
         description: undefined,
       }
-      if (body.code !== undefined) readyUpdate['code'] = body.code
-      if (body.name !== undefined) readyUpdate['name'] = body.name
-      if (body.description !== undefined) readyUpdate['description'] = body.description
+      if (body.code !== undefined) _ready['code'] = body.code
+      if (body.name !== undefined) _ready['name'] = body.name
+      if (body.description !== undefined) _ready['description'] = body.description
       // check exist code
-      if (readyUpdate['code'])
+      if (_ready['code'])
       {
         const _count = db.getCount({
           table: DB.TABLE.APP,
-          where: `code LIKE \'${readyUpdate['code']}\'`,
+          where: `code LIKE \'${_ready['code']}\'`,
         })
         if (_count.data > 0)
         {
@@ -223,20 +223,20 @@ export abstract class App {
         }
       }
       // update data
-      if (checkExistValueInObject(readyUpdate, Object.keys(readyUpdate)))
+      if (checkExistValueInObject(_ready, Object.keys(_ready)))
       {
         db.editData({
           table: DB.TABLE.APP,
           where: _where,
           set: [
-            readyUpdate.code !== undefined && 'code = $code',
-            readyUpdate.name !== undefined && 'name = $name',
-            readyUpdate.description !== undefined && 'description = $description',
+            _ready.code !== undefined && 'code = $code',
+            _ready.name !== undefined && 'name = $name',
+            _ready.description !== undefined && 'description = $description',
           ],
           values: {
-            '$code': readyUpdate.code,
-            '$name': readyUpdate.name,
-            '$description': readyUpdate.description,
+            '$code': _ready.code,
+            '$name': _ready.name,
+            '$description': _ready.description,
           },
         })
       }
@@ -246,7 +246,7 @@ export abstract class App {
       throw new ServiceError('Failed to edit App.', {
         status: _e.status,
         text: _e.message,
-        err: _e,
+        cause: _e,
       })
     }
   }
@@ -286,7 +286,7 @@ export abstract class App {
       throw new ServiceError('Failed to delete App.', {
         status: _e.status,
         text: _e.message,
-        err: _e,
+        cause: _e,
       })
     }
   }

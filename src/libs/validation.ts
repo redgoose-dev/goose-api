@@ -4,6 +4,7 @@ export const PATTERN_FIELD = '^[A-Za-z0-9_]+(?:,[A-Za-z0-9_]+)*$'
 export const PATTERN_MOD = '^[A-Za-z0-9_-]+(?:,[A-Za-z0-9_-]+)*$'
 export const PATTERN_CODE = '^[a-zA-Z0-9_-]+$'
 export const PATTERN_URL = '^(https?:\\/\\/[^\\s]+|)$'
+export const PATTERN_EMAIL = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'
 
 export const ModelAuthQuery = {
   '_a': t.Optional(t.String()),

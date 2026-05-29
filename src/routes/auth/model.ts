@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_CODE, PATTERN_URL, ModelAuthQuery } from '@/libs/validation'
+import { PATTERN_CODE, PATTERN_URL, PATTERN_EMAIL, ModelAuthQuery } from '@/libs/validation'
 
 export const AuthModel = {
 
@@ -15,7 +15,30 @@ export const AuthModel = {
   postLoginBody: t.Object({
     id: t.String({ pattern: PATTERN_CODE }),
     password: t.String(),
-  })
+  }),
+
+  putProviderBody: t.Object({
+    id: t.String({ pattern: PATTERN_CODE }),
+    name: t.String(),
+    avatar: t.Optional(t.String({ pattern: PATTERN_URL })),
+    email: t.Optional(t.String({ pattern: PATTERN_EMAIL })),
+    password: t.String(),
+  }),
+
+  patchProviderParams: t.Object({
+    srl: t.Number(),
+  }),
+  patchProviderBody: t.Object({
+    id: t.Optional(t.String({ pattern: PATTERN_CODE })),
+    name: t.Optional(t.String()),
+    avatar: t.Optional(t.String({ pattern: PATTERN_URL })),
+    email: t.Optional(t.String({ pattern: PATTERN_EMAIL })),
+    password: t.Optional(t.String()),
+  }),
+
+  deleteProviderParams: t.Object({
+    srl: t.Number(),
+  }),
 
 } as const
 
