@@ -2,9 +2,13 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import ProviderPassword from '@/classes/provider/Password'
 import { getProviderClass, type ProviderClass } from '@/classes/provider'
-import { PROVIDER_TYPE } from '@/classes/provider/assets'
+import { PROVIDER_CODE, PROVIDER_TYPE, type ProviderCode } from '@/classes/provider/assets'
 import type { CheckinToken } from '@/libs/verify'
 import type { AuthModel } from './model'
+
+type PostReadyLogin = {
+  redirectUri: string
+}
 
 export abstract class Auth {
 
@@ -95,6 +99,39 @@ export abstract class Auth {
     {
       db.transaction('rollback', _transction)
       throw new ServiceError('Failed renew token.', {
+        status: _e.status,
+        text: _e.message,
+        err: _e,
+      })
+    }
+  }
+
+  static postReadyLogin(op: PostReadyLogin)
+  {
+    try
+    {
+      // get providers
+      const providers = db.getIndex({
+        table: DB.TABLE.PROVIDER,
+      })
+      const _providers = providers.data.reduce((acc: any, cur: any) => {
+        acc[cur.code] = cur
+        return acc
+      }, {})
+      // set providers data
+      return Object.values(PROVIDER_CODE).map((code) => {
+        if (!_providers[code]) return false
+        const ProviderClass = getProviderClass(code)
+        if (ProviderClass.type !== PROVIDER_TYPE.OAUTH) return false
+        return {
+          name: code,
+          auth_url: ProviderClass.getAuthorizeLink(code, op.redirectUri),
+        }
+      }).filter(Boolean)
+    }
+    catch (_e: any)
+    {
+      throw new ServiceError('Success get ready login data.', {
         status: _e.status,
         text: _e.message,
         err: _e,

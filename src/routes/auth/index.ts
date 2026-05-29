@@ -36,8 +36,12 @@ route.post('/renew/', async (ctx) => {
 route.post('/ready-login/', async (ctx) => {
   return {
     message: 'Success get ready login data.',
-    data: {},
+    data: Auth.postReadyLogin({
+      redirectUri: ctx.body.redirect_uri,
+    }),
   }
+}, {
+  body: AuthModel.postReadyLogin,
 })
 
 // 🌵 패스워드 타입의 프로바이더 로그인
@@ -53,6 +57,5 @@ route.post('/login/', async (ctx) => {
 }, {
   body: AuthModel.postLoginBody,
 })
-
 
 export default route

@@ -2,6 +2,9 @@
  * Provider
  */
 
+import type { ProviderCode } from './assets'
+import { PATHS } from '@/libs/assets'
+
 export default abstract class Provider {
 
   /**
@@ -32,6 +35,11 @@ export default abstract class Provider {
   static getPublicToken(code: string): string
   {
     return code.slice(-32)
+  }
+
+  static getAuthorizeLink(code: ProviderCode, redirectUri: string)
+  {
+    return `${PATHS.URL}/auth/redirect/${code}/?redirect_uri=${redirectUri}`
   }
 
 }

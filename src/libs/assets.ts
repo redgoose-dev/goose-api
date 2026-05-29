@@ -1,11 +1,13 @@
-const { NODE_ENV, PATH_BASE, PATH_DATA } = Bun.env as ENV
+const { NODE_ENV, PATH_BASE, PATH_DATA, PATH_URL } = Bun.env as ENV
 
 export const IS_DEV = NODE_ENV !== 'production'
 
 export const PATHS = {
   BASE: PATH_BASE || '.',
   DATA: PATH_DATA || './data',
+  URL: PATH_URL || 'http://localhost',
 }
+export type Paths = typeof PATHS[keyof typeof PATHS]
 
 export const HEADERS_KEYS = {
   PROCESS_TIME: 'X-Process-Time',

@@ -1,11 +1,15 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_CODE, ModelAuthQuery } from '@/libs/validation'
+import { PATTERN_CODE, PATTERN_URL, ModelAuthQuery } from '@/libs/validation'
 
 export const AuthModel = {
 
   postRenewBody: t.Object({
     refresh: t.String(),
+  }),
+
+  postReadyLogin: t.Object({
+    redirect_uri: t.String({ pattern: PATTERN_URL }),
   }),
 
   postLoginBody: t.Object({

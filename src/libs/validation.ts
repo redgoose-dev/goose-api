@@ -3,6 +3,7 @@ import { t } from 'elysia'
 export const PATTERN_FIELD = '^[A-Za-z0-9_]+(?:,[A-Za-z0-9_]+)*$'
 export const PATTERN_MOD = '^[A-Za-z0-9_-]+(?:,[A-Za-z0-9_-]+)*$'
 export const PATTERN_CODE = '^[a-zA-Z0-9_-]+$'
+export const PATTERN_URL = '^(https?:\\/\\/[^\\s]+|)$'
 
 export const ModelAuthQuery = {
   '_a': t.Optional(t.String()),
