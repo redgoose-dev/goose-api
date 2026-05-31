@@ -6,9 +6,6 @@ import { printf } from '@/libs/strings'
 import { checkExistValueInObject } from '@/libs/objects'
 import type { AppModel } from './model'
 
-type GetIndexParams = {
-  foo?: string
-} & AppModel['getIndexQuery']
 type GetItemParams = {
   srl?: number
   code?: string
@@ -30,7 +27,7 @@ type DeleteItemParams = {
 
 export abstract class App {
 
-  static async getIndex(op: GetIndexParams)
+  static async getIndex(op: AppModel['getIndexQuery'])
   {
     try
     {

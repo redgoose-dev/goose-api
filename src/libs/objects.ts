@@ -16,3 +16,14 @@ export function filteringObject(obj: ZZ)
   })
   return obj
 }
+
+/**
+ * 배열을 객체로 변환 (code를 key로)
+ */
+export function arrayToObject(arr: ZZ[], keyName: string): ZZ
+{
+  return arr.reduce((acc: any, cur: any) => {
+    acc[cur[keyName]] = cur
+    return acc
+  }, {})
+}

@@ -139,7 +139,7 @@ CREATE TABLE `token` (
   `srl` INTEGER PRIMARY KEY, -- srl
   `provider_srl` INTEGER NOT NULL REFERENCES `provider`(`srl`) ON DELETE CASCADE, -- provider srl
   `access` TEXT NOT NULL UNIQUE, -- access token
-  `expires` INTEGER NOT NULL CHECK (`expires` >= 0), -- expires_in timestamp
+  `expires` INTEGER CHECK (`expires` >= 0), -- expires_in timestamp
   `refresh` TEXT NULL, -- refresh token
   `description` TEXT NULL, -- description
   `created_at` TEXT NOT NULL -- created date

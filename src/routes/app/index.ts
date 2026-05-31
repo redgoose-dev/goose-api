@@ -1,8 +1,9 @@
 import { Elysia } from 'elysia'
-import { App } from './service'
-import { AppModel } from './model'
 import { classifySrlCode } from '@/libs/service'
 import { checkingToken } from '@/libs/verify'
+import { BaseModel } from '@/libs/models'
+import { App } from './service'
+import { AppModel } from './model'
 
 const route = new Elysia({
   prefix: '/app',
@@ -42,7 +43,7 @@ route.get('/:srl/', async (ctx) => {
     data,
   }
 }, {
-  params: AppModel.getItemParams,
+  params: BaseModel.paramsSrlCode,
   query: AppModel.getItemQuery,
 })
 
@@ -72,7 +73,7 @@ route.patch('/:srl/', async (ctx) => {
   })
   return 'Success update App.'
 }, {
-  params: AppModel.getItemParams,
+  params: BaseModel.paramsSrlCode,
   body: AppModel.patchItemBody,
 })
 
@@ -85,7 +86,7 @@ route.delete('/:srl/', async (ctx) => {
   await App.deleteItem(classifySrlCode(params.srl))
   return 'Success delete App.'
 }, {
-  params: AppModel.getItemParams,
+  params: BaseModel.paramsSrlCode,
 })
 
 export default route

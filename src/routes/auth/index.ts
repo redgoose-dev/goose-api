@@ -1,5 +1,6 @@
 import { Elysia } from 'elysia'
 import { Auth } from './service'
+import { BaseModel } from '@/libs/models'
 import { AuthModel } from './model'
 import { checkingToken } from '@/libs/verify'
 
@@ -14,14 +15,12 @@ const route = new Elysia({
 // TODO
 
 // 🌵 인증 검사하기
-// TODO: 레거시에서 주소가 `/auth/checking/`로 되어있다.
 route.post('/checkin/', async (ctx) => {
   const token = checkingToken(ctx)
+  const data = await Auth.postCheckin(token)
   return {
     message: 'Complete checkin.',
-    data: {
-      ...Auth.postCheckin(token),
-    },
+    data,
   }
 })
 
@@ -40,11 +39,12 @@ route.post('/renew/', async (ctx) => {
 
 // 🌻 로그인 준비를 위한 재료 가져오기
 route.post('/ready-login/', async (ctx) => {
+  const data = await Auth.postReadyLogin({
+    redirectUri: ctx.body.redirect_uri,
+  })
   return {
     message: 'Complete get ready login data.',
-    data: Auth.postReadyLogin({
-      redirectUri: ctx.body.redirect_uri,
-    }),
+    data,
   }
 }, {
   body: AuthModel.postReadyLogin,
@@ -52,13 +52,10 @@ route.post('/ready-login/', async (ctx) => {
 
 // 🌵 패스워드 타입의 프로바이더 로그인
 route.post('/login/', async (ctx) => {
-  const { request, body } = ctx
-  const token = await Auth.postLogin(body)
+  const token = await Auth.postLogin(ctx.body)
   return {
     message: 'Complete login',
-    data: {
-      ...token,
-    },
+    data: { ...token },
   }
 }, {
   body: AuthModel.postLoginBody,
@@ -72,15 +69,33 @@ route.post('/logout/', async (ctx) => {
 })
 
 // 🌿 프로바이더 목록 조회
-// TODO
+route.get('/provider/', async (ctx) => {
+  checkingToken(ctx)
+  const data = await Auth.getProviderIndex(ctx.query)
+  return {
+    message: 'Complete get provider index.',
+    data,
+  }
+}, {
+  query: AuthModel.getProviderIndexQuery,
+})
 
 // 🌻 프로바이더 상세정보 조회
-// TODO
+route.get('/provider/:srl/', async (ctx) => {
+  const token = checkingToken(ctx)
+  const data = await Auth.getProvider(ctx.params.srl, token)
+  return {
+    message: 'Complete get provider.',
+    data,
+  }
+}, {
+  params: BaseModel.paramsSrl,
+})
 
 // 🌱 패스워드 타입의 프로바이더 등록
 route.put('/provider/', async (ctx) => {
   checkingToken(ctx)
-  Auth.putProvider(ctx.body)
+  await Auth.putProvider(ctx.body)
   return 'Complete add provider.'
 }, {
   body: AuthModel.putProviderBody,
@@ -89,33 +104,64 @@ route.put('/provider/', async (ctx) => {
 // 🌳 패스워드 타입의 프로바이더 수정
 route.patch('/provider/:srl/', async (ctx) => {
   checkingToken(ctx)
-  Auth.patchProvider(ctx.params.srl, ctx.body)
+  await Auth.patchProvider(ctx.params.srl, ctx.body)
   return 'Complete update provider.'
 }, {
-  params: AuthModel.patchProviderParams,
+  params: BaseModel.paramsSrl,
   body: AuthModel.patchProviderBody,
 })
 
 // 🍄 프로바이더 삭제
 route.delete('/provider/:srl/', async (ctx) => {
   checkingToken(ctx)
-  Auth.deleteProvider(ctx.params.srl)
+  await Auth.deleteProvider(ctx.params.srl)
   return 'Complete delete provider.'
 }, {
-  params: AuthModel.deleteProviderParams,
+  params: BaseModel.paramsSrl,
 })
 
 // 🌿 공개용 토큰 목록 조회
-// TODO
+route.get('/token/', async (ctx) => {
+  checkingToken(ctx)
+  const data = await Auth.getTokens(ctx.query)
+  return {
+    message: 'Complete get public tokens.',
+    data,
+  }
+}, {
+  query: AuthModel.getTokenQuery,
+})
 
 // 🌱 공개용 토큰 만들기
-// TODO
+route.put('/token/', async (ctx) => {
+  const token = checkingToken(ctx)
+  const data = await Auth.putToken(ctx.body, token)
+  return {
+    message: 'Complete create public token.',
+    data,
+  }
+}, {
+  body: AuthModel.putTokenBody,
+})
 
 // 🌳 공개용 토큰 수정하기
-// TODO
+route.patch('/token/:srl/', async (ctx) => {
+  checkingToken(ctx)
+  await Auth.patchToken(ctx.params.srl, ctx.body)
+  return 'Complete update token.'
+}, {
+  params: BaseModel.paramsSrl,
+  body: AuthModel.patchTokenBody,
+})
 
 // 🍄 공개용 토큰 만료시키기
-// TODO
+route.delete('/token/:srl/', async (ctx) => {
+  checkingToken(ctx)
+  await Auth.revokeToken(ctx.params.srl)
+  return 'The token has expired.'
+}, {
+  params: BaseModel.paramsSrl,
+})
 
 // 🍁 프로바이더 인증 웹소켓
 // TODO

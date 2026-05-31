@@ -42,7 +42,10 @@ export function onErrorAfter({ request, set, store, error }: any): Response
     [HEADERS_KEYS.CONTENT_TYPE]: 'text/plain',
   }
   // 오류 스택이 있으면 출력하기, TODO: 로거 영역에서 출력 가능하다면 위치 옮기기
-  if (service.dev) console.error(error.stack)
+  if (_status !== 404 && service.dev)
+  {
+    console.error(error.stack)
+  }
   // 처리시간
   if (store.beforeTime)
   {

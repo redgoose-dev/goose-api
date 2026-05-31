@@ -1,11 +1,10 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_FIELD, PATTERN_MOD, ModelAuthQuery } from '@/libs/validation'
+import { PATTERN_FIELD, PATTERN_MOD } from '@/libs/validation'
 
 export const AppModel = {
 
   getIndexQuery: t.Object({
-    ...ModelAuthQuery,
     code: t.Optional(t.String()),
     name: t.Optional(t.String()),
     field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
@@ -16,9 +15,6 @@ export const AppModel = {
     mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),
 
-  getItemParams: t.Object({
-    srl: t.Union([ t.Number(), t.String() ]),
-  }),
   getItemQuery: t.Object({
     field: t.Optional(t.String()),
     mod: t.Optional(t.String()),
