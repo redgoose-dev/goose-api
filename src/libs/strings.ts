@@ -98,3 +98,36 @@ export function printf(str: string, ...values: any[]): string
   }
   return str
 }
+
+/**
+ * 객체나 배열을 URI로 인코딩한다.
+ */
+export function encodeUri(data?: ZZ | ZZ[]): string
+{
+  if (!data) return ''
+  return Buffer.from(JSON.stringify(data), 'utf8').toString('base64url')
+}
+
+/**
+ * base64 인코딩된 URI를 객체나 배열로 디코딩한다.
+ */
+export function decodeUri(base64?: string): ZZ | ZZ[] | null
+{
+  if (!base64) return null
+  try
+  {
+    return JSON.parse(Buffer.from(base64, 'base64url').toString('utf8'))
+  }
+  catch
+  {
+    return null
+  }
+}
+
+/**
+ * 객체를 쿼리스트링으로 변환한다.
+ */
+export function parseQueryString(query: ZZ): string
+{
+  return new URLSearchParams(query).toString()
+}

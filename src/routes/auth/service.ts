@@ -3,17 +3,110 @@ import ServiceError from '@/classes/ServiceError'
 import Provider from '@/classes/provider/Provider'
 import ProviderPassword from '@/classes/provider/Password'
 import MOD from '@/classes/MOD'
-import { getProviderClass } from '@/classes/provider'
+import { getProvider } from '@/classes/provider'
 import { PROVIDER_CODE, PROVIDER_TYPE } from '@/classes/provider/assets'
 import { checkExistValueInObject, arrayToObject } from '@/libs/objects'
+import { encodeUri, decodeUri } from '@/libs/strings'
 import type { CheckinToken } from '@/libs/verify'
 import type { AuthModel } from './model'
+import type { BaseModel } from '@/libs/models'
+import type { ProviderCode } from '@/classes/provider/assets'
 
+type getRedirectParams = {
+  provider: string
+  redirect_uri: string
+  access_token?: string
+}
+type getCallback = {
+  provider: string
+  code?: string
+  state?: string
+  error?: string
+  errorDescription?: string
+}
 type PostReadyLogin = {
   redirectUri: string
 }
 
 export abstract class Auth {
+
+  /**
+   * OAuth 서비스로 리다이렉트한다.
+   *
+   * # URL Example
+   * GET /auth/redirect/discord/?redirect_uri={CLIENT_REDIRECT_URI}
+   */
+  static async getRedirect(op: getRedirectParams)
+  {
+    // set state
+    const state = encodeUri({
+      redirect_uri: op.redirect_uri,
+      access_token: op.access_token,
+    })
+    // get provider class
+    const __provider__ = getProvider(op.provider as ProviderCode)
+    const url = __provider__.createAuthorizeUrl(state)
+    if (!url) throw new ServiceError('Failed get redirect url.')
+    return url
+  }
+
+  /**
+   * OAuth 서비스에서 goose-api로 리다이렉트할때 처리하는 콜백
+   */
+  // TODO
+  static async getCallback(op: getCallback)
+  {
+    let result: ZZ = {
+      foo: 'bar'
+    }
+    let state: ZZ
+    try
+    {
+      if (op.error) throw new ServiceError(op.errorDescription || op.error, { status: 401 })
+      // get provider class
+      const __provider__ = getProvider(op.provider as ProviderCode)
+      // get token
+      const token = await __provider__.getToken(op.code)
+      console.log('(token)', token)
+      // TODO: 여기서부터 작업하기
+      // get user info
+      // check provider count
+      if (true)
+      {
+        // 프로바이더가 하나 이상일때
+        // checking access token
+        // get provider
+        if (true)
+        {
+          // TODO: provider_srl = provider.get('srl')
+        }
+        else if (true)
+        {
+          // 만들어진 프로바이더가 없으니 새로운 프로바이더를 만든다.
+        }
+        else
+        {
+          // TODO: raise Exception('Invalid user id.', 401)
+        }
+      }
+      else
+      {
+        // 프로바이더가 하나도 없을때
+      }
+      // check provider_srl
+      // add data from token
+      // set result
+    }
+    catch (_e: any)
+    {
+      console.error(_e)
+      // if 'socket_id' in state:
+        // TODO: 웹소켓 방식일때의 처리
+      // elif 'redirect_uri' in state:
+        // TODO: 리다이렉트 방식일때의 처리
+    }
+    return result
+  }
 
   static async postCheckin(token: CheckinToken)
   {
@@ -60,10 +153,10 @@ export abstract class Auth {
         where: `srl = ${token.provider_srl}`,
       })
       // 프로바이더 클래스 가져오기
-      const ProviderClass = getProviderClass(provider.data.code)
+      const __provider__ = getProvider(provider.data.code)
       // 새로운 엑세스 토큰 만들기
       // TODO: type 에서 password는 provider값이 필요하고 oauth는 refreshToken 값이 필요하다.
-      const newToken = await ProviderClass.renewToken({
+      const newToken = await __provider__.renewToken({
         provider: provider.data,
       })
       if (!newToken)
@@ -86,7 +179,7 @@ export abstract class Auth {
           { key: 'access', value: newToken.access },
           { key: 'expires', value: newToken.expires },
           { key: 'refresh', value: newToken.refresh },
-          { key: 'description', value: ProviderClass.description },
+          { key: 'description', value: __provider__.description },
           { key: 'created_at', valueName: DB.DATE_TIME },
         ],
       })
@@ -120,11 +213,11 @@ export abstract class Auth {
       // set providers data
       return Object.values(PROVIDER_CODE).map((code) => {
         if (!_providers[code]) return false
-        const ProviderClass = getProviderClass(code)
-        if (ProviderClass.type !== PROVIDER_TYPE.OAUTH) return false
+        const __provider__ = getProvider(code)
+        if (__provider__.type !== PROVIDER_TYPE.OAUTH) return false
         return {
           name: code,
-          auth_url: ProviderClass.getAuthorizeLink(code, op.redirectUri),
+          auth_url: __provider__.getAuthorizeLink(code, op.redirectUri),
         }
       }).filter(Boolean)
     }
@@ -142,6 +235,8 @@ export abstract class Auth {
   {
     try
     {
+      // set provider instance
+      const __provider__ = new ProviderPassword()
       // get provider data
       const provider = db.getData({
         table: DB.TABLE.PROVIDER,
@@ -150,7 +245,7 @@ export abstract class Auth {
           `AND user_id LIKE $userId`,
         ],
         values: {
-          '$code': ProviderPassword.code,
+          '$code': __provider__.code,
           '$userId': op.id,
         },
       })
@@ -159,13 +254,13 @@ export abstract class Auth {
         throw new ServiceError('Provider not found.', { status: 401 })
       }
       // verify password
-      const _verifyPassword = ProviderPassword.verifyPassword(op.password, provider.data.user_password)
+      const _verifyPassword = __provider__.verifyPassword(op.password, provider.data.user_password)
       if (!_verifyPassword)
       {
         throw new ServiceError('Failed to verify password.', { status: 401 })
       }
       // create new token
-      const newToken = await ProviderPassword.renewToken({
+      const newToken = await __provider__.renewToken({
         provider: provider.data,
       })
       // add data
@@ -176,7 +271,7 @@ export abstract class Auth {
           { key: 'access', value: newToken.access },
           { key: 'expires', value: newToken.expires },
           { key: 'refresh', value: newToken.refresh },
-          { key: 'description', value: ProviderPassword.description },
+          { key: 'description', value: __provider__.description },
           { key: 'created_at', valueName: DB.DATE_TIME },
         ],
       })
@@ -238,10 +333,10 @@ export abstract class Auth {
         }
         else
         {
-          const ProviderClass = getProviderClass(code)
+          const __provider__ = getProvider(code)
           return {
             account: null,
-            auth_url: ProviderClass.getAuthorizeLink(code, query.redirect_uri)
+            auth_url: __provider__.getAuthorizeLink(code, query.redirect_uri)
           }
         }
       })
@@ -295,11 +390,12 @@ export abstract class Auth {
   {
     try
     {
+      const __provider__ = new ProviderPassword()
       // check exist provider
       const count = db.getCount({
         table: DB.TABLE.PROVIDER,
         where: `code LIKE $code`,
-        values: { '$code': ProviderPassword.code },
+        values: { '$code': __provider__.code },
       })
       if (count.data > 0)
       {
@@ -311,7 +407,7 @@ export abstract class Auth {
       db.addData({
         table: DB.TABLE.PROVIDER,
         values: [
-          { key: 'code', value: ProviderPassword.code },
+          { key: 'code', value: __provider__.code },
           { key: 'user_id', value: body.id },
           { key: 'user_name', value: body.name },
           { key: 'user_avatar', value: body.avatar },
@@ -528,8 +624,10 @@ export abstract class Auth {
       {
         throw new ServiceError('provider not found.', { status: 400 })
       }
-      // create new token
-      const newToken = await ProviderPassword.renewToken({
+      // set provider instance
+      const __provider__ = new ProviderPassword()
+      // 공개용 토큰 만들기 (곧장 만들기 위하여 ProviderPassword 클래스 사용)
+      const newToken = await __provider__.renewToken({
         provider: provider.data,
       })
       // add data

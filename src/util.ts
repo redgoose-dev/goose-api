@@ -2,7 +2,7 @@ import { rm, mkdir, exists, readdir, cp } from 'node:fs/promises'
 import { Database } from 'bun:sqlite'
 import minimist from 'minimist'
 import ProviderPassword from '@/classes/provider/Password'
-import { PROVIDER_CODE } from '@/libs/provider'
+import { PROVIDER_CODE } from '@/classes/provider/assets'
 import { prompt, message } from '@/libs/cli'
 import { verifyEmail, verifyId } from '@/libs/verify'
 

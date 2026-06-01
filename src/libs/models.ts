@@ -1,5 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
+import { PROVIDER_CODE, type ProviderCode } from '@/classes/provider/assets'
 
 /**
  * # `_a` 파라메터 사용하기
@@ -19,7 +20,7 @@ export const BaseModel = {
     srl: t.Union([ t.Number(), t.String() ]),
   }),
 
-  BooleanLike: t.Transform(t.Union([
+  booleanLike: t.Transform(t.Union([
     t.Boolean(),
     t.BooleanString(),
     t.Numeric({ minimum: 0, maximum: 1 }),
@@ -27,7 +28,11 @@ export const BaseModel = {
     t.Literal('1'),
   ]))
     .Decode((value) => Boolean(value))
-    .Encode((value) => value)
+    .Encode((value) => value),
+
+  paramsProvider: t.Object({
+    provider: t.UnionEnum(Object.values(PROVIDER_CODE) as [ProviderCode, ...ProviderCode[]]),
+  }),
 
 } as const
 

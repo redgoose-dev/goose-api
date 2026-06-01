@@ -4,6 +4,18 @@ import { PATTERN_CODE, PATTERN_URL, PATTERN_EMAIL, PATTERN_MOD } from '@/libs/va
 
 export const AuthModel = {
 
+  getRedirectQuery: t.Object({
+    redirect_uri: t.String(),
+    access_token: t.Optional(t.String()),
+  }),
+
+  getCallbackQuery: t.Object({
+    code: t.Optional(t.String()),
+    error: t.Optional(t.String()),
+    error_description: t.Optional(t.String()),
+    state: t.Optional(t.String()),
+  }),
+
   postRenewBody: t.Object({
     refresh: t.String(),
   }),

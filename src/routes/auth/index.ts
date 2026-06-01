@@ -8,11 +8,31 @@ const route = new Elysia({
   prefix: '/auth',
 })
 
-// 🌵 OAuth 인증요청으로 가기위한 경유지
-// TODO
+// 🌵 OAuth 인증요청으로 가기위한 경유지, TODO: 어쩌면 안쓸지도 모르겠다. (웹소켓으로 주로 사용하는듯..)
+route.get('/redirect/:provider/', async (ctx) => {
+  const url = await Auth.getRedirect({
+    provider: ctx.params.provider,
+    ...ctx.query,
+  })
+  return ctx.redirect(url)
+}, {
+  params: BaseModel.paramsProvider,
+  query: AuthModel.getRedirectQuery,
+})
 
 // 🌵 OAuth 에서 리다이렉트 콜백
-// TODO
+route.get('/callback/:provider/', async (ctx) => {
+  return await Auth.getCallback({
+    provider: ctx.params.provider,
+    code: ctx.query.code,
+    state: ctx.query.state,
+    error: ctx.query.error,
+    errorDescription: ctx.query.error_description,
+  })
+}, {
+  params: BaseModel.paramsProvider,
+  query: AuthModel.getCallbackQuery,
+})
 
 // 🌵 인증 검사하기
 route.post('/checkin/', async (ctx) => {

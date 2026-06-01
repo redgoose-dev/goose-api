@@ -22,15 +22,15 @@ type RenewTokenReturn = {
 
 const PASSWORD_HASH_ROUND = 9
 
-export default abstract class ProviderPassword extends Provider {
+class ProviderPassword extends Provider {
 
-  static code = PROVIDER_CODE.PASSWORD
-  static type = PROVIDER_TYPE.PASSWORD
-  static description = 'password login'
-  static accessSecret = Bun.env.AUTH_PASSWORD_ACCESS_SECRET as string
-  static accessExpires = Bun.env.AUTH_PASSWORD_ACCESS_EXPIRES as SignOptions['expiresIn']
-  static refreshSecret = Bun.env.AUTH_PASSWORD_REFRESH_SECRET as string
-  static refreshExpires = Bun.env.AUTH_PASSWORD_REFRESH_EXPIRES as SignOptions['expiresIn']
+  public code = PROVIDER_CODE.PASSWORD
+  public type = PROVIDER_TYPE.PASSWORD
+  public description = 'password login'
+  private accessSecret = Bun.env.AUTH_PASSWORD_ACCESS_SECRET as string
+  private accessExpires = Bun.env.AUTH_PASSWORD_ACCESS_EXPIRES as SignOptions['expiresIn']
+  private refreshSecret = Bun.env.AUTH_PASSWORD_REFRESH_SECRET as string
+  private refreshExpires = Bun.env.AUTH_PASSWORD_REFRESH_EXPIRES as SignOptions['expiresIn']
 
   static hashPassword(pw: string): string
   {
@@ -38,13 +38,13 @@ export default abstract class ProviderPassword extends Provider {
     return hashSync(pw, salt)
   }
 
-  static verifyPassword(password: string, hashedPassword: string): boolean
+  public verifyPassword(password: string, hashedPassword: string): boolean
   {
     return compareSync(String(password), hashedPassword)
   }
 
   // 새로운 토큰 제작
-  static newToken(type: 'access'|'refresh', payload: ZZ = {}): ZZ
+  public newToken(type: 'access'|'refresh', payload: ZZ = {}): ZZ
   {
     let code: string
     switch (type)
@@ -66,12 +66,9 @@ export default abstract class ProviderPassword extends Provider {
     }
   }
 
-  static async renewToken(op: RenewTokenParams): Promise<RenewTokenReturn>
+  public async renewToken(op: RenewTokenParams): Promise<RenewTokenReturn>
   {
-    if (!op.provider)
-    {
-      throw new Error('Not found provider data.')
-    }
+    if (!op.provider) throw new Error('Not found provider data.')
     const _access = this.newToken('access', {
       srl: op.provider.srl,
       user_id: op.provider.user_id,
@@ -79,13 +76,15 @@ export default abstract class ProviderPassword extends Provider {
     const _refresh = this.newToken('refresh', {
       srl: op.provider.srl,
     })
-    const _expires = this.convertExpToRemainTime(_access.parsed.exp)
+    const _expires = Provider.convertExpToRemainTime(_access.parsed.exp)
     return {
       access: _access.code,
-      accessPublic: this.getPublicToken(_access.code),
+      accessPublic: Provider.getPublicToken(_access.code),
       refresh: _refresh.code,
       expires: _expires,
     }
   }
 
 }
+
+export default ProviderPassword
