@@ -6,14 +6,14 @@
 import ServiceError from '@/classes/ServiceError'
 import Provider from './Provider'
 import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
-import { encodeUri, parseQueryString } from '@/libs/strings'
+import { parseQueryString } from '@/libs/strings'
 import { PATHS } from '@/libs/assets'
 
 export default class ProviderDiscord extends Provider {
 
   public code = PROVIDER_CODE.DISCORD
   public type = PROVIDER_TYPE.OAUTH
-  public description = `oAuth by ${PROVIDER_CODE.DISCORD}`
+  public description = `OAuth by ${PROVIDER_CODE.DISCORD}`
   private scope = 'email identify'
   private headerType = 'Bearer'
   private clientId = Bun.env.AUTH_DISCORD_CLIENT_ID
@@ -26,7 +26,29 @@ export default class ProviderDiscord extends Provider {
     super()
   }
 
-  public createAuthorizeUrl(state: string)
+  static getAvatarUrl(id?: string, _code?: string): string
+  {
+    const url = {
+      'base': 'https://cdn.discordapp.com/avatars',
+      'embed': 'https://cdn.discordapp.com/embed/avatars',
+    }
+    if (_code)
+    {
+      const filename = `${_code}.${_code.startsWith('a_') ? 'gif' : 'png'}`
+      return `${url.base}/${id}/${filename}`
+    }
+    else
+    {
+      return `${url.embed}/${Number(id) % 5}.png`
+    }
+  }
+
+  static checkUserId(userId: string, userData: ZZ): boolean
+  {
+    return userId === userData.id
+  }
+
+  public createAuthorizeUrl(state: string): string
   {
     const _query = parseQueryString({
       client_id: this.clientId,
@@ -35,10 +57,10 @@ export default class ProviderDiscord extends Provider {
       scope: this.scope,
       state,
     })
-    return `${this.url_authorization}/?${_query}`
+    return `${this.url_authorization}?${_query}`
   }
 
-  public async getToken(code: string)
+  public async getToken(code: string): Promise<ZZ>
   {
     const res = await fetch(this.url_token, {
       method: 'post',
@@ -55,6 +77,7 @@ export default class ProviderDiscord extends Provider {
     if (!res?.ok)
     {
       throw new ServiceError('인증 서비스 토큰을 가져올 수 없습니다.', {
+        status: 401,
         text: _json.error_description,
       })
     }
@@ -69,18 +92,27 @@ export default class ProviderDiscord extends Provider {
     }
   }
 
-  static async getUser(token: string): Promise<ZZ | null>
+  public async getUser(accessToken: string): Promise<ZZ>
   {
-    return null
-  }
-
-  static checkUserId(userId: string, userData: ZZ): boolean
-  {
-    return false
+    const res = await fetch(this.url_userinfo, {
+      method: 'get',
+      headers: {
+        'Authorization': `${this.headerType} ${accessToken}`,
+      },
+    })
+    const _json = (await res.json()) as ZZ
+    if (!_json?.id) throw new Error('응답 데이터가 없습니다.')
+    return {
+      id: _json.id,
+      name: _json.username,
+      email: _json.email,
+      avatar: ProviderDiscord.getAvatarUrl(_json.id, _json.avatar),
+    }
   }
 
   public async renewToken(): Promise<ZZ>
   {
+    // TODO
     return {}
   }
 

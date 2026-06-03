@@ -59,6 +59,14 @@ export const AuthModel = {
     description: t.String(),
   }),
 
+  wsAuthorizeMessageBody: t.Object({
+    mode: t.String(),
+    provider: t.String(),
+    session: t.String(),
+    redirect_uri: t.Optional(t.String()),
+    access_token: t.Optional(t.String()),
+  }),
+
 } as const
 
 export type AuthModel = {

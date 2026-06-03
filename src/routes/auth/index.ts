@@ -3,9 +3,11 @@ import { Auth } from './service'
 import { BaseModel } from '@/libs/models'
 import { AuthModel } from './model'
 import { checkingToken } from '@/libs/verify'
+import { IS_DEV } from '@/libs/assets'
 
 const route = new Elysia({
   prefix: '/auth',
+  websocket: {},
 })
 
 // 🌵 OAuth 인증요청으로 가기위한 경유지, TODO: 어쩌면 안쓸지도 모르겠다. (웹소켓으로 주로 사용하는듯..)
@@ -22,7 +24,7 @@ route.get('/redirect/:provider/', async (ctx) => {
 
 // 🌵 OAuth 에서 리다이렉트 콜백
 route.get('/callback/:provider/', async (ctx) => {
-  return await Auth.getCallback({
+  return await Auth.getCallback(ctx, {
     provider: ctx.params.provider,
     code: ctx.query.code,
     state: ctx.query.state,
@@ -177,13 +179,28 @@ route.patch('/token/:srl/', async (ctx) => {
 // 🍄 공개용 토큰 만료시키기
 route.delete('/token/:srl/', async (ctx) => {
   checkingToken(ctx)
-  await Auth.revokeToken(ctx.params.srl)
+  await Auth.deleteToken(ctx.params.srl)
   return 'The token has expired.'
 }, {
   params: BaseModel.paramsSrl,
 })
 
 // 🍁 프로바이더 인증 웹소켓
-// TODO
+route.ws('/ws/authorize/', {
+  body: AuthModel.wsAuthorizeMessageBody,
+  open: (ws) => Auth.wsOpen(ws),
+  message: (ws, body) => Auth.wsMessage(ws, body),
+  close: (ws) => Auth.wsClose(ws),
+})
+
+// for DEV
+if (IS_DEV)
+{
+  route.get('/ws-test/', async () => {
+    return new Response(Bun.file(`${import.meta.dir}/get_ws-test.html`), {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
+  })
+}
 
 export default route

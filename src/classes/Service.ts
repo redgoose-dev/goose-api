@@ -7,6 +7,10 @@ import originPreference from '@/../resource/preference.json'
 
 const { SERVICE_NAME, PATH_DATA, DEBUG } = Bun.env
 
+type ServiceData = {
+  oAuth: Map<string, any>
+}
+
 class Service<T extends ZZ = ZZ> {
 
   public serviceName: string = SERVICE_NAME as string
@@ -22,7 +26,9 @@ class Service<T extends ZZ = ZZ> {
   // 환경설정
   public preference: ZZ = originPreference
   // 실행중에 사용되는 커스텀 데이터 공간
-  public data = {} as T
+  public data: ServiceData = {
+    oAuth: new Map(),
+  }
 
   constructor()
   {}

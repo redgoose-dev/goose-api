@@ -27,3 +27,5 @@ export const DEFAULT_HEADERS = {
   [HEADERS_KEYS.ALLOW_HEADERS]: 'Origin, Content-Type, Authorization, Accept',
   [HEADERS_KEYS.ALLOW_CREDENTIALS]: 'true',
 }
+
+export const WS_TIMEOUT = 120 // 웹소켓 타임아웃 (초)

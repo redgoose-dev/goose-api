@@ -5,7 +5,8 @@ import { filteringObject } from '@/libs/objects'
 
 export function onRequest({ request, set, store }: any)
 {
-  // console.log('call onRequest()')
+  // set error code
+  request.errorCode = createCode(12)
 }
 
 export function onResponse({ set, store }: any)
@@ -25,10 +26,9 @@ export function onErrorBefore({ request, set, store, error }: any)
   // set error code
   if (![ 403, 404 ].includes(error.status))
   {
-    const errorCode = createCode(12)
-    set.headers[HEADERS_KEYS.ERROR_CODE] = errorCode
+    set.headers[HEADERS_KEYS.ERROR_CODE] = request.errorCode
     store.logger.mergeContext(request, filteringObject({
-      code: errorCode,
+      code: request.errorCode,
       errorMessage: error.errorMessage,
     }))
   }

@@ -51,3 +51,11 @@ app.listen({
 
 // print server message
 openServer(app)
+
+// DEV: 검사용
+// if (server.dev)
+// {
+//   setInterval(() => {
+//     console.log(`[${Date.now()}]`, (app.store as any).service.data.oAuth.keys())
+//   }, 2000)
+// }
