@@ -3,8 +3,7 @@ import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import Provider from '@/classes/provider/Provider'
 import ProviderPassword from '@/classes/provider/Password'
-import { getProvider } from '@/classes/provider'
-import { PROVIDER_CODE, PROVIDER_TYPE, type ProviderCode } from '@/classes/provider/assets'
+import { PROVIDER_CODE, PROVIDER_TYPE, type ProviderCode, getProvider } from '@/classes/provider'
 import { checkExistValueInObject, arrayToObject } from '@/libs/objects'
 import { encodeUri, decodeUri, parseQueryString } from '@/libs/strings'
 import { checkingToken, type CheckinToken } from '@/libs/verify'
@@ -156,7 +155,7 @@ export abstract class Auth {
       // set result
       const data = {
         provider_srl: providerSrl,
-        access: token.access,
+        access: Provider.getPublicToken(token.access),
         expires: token.expires,
         refresh: token.refresh,
       }
@@ -273,11 +272,11 @@ export abstract class Auth {
       // 프로바이더 클래스 가져오기
       const __provider__ = getProvider(provider.data.code)
       // 새로운 엑세스 토큰 만들기
-      // TODO: type 에서 password는 provider값이 필요하고 oauth는 refreshToken 값이 필요하다.
       const newToken = await __provider__.renewToken({
         provider: provider.data,
+        refresh: refreshToken,
       })
-      if (!newToken)
+      if (!newToken?.access)
       {
         throw new ServiceError('Failed to renew access token.', { status: 400 })
       }

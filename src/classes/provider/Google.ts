@@ -3,11 +3,11 @@
  * 구글 인증 서비스 인터페이스 클래스
  */
 
+import ServiceError from '@/classes/ServiceError'
 import Provider from './Provider'
-import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
+import { PROVIDER_CODE, PROVIDER_TYPE } from './'
 import { parseQueryString } from '@/libs/strings'
 import { PATHS } from '@/libs/assets'
-import ServiceError from "@/classes/ServiceError.ts";
 
 export default class ProviderGoogle extends Provider {
 
@@ -93,9 +93,33 @@ export default class ProviderGoogle extends Provider {
     }
   }
 
-  public async renewToken(): Promise<ZZ>
+  public async renewToken(op: ZZ): Promise<ZZ|undefined>
   {
-    // TODO
+    if (!op.refresh) return
+    const res = await fetch(this.url_token, {
+      method: 'post',
+      headers: { 'Accept': 'application/json' },
+      body: new URLSearchParams({
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        grant_type: 'refresh_token',
+        refresh_token: op.refresh,
+      } as ZZ),
+    })
+    const _json: any = await res.json()
+    if (!res?.ok)
+    {
+      throw new ServiceError('엑세스 토큰 재발급 실패', {
+        status: 401,
+        text: _json.error_description,
+      })
+    }
+    return {
+      access: _json.access_token,
+      accessPublic: Provider.getPublicToken(_json.access_token),
+      refresh: op.refresh,
+      expires: _json.expires_in,
+    }
   }
 
 }

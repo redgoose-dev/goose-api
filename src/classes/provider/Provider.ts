@@ -12,9 +12,9 @@ abstract class Provider {
   /**
    * 공개용 토큰 가져오기
    */
-  static getPublicToken(code: string): string
+  static getPublicToken(code: string, n: number = 32): string
   {
-    return code.slice(-32)
+    return code.slice(0 - n)
   }
 
   /**

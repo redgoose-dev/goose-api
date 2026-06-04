@@ -7,18 +7,7 @@ import { hashSync, genSaltSync, compareSync } from 'bcryptjs'
 import { sign, verify } from 'jsonwebtoken'
 import type { SignOptions } from 'jsonwebtoken'
 import Provider from './Provider'
-import { PROVIDER_CODE, PROVIDER_TYPE } from './assets'
-
-type RenewTokenParams = {
-  refreshToken?: string
-  provider?: ZZ
-}
-type RenewTokenReturn = {
-  access: string
-  accessPublic: string
-  refresh: string
-  expires: number
-}
+import { PROVIDER_CODE, PROVIDER_TYPE } from './'
 
 const PASSWORD_HASH_ROUND = 9
 
@@ -66,7 +55,7 @@ class ProviderPassword extends Provider {
     }
   }
 
-  public async renewToken(op: RenewTokenParams): Promise<RenewTokenReturn>
+  public async renewToken(op: ZZ): Promise<ZZ>
   {
     if (!op.provider) throw new Error('Not found provider data.')
     const _access = this.newToken('access', {

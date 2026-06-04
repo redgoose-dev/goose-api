@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PROVIDER_CODE, type ProviderCode } from '@/classes/provider/assets'
+import { PROVIDER_CODE, type ProviderCode } from '@/classes/provider'
 
 /**
  * # `_a` 파라메터 사용하기
