@@ -20,6 +20,12 @@ export const BaseModel = {
     srl: t.Union([ t.Number(), t.String() ]),
   }),
 
+  paramsTableSelect: t.Object({
+    where: t.Optional(t.Union([ t.String(), t.ArrayString() ])),
+    values: t.Optional(t.Record(t.String(), t.Any())),
+    join: t.Optional(t.Union([ t.String(), t.ArrayString() ])),
+  }),
+
   booleanLike: t.Transform(t.Union([
     t.Boolean(),
     t.BooleanString(),

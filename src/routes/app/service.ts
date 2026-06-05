@@ -132,7 +132,8 @@ export abstract class App {
       }
       return data
     }
-    catch (_e: any) {
+    catch (_e: any)
+    {
       throw new ServiceError('Failed to get App.', {
         status: _e.status,
         text: _e.message,
@@ -250,7 +251,7 @@ export abstract class App {
 
   static async deleteItem({ srl, code }: DeleteItemParams)
   {
-    let _transction = false
+    let _transaction = false
     try
     {
       // set where
@@ -266,7 +267,8 @@ export abstract class App {
       {
         throw new ServiceError('App data not found.', { status: 204 })
       }
-      _transction = db.transaction('begin')
+      // begin transaction
+      _transaction = db.transaction('begin')
       // TODO: Article 데이터 삭제 (파일, 댓글, 태그)
       // TODO: Nest 데이터 삭제 (카테고리)
       // delete app data
@@ -275,11 +277,13 @@ export abstract class App {
         where: _where,
         debug: true,
       })
-      _transction = db.transaction('commit')
+      // commit transaction
+      _transaction = db.transaction('commit')
     }
     catch (_e: any)
     {
-      db.transaction('rollback', _transction)
+      // collback transaction
+      db.transaction('rollback', _transaction)
       throw new ServiceError('Failed to delete App.', {
         status: _e.status,
         text: _e.message,

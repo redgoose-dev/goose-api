@@ -16,8 +16,8 @@ route.get('/', async (ctx) => {
   checkingToken(ctx)
   // TODO: query.size - 기본값은 환경설정에서 값 가져오기
   // set query
-  if (query.page === undefined) query.page = 1
-  if (query.size === undefined) query.size = 33
+  // if (query.page === undefined) query.page = 1
+  // if (query.size === undefined) query.size = 33
   const data = await App.getIndex({
     ...query,
   })

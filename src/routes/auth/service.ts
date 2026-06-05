@@ -256,7 +256,7 @@ export abstract class Auth {
 
   static async postRenew(token: CheckinToken, refreshToken: string)
   {
-    let _transction = false
+    let _transaction = false
     try
     {
       // check refresh token
@@ -280,7 +280,8 @@ export abstract class Auth {
       {
         throw new ServiceError('Failed to renew access token.', { status: 400 })
       }
-      _transction = db.transaction('begin')
+      // begin transaction
+      _transaction = db.transaction('begin')
       // 이전 토큰의 만료시간을 0으로 변경
       db.editData({
         table: DB.TABLE.TOKEN,
@@ -300,7 +301,8 @@ export abstract class Auth {
           { key: 'created_at', valueName: DB.DATE_TIME },
         ],
       })
-      _transction = db.transaction('commit')
+      // commit transaction
+      _transaction = db.transaction('commit')
       return {
         access: newToken.accessPublic,
         refresh: newToken.refresh,
@@ -309,7 +311,8 @@ export abstract class Auth {
     }
     catch (_e: any)
     {
-      db.transaction('rollback', _transction)
+      // collback transaction
+      db.transaction('rollback', _transaction)
       throw new ServiceError('Failed renew token.', {
         status: _e.status,
         text: _e.message,
@@ -619,7 +622,7 @@ export abstract class Auth {
 
   static async deleteProvider(srl: number)
   {
-    let _transction = false
+    let _transaction = false
     try
     {
       // check exist data
@@ -631,7 +634,8 @@ export abstract class Auth {
       {
         throw new ServiceError('Provider not found.', { status: 204 })
       }
-      _transction = db.transaction('begin')
+      // begin transaction
+      _transaction = db.transaction('begin')
       // 프로바이더 삭제
       db.deleteData({
         table: DB.TABLE.PROVIDER,
@@ -643,11 +647,13 @@ export abstract class Auth {
         where: `provider_srl = ${srl}`,
         set: [ 'expires = 0' ],
       })
-      _transction = db.transaction('commit')
+      // commit transaction
+      _transaction = db.transaction('commit')
     }
     catch (_e: any)
     {
-      db.transaction('rollback', _transction)
+      // collback transaction
+      db.transaction('rollback', _transaction)
       throw new ServiceError('Failed delete provider.', {
         status: _e.status,
         text: _e.message,

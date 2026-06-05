@@ -1,6 +1,5 @@
 import { Elysia } from 'elysia'
 import { checkingToken } from '@/libs/verify'
-import { classifySrlCode } from '@/libs/service'
 import { BaseModel } from '@/libs/models'
 import { Json } from './service'
 import { JsonModel } from './model'
@@ -10,10 +9,32 @@ const route = new Elysia({
 })
 
 // 🌿 Index
-route.get('/', async (ctx) => {}, {})
+route.get('/', async (ctx) => {
+  checkingToken(ctx)
+  const data = await Json.getIndex(ctx.query)
+  return {
+    message: 'Complete get JSON index.',
+    data,
+  }
+}, {
+  query: JsonModel.getIndexQuery,
+})
 
 // 🌻 Detail
-route.get('/:srl/', async (ctx) => {}, {})
+route.get('/:srl/', async (ctx) => {
+  checkingToken(ctx)
+  const data = await Json.getItem({
+    ...ctx.params,
+    ...ctx.query,
+  })
+  return {
+    message: 'Complete get JSON item.',
+    data,
+  }
+}, {
+  params: BaseModel.paramsSrl,
+  query: JsonModel.getItemQuery,
+})
 
 // 🌱 Create
 route.put('/', async (ctx) => {
@@ -28,9 +49,25 @@ route.put('/', async (ctx) => {
 })
 
 // 🌳 Patch
-route.patch('/:srl/', async (ctx) => {}, {})
+route.patch('/:srl/', async (ctx) => {
+  checkingToken(ctx)
+  await Json.patchItem({
+    srl: ctx.params.srl,
+    body: ctx.body,
+  })
+  return 'Complete update JSON.'
+}, {
+  params: BaseModel.paramsSrl,
+  body: JsonModel.patchItemBody,
+})
 
 // 🍄 Delete
-route.delete('/:srl/', async (ctx) => {}, {})
+route.delete('/:srl/', async (ctx) => {
+  checkingToken(ctx)
+  await Json.deleteItem(ctx.params.srl)
+  return 'Complete delete JSON.'
+}, {
+  params: BaseModel.paramsSrl,
+})
 
 export default route
