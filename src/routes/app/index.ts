@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia'
-import { classifySrlCode } from '@/libs/service'
 import { checkingToken } from '@/libs/verify'
+import { classifySrlCode } from '@/libs/service'
 import { BaseModel } from '@/libs/models'
 import { App } from './service'
 import { AppModel } from './model'
@@ -22,14 +22,14 @@ route.get('/', async (ctx) => {
     ...query,
   })
   return {
-    message: 'Success get App index.',
+    message: 'Complete get App index.',
     data,
   }
 }, {
   query: AppModel.getIndexQuery,
 })
 
-// 🌻 Detail app
+// 🌻 Detail
 route.get('/:srl/', async (ctx) => {
   const { params, query } = ctx
   // checking token
@@ -39,7 +39,7 @@ route.get('/:srl/', async (ctx) => {
     ...query,
   })
   return {
-    message: 'Success get App.',
+    message: 'Complete get App.',
     data,
   }
 }, {
@@ -47,21 +47,21 @@ route.get('/:srl/', async (ctx) => {
   query: AppModel.getItemQuery,
 })
 
-// 🌱 Create app
+// 🌱 Create
 route.put('/', async (ctx) => {
   const { body } = ctx
   // checking token
   checkingToken(ctx)
   const addedSrl = await App.putItem({ body })
   return {
-    message: 'Success add App.',
+    message: 'Complete add App.',
     data: addedSrl,
   }
 }, {
   body: AppModel.putItemBody,
 })
 
-// 🌳 Patch app data
+// 🌳 Patch
 route.patch('/:srl/', async (ctx) => {
   const { params, body } = ctx
   // checking token
@@ -71,13 +71,13 @@ route.patch('/:srl/', async (ctx) => {
     ...classifySrlCode(params.srl),
     body,
   })
-  return 'Success update App.'
+  return 'Complete update App.'
 }, {
   params: BaseModel.paramsSrlCode,
   body: AppModel.patchItemBody,
 })
 
-// 🍄 Delete app
+// 🍄 Delete
 route.delete('/:srl/', async (ctx) => {
   const { params } = ctx
   // checking token

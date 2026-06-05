@@ -27,3 +27,20 @@ export function arrayToObject(arr: ZZ[], keyName: string): ZZ
     return acc
   }, {})
 }
+
+/**
+ * json 파싱
+ */
+export function parseJSON(src?: any): any
+{
+  try
+  {
+    if (src && typeof src === 'string') return JSON.parse(src)
+    else if (src) return src
+    else return null
+  }
+  catch (_e: any)
+  {
+    return null
+  }
+}
