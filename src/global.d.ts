@@ -1,14 +1,10 @@
 import type * as Elysia from 'elysia'
 import type { Logger } from 'logixlysia'
-import type { Service as Service_ } from '@/classes/Service'
 
 declare global {
 
   // Object type
   export type ZZ = Record<string|number, any>
-
-  // Service
-  export type Service = Service_
 
   // Module store in context
   export type Store = Elysia.Context['store'] & {

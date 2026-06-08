@@ -2,7 +2,7 @@
  * Provider
  */
 
-import type { ProviderCode } from './assets'
+import type { ProviderCode } from './'
 import { PATHS } from '@/libs/assets'
 
 abstract class Provider {

@@ -82,5 +82,4 @@ class Service<T extends ZZ = ZZ> {
 
 }
 
-export type { Service }
 export default Service

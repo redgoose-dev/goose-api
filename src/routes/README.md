@@ -12,7 +12,7 @@
 ## Service 클래스 타입 적용
 
 ```typescript
-import type Service from '@/classes/Service'
+import Service from '@/classes/Service'
 
 export default async (ctx) => {
   const { service } = ctx.store as { service: Service }
@@ -26,7 +26,6 @@ export default async (ctx) => {
 ## 라우트 주석 가이드
 
 `./app/index.ts` 파일에서 라우트 핸들러 주석을 구분하는 이모지입니다.
-
 
 - 🌿: 목록
 - 🌻: 상세데이터

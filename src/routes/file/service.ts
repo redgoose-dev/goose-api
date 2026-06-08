@@ -10,6 +10,6 @@ export abstract class FileTool {
       where: op.where || '',
       values: op.values || {},
     })
-    return count.data
+    return count.data || 0
   }
 }
