@@ -3,7 +3,7 @@ import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import * as messages from '@/libs/messages'
 import { printf } from '@/libs/strings'
-import { checkExistValueInObject } from '@/libs/objects'
+import { filteringObject } from '@/libs/objects'
 import type { AppModel } from './model'
 
 type GetItemParams = {
@@ -31,7 +31,7 @@ export abstract class App {
   {
     try
     {
-      // set where, values
+      // set assets
       let _where = []
       let _values: ZZ = {}
       if (op.code)
@@ -221,23 +221,25 @@ export abstract class App {
         }
       }
       // update data
-      if (checkExistValueInObject(_ready, Object.keys(_ready)))
+      _ready = filteringObject(_ready)
+      if (Object.keys(_ready).length <= 0)
       {
-        db.editData({
-          table: DB.TABLE.APP,
-          where: _where,
-          set: [
-            _ready.code !== undefined && 'code = $code',
-            _ready.name !== undefined && 'name = $name',
-            _ready.description !== undefined && 'description = $description',
-          ],
-          values: {
-            '$code': _ready.code,
-            '$name': _ready.name,
-            '$description': _ready.description,
-          },
-        })
+        throw new ServiceError(messages.ERR_CANT_UPDATE, { status: 400 })
       }
+      db.editData({
+        table: DB.TABLE.APP,
+        where: _where,
+        set: [
+          _ready.code !== undefined && 'code = $code',
+          _ready.name !== undefined && 'name = $name',
+          _ready.description !== undefined && 'description = $description',
+        ],
+        values: {
+          '$code': _ready.code,
+          '$name': _ready.name,
+          '$description': _ready.description,
+        },
+      })
     }
     catch (_e: any)
     {

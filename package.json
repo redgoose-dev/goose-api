@@ -13,7 +13,9 @@
     "prebuild": "rm -rf ./dist",
     "build": "bun run --bun ./src/build.ts",
     "prod:util": "NODE_ENV=production bun run --bun dist/util.js",
-    "prod:preview": "NODE_ENV=production bun run --bun dist/main.js"
+    "prod:preview": "NODE_ENV=production bun run --bun dist/main.js",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

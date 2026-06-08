@@ -41,6 +41,7 @@ app.use(routes.auth)
 app.use(routes.app)
 app.use(routes.article)
 app.use(routes.json)
+app.use(routes.tag)
 app.use(routes.options)
 
 // set listen server

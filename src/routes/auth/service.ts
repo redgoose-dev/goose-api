@@ -4,11 +4,12 @@ import MOD from '@/classes/MOD'
 import Provider from '@/classes/provider/Provider'
 import ProviderPassword from '@/classes/provider/Password'
 import { PROVIDER_CODE, PROVIDER_TYPE, type ProviderCode, getProvider } from '@/classes/provider'
-import { checkExistValueInObject, arrayToObject } from '@/libs/objects'
+import { arrayToObject, filteringObject } from '@/libs/objects'
 import { encodeUri, decodeUri, parseQueryString } from '@/libs/strings'
 import { checkingToken, type CheckinToken } from '@/libs/verify'
 import { WS_TIMEOUT } from '@/libs/assets'
 import { type AuthModel } from './model'
+import * as messages from "@/libs/messages.ts";
 
 type GetRedirectParams = {
   provider: string
@@ -587,9 +588,10 @@ export abstract class Auth {
       if (body.email !== undefined) _ready['email'] = body.email
       if (body.password !== undefined) _ready['password'] = ProviderPassword.hashPassword(body.password)
       // update data
-      if (!checkExistValueInObject(_ready, Object.keys(_ready)))
+      _ready = filteringObject(_ready)
+      if (Object.keys(_ready).length <= 0)
       {
-        throw new ServiceError('Nothing to update.', { status: 400 })
+        throw new ServiceError(messages.ERR_CANT_UPDATE, { status: 400 })
       }
       db.editData({
         table: DB.TABLE.PROVIDER,

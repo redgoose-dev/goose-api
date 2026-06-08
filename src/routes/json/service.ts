@@ -8,8 +8,7 @@ import { MODULE as TAG_MODULE } from '@/routes/tag/assets'
 import { FileTool } from '@/routes/file/service'
 import { MODULE as FILE_MODULE } from '@/routes/file/assets'
 import * as messages from '@/libs/messages'
-import { printf } from '@/libs/strings'
-import { checkExistValueInObject, parseJSON, filteringObject } from '@/libs/objects'
+import { parseJSON, filteringObject } from '@/libs/objects'
 import type { JsonModel } from './model'
 import type { BaseModel } from '@/libs/models'
 
@@ -261,7 +260,7 @@ export abstract class Json {
       if (body.tag !== undefined)
       {
         // TODO: 태그 데이터 업데이트하기. 트랜잭션 영역이기 때문에 먼저 수정해도 된다.
-        TagTool.update()
+        // TagTool.update()
         _ready['tag'] = body.tag
       }
       // check update data
