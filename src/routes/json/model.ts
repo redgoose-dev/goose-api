@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import {PATTERN_FIELD, PATTERN_MOD, PATTERN_TAG} from '@/libs/validation'
+import { PATTERN_FIELD, PATTERN_MOD, PATTERN_TAG } from '@/libs/validation'
 
 export const JsonModel = {
 

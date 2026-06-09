@@ -2,7 +2,7 @@ import { Elysia } from 'elysia'
 import type { Logger } from 'logixlysia'
 import Service from '@/classes/Service'
 
-type ElysiaService = Elysia & {
+export type ElysiaService = Elysia & {
   store: {
     beforeTime?: bigint
     service: Service

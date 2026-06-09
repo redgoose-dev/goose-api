@@ -1,18 +1,23 @@
-import { describe, expect, it } from 'bun:test'
-import { createTestApp } from './helpers/create-test-app'
+import { describe, expect, it, beforeAll } from 'bun:test'
+import { createTestApp, type ElysiaService } from './helpers/create-test-app'
 import { createRequest } from './helpers/request-assets'
-import routeTag from '@/routes/tag'
 import DB, { db } from '@/classes/DB'
-
-const MODULE = 'json'
-const MODULE_SRL = 1
-const TAG_NAME = ''
+import routeTag from '@/routes/tag'
 
 describe('DELETE /tag/', () => {
-  it('임시로 추가한 태그를 삭제한다', async () => {
-    const app = await createTestApp()
-    app.use(routeTag)
+  const MODULE = 'json'
+  const MODULE_SRL = 1
+  const TAG_NAME = ''
 
+  let app: ElysiaService
+  let origin: ZZ
+
+  beforeAll(async () => {
+    app = await createTestApp()
+    app.use(routeTag)
+  })
+
+  it('임시로 추가한 태그를 삭제한다', async () => {
     // 임시 태그 만들기
     const tagName = TAG_NAME || `test-delete-${Date.now()}`
     const tagSrl = Number(db.addData({

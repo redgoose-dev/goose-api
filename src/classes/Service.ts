@@ -29,6 +29,8 @@ class Service<T extends ZZ = ZZ> {
   public data: ServiceData = {
     oAuth: new Map(),
   }
+  // preference 데이터 경로
+  private pathPreference = `${PATH_DATA}/preference.json`
 
   constructor()
   {}
@@ -36,7 +38,7 @@ class Service<T extends ZZ = ZZ> {
   async #checkInstall(): Promise<boolean>
   {
     const paths: string[] = [
-      `${PATH_DATA}/preference.json`,
+      this.pathPreference,
       `${PATH_DATA}/db.sqlite`,
       `${PATH_DATA}/upload/origin`,
       `${PATH_DATA}/upload/cover`,
@@ -69,15 +71,31 @@ class Service<T extends ZZ = ZZ> {
 
   async loadPreference(): Promise<ZZ>
   {
-    const file = Bun.file(`${PATH_DATA}/preference.json`, {
+    const file = Bun.file(this.pathPreference, {
       type: 'application/json',
     })
     return (await file.json()) || undefined
   }
 
-  async updatePreference(): Promise<void>
+  async updatePreference(src: ZZ, change: boolean): Promise<void>
   {
-    // TODO
+    if (!(src && src.constructor == Object))
+    {
+      throw new Error('Not found update data.')
+    }
+    if (change)
+    {
+      this.preference = { ...src }
+    }
+    else
+    {
+      this.preference = {
+        ...this.preference,
+        ...src,
+      }
+    }
+    const raw = JSON.stringify(this.preference, null, 2)
+    await Bun.write(this.pathPreference, raw)
   }
 
 }
