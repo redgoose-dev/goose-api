@@ -3,14 +3,13 @@ import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import { CategoryTool } from '@/routes/category/service'
 import { MODULE as CATEGORY_MODULE } from '@/routes/category/assets'
-import { TagTool } from '@/routes/tag/service'
-import { MODULE as TAG_MODULE } from '@/routes/tag/assets'
+import { TagTool, MODULE as MODULE_TAG } from '@/routes/tag/service'
 import { FileTool } from '@/routes/file/service'
 import { MODULE as FILE_MODULE } from '@/routes/file/assets'
 import * as messages from '@/libs/messages'
 import { parseJSON, filteringObject } from '@/libs/objects'
-import type { JsonModel } from './model'
-import type { BaseModel } from '@/libs/models'
+import { type BaseModel } from '@/libs/models'
+import { type JsonModel } from './model'
 
 type GetItemParams = { srl: number } & JsonModel['getItemQuery']
 type PutItemParams = {
@@ -60,7 +59,7 @@ export abstract class Json {
       {
         const _tags = op.tag.split(',').join(',')
         _where.push(`AND j.srl IN (SELECT mt.module_srl FROM ${DB.TABLE.MAP_TAG} AS mt WHERE mt.module LIKE $tag_module AND mt.tag_srl IN (${_tags}))`)
-        _values['$tag_module'] = TAG_MODULE.JSON
+        _values['$tag_module'] = MODULE_TAG.JSON
       }
       // get total
       const total = db.getCount({
@@ -114,6 +113,7 @@ export abstract class Json {
     }
   }
 
+  // TODO: op -> { srl, query } 형태로 바꾸기
   static async getItem(op: GetItemParams)
   {
     try
@@ -121,7 +121,7 @@ export abstract class Json {
       // set assets
       let _table = `${DB.TABLE.JSON} AS j`
       const _field = op.field ? op.field.split(',') : ''
-      // get item
+      // get data
       let item = db.getData({
         table: _table,
         field: _field,

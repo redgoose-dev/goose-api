@@ -1,9 +1,14 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import { compareIndex } from '@/libs/objects'
-import { MODULE } from './assets'
 import { TagModel } from './model'
 import type { BaseModel } from '@/libs/models'
+
+export const MODULE = {
+  ARTICLE: 'article',
+  JSON: 'json',
+  CHECKLIST: 'checklist',
+}
 
 export abstract class TagTool {
   static count(op: BaseModel['paramsTableSelect']): number

@@ -13,9 +13,7 @@ describe('GET /preference/', () => {
     const app = await createTestApp()
     app.use(routePreference)
     // call request
-    const res = await app.handle(createRequest('/preference/', {
-      method: 'GET',
-    }))
+    const res = await app.handle(createRequest('/preference/'))
     expect(res.status).toBe(200)
     const data = await res.json()
     expect(data).toEqual(
