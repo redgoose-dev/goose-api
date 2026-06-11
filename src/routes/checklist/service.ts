@@ -2,11 +2,10 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import { TagTool, MODULE as MODULE_TAG } from '../tag/service'
-import { parseJSON, filteringObject } from '@/libs/objects'
+import { filteringObject } from '@/libs/objects'
 import * as messages from '@/libs/messages'
 import { type BaseModel } from '@/libs/models'
 import { type ChecklistModel } from './model'
-import { JsonTool } from '../json/service'
 
 type GetIndexParams = {
   query: ChecklistModel['getIndexQuery']
@@ -200,7 +199,7 @@ export abstract class Checklist {
             value: body.regdate || undefined,
             valueName: body.regdate ? undefined : DB.DATE_TIME,
           },
-        ].filter(Boolean),
+        ],
       })
       // add tags
       if (body.tag && added.data > 0)
@@ -233,7 +232,7 @@ export abstract class Checklist {
     try
     {
       // check exist data
-      const count = JsonTool.count({
+      const count = ChecklistTool.count({
         where: `srl = ${srl}`,
       })
       if (count <= 0) throw new ServiceError('Not found data.', { status: 204 })
@@ -301,18 +300,31 @@ export abstract class Checklist {
   static async deleteItem(srl: number)
   {
     let _transaction = false
-    console.log('Checklist.deleteItem()', srl)
     try
     {
-      // TODO
+      // check data
+      const count = ChecklistTool.count({
+        where: `srl = ${srl}`,
+      })
+      if (count <= 0) throw new ServiceError('Not found data.', { status: 204 })
       // begin transaction
       _transaction = db.transaction('begin')
-      // TODO
+      // delete data
+      db.deleteData({
+        table: DB.TABLE.CHECKLIST,
+        where: `srl = ${srl}`,
+      })
+      // delete tag
+      TagTool.delete({
+        module: MODULE_TAG.CHECKLIST,
+        module_srl: srl,
+      })
       // commit transaction
       _transaction = db.transaction('commit')
     }
     catch (_e: any)
     {
+      console.error(_e)
       // collback transaction
       db.transaction('rollback', _transaction)
       throw new ServiceError('Failed to delete Checklist item.', {

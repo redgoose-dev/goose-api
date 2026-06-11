@@ -11,7 +11,9 @@ const route = new Elysia({
 // 🌿 Index
 route.get('/', async (ctx) => {
   checkingToken(ctx)
-  const data = await Json.getIndex(ctx.query)
+  const data = await Json.getIndex({
+    query: ctx.query,
+  })
   return {
     message: 'Complete get JSON index.',
     data,
@@ -24,8 +26,8 @@ route.get('/', async (ctx) => {
 route.get('/:srl/', async (ctx) => {
   checkingToken(ctx)
   const data = await Json.getItem({
-    ...ctx.params,
-    ...ctx.query,
+    srl: ctx.params.srl,
+    query: ctx.query,
   })
   return {
     message: 'Complete get JSON item.',

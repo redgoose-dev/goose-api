@@ -1,9 +1,11 @@
-import { describe, expect, it, beforeAll, afterAll } from 'bun:test'
+import { describe, expect, it, beforeAll } from 'bun:test'
+import DB, { db } from '@/classes/DB'
 import { createTestApp, type ElysiaService } from './helpers/create-test-app'
 import { createRequest } from './helpers/request-assets'
-import routeChecklist from '@/routes/checklist'
+import * as routes from '@/routes/index'
 import { dateFormat } from '@/libs/strings'
 import { dconsole, getData } from './helpers/debug'
+import { TagTool, MODULE as MODULE_TAG } from '@/routes/tag/service'
 
 /**
  * # Command guide
@@ -13,7 +15,7 @@ describe('GET /checklist/', () => {
   let app: ElysiaService
   beforeAll(async () => {
     app = await createTestApp()
-    app.use(routeChecklist)
+    app.use(routes.checklist)
   })
   it.only('체크리스트 목록을 가져온다.', async () => {
     const res = await app.handle(createRequest(`/checklist/`, {
@@ -34,7 +36,7 @@ describe('GET /checklist/', () => {
         data: expect.any(Object),
       })
     )
-    dconsole('[RESULT]', data)
+    // dconsole('[RESULT]', data)
   })
 })
 
@@ -47,7 +49,7 @@ describe('GET /checklist/:srl/', () => {
   let app: ElysiaService
   beforeAll(async () => {
     app = await createTestApp()
-    app.use(routeChecklist)
+    app.use(routes.checklist)
   })
   it.only('체크리스트 하나를 가져온다.', async () => {
     const res = await app.handle(createRequest(`/checklist/${srl}/`, {
@@ -76,7 +78,7 @@ describe('PUT /checklist/', () => {
   let app: ElysiaService
   beforeAll(async () => {
     app = await createTestApp()
-    app.use(routeChecklist)
+    app.use(routes.checklist)
   })
   it.only('체크리스트 하나를 등록한다.', async () => {
     const res = await app.handle(createRequest('/checklist/', {
@@ -107,7 +109,7 @@ describe('PATCH /checklist/:srl/', () => {
   let app: ElysiaService
   beforeAll(async () => {
     app = await createTestApp()
-    app.use(routeChecklist)
+    app.use(routes.checklist)
   })
   it.only('체크리스트 하나를 업데이트한다.', async () => {
     const _body = {
@@ -133,17 +135,39 @@ describe('DELETE /checklist/:srl/', () => {
   let app: ElysiaService
   beforeAll(async () => {
     app = await createTestApp()
-    app.use(routeChecklist)
+    app.use(routes.checklist)
   })
   it.only('체크리스트를 삭제한다.', async () => {
-    // TODO: 삭제할 데이터를 추가
+    // 삭제할 체크리스트 만들기
+    const addedRes = await app.handle(createRequest('/checklist', {
+      method: 'PUT',
+      body: JSON.stringify({
+        content: '- [ ] item #1\n- [x] item #2',
+        tag: 'EOOO,FOOO,HOOO',
+      }),
+    }))
+    const checklistSrl = (await getData(addedRes)).data as number
+    expect(checklistSrl).toBeGreaterThan(0)
     try
     {
-      // TODO: 데이터 삭제 요청
+      // 체크리스트 삭제하기
+      const res = await app.handle(createRequest(`/checklist/${checklistSrl}/`, {
+        method: 'DELETE',
+      }))
+      expect(res.status).toBe(200)
+      const data = await getData(res)
+      expect(data).toEqual(expect.any(String))
     }
     finally
     {
-      // TODO: 실패해서 삭제못한 데이터 삭제
+      db.deleteData({
+        table: DB.TABLE.CHECKLIST,
+        where: `srl = ${checklistSrl}`,
+      })
+      TagTool.delete({
+        module: MODULE_TAG.CHECKLIST,
+        module_srl: checklistSrl,
+      })
     }
   })
 })

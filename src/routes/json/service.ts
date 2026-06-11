@@ -11,7 +11,13 @@ import { parseJSON, filteringObject } from '@/libs/objects'
 import { type BaseModel } from '@/libs/models'
 import { type JsonModel } from './model'
 
-type GetItemParams = { srl: number } & JsonModel['getItemQuery']
+type GetIndexParams = {
+  query: JsonModel['getIndexQuery']
+}
+type GetItemParams = {
+  srl: number
+  query: JsonModel['getItemQuery']
+}
 type PutItemParams = {
   body: JsonModel['putItemBody'],
 }
@@ -34,7 +40,7 @@ export abstract class JsonTool {
 
 export abstract class Json {
 
-  static async getIndex(op: JsonModel['getIndexQuery'])
+  static async getIndex({ query }: GetIndexParams)
   {
     try
     {
@@ -43,21 +49,21 @@ export abstract class Json {
       let _where: string[] = []
       let _values: ZZ = {}
       let _join: string[] = []
-      const _field = op.field ? op.field.split(',') : ''
+      const _field = query.field ? query.field.split(',') : ''
       // set base params
-      if (op.category)
+      if (query.category)
       {
         _where.push(`AND category_srl = $category_srl`)
-        _values['$category_srl'] = op.category
+        _values['$category_srl'] = query.category
       }
-      if (op.name)
+      if (query.name)
       {
         _where.push(`AND name LIKE '%' || $name || '%'`)
-        _values['$name'] = op.name
+        _values['$name'] = query.name
       }
-      if (op.tag)
+      if (query.tag)
       {
-        const _tags = op.tag.split(',').join(',')
+        const _tags = query.tag.split(',').join(',')
         _where.push(`AND j.srl IN (SELECT mt.module_srl FROM ${DB.TABLE.MAP_TAG} AS mt WHERE mt.module LIKE $tag_module AND mt.tag_srl IN (${_tags}))`)
         _values['$tag_module'] = MODULE_TAG.JSON
       }
@@ -76,14 +82,14 @@ export abstract class Json {
         field: _field,
         where: _where,
         join: _join,
-        order: Boolean(op.order || op.sort) ? op.order : 'srl',
-        sort: Boolean(op.order || op.sort) ? op.sort : 'desc',
-        page: op.page,
-        size: op.size,
+        order: Boolean(query.order || query.sort) ? query.order : 'srl',
+        sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
+        page: query.page,
+        size: query.size,
         values: _values,
       })
       // set MOD
-      const _mod: MOD = new MOD(op.mod)
+      const _mod: MOD = new MOD(query.mod)
       // 인덱스 데이터 컨버팅
       index.data = index.data.map((o: ZZ) => {
         // MOD / category
@@ -113,19 +119,18 @@ export abstract class Json {
     }
   }
 
-  // TODO: op -> { srl, query } 형태로 바꾸기
-  static async getItem(op: GetItemParams)
+  static async getItem({ srl, query }: GetItemParams)
   {
     try
     {
       // set assets
       let _table = `${DB.TABLE.JSON} AS j`
-      const _field = op.field ? op.field.split(',') : ''
+      const _field = query.field ? query.field.split(',') : ''
       // get data
       let item = db.getData({
         table: _table,
         field: _field,
-        where: `srl = ${op.srl}`,
+        where: `srl = ${srl}`,
       })
       if (!item.data) throw new ServiceError('No data', { status: 204 })
       // set json data
@@ -134,7 +139,7 @@ export abstract class Json {
         item.data.json = parseJSON(item.data.json)
       }
       // set mod
-      const _mod: MOD = new MOD(op.mod)
+      const _mod: MOD = new MOD(query.mod)
       // MOD / count-file
       if (_mod.check('count-file'))
       {
@@ -142,12 +147,12 @@ export abstract class Json {
         // const _count = FileTool.count({
         //   where: [
         //     `AND module = \'${FILE_MODULE.JSON}\'`,
-        //     `AND module_srl = ${op.srl}`,
+        //     `AND module_srl = ${srl}`,
         //   ],
         // })
       }
       // return
-      return { ...item.data }
+      return item.data
     }
     catch (_e: any)
     {
@@ -194,8 +199,15 @@ export abstract class Json {
       // add tag
       if (body.tag)
       {
-        // TODO: 태그 추가하기 (태그 클래스에서..)
-        console.log('TODO: body.tag', body.tag)
+        const _tags = body.tag.split(',')
+        for (const tag of _tags)
+        {
+          TagTool.add({
+            module: MODULE_TAG.JSON,
+            module_srl: added.data,
+            tag,
+          })
+        }
       }
       // commit transaction
       _transaction = db.transaction('commit')
@@ -319,13 +331,18 @@ export abstract class Json {
         table: DB.TABLE.JSON,
         where: `srl = ${srl}`,
       })
-      // TODO: delete tags
+      // delete tags
+      TagTool.delete({
+        module: MODULE_TAG.JSON,
+        module_srl: srl,
+      })
       // TODO: delete files
       // commit transaction
       _transaction = db.transaction('commit')
     }
     catch (_e: any)
     {
+      console.error(_e)
       // collback transaction
       db.transaction('rollback', _transaction)
       throw new ServiceError('Failed to delete JSON.', {
