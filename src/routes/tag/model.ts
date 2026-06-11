@@ -1,7 +1,7 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
 import { PATTERN_TAG } from '@/libs/validation'
-import { MODULE } from './assets'
+import { MODULE } from './service'
 
 export const TagModel = {
 

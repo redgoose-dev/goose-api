@@ -2,6 +2,13 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import type { BaseModel } from '@/libs/models'
 
+export const MODULE = {
+  ARTICLE: 'article',
+  JSON: 'json',
+  CHECKLIST: 'checklist',
+  COMMENT: 'comment',
+}
+
 export abstract class FileTool {
   static count(op: BaseModel['paramsTableSelect']): number
   {
