@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia'
 import { checkingToken } from '@/libs/verify'
-import { BaseModel } from '@/libs/models'
 import { Checklist } from './service'
+import { BaseModel } from '@/libs/models'
 import { ChecklistModel } from './model'
 
 const route = new Elysia({

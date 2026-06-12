@@ -5,9 +5,15 @@ export const IS_DEV = NODE_ENV !== 'production'
 export const PATHS = {
   BASE: PATH_BASE || '.',
   DATA: PATH_DATA || './data',
+  UPLOAD: PATH_DATA ? `${PATH_DATA}/upload` : './data/upload',
   URL: PATH_URL || 'http://localhost',
 }
 export type Paths = typeof PATHS[keyof typeof PATHS]
+
+export const PATH_UPLOAD = {
+  COVER: 'cover',
+  ORIGIN: 'origin',
+}
 
 export const HEADERS_KEYS = {
   PROCESS_TIME: 'X-Process-Time',

@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import {PATTERN_TAG, PATTERN_DATE, PATTERN_FIELD, PATTERN_MOD} from '@/libs/validation'
+import { PATTERN_TAG, PATTERN_DATE, PATTERN_FIELD, PATTERN_MOD } from '@/libs/validation'
 
 export const ChecklistModel = {
 

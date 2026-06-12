@@ -55,12 +55,11 @@ export function getByte(bytes: number): string
 
 /**
  * create code
- * @param {number} len
- * @return {string}
+ * @param {number} size
  */
-export function createCode(len: number = 8): string
+export function createCode(size: number = 8): string
 {
-  return randomBytes(len).toString('hex')
+  return randomBytes(size).toString('hex')
 }
 
 /**

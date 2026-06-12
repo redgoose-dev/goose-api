@@ -23,7 +23,6 @@ await Bun.build({
     'bcryptjs',
     'elysia',
     'jsonwebtoken',
-    'sharp',
     'logixlysia',
   ],
   naming: {
