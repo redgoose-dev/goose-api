@@ -84,7 +84,7 @@ export abstract class Checklist {
       })
       if (count.data <= 0) throw new ServiceError('No data', { status: 204 })
       // get index data
-      let index = db.getIndex({
+      const index = db.getIndex({
         table: _table,
         prefix: 'DISTINCT',
         field: _field,
@@ -99,7 +99,7 @@ export abstract class Checklist {
       // set MOD
       const _mod: MOD = new MOD(query.mod)
       // 인덱스 데이터 컨버팅
-      index.data = index.data.map((o: ZZ) => {
+      const _index = index.data.map((o: ZZ) => {
         // MOD / tag
         if (_mod.check('tag'))
         {
@@ -123,7 +123,7 @@ export abstract class Checklist {
       // return
       return {
         total: count.data,
-        index: index.data,
+        index: _index,
       }
     }
     catch (_e: any)

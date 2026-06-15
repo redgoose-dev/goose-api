@@ -16,6 +16,9 @@ export const BaseModel = {
   paramsSrl: t.Object({
     srl: t.Number(),
   }),
+  paramsCode: t.Object({
+    code: t.String(),
+  }),
   paramsSrlCode: t.Object({
     srl: t.Union([ t.Number(), t.String() ]),
   }),

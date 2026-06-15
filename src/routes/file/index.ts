@@ -10,14 +10,29 @@ const route = new Elysia({
 
 // 🌿 Index
 route.get('/', async (ctx) => {
-  // TODO
-}, {})
+  checkingToken(ctx)
+  const data = await File_.getIndex({
+    query: ctx.query,
+  })
+  return {
+    message: 'Complete get File index.',
+    data,
+  }
+}, {
+  query: FileModel.getIndexQuery,
+})
 
 // 🌻 Detail
-route.get('/:srl/', async (ctx) => {
-  // TODO
+route.get('/:code/', async (ctx) => {
+  checkingToken(ctx)
+  return await File_.getItem({
+    code: ctx.params.code,
+    query: ctx.query,
+    ctx,
+  })
 }, {
-  params: BaseModel.paramsSrlCode,
+  params: BaseModel.paramsCode,
+  query: FileModel.getItemQuery,
 })
 
 // 🌱 Create
@@ -38,19 +53,27 @@ route.put('/', async (ctx) => {
 // 🌳 Patch
 route.patch('/:srl/', async (ctx) => {
   checkingToken(ctx)
-  // TODO
-  return 'Complete update File.'
+  const data = await File_.patchItem({
+    srl: ctx.params.srl,
+    body: ctx.body,
+    service: (ctx.store as Store).service,
+  })
+  return {
+    message: 'Complete update File.',
+    data,
+  }
 }, {
-  params: BaseModel.paramsSrlCode,
+  params: BaseModel.paramsSrl,
   body: FileModel.patchItemBody,
 })
 
 // 🍄 Delete
 route.delete('/:srl/', async (ctx) => {
   checkingToken(ctx)
-  // TODO
+  await File_.deleteItem(ctx.params.srl)
+  return 'Complete delete File.'
 }, {
-  params: BaseModel.paramsSrlCode,
+  params: BaseModel.paramsSrl,
 })
 
 export default route

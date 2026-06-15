@@ -46,7 +46,6 @@ export function parseJSON(src?: any): any
   }
 }
 
-
 /**
  * 배열 두개를 비교하여 추가, 중복, 삭제 상황의 값들을 가져올 수 있다.
  */
@@ -65,4 +64,9 @@ export function compareIndex<T>(a: T[], b: T[]): CompareResult<T>
     duplicate: b.filter((x) => x && aNormalized.includes(nor(x))),
     removed: a.filter((x) => x && !bNormalized.includes(nor(x))),
   }
+}
+
+export function isObject(value: unknown): value is Record<string, unknown>
+{
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }

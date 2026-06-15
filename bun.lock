@@ -155,7 +155,7 @@
 
     "lodash.once": ["lodash.once@4.1.1", "", {}, "sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg=="],
 
-    "logixlysia": ["logixlysia@6.5.0", "", { "dependencies": { "chalk": "^5.6.2", "pino": "^10.3.1", "pino-pretty": "^13.1.3" }, "peerDependencies": { "@opentelemetry/api": "^1.9.0", "ai": "^6.0.0", "elysia": "^1.4.28", "typescript": "^6.0.2" }, "optionalPeers": ["@opentelemetry/api", "ai"] }, "sha512-GtcXTmZPiJKLw6KQl033/Uqy7789vKwa9nGTgw+PAdQUVZ/h3QU5p9zlrfKfx2AE2MXtLNgEJccMSW2KR1BATQ=="],
+    "logixlysia": ["logixlysia@6.5.1", "", { "dependencies": { "chalk": "^5.6.2", "pino": "^10.3.1", "pino-pretty": "^13.1.3" }, "peerDependencies": { "@opentelemetry/api": "^1.9.0", "ai": "^6.0.0", "elysia": "^1.4.28", "typescript": "^6.0.2" }, "optionalPeers": ["@opentelemetry/api", "ai"] }, "sha512-SOLzLsZ8nh830g992hRmiwR1747h2R+ldSUGARLXr+oGedhWGzQ0Qy5YQHoOiOpUXK9FxmJCtiQYD8bU+K/jvg=="],
 
     "memoirist": ["memoirist@0.4.0", "", {}, "sha512-zxTgA0mSYELa66DimuNQDvyLq36AwDlTuVRbnQtB+VuTcKWm5Qc4z3WkSpgsFWHNhexqkIooqpv4hdcqrX5Nmg=="],
 

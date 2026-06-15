@@ -30,3 +30,12 @@ export async function getUploadPath(dirName: string = PATH_UPLOAD.ORIGIN, filena
   if (filename) filename = `/${filename}`
   return path + filename
 }
+
+export async function createDirectory(path: string)
+{
+  const dir = path.substring(0, path.lastIndexOf('/'))
+  if (!(await Bun.file(dir).exists()))
+  {
+    await mkdir(dir, { recursive: true })
+  }
+}

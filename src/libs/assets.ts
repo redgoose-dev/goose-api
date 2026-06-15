@@ -6,6 +6,7 @@ export const PATHS = {
   BASE: PATH_BASE || '.',
   DATA: PATH_DATA || './data',
   UPLOAD: PATH_DATA ? `${PATH_DATA}/upload` : './data/upload',
+  CACHE: PATH_DATA ? `${PATH_DATA}/cache` : './data/cache',
   URL: PATH_URL || 'http://localhost',
 }
 export type Paths = typeof PATHS[keyof typeof PATHS]
@@ -35,3 +36,31 @@ export const DEFAULT_HEADERS = {
 }
 
 export const WS_TIMEOUT = 120 // 웹소켓 타임아웃 (초)
+
+export const RESIZE_TYPE = {
+  COVER: 'cover',
+  CONTAIN: 'contain',
+  FILL: 'fill',
+  INSIDE: 'inside',
+  OUTSIDE: 'outside',
+}
+
+export abstract class Permission {
+  static PUBLIC = 'public'
+  static PRIVATE = 'private'
+  static READY = 'ready'
+  static filter(value?: string): string
+  {
+    switch (value)
+    {
+      case this.PUBLIC:
+        return this.PUBLIC
+      case this.PRIVATE:
+        return this.PRIVATE
+      case this.READY:
+        return this.READY
+      default:
+        return this.PUBLIC
+    }
+  }
+}
