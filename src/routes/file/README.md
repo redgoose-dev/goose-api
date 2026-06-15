@@ -1,4 +1,4 @@
-# file
+# File
 
 첨부파일 데이터 관리
 
@@ -68,7 +68,7 @@ GET /file/
 @query {int} module_srl / 모듈 srl 번호
 @query {str} name / 이름
 @query {str} mime / MIME 타입
-@query {str} fields / 조회할 필드
+@query {str} field / 조회할 필드
 @query {int} page / 페이지 번호
 @query {int} size / 페이지 당 데이터 수
 @query {str} order='srl' / 정렬 기준
