@@ -2,6 +2,7 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import { parseJSON } from '@/libs/objects'
+import * as fileHelper from '../file/__helper'
 import type { JsonModel } from './__model'
 
 type GetItemParams = {
@@ -37,13 +38,12 @@ export default async function getItem({ srl, query }: GetItemParams)
     // MOD / count-file
     if (_mod.check('count-file'))
     {
-      // TODO: file 테이블 데이터가 쌓이면 만들자
-      // const _count = FileTool.count({
-      //   where: [
-      //     `AND module = \'${FILE_MODULE.JSON}\'`,
-      //     `AND module_srl = ${srl}`,
-      //   ],
-      // })
+      item.data['count_file'] = fileHelper.count({
+        where: [
+          `AND module = \'${fileHelper.MODULE.JSON}\'`,
+          `AND module_srl = ${srl}`,
+        ],
+      })
     }
 
     return item.data

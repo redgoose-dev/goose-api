@@ -1,6 +1,7 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import * as tagHelper from '@/routes/tag/__helper'
+import * as fileHelper from '@/routes/file/__helper'
 import * as helper from './__helper'
 
 export default async function deleteItem(srl: number)
@@ -29,7 +30,11 @@ export default async function deleteItem(srl: number)
       module_srl: srl,
     })
 
-    // TODO: delete files
+    // delete files
+    await fileHelper.remove({
+      module: fileHelper.MODULE.JSON,
+      module_srl: srl,
+    })
 
     // commit transaction
     _transaction = db.transaction('commit')

@@ -1,6 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import { PATHS } from '@/libs/assets'
-import { createDirectory } from '@/libs/file'
+import { createDirectory, deleteFile } from '@/libs/file'
 import { getSharp } from '@/libs/external'
 import type { BaseModel } from '@/libs/models'
 
@@ -208,3 +208,37 @@ export function remakeFilename(path: string, ext: string): string
   return `${base}.${ext}`
 }
 
+export async function remove({ module, module_srl }: ZZ)
+{
+  const _where = [
+    `AND module LIKE \'${module}\'`,
+    `AND module_srl = ${module_srl}`,
+  ]
+  // get item
+  const files = db.getIndex({
+    table: DB.TABLE.FILE,
+    field: 'srl,code,path',
+    where: _where,
+  })
+  // delete data
+  db.deleteData({
+    table: DB.TABLE.FILE,
+    where: _where,
+  })
+  // delete files
+  for await (const file of files.data)
+  {
+    await deleteFile(file.path)
+    await deleteCache(file.code)
+  }
+}
+
+export async function deleteCache(code: string)
+{
+  const pattern = `${PATHS.CACHE}/**/${code}*`
+  const glob = new Bun.Glob(pattern)
+  for await (const file of glob.scan('.'))
+  {
+    await deleteFile(file)
+  }
+}

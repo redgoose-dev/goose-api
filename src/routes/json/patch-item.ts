@@ -2,7 +2,8 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import * as messages from '@/libs/messages'
 import { parseJSON, filteringObject } from '@/libs/objects'
-import { CategoryTool, MODULE as CATEGORY_MODULE } from '@/routes/category/__helper'
+import * as categoryHelper from '@/routes/category/__helper'
+import * as tagHelper from '@/routes/tag/__helper'
 import * as helper from './__helper'
 import { type JsonModel } from './__model'
 
@@ -35,12 +36,11 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     }
     if (body.category)
     {
-      // TODO: 리팩토링 필요
       // TODO: 잘 작동하는지 확인필요
-      const _count = CategoryTool.count({
+      const _count = categoryHelper.count({
         where: [
           `AND srl = ${body.category}`,
-          `AND module LIKE \'${CATEGORY_MODULE.JSON}\'`,
+          `AND module LIKE \'${categoryHelper.MODULE.JSON}\'`,
         ],
       })
       if (_count <= 0) throw new ServiceError(`Invalid category`, { status: 400 })
@@ -59,9 +59,7 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     }
     if (body.tag !== undefined)
     {
-      // TODO: 태그 데이터 업데이트하기. 트랜잭션 영역이기 때문에 먼저 수정해도 된다.
-      // TagTool.update()
-      _ready['tag'] = body.tag
+      _ready['tag'] = body.tag.split(',') || []
     }
 
     // check update data
@@ -89,6 +87,16 @@ export default async function patchItem({ srl, body }: PatchItemParams)
         '$json': _ready.json,
       },
     })
+
+    // update tag
+    if (_ready.tag !== undefined)
+    {
+      tagHelper.update({
+        module: tagHelper.MODULE.JSON,
+        module_srl: srl,
+        tags: _ready.tag,
+      })
+    }
 
     // commit transaction
     _transaction = db.transaction('commit')

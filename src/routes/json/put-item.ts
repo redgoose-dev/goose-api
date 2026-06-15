@@ -2,7 +2,7 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import { parseJSON } from '@/libs/objects'
 import * as tagHelper from '@/routes/tag/__helper'
-import { CategoryTool, MODULE as CATEGORY_MODULE } from '@/routes/category/__helper'
+import * as categoryHelper from '@/routes/category/__helper'
 import type { JsonModel } from './__model'
 
 type PutItemParams = {
@@ -20,11 +20,11 @@ export default async function putItem({ body }: PutItemParams)
     // check category
     if (body.category)
     {
-      // TODO: 리팩토링 예정
-      const _count = CategoryTool.count({
+      // TODO: 작동하는지 확인 필요함
+      const _count = categoryHelper.count({
         where: [
           `AND srl = ${body.category}`,
-          `AND module LIKE \'${CATEGORY_MODULE.JSON}\'`,
+          `AND module LIKE \'${categoryHelper.MODULE.JSON}\'`,
         ],
       })
       if (_count <= 0) throw new ServiceError(`Invalid category`, { status: 400 })
