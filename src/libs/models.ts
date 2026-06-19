@@ -24,6 +24,7 @@ export const BaseModel = {
   }),
 
   paramsTableSelect: t.Object({
+    table: t.Optional(t.String()),
     where: t.Optional(t.Union([ t.String(), t.ArrayString() ])),
     values: t.Optional(t.Record(t.String(), t.Any())),
     join: t.Optional(t.Union([ t.String(), t.ArrayString() ])),

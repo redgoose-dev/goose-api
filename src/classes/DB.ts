@@ -217,6 +217,7 @@ class DB {
     let valueNames: string[] = []
     let values: string[] = []
     op.values.forEach((item: ZZ) => {
+      if (!item) return
       if (item.value || item.valueName)
       {
         fields.push(item.key)

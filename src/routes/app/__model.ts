@@ -17,7 +17,7 @@ export const AppModel = {
 
   getItemQuery: t.Object({
     field: t.Optional(t.String()),
-    mod: t.Optional(t.String()),
+    mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),
 
   putItemBody: t.Object({

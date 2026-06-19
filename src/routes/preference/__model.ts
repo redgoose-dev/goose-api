@@ -9,7 +9,7 @@ export const PreferenceModel = {
     change: t.Optional(BaseModel.booleanLike),
   }),
 
-}
+} as const
 
 export type PreferenceModel = {
   [k in keyof typeof PreferenceModel]: UnwrapSchema<typeof PreferenceModel[k]>

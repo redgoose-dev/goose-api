@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import * as appHelper from './__helper'
 
 type DeleteItemParams = {
   srl?: number
@@ -17,27 +18,21 @@ export default async function deleteItem({ srl, code }: DeleteItemParams)
     else if (code) _where = `code LIKE \'${code}\'`
 
     // check exist data
-    const _count = db.getCount({
+    const item = db.getData({
       table: DB.TABLE.APP,
+      field: 'srl',
       where: _where,
     })
-    if (!(_count.data > 0))
+    if (!item.data)
     {
-      throw new ServiceError('App data not found.', { status: 204 })
+      throw new ServiceError('No data', { status: 204 })
     }
 
     // begin transaction
     _transaction = db.transaction('begin')
 
-    // TODO: Article 데이터 삭제 (파일, 댓글, 태그)
-    // TODO: Nest 데이터 삭제 (카테고리)
-
-    // delete app data
-    db.deleteData({
-      table: DB.TABLE.APP,
-      where: _where,
-      debug: true,
-    })
+    // delete app
+    await appHelper.remove(item.data.srl)
 
     // commit transaction
     _transaction = db.transaction('commit')

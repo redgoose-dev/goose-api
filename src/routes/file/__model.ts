@@ -89,7 +89,7 @@ export const FileModel = {
     }),
   }),
 
-}
+} as const
 
 export type FileModel = {
   [k in keyof typeof FileModel]: UnwrapSchema<typeof FileModel[k]>

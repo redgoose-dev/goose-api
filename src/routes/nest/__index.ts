@@ -1,10 +1,11 @@
 import { Elysia } from 'elysia'
 import { checkingToken } from '@/libs/verify'
+import { classifySrlCode } from '@/libs/service'
 import { BaseModel } from '@/libs/models'
-import { CategoryModel } from './__model'
+import { NestModel } from './__model'
 
 const route = new Elysia({
-  prefix: '/category',
+  prefix: '/nest',
 })
 
 // 🌿 Index
@@ -15,11 +16,11 @@ route.get('/', async (ctx) => {
     query: ctx.query,
   })
   return {
-    message: 'Complete get Category index.',
+    message: 'Complete get Nest index.',
     data,
   }
 }, {
-  query: CategoryModel.getIndexQuery,
+  query: NestModel.getIndexQuery,
 })
 
 // 🌻 Detail
@@ -27,29 +28,31 @@ import { default as getItem } from './get-item'
 route.get('/:srl/', async (ctx) => {
   checkingToken(ctx)
   const data = await getItem({
-    srl: ctx.params.srl,
+    ...classifySrlCode(ctx.params.srl),
     query: ctx.query,
   })
   return {
-    message: 'Complete get Category item.',
+    message: 'Complete get Nest item.',
     data,
   }
 }, {
-  params: BaseModel.paramsSrl,
-  query: CategoryModel.getItemQuery,
+  params: BaseModel.paramsSrlCode,
+  query: NestModel.getItemQuery,
 })
 
 // 🌱 Create
 import { default as putItem } from './put-item'
 route.put('/', async (ctx) => {
   checkingToken(ctx)
-  const data = await putItem({ body: ctx.body })
+  const data = await putItem({
+    body: ctx.body,
+  })
   return {
-    message: 'Complete add Category.',
-    data,
+    message: 'Complete add Nest.',
+    data: undefined,
   }
 }, {
-  body: CategoryModel.putItemBody,
+  body: NestModel.putItemBody,
 })
 
 // 🌳 Patch
@@ -60,22 +63,10 @@ route.patch('/:srl/', async (ctx) => {
     srl: ctx.params.srl,
     body: ctx.body,
   })
-  return 'Complete update Category.'
+  return 'Complete update Nest.'
 }, {
   params: BaseModel.paramsSrl,
-  body: CategoryModel.patchItemBody,
-})
-
-// 🌳 Change order
-import { default as patchChangeOrder } from './patch-change-order'
-route.patch('/change-order/', async (ctx) => {
-  checkingToken(ctx)
-  await patchChangeOrder({
-    body: ctx.body,
-  })
-  return 'Complete change order Category.'
-}, {
-  body: CategoryModel.patchChangeOrderBody,
+  body: NestModel.patchItemBody,
 })
 
 // 🍄 Delete
@@ -83,7 +74,7 @@ import { default as deleteItem } from './delete-item'
 route.delete('/:srl/', async (ctx) => {
   checkingToken(ctx)
   await deleteItem(ctx.params.srl)
-  return 'Complete delete Category.'
+  return 'Complete delete Nest.'
 }, {
   params: BaseModel.paramsSrl,
 })

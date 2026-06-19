@@ -33,7 +33,7 @@ export const ChecklistModel = {
     tag: t.Optional(t.String({ pattern: PATTERN_TAG })),
   }),
 
-}
+} as const
 
 export type ChecklistModel = {
   [k in keyof typeof ChecklistModel]: UnwrapSchema<typeof ChecklistModel[k]>

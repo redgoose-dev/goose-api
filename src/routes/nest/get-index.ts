@@ -2,11 +2,11 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import { parseJSON } from '@/libs/objects'
-import * as tagHelper from '@/routes/tag/__helper'
-import type { JsonModel } from './__model'
+import * as articleHelper from '@/routes/article/__helper'
+import type { NestModel } from './__model'
 
 type GetIndexParams = {
-  query: JsonModel['getIndexQuery']
+  query: NestModel['getIndexQuery']
 }
 
 export default async function getIndex({ query }: GetIndexParams)
@@ -14,43 +14,36 @@ export default async function getIndex({ query }: GetIndexParams)
   try
   {
     // set assets
-    let _table = `${DB.TABLE.JSON} AS j`
+    let _table = `${DB.TABLE.NEST} AS n`
     let _where: string[] = []
     let _values: ZZ = {}
     let _join: string[] = []
     const _field = query.field ? query.field.split(',') : ''
 
     // set base params
-    if (query.category)
+    if (query.app)
     {
-      _where.push(`AND category_srl = $category_srl`)
-      _values['$category_srl'] = query.category
+      _where.push(`AND app_srl = ${query.app}`)
+    }
+    if (query.code)
+    {
+      _where.push(`AND code LIKE \'${query.code}\'`)
     }
     if (query.name)
     {
-      _where.push(`AND name LIKE '%' || $name || '%'`)
-      _values['$name'] = query.name
-    }
-    if (query.tag)
-    {
-      const _tags = query.tag.split(',').join(',')
-      _where.push(`AND j.srl IN (SELECT mt.module_srl FROM ${DB.TABLE.MAP_TAG} AS mt WHERE mt.module LIKE $tag_module AND mt.tag_srl IN (${_tags}))`)
-      _values['$tag_module'] = tagHelper.MODULE.JSON
+      _where.push(`AND name LIKE \'%${query.name}%\'`)
     }
 
-    // get total
+    // get count
     const count = db.getCount({
       table: _table,
       where: _where,
-      join: _join,
-      values: _values,
     })
     if (count.data <= 0) throw new ServiceError('No data', { status: 204 })
 
-    // get index data
+    // get index
     let index = db.getIndex({
       table: _table,
-      prefix: 'DISTINCT',
       field: _field,
       where: _where,
       join: _join,
@@ -66,11 +59,21 @@ export default async function getIndex({ query }: GetIndexParams)
 
     // transform index
     index.data = index.data.map((o: ZZ) => {
-      // MOD / category
-      if (_mod.check('category'))
+      // MOD / app
+      if (_mod.check('app') && o.app_srl)
       {
-        // TODO: 분류 데이터가 쌓이면 만들자
-        console.log('MOD: category')
+        o.app = db.getData({
+          table: DB.TABLE.APP,
+          field: 'srl,code,name',
+          where: `srl = ${o.app_srl}`,
+        }).data
+      }
+      // MOD / count-article
+      if (_mod.check('count-article'))
+      {
+        o.count_article = articleHelper.count({
+          where: `nest_srl = ${o.srl}`,
+        })
       }
       return {
         ...o,
@@ -85,7 +88,7 @@ export default async function getIndex({ query }: GetIndexParams)
   }
   catch (_e: any)
   {
-    throw new ServiceError('Failed to get JSON index.', {
+    throw new ServiceError('Failed to get Nest index.', {
       status: _e.status,
       text: _e.message,
       cause: _e,
