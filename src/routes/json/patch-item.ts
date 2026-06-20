@@ -36,7 +36,6 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     }
     if (body.category)
     {
-      // TODO: 잘 작동하는지 확인필요
       const _count = categoryHelper.count({
         where: [
           `AND srl = ${body.category}`,

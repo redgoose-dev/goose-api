@@ -15,17 +15,26 @@ export default async function patchItem({ srl, body }: PatchItemParams)
   try
   {
     // check item
-    const count = helper.count({
+    const item = db.getData({
+      table: DB.TABLE.CATEGORY,
       where: `srl = ${srl}`,
     })
-    if (count <= 0) throw new ServiceError('No data.', { status: 204 })
-    console.log('count', count)
+    if (!item.data) throw new ServiceError('No data.', { status: 204 })
 
     // set ready update
     let _ready: ZZ = {
       name: undefined,
     }
-    if (body.name) _ready.name = body.name
+    if (body.name)
+    {
+      // checking exist name
+      helper.checkingExistName({
+        module: item.data.module,
+        moduleSrl: item.data.module_srl,
+        name: body.name,
+      })
+      _ready.name = body.name
+    }
 
     // check update data
     _ready = filteringObject(_ready)

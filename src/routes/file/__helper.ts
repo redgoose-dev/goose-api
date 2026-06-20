@@ -65,6 +65,24 @@ export function count(op: BaseModel['paramsTableSelect']): number
   return count.data || 0
 }
 
+type GetIndexParams = {
+  module: string
+  module_srl: number
+  field: string
+}
+export function getIndex({ module, module_srl, field }: GetIndexParams)
+{
+  const index = db.getIndex({
+    table: DB.TABLE.FILE,
+    field,
+    where: [
+      `AND module LIKE \'${module}\'`,
+      `AND module_srl = ${module_srl}`,
+    ],
+  })
+  return index.data
+}
+
 export function getModuleData(module: string, moduleSrl: number): ZZ | null
 {
   const _module = getModuleName(module)

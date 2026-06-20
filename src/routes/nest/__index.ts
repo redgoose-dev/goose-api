@@ -49,7 +49,7 @@ route.put('/', async (ctx) => {
   })
   return {
     message: 'Complete add Nest.',
-    data: undefined,
+    data,
   }
 }, {
   body: NestModel.putItemBody,

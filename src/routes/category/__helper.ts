@@ -17,6 +17,16 @@ export function count({ table, where, values }: BaseModel['paramsTableSelect']):
   return count.data || 0
 }
 
+export function getItem(srl: number, field?: string)
+{
+  const item = db.getData({
+    table: DB.TABLE.CATEGORY,
+    where: `srl = ${srl}`,
+    field: field || '*',
+  })
+  return item.data
+}
+
 export function checkingModule(module: string, moduleSrl?: number)
 {
   switch (module)
@@ -38,6 +48,31 @@ export function checkingModule(module: string, moduleSrl?: number)
       break
     default:
       throw new ServiceError('Module not found.', { status: 400 })
+  }
+}
+
+type CheckingExistName = {
+  name: string,
+  module: string,
+  moduleSrl?: number
+}
+export function checkingExistName({ name, module, moduleSrl }: CheckingExistName)
+{
+  let _where = [
+    `AND name LIKE \'${name}\'`,
+    `AND module LIKE \'${module}\'`,
+  ]
+  if (module === MODULE.NEST && (moduleSrl ?? 0) > 0)
+  {
+    _where.push(`AND module_srl = ${moduleSrl}`)
+  }
+  const _count = db.getCount({
+    table: DB.TABLE.CATEGORY,
+    where: _where,
+  })
+  if (_count.data > 0)
+  {
+    throw new ServiceError('Exist name in Category.', { status: 400 })
   }
 }
 

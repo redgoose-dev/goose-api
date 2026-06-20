@@ -96,11 +96,11 @@ export default async function patchItem({ srl, body }: PatchItemParams)
         _ready.json !== undefined && 'json = $json',
       ],
       values: {
-        $app_srl: _ready.app_srl,
-        $code: _ready.code,
-        $name: _ready.name,
-        $description: _ready.description,
-        $json: _ready.json,
+        '$app_srl': _ready.app_srl,
+        '$code': _ready.code,
+        '$name': _ready.name,
+        '$description': _ready.description,
+        '$json': _ready.json,
       },
     })
   }

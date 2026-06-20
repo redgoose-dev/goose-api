@@ -12,6 +12,17 @@ export function count(op: BaseModel['paramsTableSelect']): number
   return count.data || 0
 }
 
+export function getItemFromNest(nest_srl: number, field: string)
+{
+  const _field = field ? field.split(',').map(o => (`a.${o}`)).join(',') : 'a.*'
+  const item = db.getData({
+    table: `${DB.TABLE.APP} as a`,
+    field: `DISTINCT ${_field}`,
+    join: `INNER JOIN ${DB.TABLE.NEST} AS n ON n.app_srl = a.srl AND n.srl = ${nest_srl}`,
+  })
+  return item.data
+}
+
 export async function remove(srl: number)
 {
   // get nests

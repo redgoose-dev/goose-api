@@ -20,7 +20,6 @@ export default async function putItem({ body }: PutItemParams)
     // check category
     if (body.category)
     {
-      // TODO: 작동하는지 확인 필요함
       const _count = categoryHelper.count({
         where: [
           `AND srl = ${body.category}`,
@@ -49,15 +48,11 @@ export default async function putItem({ body }: PutItemParams)
     // add tag
     if (body.tag)
     {
-      const _tags = body.tag.split(',')
-      for (const tag of _tags)
-      {
-        tagHelper.add({
-          module: tagHelper.MODULE.JSON,
-          module_srl: added.data,
-          tag,
-        })
-      }
+      tagHelper.update({
+        module: tagHelper.MODULE.JSON,
+        module_srl: added.data,
+        tags: body.tag.split(',') ?? [],
+      })
     }
 
     // commit transaction

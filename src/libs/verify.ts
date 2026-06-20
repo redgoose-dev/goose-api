@@ -92,7 +92,7 @@ export function checkingToken(ctx: any, op: Partial<CheckingTokenOptions> = {}):
     }
     return {
       ..._token.data,
-      public: _token.data.expires, // set public token flag
+      public: (_token.data.expires ?? 0) <= 0, // set public token flag
     }
   }
   catch (_e: any)

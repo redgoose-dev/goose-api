@@ -14,6 +14,13 @@ export default async function putItem({ body }: PutItemParams)
     // checking module
     helper.checkingModule(body.module, body.module_srl)
 
+    // checking exist name
+    helper.checkingExistName({
+      module: body.module,
+      moduleSrl: body.module_srl,
+      name: body.name,
+    })
+
     // get count for max turn
     let _where = [ `AND module LIKE \'${body.module}\'` ]
     switch (body.module)

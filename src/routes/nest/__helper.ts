@@ -13,6 +13,16 @@ export function count(op: BaseModel['paramsTableSelect']): number
   return count.data || 0
 }
 
+export function getItem(srl: number, field?: string)
+{
+  const item = db.getData({
+    table: DB.TABLE.NEST,
+    where: `srl = ${srl}`,
+    field: field || '*',
+  })
+  return item.data
+}
+
 export async function remove(srl: number)
 {
   // delete article

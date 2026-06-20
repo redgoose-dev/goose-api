@@ -8,16 +8,6 @@ export const MODULE = {
   CHECKLIST: 'checklist',
 }
 
-export function count(op: BaseModel['paramsTableSelect']): number
-{
-  const count = db.getCount({
-    table: DB.TABLE.MAP_TAG,
-    where: op.where || '',
-    values: op.values || {},
-  })
-  return count.data || 0
-}
-
 export function getOriginTableName(module: string): string
 {
   switch (module)
@@ -33,6 +23,31 @@ export function getOriginTableName(module: string): string
   }
 }
 
+export function count(op: BaseModel['paramsTableSelect']): number
+{
+  const count = db.getCount({
+    table: DB.TABLE.MAP_TAG,
+    where: op.where || '',
+    values: op.values || {},
+  })
+  return count.data || 0
+}
+
+export function getIndex(module: string, module_srl: number)
+{
+  const tags = db.getIndex({
+    table: `${DB.TABLE.TAG} as t`,
+    field: `t.srl,t.name`,
+    join: `JOIN ${DB.TABLE.MAP_TAG} AS mt ON mt.tag_srl = t.srl`,
+    where: [
+      `AND mt.module LIKE \'${module}\'`,
+      `AND mt.module_srl = ${module_srl}`,
+    ],
+  })
+  return tags.data.length > 0 ? tags.data : []
+}
+
+// TODO: 이 함수는 안쓰게 될거같다. update()로도 충분해 보인다.
 export function add({ module, module_srl, tag }: ZZ)
 {
   // get tag data
