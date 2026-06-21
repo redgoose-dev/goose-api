@@ -26,10 +26,11 @@ route.get('/', async (ctx) => {
 // 🌻 Detail
 import { default as getItem } from './get-item'
 route.get('/:srl/', async (ctx) => {
-  checkingToken(ctx, { usePublic: true })
+  const token = checkingToken(ctx, { usePublic: true })
   const data = await getItem({
     srl: ctx.params.srl,
     query: ctx.query,
+    token,
   })
   return {
     message: 'Complete get Article.',
@@ -75,7 +76,7 @@ route.delete('/:srl/', async (ctx) => {
   params: BaseModel.paramsSrl,
 })
 
-// 🌳 Change nest
+// 🌳 Change Nest
 import { default as patchChangeNest } from './patch-change-nest'
 route.patch('/:srl/change-nest/', async (ctx) => {
   checkingToken(ctx)
@@ -83,24 +84,24 @@ route.patch('/:srl/change-nest/', async (ctx) => {
     srl: ctx.params.srl,
     body: ctx.body,
   })
-  return 'Complete update change nest.'
+  return 'Complete update change.'
 }, {
   params: BaseModel.paramsSrl,
   body: ArticleModel.patchChangeNestBody,
 })
 
 // 🌳 Update up count
-import { default as patchUpCount } from './patch-up-count'
+import { default as patchUp } from './patch-up'
 route.patch('/:srl/up/', async (ctx) => {
   checkingToken(ctx)
-  await patchUpCount({
+  await patchUp({
     srl: ctx.params.srl,
     body: ctx.body,
   })
   return 'Complete update up count.'
 }, {
   params: BaseModel.paramsSrl,
-  body: ArticleModel.patchUpCountBody,
+  body: ArticleModel.patchUpBody,
 })
 
 export default route

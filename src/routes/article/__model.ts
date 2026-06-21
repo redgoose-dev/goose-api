@@ -23,7 +23,7 @@ export const ArticleModel = {
 
   getItemQuery: t.Object({
     field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
-    app_srl: t.Optional(t.Numeric()),
+    app: t.Optional(t.Numeric()),
     mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),
 
@@ -43,11 +43,10 @@ export const ArticleModel = {
   }),
 
   patchChangeNestBody: t.Object({
-    app_srl: t.Optional(t.Numeric()),
-    nest_srl: t.Optional(t.Numeric()),
+    nest: t.Optional(t.Numeric()),
   }),
 
-  patchUpCountBody: t.Object({
+  patchUpBody: t.Object({
     mode: t.Optional(t.Union([
       t.Literal('hit'),
       t.Literal('star'),

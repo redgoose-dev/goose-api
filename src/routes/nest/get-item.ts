@@ -17,9 +17,9 @@ export default async function getItem({ srl, code, query }: GetItemParams)
   {
     // set assets
     let _table = `${DB.TABLE.NEST} AS n`
+    let _join: string[] = []
     let _where: string[] = []
     let _values: ZZ = {}
-    let _join: string[] = []
     const _field = query.field ? query.field.split(',') : ''
 
     // set base params
@@ -40,8 +40,8 @@ export default async function getItem({ srl, code, query }: GetItemParams)
     let item = db.getData({
       table: _table,
       field: _field,
-      where: _where,
       join: _join,
+      where: _where,
       values: _values,
     })
     if (!item.data) throw new ServiceError('No data', { status: 204 })

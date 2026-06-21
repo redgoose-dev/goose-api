@@ -1,4 +1,4 @@
-import DB, { db } from '@/classes/DB'
+import { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
 

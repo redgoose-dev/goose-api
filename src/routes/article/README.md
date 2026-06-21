@@ -143,7 +143,7 @@ DELETE /article/{srl:int}/
 ### Request
 
 ```
-PATCH /article/{srl:int}/change-srl/
+PATCH /article/{srl:int}/change/
 
 @headers {str} Authorization / [required] 액세스 토큰
 @param {int} srl / 아티클 srl 번호

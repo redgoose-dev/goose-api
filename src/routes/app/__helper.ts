@@ -2,12 +2,12 @@ import DB, { db } from '@/classes/DB'
 import * as nestHelper from '@/routes/nest/__helper'
 import type { BaseModel } from '@/libs/models'
 
-export function count(op: BaseModel['paramsTableSelect']): number
+export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: DB.TABLE.APP,
-    where: op.where || '',
-    values: op.values || {},
+    table: table || DB.TABLE.APP,
+    where: where || '',
+    values: values || {},
   })
   return count.data || 0
 }

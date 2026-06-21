@@ -230,7 +230,7 @@ class DB {
     let _data
     if (op.run !== false)
     {
-      this.#connect().run(_sql, values || {})
+      this.#connect().run(_sql, values ?? {})
       _data = this.getLastKey(op.table)
     }
     return {
@@ -246,7 +246,7 @@ class DB {
     const _where = this.#getWhere(op.where)
     let _sql = this.#optimizeSql(`UPDATE ${op.table} SET ${_set} ${_where}`)
     if (op.debug) this.#debug('DB.editData()', _sql, op.values)
-    if (op.run !== false) this.#connect().run(_sql, op.values)
+    if (op.run !== false) this.#connect().run(_sql, op.values ?? {})
     return {
       sql: _sql,
       values: op.values,
@@ -258,7 +258,7 @@ class DB {
     const _where = this.#getWhere(op.where)
     let _sql = this.#optimizeSql(`DELETE FROM ${op.table} ${_where}`)
     if (op.debug) this.#debug('DB.deleteData()', _sql, op.values)
-    if (op.run !== false) this.#connect().run(_sql, op.values || {})
+    if (op.run !== false) this.#connect().run(_sql, op.values ?? {})
     return {
       sql: _sql,
       values: op.values,

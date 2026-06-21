@@ -46,7 +46,7 @@ export default async function patchItem({ srl, body }: PatchItemParams)
       json: undefined,
     }
 
-    // check exist code
+    // setup ready update
     if (body.app)
     {
       _ready.app_srl = body.app
