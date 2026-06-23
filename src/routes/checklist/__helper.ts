@@ -15,12 +15,12 @@ export function getPercentIntoChecks(body: string): number
   return Math.floor((checked / total) * 100)
 }
 
-export function count(op: BaseModel['paramsTableSelect'])
+export function count({ table, where, values }: BaseModel['paramsTableSelect'])
 {
   const count = db.getCount({
-    table: DB.TABLE.CHECKLIST,
-    where: op.where || '',
-    values: op.values || {},
+    table: table ?? DB.TABLE.CHECKLIST,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }

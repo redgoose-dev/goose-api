@@ -1,10 +1,10 @@
 import { Elysia } from 'elysia'
 import { checkingToken } from '@/libs/verify'
 import { BaseModel } from '@/libs/models'
-import { ChecklistModel } from './__model'
+import { CommentModel } from './__model'
 
 const route = new Elysia({
-  prefix: '/checklist',
+  prefix: '/comment',
 })
 
 // 🌿 Index
@@ -15,11 +15,11 @@ route.get('/', async (ctx) => {
     query: ctx.query,
   })
   return {
-    message: 'Complete get Checklist index.',
+    message: 'Complete get Comment index.',
     data,
   }
 }, {
-  query: ChecklistModel.getIndexQuery,
+  query: CommentModel.getIndexQuery,
 })
 
 // 🌻 Detail
@@ -31,12 +31,12 @@ route.get('/:srl/', async (ctx) => {
     query: ctx.query,
   })
   return {
-    message: 'Complete get Checklist.',
-    data,
+    message: '',
+    data
   }
 }, {
   params: BaseModel.paramsSrl,
-  query: ChecklistModel.getItemQuery,
+  query: CommentModel.getItemQuery,
 })
 
 // 🌱 Create
@@ -47,11 +47,11 @@ route.put('/', async (ctx) => {
     body: ctx.body,
   })
   return {
-    message: 'Complete add Checklist.',
+    message: 'Complete add Comment.',
     data,
   }
 }, {
-  body: ChecklistModel.putItemBody,
+  body: CommentModel.putItemBody,
 })
 
 // 🌳 Patch
@@ -62,10 +62,9 @@ route.patch('/:srl/', async (ctx) => {
     srl: ctx.params.srl,
     body: ctx.body,
   })
-  return 'Complete update Checklist.'
 }, {
   params: BaseModel.paramsSrl,
-  body: ChecklistModel.patchItemBody,
+  body: CommentModel.patchItemBody,
 })
 
 // 🍄 Delete
@@ -73,7 +72,7 @@ import { default as deleteItem } from './delete-item'
 route.delete('/:srl/', async (ctx) => {
   checkingToken(ctx)
   await deleteItem(ctx.params.srl)
-  return 'Complete delete Checklist.'
+  return 'Complete delete Comment.'
 }, {
   params: BaseModel.paramsSrl,
 })

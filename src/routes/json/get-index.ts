@@ -65,17 +65,18 @@ export default async function getIndex({ query }: GetIndexParams)
     const _mod: MOD = new MOD(query.mod)
 
     // transform index
-    index.data = index.data.map((o: ZZ) => {
+    index.data = index.data.map((item: ZZ) => {
+      if (item.json) item.json = parseJSON(item.json)
       // MOD / category
       if (_mod.check('category'))
       {
-        // TODO: 분류 데이터가 쌓이면 만들자
-        console.log('MOD: category')
+        item.category = db.getData({
+          table: DB.TABLE.CATEGORY,
+          field: 'srl,name',
+          where: `srl = ${item.category_srl ?? 0}`,
+        }).data
       }
-      return {
-        ...o,
-        json: parseJSON(o.json),
-      }
+      return item
     })
 
     return {

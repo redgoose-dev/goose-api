@@ -1,6 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
-import * as appHelper from './__helper'
+import * as helper from './__helper'
 
 type DeleteItemParams = {
   srl?: number
@@ -32,7 +32,7 @@ export default async function deleteItem({ srl, code }: DeleteItemParams)
     _transaction = db.transaction('begin')
 
     // delete app
-    await appHelper.remove(item.data.srl)
+    await helper.remove(item.data.srl)
 
     // commit transaction
     _transaction = db.transaction('commit')

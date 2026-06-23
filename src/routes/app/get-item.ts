@@ -1,6 +1,8 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
+import * as nestHelper from '@/routes/nest/__helper'
+import * as helper from './__helper'
 import type { AppModel } from './__model'
 
 type GetItemParams = {
@@ -41,14 +43,14 @@ export default async function getItem({ srl, code, query }: GetItemParams)
     // MOD / count-nest
     if (_mod.check('count-nest'))
     {
-      // TODO: Nest 데이터 쌓이면 만들자
-      console.log('MOD: count-nest')
+      data.count_nest = nestHelper.count({
+        where: `app_srl = ${item.data.srl}`,
+      })
     }
     // MOD / count-article
     if (_mod.check('count-article'))
     {
-      // TODO: Article 데이터 쌓이면 만들자
-      console.log('MOD: count-article')
+      data.count_article = helper.countArticle(item.data.srl)
     }
 
     return data

@@ -1,4 +1,4 @@
-import DB, { db } from '@/classes/DB'
+import { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
 
@@ -8,16 +8,14 @@ export default async function deleteItem(srl: number)
   try
   {
     // check data
-    const count = helper.count({
-      where: `srl = ${srl}`,
-    })
+    const count = helper.count({ where: `srl = ${srl}` })
     if (count <= 0) throw new ServiceError('No data.', { status: 204 })
 
     // begin transaction
     _transaction = db.transaction('begin')
 
-    // delete data
-    await helper.remove({ srl })
+    // delete comment
+    await helper.remove(srl)
 
     // commit transaction
     _transaction = db.transaction('commit')
@@ -27,7 +25,7 @@ export default async function deleteItem(srl: number)
     // collback transaction
     db.transaction('rollback', _transaction)
 
-    throw new ServiceError('Failed to delete Category.', {
+    throw new ServiceError('Failed to delete Comment.', {
       status: _e.status,
       text: _e.message,
       cause: _e,

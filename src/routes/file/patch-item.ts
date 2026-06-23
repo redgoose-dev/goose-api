@@ -56,7 +56,7 @@ export default async function patchItem({ srl, body, service }: PatchItemParams)
         _ready.json = { ...(parseJSON(item.data.json) || {}) }
       }
       // check file size
-      if (body.file.size > service.preference['file.limitSize'])
+      if (body.file.size > service.preference['file.limit.size'])
       {
         throw new ServiceError('File size limit exceeded.', { status: 400 })
       }

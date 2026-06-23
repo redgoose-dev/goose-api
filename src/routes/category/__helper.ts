@@ -10,9 +10,9 @@ export const MODULE = {
 export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: table || DB.TABLE.CATEGORY,
-    where: where || '',
-    values: values || {},
+    table: table ?? DB.TABLE.CATEGORY,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }
@@ -76,8 +76,52 @@ export function checkingExistName({ name, module, moduleSrl }: CheckingExistName
   }
 }
 
-export async function remove(module: string, moduleSrl: number)
+type RemoveParams = {
+  srl?: number,
+  module?: string,
+  module_srl?: number
+}
+export async function remove({ srl, module, module_srl }: RemoveParams)
 {
-  console.log('Category.helper.remove()', module, moduleSrl)
-  // TODO
+  // get data
+  const item = db.getData({
+    table: DB.TABLE.CATEGORY,
+    field: 'srl,module',
+    where: [
+      srl && `AND srl = ${srl}`,
+      module && `AND module LIKE \'${module}\'`,
+      (module && module_srl) && `AND module_srl = ${module_srl}`,
+    ].filter(Boolean) as string[],
+  })
+  if (!item.data) return
+  // update module data
+  if (srl)
+  {
+    switch (item.data.module)
+    {
+      case MODULE.NEST:
+        db.editData({
+          table: DB.TABLE.ARTICLE,
+          where: `category_srl = ${item.data.srl}`,
+          set: [ 'category_srl = NULL' ],
+        })
+        break
+      case MODULE.JSON:
+        db.editData({
+          table: DB.TABLE.JSON,
+          where: `category_srl = ${item.data.srl}`,
+          set: [ 'category_srl = NULL' ],
+        })
+        break
+    }
+  }
+  // delete data
+  db.deleteData({
+    table: DB.TABLE.CATEGORY,
+    where: [
+      srl && `srl = ${srl}`,
+      module && `module LIKE \'${module}\'`,
+      (module && module_srl) && `AND module_srl = ${module_srl}`,
+    ].filter(Boolean) as string[],
+  })
 }

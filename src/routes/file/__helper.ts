@@ -55,12 +55,12 @@ export async function fileToResource(file: File): Promise<FileToResource>
   }
 }
 
-export function count(op: BaseModel['paramsTableSelect']): number
+export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: DB.TABLE.FILE,
-    where: op.where || '',
-    values: op.values || {},
+    table: table ?? DB.TABLE.FILE,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }
@@ -244,7 +244,7 @@ export async function remove({ module, module_srl }: ZZ)
     where: _where,
   })
   // delete files
-  for await (const file of files.data)
+  for (const file of files.data)
   {
     await deleteFile(file.path)
     await deleteCache(file.code)

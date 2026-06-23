@@ -158,7 +158,7 @@ export default async function patchItem({ srl, body }: PatchItemParams)
           `AND module_srl = ${srl}`,
         ],
       })
-      for await (const file of files.data)
+      for (const file of files.data)
       {
         await fileHelper.deleteCache(file.code)
       }

@@ -87,7 +87,7 @@ CREATE TABLE `file` (
   `mime` TEXT NOT NULL, -- file mime type
   `size` INTEGER NOT NULL DEFAULT 0 CHECK (`size` >= 0), -- file size
   `json` TEXT NULL DEFAULT '{}', -- file json data
-  `module` TEXT NOT NULL CHECK (`module` IN ('article', 'json', 'checklist')), -- module table name
+  `module` TEXT NOT NULL CHECK (`module` IN ('article', 'checklist', 'comment', 'json')), -- module table name
   `module_srl` INTEGER NOT NULL, -- module srl
   `created_at` TEXT NOT NULL -- created date
 );

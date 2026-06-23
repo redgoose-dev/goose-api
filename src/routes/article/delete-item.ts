@@ -9,7 +9,7 @@ export default async function deleteItem(srl: number)
   {
     // check data
     const count = helper.count({
-      where: `AND srl = ${srl}`,
+      where: `srl = ${srl}`,
     })
     if (count <= 0) throw new ServiceError('No data.', { status: 204 })
 
@@ -17,7 +17,6 @@ export default async function deleteItem(srl: number)
     _transaction = db.transaction('begin')
 
     // delete data
-    // TODO: 덜 끝났음
     await helper.remove(srl)
 
     // commit transaction

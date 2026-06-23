@@ -23,12 +23,12 @@ export function getOriginTableName(module: string): string
   }
 }
 
-export function count(op: BaseModel['paramsTableSelect']): number
+export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: DB.TABLE.MAP_TAG,
-    where: op.where || '',
-    values: op.values || {},
+    table: table ?? DB.TABLE.MAP_TAG,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }

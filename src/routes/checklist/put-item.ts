@@ -59,7 +59,7 @@ export default async function putItem({ body }: PutItemParams)
     // collback transaction
     db.transaction('rollback', _transaction)
 
-    throw new ServiceError('Failed to add Checklist item.', {
+    throw new ServiceError('Failed to add Checklist.', {
       status: _e.status,
       text: _e.message,
       cause: _e,

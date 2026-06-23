@@ -29,10 +29,12 @@ export default async function putItem({ body, service }: PutItemParams)
     }
 
     // check file size
-    if (body.file.size > service.preference['file.limitSize'])
+    if (body.file.size > service.preference['file.limit.size'])
     {
       throw new ServiceError('File size limit exceeded.', { status: 400 })
     }
+
+    // TODO: 등록할 수 있는 최대 갯수 제한검사
 
     // convert file to resource
     let _resource: FileToResource = await helper.fileToResource(body.file)

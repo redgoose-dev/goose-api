@@ -5,9 +5,9 @@ import type { BaseModel } from '@/libs/models'
 export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: table || DB.TABLE.APP,
-    where: where || '',
-    values: values || {},
+    table: table ?? DB.TABLE.APP,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }
@@ -32,7 +32,7 @@ export async function remove(srl: number)
     where: `app_srl = ${srl}`,
   })
   // remove nests
-  for await (const o of nests.data)
+  for (const o of nests.data)
   {
     await nestHelper.remove(o.srl)
   }
@@ -41,4 +41,15 @@ export async function remove(srl: number)
     table: DB.TABLE.APP,
     where: `srl = ${srl}`,
   })
+}
+
+export function countArticle(app_srl: number)
+{
+  const _count = db.getCount({
+    table: `${DB.TABLE.ARTICLE} as a`,
+    field: 'COUNT(a.srl) AS count',
+    join: `INNER JOIN ${DB.TABLE.NEST} AS n ON a.nest_srl = n.srl`,
+    where: `n.app_srl = ${app_srl}`,
+  })
+  return _count.data ?? 0
 }

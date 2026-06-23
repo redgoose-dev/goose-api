@@ -99,10 +99,16 @@ export default async function getIndex({ query }: GetIndexParams)
         switch (item.module)
         {
           case helper.MODULE.NEST:
-            item.count = articleHelper.count({ where: _itemWhere })
+            item.count = articleHelper.count({
+              table: `${DB.TABLE.ARTICLE} as a`,
+              where: _itemWhere,
+            })
             break
           case helper.MODULE.JSON:
-            item.count = jsonHelper.count({ where: _itemWhere })
+            item.count = jsonHelper.count({
+              table: `${DB.TABLE.JSON} as j`,
+              where: _itemWhere,
+            })
             break
         }
       }
@@ -121,10 +127,16 @@ export default async function getIndex({ query }: GetIndexParams)
         {
           case helper.MODULE.NEST:
             if (query.module_srl) _itemWhere.push(`AND module_srl = ${query.module_srl}`)
-            _newItem.count = articleHelper.count({ where: _itemWhere })
+            _newItem.count = articleHelper.count({
+              table: `${DB.TABLE.ARTICLE} as a`,
+              where: _itemWhere,
+            })
             break
           case helper.MODULE.JSON:
-            _newItem.count = jsonHelper.count({ where: _itemWhere })
+            _newItem.count = jsonHelper.count({
+              table: `${DB.TABLE.JSON} as j`,
+              where: _itemWhere,
+            })
             break
         }
       }
@@ -143,10 +155,16 @@ export default async function getIndex({ query }: GetIndexParams)
         {
           case helper.MODULE.NEST:
             if (query.module_srl) _itemWhere.push(`AND nest_srl = ${query.module_srl}`)
-            _newItem.count = articleHelper.count({ where: _itemWhere })
+            _newItem.count = articleHelper.count({
+              table: `${DB.TABLE.ARTICLE} as a`,
+              where: _itemWhere,
+            })
             break
           case helper.MODULE.JSON:
-            _newItem.count = jsonHelper.count({ where: _itemWhere })
+            _newItem.count = jsonHelper.count({
+              table: `${DB.TABLE.JSON} as j`,
+              where: _itemWhere,
+            })
             break
         }
       }

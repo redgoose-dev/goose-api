@@ -81,7 +81,7 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     // collback transaction
     db.transaction('rollback', _transaction)
 
-    throw new ServiceError('Failed to update Checklist item.', {
+    throw new ServiceError('Failed to update Checklist.', {
       status: _e.status,
       text: _e.message,
       cause: _e,

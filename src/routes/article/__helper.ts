@@ -1,7 +1,7 @@
 import DB, { db } from '@/classes/DB'
 import * as tagHelper from '@/routes/tag/__helper'
 import * as fileHelper from '@/routes/file/__helper'
-// import * as commentHelper from '@/routes/comment/__helper'
+import * as commentHelper from '@/routes/comment/__helper'
 import type { BaseModel } from '@/libs/models'
 
 export const STATUS = {
@@ -14,19 +14,23 @@ export const STATUS = {
   },
 } as const
 
-export function count({ where, values }: BaseModel['paramsTableSelect']): number
+export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
 {
   const count = db.getCount({
-    table: `${DB.TABLE.ARTICLE} AS a`,
-    where: where || '',
-    values: values || {},
+    table: table ?? DB.TABLE.ARTICLE,
+    where: where ?? '',
+    values: values ?? {},
   })
   return count.data || 0
 }
 
 export async function remove(srl: number)
 {
-  // TODO: comment data
+  // comment data
+  await commentHelper.removeWithModule({
+    module: commentHelper.MODULE.ARTICLE,
+    module_srl: srl,
+  })
   // tag data
   tagHelper.remove({
     module: tagHelper.MODULE.ARTICLE,
