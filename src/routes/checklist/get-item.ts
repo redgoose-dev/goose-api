@@ -1,6 +1,8 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
+import * as fileHelper from '@/routes/file/__helper'
+import * as tagHelper from '@/routes/tag/__helper'
 import type { ChecklistModel } from './__model'
 
 type GetItemParams = {
@@ -29,12 +31,17 @@ export default async function getItem({ srl, query }: GetItemParams)
     // MOD / count-file
     if (_mod.check('count-file'))
     {
-      // TODO
+      item.data.count_file = fileHelper.count({
+        where: [
+          `AND module LIKE \'${fileHelper.MODULE.CHECKLIST}\'`,
+          `AND module_srl = ${srl}`,
+        ],
+      })
     }
     // MOD / tag
     if (_mod.check('tag'))
     {
-      // TODO
+      item.data.tag = tagHelper.getIndex(tagHelper.MODULE.CHECKLIST, srl)
     }
 
     // return

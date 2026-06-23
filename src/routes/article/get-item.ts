@@ -81,14 +81,12 @@ export default async function getItem({ srl, query, token }: GetItemParams)
     // MOD / count-file
     if (_mod.check('count-file'))
     {
-      const _count = db.getCount({
-        table: DB.TABLE.FILE,
+      item.data.count_file = fileHelper.count({
         where: [
           `AND module LIKE \'${fileHelper.MODULE.ARTICLE}\'`,
           `AND module_srl = ${srl}`,
         ],
       })
-      item.data.count_file = _count.data || 0
     }
 
     return item.data

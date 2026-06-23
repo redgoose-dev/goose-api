@@ -63,24 +63,6 @@ export function createCode(size: number = 8): string
 }
 
 /**
- * date formatter
- * TODO: 사용하는지 확인 필요하다.
- */
-export function dateFormatter(date: Date, options: ZZ = {}): string
-{
-  const formatter = new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    ...options,
-  })
-  return formatter.format(date)
-}
-
-/**
  * @example
  * ```ts
  * const str = printf('Hello {0} {1}', 'World', '!')

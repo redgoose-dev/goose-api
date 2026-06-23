@@ -141,6 +141,7 @@ class DB {
           }
           catch(_e)
           {
+            console.error('TODO: 어떻게 처리할지 고민해보자', _e)
             // TODO: 어떻게 처리할지 고민해보자
           }
         }

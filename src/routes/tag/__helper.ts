@@ -47,7 +47,6 @@ export function getIndex(module: string, module_srl: number)
   return tags.data.length > 0 ? tags.data : []
 }
 
-// TODO: 이 함수는 안쓰게 될거같다. update()로도 충분해 보인다.
 export function add({ module, module_srl, tag }: ZZ)
 {
   // get tag data

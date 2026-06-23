@@ -1,12 +1,3 @@
-// /**
-//  * 객체에 값이 존재하는지 검사
-//  * TODO: 이 함수는 안써도 될법하다. `src/routes/json/service.ts:check update data` 부분에서 함수없이 검사해놨다.
-//  */
-// export function checkExistValueInObject(obj: ZZ, keys: string[]): boolean
-// {
-//   return keys.some(key => (key in obj) && obj[key] !== null && obj[key] !== undefined)
-// }
-
 /**
  * value 값이 undefined 라면 key 삭제
  */
