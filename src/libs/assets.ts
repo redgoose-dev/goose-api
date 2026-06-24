@@ -64,3 +64,8 @@ export abstract class Permission {
     }
   }
 }
+
+export function getBool(value?: string): boolean
+{
+  return (value ?? '').toLowerCase() === 'true'
+}

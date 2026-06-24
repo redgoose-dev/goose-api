@@ -41,16 +41,16 @@ export function onErrorAfter({ request, set, store, error }: any): Response
     ...DEFAULT_HEADERS,
     [HEADERS_KEYS.CONTENT_TYPE]: 'text/plain',
   }
-  // 오류 스택이 있으면 출력하기, TODO: 로거 영역에서 출력 가능하다면 위치 옮기기
-  if (_status !== 404 && service.dev)
-  {
-    console.error(error.stack)
-  }
   // 처리시간
   if (store.beforeTime)
   {
     headers[HEADERS_KEYS.PROCESS_TIME] = getElapsedTime(store.beforeTime)
   }
+  // 오류 스택 출력하기
+  // if (_status !== 404 && error.stack && service.dev)
+  // {
+  //   store.logger.error(request, error.stack, { raw: true })
+  // }
   // set headers
   setHeaders(set.headers, headers)
   // switch status

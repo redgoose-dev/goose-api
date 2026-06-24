@@ -3,12 +3,12 @@ import { randomBytes } from 'node:crypto'
 /**
  * 콘솔로그에서 컬러를 입힌다.
  */
-type ColorTextColor = 'white' | 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan'
-export function colorText(message: string, color: ColorTextColor): string
+type ColorTextColor = 'light' | 'dark' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan'
+export function colorText(message: string, color?: ColorTextColor): string
 {
   const assets: ZZ = {
-    white: '\x1b[37m',
-    black: '\x1b[31m',
+    light: '\x1b[37m',
+    dark: '\x1b[90m',
     red: '\x1b[31m',
     green: '\x1b[32m',
     yellow: '\x1b[33m',
@@ -16,30 +16,29 @@ export function colorText(message: string, color: ColorTextColor): string
     magenta: '\x1b[35m',
     cyan: '\x1b[36m',
   }
-  return assets[color] ? `${assets[color]}${message}\x1b[0m` : message
-}
-
-/**
- * 숫자 한자리라면 앞에 `0`을 붙인다.
- */
-export function twoDigit(day: string|number): string
-{
-  return `0${day}`.slice(-2)
+  return color && assets[color] ? `${assets[color]}${message}\x1b[0m` : message
 }
 
 /**
  * convert date format
- * format guide: `{yyyy}-{MM}-{dd} / {month},{week},{weekShort} / {hh}:{mm}:{ss}`
+ * format guide: `{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}.{ms}`
  */
-export function dateFormat(date: Date, format: string): string
+export function dateFormat(date: Date = new Date(), format: string): string
 {
+  const pad = (n: number, len = 2) => String(n).padStart(len, '0')
   let mix = format.replace(/\{yyyy\}/, String(date.getFullYear()))
-  mix = mix.replace(/\{MM\}/, twoDigit(date.getMonth() + 1))
-  mix = mix.replace(/\{dd\}/, twoDigit(date.getDate()))
-  mix = mix.replace(/\{hh\}/, twoDigit(date.getHours()))
-  mix = mix.replace(/\{mm\}/, twoDigit(date.getMinutes()))
-  mix = mix.replace(/\{ss\}/, twoDigit(date.getSeconds()))
+  mix = mix.replace(/\{MM\}/, pad(date.getMonth() + 1))
+  mix = mix.replace(/\{dd\}/, pad(date.getDate()))
+  mix = mix.replace(/\{hh\}/, pad(date.getHours()))
+  mix = mix.replace(/\{mm\}/, pad(date.getMinutes()))
+  mix = mix.replace(/\{ss\}/, pad(date.getSeconds()))
+  mix = mix.replace(/\{ms\}/, pad(date.getSeconds(), 3))
   return mix
+}
+
+export function formatDateTime(date: Date = new Date()): string
+{
+  return ``
 }
 
 /**

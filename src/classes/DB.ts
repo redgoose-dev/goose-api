@@ -141,10 +141,7 @@ class DB {
             this.run('ROLLBACK')
           }
           catch(_e)
-          {
-            console.error('DB 롤백 실패 ㅠㅠ', _e)
-            // TODO: 어떻게 처리할지 고민해보자
-          }
+          {}
         }
         return false
     }
