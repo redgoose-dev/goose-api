@@ -14,6 +14,7 @@ route.get('/', async (ctx) => {
   const data = await getIndex({
     query: ctx.query,
     token,
+    service: (ctx.store as Store).service,
   })
   return {
     message: 'Complete get Article index.',

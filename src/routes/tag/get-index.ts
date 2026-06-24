@@ -1,12 +1,14 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import { TagModel } from './__model'
 
 type GetIndexParams = {
   query: TagModel['getIndexQuery']
+  service: Service
 }
 
-export default async function getIndex({ query }: GetIndexParams)
+export default async function getIndex({ query, service }: GetIndexParams)
 {
   try
   {
@@ -48,8 +50,8 @@ export default async function getIndex({ query }: GetIndexParams)
       join: _join,
       order: Boolean(query.order || query.sort) ? query.order : 'srl',
       sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['tag.index.size'],
       values: _values,
     })
 

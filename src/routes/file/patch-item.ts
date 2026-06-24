@@ -127,6 +127,10 @@ export default async function patchItem({ srl, body, service }: PatchItemParams)
 
     // delete legacy file
     if (item.data.path) await deleteFile(item.data.path)
+
+    // delete cache
+    if (_ready.file) await helper.deleteCache(item.data.code)
+
     return {
       ...updatedItem.data,
       path: undefined,

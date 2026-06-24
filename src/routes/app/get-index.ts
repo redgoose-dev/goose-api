@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import MOD from '@/classes/MOD'
 import * as nestHelper from '@/routes/nest/__helper'
 import * as helper from './__helper'
@@ -7,9 +8,10 @@ import type { AppModel } from './__model'
 
 type GetIndexParams = {
   query: AppModel['getIndexQuery']
+  service: Service
 }
 
-export default async function getIndex({ query }: GetIndexParams)
+export default async function getIndex({ query, service }: GetIndexParams)
 {
   try
   {
@@ -48,8 +50,8 @@ export default async function getIndex({ query }: GetIndexParams)
       where: _where,
       order: Boolean(query.order || query.sort) ? query.order : 'srl',
       sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['app.index.size'],
       values: _values,
     })
 

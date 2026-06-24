@@ -1,12 +1,14 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import type { CommentModel } from './__model'
 
 type GetIndexParams = {
   query: CommentModel['getIndexQuery']
+  service: Service
 }
 
-export default async function getItem({ query }: GetIndexParams)
+export default async function getItem({ query, service }: GetIndexParams)
 {
   try
   {
@@ -46,8 +48,8 @@ export default async function getItem({ query }: GetIndexParams)
       where: _where,
       order: Boolean(query.order || query.sort) ? query.order : 'srl',
       sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['comment.index.size'],
       values: _values,
     })
 

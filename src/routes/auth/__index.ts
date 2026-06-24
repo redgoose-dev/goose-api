@@ -10,7 +10,6 @@ const route = new Elysia({
 })
 
 // 🌵 OAuth 인증요청으로 가기위한 경유지
-// TODO: 어쩌면 안쓸지도 모르겠다. (웹소켓으로 주로 사용하는듯..)
 import { default as getRedirect } from './get-redirect'
 route.get('/redirect/:provider/', async (ctx) => {
   const url = await getRedirect({

@@ -14,6 +14,7 @@ route.get('/', async (ctx) => {
   checkingToken(ctx)
   const data = await getIndex({
     query: ctx.query,
+    service: (ctx.store as Store).service,
   })
   return {
     message: 'Complete get Nest index.',

@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import MOD from '@/classes/MOD'
 import { parseJSON } from '@/libs/objects'
 import * as appHelper from '@/routes/app/__helper'
@@ -14,9 +15,10 @@ import type { ArticleModel } from './__model'
 type GetIndexParams = {
   query: ArticleModel['getIndexQuery']
   token: CheckinToken
+  service: Service
 }
 
-export default async function getIndex({ query, token }: GetIndexParams)
+export default async function getIndex({ query, token, service }: GetIndexParams)
 {
   try
   {
@@ -121,8 +123,8 @@ export default async function getIndex({ query, token }: GetIndexParams)
       join: _join,
       order: _order,
       sort: _sort,
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['article.index.size'],
       values: _values,
     })
 

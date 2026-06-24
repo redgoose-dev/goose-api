@@ -26,20 +26,6 @@ abstract class Provider {
     return exp - now
   }
 
-  // TODO: 안쓸수도 있음
-  // /**
-  //  * 시간이 만료되었는지 검사
-  //  * @param {number} createdTime 만들어진 시간(초)
-  //  * @param {number} expired 만료시간(초)
-  //  * @return 만료되었으면 true
-  //  */
-  // public checkRemainTime(createdTime: number, expired: number): boolean
-  // {
-  //   const _now = Date.now()
-  //   const _target = (new Date(createdTime).getTime()) + (expired * 1000)
-  //   return _target < _now
-  // }
-
   public getAuthorizeLink(code: ProviderCode, redirectUri: string)
   {
     return `${PATHS.URL}/auth/redirect/${code}/?redirect_uri=${redirectUri}`

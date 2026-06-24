@@ -34,7 +34,18 @@ export default async function putItem({ body, service }: PutItemParams)
       throw new ServiceError('File size limit exceeded.', { status: 400 })
     }
 
-    // TODO: 등록할 수 있는 최대 갯수 제한검사
+    // check limit count
+    const _count = helper.count({
+      where: [
+        `AND module LIKE \'${body.module}\'`,
+        `AND module_srl = ${body.module_srl}`,
+      ],
+    })
+    const _limit = service.preference['file.limit.count']
+    if (_limit <= _count)
+    {
+      throw new ServiceError(`You can upload up to ${_limit} files.`, { status: 400 })
+    }
 
     // convert file to resource
     let _resource: FileToResource = await helper.fileToResource(body.file)

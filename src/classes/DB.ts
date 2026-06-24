@@ -87,6 +87,7 @@ class DB {
   #getLimit(op: ParamLimit = {}): string
   {
     if (op.page === undefined || op.size === undefined) return ''
+    if (op.page <= 0) return ''
     let _size = op.size || 24
     let _offset = ((op.page || 1) - 1) * _size
     return `LIMIT ${_size} OFFSET ${_offset}`
@@ -141,7 +142,7 @@ class DB {
           }
           catch(_e)
           {
-            console.error('TODO: 어떻게 처리할지 고민해보자', _e)
+            console.error('DB 롤백 실패 ㅠㅠ', _e)
             // TODO: 어떻게 처리할지 고민해보자
           }
         }

@@ -106,7 +106,7 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
             await helper.createCache(_cacheFile, {
               code: _file.code,
               module: _file.module,
-              module_srt: _file.module_srl,
+              module_srl: _file.module_srl,
               private: _permission === Permission.PRIVATE,
               path: _file.path,
               cache_path: _newData.cachePath || null,

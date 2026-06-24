@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import MOD from '@/classes/MOD'
 import * as articleHelper from '@/routes/article/__helper'
 import * as jsonHelper from '@/routes/json/__helper'
@@ -8,9 +9,10 @@ import type { CategoryModel } from './__model'
 
 type GetIndexParams = {
   query: CategoryModel['getIndexQuery']
+  service: Service
 }
 
-export default async function getIndex({ query }: GetIndexParams)
+export default async function getIndex({ query, service }: GetIndexParams)
 {
   try
   {
@@ -62,8 +64,8 @@ export default async function getIndex({ query }: GetIndexParams)
       join: _join,
       order: Boolean(query.order || query.sort) ? query.order : 'srl',
       sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['category.index.size'],
       values: _values,
     })
 

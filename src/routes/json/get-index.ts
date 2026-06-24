@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import Service from '@/classes/Service'
 import MOD from '@/classes/MOD'
 import { parseJSON } from '@/libs/objects'
 import * as tagHelper from '@/routes/tag/__helper'
@@ -7,9 +8,10 @@ import type { JsonModel } from './__model'
 
 type GetIndexParams = {
   query: JsonModel['getIndexQuery']
+  service: Service
 }
 
-export default async function getIndex({ query }: GetIndexParams)
+export default async function getIndex({ query, service }: GetIndexParams)
 {
   try
   {
@@ -56,8 +58,8 @@ export default async function getIndex({ query }: GetIndexParams)
       join: _join,
       order: Boolean(query.order || query.sort) ? query.order : 'srl',
       sort: Boolean(query.order || query.sort) ? query.sort : 'desc',
-      page: query.page,
-      size: query.size,
+      page: query.page ?? 1,
+      size: query.size ?? service.preference['json.index.size'],
       values: _values,
     })
 
