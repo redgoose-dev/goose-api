@@ -9,8 +9,7 @@ const route = new Elysia({
 // 🌿 Index
 import { default as getIndex } from './get-index'
 route.get('/', async (ctx) => {
-  // checking token
-  checkingToken(ctx)
+  checkingToken(ctx, { usePublic: true })
   const data = await getIndex({
     query: ctx.query,
     service: (ctx.store as Store).service,
@@ -26,7 +25,6 @@ route.get('/', async (ctx) => {
 // 🌳 Patch
 import { default as patchItem } from './patch-item'
 route.patch('/', async (ctx) => {
-  // checking token
   checkingToken(ctx)
   await patchItem({
     body: ctx.body,
@@ -39,7 +37,6 @@ route.patch('/', async (ctx) => {
 // 🍄 Delete
 import { default as deleteItem } from './delete-item'
 route.delete('/', async (ctx) => {
-  // checking token
   checkingToken(ctx)
   await deleteItem({
     body: ctx.body,

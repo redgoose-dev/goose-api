@@ -38,7 +38,7 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
         const _path = _cache.cache_path || _cache.path
         if (await existFile(_path))
         {
-          if (_cache.private) checkingToken(ctx, { usePublic: true })
+          if (_cache.private) checkingToken(ctx)
           data.path = _path
           data.mime = _cache.mime
         }
@@ -80,7 +80,7 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
         case Permission.PRIVATE:
         case Permission.PUBLIC:
           // check auth
-          if (_permission === Permission.PRIVATE) checkingToken(ctx, { usePublic: true })
+          if (_permission === Permission.PRIVATE) checkingToken(ctx)
           let _newData: ZZ = {}
           // get new data
           if (_file.mime?.startsWith('image/') && _imageOption)

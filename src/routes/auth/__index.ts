@@ -51,9 +51,7 @@ route.post('/checkin/', async (ctx) => {
 // 🌵 리프레시 토큰으로 엑세스 토큰 재발급받기
 import { default as postRenew } from './post-renew'
 route.post('/renew/', async (ctx) => {
-  const token = checkingToken(ctx, {
-    checkExpires: false,
-  })
+  const token = checkingToken(ctx, { checkExpires: false })
   const data = await postRenew({
     token,
     refreshToken: ctx.body.refresh,
@@ -69,6 +67,7 @@ route.post('/renew/', async (ctx) => {
 // 🌻 로그인 준비를 위한 재료 가져오기
 import { default as postReadyLogin } from './post-ready-login'
 route.post('/ready-login/', async (ctx) => {
+  checkingToken(ctx, { usePublic: true })
   const data = await postReadyLogin({
     body: ctx.body,
   })
@@ -83,6 +82,7 @@ route.post('/ready-login/', async (ctx) => {
 // 🌵 패스워드 타입의 프로바이더 로그인
 import { default as postLogin } from './post-login'
 route.post('/login/', async (ctx) => {
+  checkingToken(ctx, { usePublic: true })
   const data = await postLogin({
     body: ctx.body,
   })

@@ -94,7 +94,7 @@ route.patch('/:srl/change-nest/', async (ctx) => {
 // 🌳 Update up count
 import { default as patchUp } from './patch-up'
 route.patch('/:srl/up/', async (ctx) => {
-  checkingToken(ctx)
+  checkingToken(ctx, { usePublic: true })
   await patchUp({
     srl: ctx.params.srl,
     body: ctx.body,

@@ -11,7 +11,7 @@ const route = new Elysia({
 // 🌿 Index
 import { default as getIndex } from './get-index'
 route.get('/', async (ctx) => {
-  checkingToken(ctx)
+  checkingToken(ctx, { usePublic: true })
   const data = await getIndex({
     query: ctx.query,
     service: (ctx.store as Store).service,
@@ -27,7 +27,7 @@ route.get('/', async (ctx) => {
 // 🌻 Detail
 import { default as getItem } from './get-item'
 route.get('/:srl/', async (ctx) => {
-  checkingToken(ctx)
+  checkingToken(ctx, { usePublic: true })
   const data = await getItem({
     ...classifySrlCode(ctx.params.srl),
     query: ctx.query,
