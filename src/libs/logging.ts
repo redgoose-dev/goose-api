@@ -62,7 +62,7 @@ const consoleTransport: Transport = {
       const _time = colorText(dateFormat(undefined, '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}.{ms}'), 'dark')
       const _method = `[${meta.request.method}]`
       const _url = colorText(getUrl(meta.request.url), 'blue')
-      const _status = meta.status
+      const _status = meta.status ?? 500
       const _message = message ? ` || ${message}` : ''
       const _speed = colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'green')
       console.group(`${_level} ${_time} ${_method} ${_url} || ${_status + _message} || ${_speed}`)

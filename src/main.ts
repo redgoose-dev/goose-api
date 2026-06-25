@@ -48,6 +48,7 @@ app.use(routes.file)
 app.use(routes.json)
 app.use(routes.tag)
 app.use(routes.preference)
+app.use(routes.mix)
 app.use(routes.options)
 
 // set listen server
