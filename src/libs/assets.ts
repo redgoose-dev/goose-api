@@ -1,6 +1,6 @@
-const { NODE_ENV, PATH_BASE, PATH_DATA, PATH_URL } = Bun.env as ENV
+const { PATH_BASE, PATH_DATA, PATH_URL, DEBUG } = Bun.env as ENV
 
-export const IS_DEV = NODE_ENV !== 'production'
+export const IS_DEV = getBool(DEBUG)
 
 export const PATHS = {
   BASE: PATH_BASE || '.',

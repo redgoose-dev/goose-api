@@ -1,6 +1,5 @@
 import logixlysia from 'logixlysia'
 import type { Transport } from 'logixlysia'
-import ServiceError from '@/classes/ServiceError'
 import { IS_DEV, getBool } from '@/libs/assets'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
@@ -51,7 +50,7 @@ function getStatus(code: number): string
       return colorText(_code, 'green')
     case 204:
     case 404:
-      return colorText(_code, 'light')
+      return colorText(_code, 'blue')
     case 400:
     case 500:
       return colorText(_code, 'red')

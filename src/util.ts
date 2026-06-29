@@ -162,7 +162,7 @@ function addAccount(db: Database, account: ZZ)
       name, // user_name
       '', // user_email
       '', // user_avatar
-      ProviderPassword.hashPassword(password), // user_password
+      ProviderPassword.hashPassword(String(password)), // user_password
     ])
     message('run', '계정을 추가했습니다.')
   }

@@ -10,14 +10,14 @@ if [ ! -f "$FILE_DB" ] || [ ! -f "$FILE_PREFERENCE" ]; then
   echo "[entrypoint] install required: missing $FILE_DB or $FILE_PREFERENCE"
   # clean partial install state if one of the install files already exists
   if [ -f "$FILE_DB" ] || [ -f "$FILE_PREFERENCE" ]; then
-    bun run prod:uninstall -y
+    bun run dev:util uninstall -y
   fi
   # install with default user
-  bun run prod:install \
-    --id=goose \
-    --name=GoOSe \
-    --email=scripter@me.com \
-    --password=1234
+  bun run prod:util install \
+    --id="goose" \
+    --name="GoOSe" \
+    --email="scripter@me.com" \
+    --password="1234"
 fi
 
 exec "$@"

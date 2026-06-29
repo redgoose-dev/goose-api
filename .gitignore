@@ -1,7 +1,8 @@
 # Directories
 dist/
 data/
-__legacy/
+scripts/
+__LEGACY__/
 
 # files
 cmd.sh

@@ -1,4 +1,4 @@
-const { SERVICE_NAME } = Bun.env
+const { SERVICE_NAME, SOURCE_MAP } = Bun.env
 
 // Print start
 console.log(`🪴 Start build ${SERVICE_NAME}...`)
@@ -14,16 +14,14 @@ await Bun.build({
   target: 'bun',
   format: 'esm',
   splitting: true,
+  sourcemap: SOURCE_MAP?.toLowerCase() === 'true',
   minify: {
     whitespace: true,
     identifiers: true,
     syntax: true,
   },
   external: [
-    'bcryptjs',
-    'elysia',
-    'jsonwebtoken',
-    'logixlysia',
+    'sharp',
   ],
   naming: {
     entry: '[name].[ext]',
