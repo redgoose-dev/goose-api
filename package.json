@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "elysia": "^1.4.28",
+    "elysia": "^1.4.29",
     "jsonwebtoken": "^9.0.3",
-    "logixlysia": "^6.5.1",
-    "sharp": "^0.34.5"
+    "logixlysia": "^6.6.0",
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
     "@types/bun": "latest",
