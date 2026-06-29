@@ -19,7 +19,8 @@ export default async function getItem({ srl, query }: GetItemParams)
     let item = db.getData({
       table: _table,
       field: _field,
-      where: `srl = ${srl}`,
+      where: `srl = $srl`,
+      values: { '$srl': srl },
     })
     if (!item.data) throw new ServiceError('No data', { status: 204 })
 

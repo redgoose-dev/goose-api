@@ -5,7 +5,7 @@ import { createRequest } from './helpers/request-assets'
 import * as routes from '@/routes/index'
 import { dateFormat } from '@/libs/strings'
 import { dconsole, getData } from './helpers/debug'
-import { TagTool, MODULE as MODULE_TAG } from '@/routes/tag/service'
+import * as tagHelper from '@/routes/tag/__helper'
 
 /**
  * # Command guide
@@ -164,8 +164,8 @@ describe('DELETE /checklist/:srl/', () => {
         table: DB.TABLE.CHECKLIST,
         where: `srl = ${checklistSrl}`,
       })
-      TagTool.delete({
-        module: MODULE_TAG.CHECKLIST,
+      tagHelper.remove({
+        module: tagHelper.MODULE.CHECKLIST,
         module_srl: checklistSrl,
       })
     }

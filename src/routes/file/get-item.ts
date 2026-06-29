@@ -7,15 +7,19 @@ import * as helper from './__helper'
 import type { FileModel } from './__model'
 
 type GetItemParams = {
-  code: string
+  srl?: number
+  code?: string
   query: FileModel['getItemQuery']
   ctx: any
 }
 
-export default async function getIndex({ code, query, ctx }: GetItemParams)
+export default async function getItem({ srl, code, query, ctx }: GetItemParams)
 {
   try
   {
+    let useCache = Boolean(code)
+    let _cacheFile: Bun.BunFile
+
     // set image options
     const _imageOption = helper.getImageOptions(query.w, query.h, query.t, query.q)
 
@@ -26,26 +30,29 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
       buffer: undefined,
     }
 
-    // 캐시파일에서 데이터 가져오기
-    let _cacheFile = await helper.getCache(code, _imageOption)
-
-    // 캐시 데이터 사용하기
-    if (_imageOption?.query && await _cacheFile.exists())
+    // 캐시파일 사용
+    if (useCache && code)
     {
-      const _cache = await _cacheFile.json()
-      if (_cache)
+      // 캐시파일에서 데이터 가져오기
+      _cacheFile = await helper.getCache(code, _imageOption)
+      // 캐시 데이터 사용하기
+      if (_imageOption?.query && await _cacheFile.exists())
       {
-        const _path = _cache.cache_path || _cache.path
-        if (await existFile(_path))
+        const _cache = await _cacheFile.json()
+        if (_cache)
         {
-          if (_cache.private) checkingToken(ctx)
-          data.path = _path
-          data.mime = _cache.mime
-        }
-        else
-        {
-          // 문제가 있는 파일이라고 판단하여 캐시파일을 삭제한다.
-          await deleteFile(_cacheFile.name as string)
+          const _path = _cache.cache_path || _cache.path
+          if (await existFile(_path))
+          {
+            if (_cache.private) checkingToken(ctx)
+            data.path = _path
+            data.mime = _cache.mime
+          }
+          else
+          {
+            // 문제가 있는 파일이라고 판단하여 캐시파일을 삭제한다.
+            await deleteFile(_cacheFile.name as string)
+          }
         }
       }
     }
@@ -56,7 +63,10 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
       // get file data
       const _file = db.getData({
         table: DB.TABLE.FILE,
-        where: `code GLOB \'${code}\'`,
+        where: [
+          srl && `AND srl = ${srl}`,
+          code && `AND code GLOB \'${code}\'`,
+        ].filter(Boolean) as string[],
       }).data
       if (!_file)
       {
@@ -90,6 +100,7 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
               path: _file.path,
               mime: _file.mime,
               imageOptions: _imageOption,
+              save: useCache,
             })
           }
           else
@@ -100,7 +111,7 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
             }
           }
           // create cache file
-          if (_imageOption?.query)
+          if (useCache && _imageOption?.query)
           {
             _cacheFile = await helper.getCache(_file.code, _imageOption)
             await helper.createCache(_cacheFile, {
@@ -126,12 +137,6 @@ export default async function getIndex({ code, query, ctx }: GetItemParams)
         default:
           throw new ServiceError('Invalid permission.', { status: 500 })
       }
-    }
-
-    // check output data
-    if (!(data.path && data.mime))
-    {
-      throw new ServiceError('Not found file data.', { status: 404 })
     }
 
     // 버퍼 데이터를 만든다.

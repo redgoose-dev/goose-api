@@ -149,7 +149,7 @@ export async function createCache(file: Bun.BunFile, data: ZZ)
  */
 export async function resizeImage(op: ZZ = {})
 {
-  const { code, path, mime, imageOptions } = op
+  const { code, path, mime, imageOptions, save } = op
   // get dirname
   const dirName = path.split(`${PATHS.UPLOAD}/`)[1].split('/')[0]
   // set destination path
@@ -185,27 +185,22 @@ export async function resizeImage(op: ZZ = {})
           height: _h,
           fit: _t,
           kernel: 'lanczos3',
+          background: { r: 255, g: 255, b: 255, alpha: 0 },
         })
         break
     }
-    let _mime: string
-    if (_q > 85)
-    {
-      _resize.webp({ quality: _q })
-      _mime = 'image/webp'
-    }
-    else
-    {
-      _resize.jpeg({ quality: _q })
-      _mime = 'image/jpeg'
-    }
+    let _mime = 'image/webp'
+    _resize.webp({ quality: _q })
     // create buffer
     const _buffer = await _resize.toBuffer()
     // save file
-    await createDirectory(destPath)
-    await Bun.write(destPath, _buffer)
+    if (save)
+    {
+      await createDirectory(destPath)
+      await Bun.write(destPath, _buffer)
+    }
     return {
-      cachePath: destPath,
+      cachePath: save ? destPath : 'buffer',
       buffer: _buffer,
       mime: _mime,
     }

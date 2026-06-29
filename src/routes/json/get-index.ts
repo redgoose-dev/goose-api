@@ -23,17 +23,17 @@ export default async function getIndex({ query, service }: GetIndexParams)
     const _field = query.field ? query.field.split(',') : ''
 
     // set base params
-    if (query.category)
+    if (query.category !== undefined)
     {
-      _where.push(`AND category_srl = $category_srl`)
-      _values['$category_srl'] = query.category
+      if (query.category > 0) _where.push(`AND category_srl = ${query.category}`)
+      else _where.push(`AND category_srl IS NULL`)
     }
-    if (query.name)
+    if (query.name !== undefined)
     {
       _where.push(`AND name LIKE '%' || $name || '%'`)
       _values['$name'] = query.name
     }
-    if (query.tag)
+    if (query.tag !== undefined)
     {
       const _tags = query.tag.split(',').join(',')
       _where.push(`AND j.srl IN (SELECT mt.module_srl FROM ${DB.TABLE.MAP_TAG} AS mt WHERE mt.module LIKE $tag_module AND mt.tag_srl IN (${_tags}))`)

@@ -23,6 +23,7 @@ export default async function getProviderIndex({ query }: GetProviderIndexParams
       {
         const { user_password, ...rest } = _providers[code]
         return {
+          code,
           account: rest,
           auth_url: null,
         }
@@ -31,6 +32,7 @@ export default async function getProviderIndex({ query }: GetProviderIndexParams
       {
         const __provider__ = getProvider(code)
         return {
+          code,
           account: null,
           auth_url: __provider__.getAuthorizeLink(code, query.redirect_uri)
         }

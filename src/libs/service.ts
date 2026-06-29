@@ -24,7 +24,7 @@ export function onResponse({ set, store }: any)
 export function onErrorBefore({ request, set, store, error }: any)
 {
   // set error code
-  if (![ 403, 404 ].includes(error.status))
+  if (![ 204, 403, 404 ].includes(error.status))
   {
     set.headers[HEADERS_KEYS.ERROR_CODE] = request.errorCode
     store.logger.mergeContext(request, filteringObject({

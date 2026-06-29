@@ -105,7 +105,7 @@ GET /article/{srl:int}/
 @param {int} srl / [required] 아티클 srl 번호
 @query {str} fields / 조회할 필드
 @query {int} app / 앱 srl 번호
-@query {str} mod / MOD (up-hit,up-star,count-file)
+@query {str} mod / MOD (up-hit,up-star,count-file,app)
 ```
 
 ### Response

@@ -31,7 +31,7 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
     // get provider class
     const __provider__ = getProvider(code as ProviderCode)
     // get token
-    const token = await __provider__.getToken(code)
+    const token = await __provider__.getToken(query.code)
     // DEV: 토큰을 얻어내는 과정을 생략하기 위한 임시코드
     // const token = {
     //   access: "MTM1MjM0ODU3MDE2NjIzMTIyMw.G6xy9nmbFA0JH6uJgluFGWr5tPa6Z0",

@@ -87,7 +87,7 @@ class DB {
   #getLimit(op: ParamLimit = {}): string
   {
     if (op.page === undefined || op.size === undefined) return ''
-    if (op.page <= 0) return ''
+    if (op.page <= 0 || op.size <= 0) return ''
     let _size = op.size || 24
     let _offset = ((op.page || 1) - 1) * _size
     return `LIMIT ${_size} OFFSET ${_offset}`

@@ -32,21 +32,21 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     const _field = query.field ? query.field.split(',') : ''
 
     // set base params
-    if (query.app)
+    if (query.app !== undefined)
     {
       _join.push(`JOIN ${DB.TABLE.NEST} AS n ON n.srl = a.nest_srl`)
       _where.push(`AND n.app_srl = ${query.app}`)
     }
-    if (query.nest)
+    if (query.nest !== undefined)
     {
       _where.push(`AND nest_srl = ${query.nest}`)
     }
-    if (query.category)
+    if (query.category !== undefined)
     {
       if (query.category > 0) _where.push(`AND category_srl = ${query.category}`)
       else _where.push(`AND category_srl IS NULL`)
     }
-    if (query.q)
+    if (query.q !== undefined)
     {
       _where.push(`AND (a.title LIKE \'%${query.q}%\' OR content LIKE \'%${query.q}%\')`)
     }
@@ -62,12 +62,12 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     {
       _where.push(`AND mode NOT LIKE \'${helper.STATUS.READY}\'`)
     }
-    if (query.tag)
+    if (query.tag !== undefined)
     {
       const _tags = query.tag.split(',').join(',')
       _where.push(`AND a.srl IN (SELECT mt.module_srl FROM ${DB.TABLE.MAP_TAG} AS mt WHERE mt.module LIKE \'${tagHelper.MODULE.ARTICLE}\' AND mt.tag_srl IN (${_tags}))`)
     }
-    if (query.duration)
+    if (query.duration !== undefined)
     {
       const _duration: string[] = query.duration.split(',')
       const _rangeMap: ZZ = {
@@ -108,9 +108,9 @@ export default async function getIndex({ query, token, service }: GetIndexParams
       _sort = ''
       _values['$random'] = Number(query.random)
     }
-    else if (query.order)
+    else if (query.order || query.sort)
     {
-      _order = query.order
+      _order = query.order || 'srl'
       _sort = query.sort || 'desc'
     }
 

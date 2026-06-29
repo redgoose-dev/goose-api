@@ -1,5 +1,6 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import * as fileHelper from '@/routes/file/__helper'
 import * as tagHelper from '@/routes/tag/__helper'
 import * as helper from './__helper'
 
@@ -21,6 +22,12 @@ export default async function deleteItem(srl: number)
     db.deleteData({
       table: DB.TABLE.CHECKLIST,
       where: `srl = ${srl}`,
+    })
+
+    // delete file
+    await fileHelper.remove({
+      module: fileHelper.MODULE.CHECKLIST,
+      module_srl: srl,
     })
 
     // delete tag

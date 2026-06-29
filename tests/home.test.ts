@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { createTestApp } from './helpers/create-test-app'
-import routeHome from '@/routes/home'
+import routeHome from '@/routes/home/__index'
 
 describe('GET /', () => {
   it('홈 엔드포인트가 응답한다', async () => {

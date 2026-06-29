@@ -2,7 +2,7 @@ PRAGMA foreign_keys = ON;
 
 -- table `app`
 CREATE TABLE `app` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `code` TEXT NOT NULL UNIQUE, -- code
   `name` TEXT NOT NULL, -- name
   `description` TEXT NULL, -- description
@@ -11,7 +11,7 @@ CREATE TABLE `app` (
 
 -- table `article`
 CREATE TABLE `article` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `nest_srl` INTEGER NULL, -- nest srl
   `category_srl` INTEGER NULL, -- category srl
   `title` TEXT NULL, -- title
@@ -33,7 +33,7 @@ CREATE INDEX idx_article_public_nest_regdate ON article(nest_srl, regdate DESC, 
 
 -- table `checklist`
 CREATE TABLE `checklist` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `content` TEXT NULL, -- markdown content
   `percent` INTEGER NOT NULL DEFAULT 0 CHECK (`percent` BETWEEN 0 AND 100), -- progress
   `created_at` TEXT NOT NULL, -- created date
@@ -42,7 +42,7 @@ CREATE TABLE `checklist` (
 
 -- table `json`
 CREATE TABLE `json` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `category_srl` INTEGER NULL, -- category srl
   `name` TEXT NOT NULL, -- name
   `description` TEXT NULL, -- description
@@ -55,7 +55,7 @@ CREATE INDEX idx_json_category_srl ON json(category_srl);
 
 -- table `nest`
 CREATE TABLE `nest` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `app_srl` INTEGER NULL, -- app srl
   `code` TEXT NOT NULL UNIQUE, -- unique nest code
   `name` TEXT NULL, -- name
@@ -68,7 +68,7 @@ CREATE INDEX idx_nest_app_srl ON nest(app_srl);
 
 -- table `category`
 CREATE TABLE `category` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `name` TEXT NOT NULL, -- description
   `turn` INTEGER NOT NULL DEFAULT 0, -- category name
   `module` TEXT NOT NULL CHECK (`module` IN ('nest', 'json')), -- module table name
@@ -80,7 +80,7 @@ CREATE INDEX idx_category_module_srl_turn ON category(module, module_srl, turn);
 
 -- table `file`
 CREATE TABLE `file` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `code` TEXT NOT NULL UNIQUE, -- unique file code
   `name` TEXT NOT NULL, -- file name
   `path` TEXT NOT NULL, -- file path
@@ -96,7 +96,7 @@ CREATE INDEX idx_file_mime ON file(mime);
 
 -- table `comment`
 CREATE TABLE `comment` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `content` TEXT NOT NULL, -- markdown content
   `module` TEXT NOT NULL CHECK (`module` = 'article'), -- article
   `module_srl` INTEGER NOT NULL, -- module srl
@@ -107,12 +107,12 @@ CREATE INDEX idx_comment_module_srl ON comment(module, module_srl);
 
 -- table `tag`
 CREATE TABLE `tag` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `name` TEXT NOT NULL UNIQUE -- tag name
 );
 -- table `map_tag`
 CREATE TABLE `map_tag` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `tag_srl` INTEGER NOT NULL REFERENCES `tag`(`srl`) ON DELETE CASCADE, -- tag srl
   `module` TEXT NOT NULL CHECK (`module` IN ('article', 'json', 'checklist')), -- module table name
   `module_srl` INTEGER NOT NULL, -- module srl
@@ -122,7 +122,7 @@ CREATE INDEX idx_map_tag_module_srl ON map_tag(module, module_srl);
 
 -- table `provider`
 CREATE TABLE `provider` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `code` TEXT NOT NULL, -- provider name
   `user_id` TEXT NOT NULL, -- user id
   `user_name` TEXT NULL, -- username
@@ -136,7 +136,7 @@ CREATE INDEX idx_provider_user_id ON provider(user_id);
 
 -- table `token`
 CREATE TABLE `token` (
-  `srl` INTEGER PRIMARY KEY, -- srl
+  `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `provider_srl` INTEGER NOT NULL REFERENCES `provider`(`srl`) ON DELETE CASCADE, -- provider srl
   `access` TEXT NOT NULL UNIQUE, -- access token
   `expires` INTEGER CHECK (`expires` >= 0), -- expires_in timestamp

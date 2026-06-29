@@ -32,8 +32,7 @@ export default async function getIndex({ query, service }: GetIndexParams)
     }
     if (query.module)
     {
-      _where.push(`AND c.module LIKE $module`)
-      _values['$module'] = query.module
+      _where.push(`AND c.module LIKE \'${query.module}\'`)
     }
     if (query.module === helper.MODULE.NEST && query.module_srl !== undefined)
     {
@@ -49,7 +48,7 @@ export default async function getIndex({ query, service }: GetIndexParams)
 
     // get total
     const count = helper.count({
-      table: `${DB.TABLE.CATEGORY} AS c`,
+      table: _table,
       where: _where,
       values: _values,
     })
@@ -128,7 +127,7 @@ export default async function getIndex({ query, service }: GetIndexParams)
         switch (query.module)
         {
           case helper.MODULE.NEST:
-            if (query.module_srl) _itemWhere.push(`AND module_srl = ${query.module_srl}`)
+            if (query.module_srl) _itemWhere.push(`AND nest_srl = ${query.module_srl}`)
             _newItem.count = articleHelper.count({
               table: `${DB.TABLE.ARTICLE} as a`,
               where: _itemWhere,

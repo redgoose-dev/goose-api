@@ -45,6 +45,7 @@ export default async function getIndex({ query, service }: GetIndexParams)
     // get index
     const index = db.getIndex({
       table: `${DB.TABLE.TAG} AS t`,
+      prefix: 'DISTINCT',
       field: _field,
       where: _where,
       join: _join,

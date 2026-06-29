@@ -58,6 +58,16 @@ export default async function getItem({ srl, query, token }: GetItemParams)
 
     // set MOD
     const _mod: MOD = new MOD(query.mod)
+    // MOD / app
+    if (_mod.check('app') && item.data.nest_srl)
+    {
+      item.data.app = db.getData({
+        table: `${DB.TABLE.APP} AS a`,
+        field: 'a.srl,a.code,a.name',
+        join: `JOIN ${DB.TABLE.NEST} AS n ON a.srl = n.app_srl`,
+        where: `n.srl = ${item.data.nest_srl}`,
+      }).data
+    }
     // MOD / up-hit,up-star
     if (_mod.check('up-hit') || _mod.check('up-star'))
     {

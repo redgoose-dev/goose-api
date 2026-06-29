@@ -51,9 +51,9 @@ export default async function putItem({ body, service }: PutItemParams)
     let _resource: FileToResource = await helper.fileToResource(body.file)
 
     // convert format or quality
-    if (_resource.image)
+    if (_resource.image && (body.format || body.quality))
     {
-      _resource.image = helper.convertImageFormat(_resource.image, _resource.mime, body.quality)
+      _resource.image = helper.convertImageFormat(_resource.image, body.format, body.quality)
     }
 
     // set save path
@@ -70,7 +70,7 @@ export default async function putItem({ body, service }: PutItemParams)
     }
 
     // set image size
-    let _json: ZZ = body.json || {}
+    let _json: ZZ = body.json ?? {}
     if (_resource.image)
     {
       const _metadata = await _resource.image.metadata()

@@ -49,25 +49,21 @@ export const FileModel = {
       t.Literal(MODULE.COMMENT),
     ]),
     module_srl: t.Numeric(),
-    dir_name: t.String({
-      default: 'origin',
-    }),
     file: t.File(),
-    json: t.Union([
+    dir_name: t.Optional(t.String({
+      default: 'origin',
+    })),
+    json: t.Optional(t.Union([
       t.String(),
       t.Object({}, { additionalProperties: true }),
-    ], {
-      default: {},
-    }),
-    format: t.String({
+    ])),
+    format: t.Optional(t.String({
       pattern: PATTERN_MIME,
-      default: '',
-    }),
-    quality: t.Numeric({
-      default: 95,
+    })),
+    quality: t.Optional(t.Numeric({
       minimum: 1,
       maximum: 100,
-    }),
+    })),
   }),
 
   patchItemBody: t.Object({

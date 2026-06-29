@@ -44,7 +44,10 @@ export default async function patchItem({ srl, code, body }: PatchItemParams)
     {
       const _count = db.getCount({
         table: DB.TABLE.APP,
-        where: `code LIKE \'${_ready['code']}\'`,
+        where: [
+          `AND srl != ${srl}`,
+          `AND code LIKE \'${_ready['code']}\'`,
+        ],
       })
       if (_count.data > 0)
       {

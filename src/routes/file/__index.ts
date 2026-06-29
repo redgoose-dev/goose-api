@@ -1,5 +1,6 @@
 import { Elysia } from 'elysia'
 import { checkingToken } from '@/libs/verify'
+import { classifySrlCode } from '@/libs/service'
 import { BaseModel } from '@/libs/models'
 import { FileModel } from './__model'
 
@@ -25,14 +26,14 @@ route.get('/', async (ctx) => {
 
 // 🌻 Detail
 import { default as getItem } from './get-item'
-route.get('/:code/', async (ctx) => {
+route.get('/:srl/', async (ctx) => {
   return await getItem({
-    code: ctx.params.code,
+    ...classifySrlCode(ctx.params.srl),
     query: ctx.query,
     ctx,
   })
 }, {
-  params: BaseModel.paramsCode,
+  params: BaseModel.paramsSrlCode,
   query: FileModel.getItemQuery,
 })
 

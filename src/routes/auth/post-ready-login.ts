@@ -22,9 +22,16 @@ export default async function postReadyLogin({ body }: PostReadyLogin)
     return Object.values(PROVIDER_CODE).map((code) => {
       if (!_providers[code]) return false
       const __provider__ = getProvider(code)
-      if (__provider__.type !== PROVIDER_TYPE.OAUTH) return false
+      if (__provider__.type !== PROVIDER_TYPE.OAUTH)
+      {
+        return {
+          name: code,
+          type: __provider__.type,
+        }
+      }
       return {
         name: code,
+        type: __provider__.type,
         auth_url: __provider__.getAuthorizeLink(code, body.redirect_uri),
       }
     }).filter(Boolean)

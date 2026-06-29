@@ -67,7 +67,6 @@ route.post('/renew/', async (ctx) => {
 // 🌻 로그인 준비를 위한 재료 가져오기
 import { default as postReadyLogin } from './post-ready-login'
 route.post('/ready-login/', async (ctx) => {
-  checkingToken(ctx, { usePublic: true })
   const data = await postReadyLogin({
     body: ctx.body,
   })
@@ -82,7 +81,6 @@ route.post('/ready-login/', async (ctx) => {
 // 🌵 패스워드 타입의 프로바이더 로그인
 import { default as postLogin } from './post-login'
 route.post('/login/', async (ctx) => {
-  checkingToken(ctx, { usePublic: true })
   const data = await postLogin({
     body: ctx.body,
   })

@@ -2,6 +2,7 @@ import logixlysia from 'logixlysia'
 import type { Transport } from 'logixlysia'
 import ServiceError from '@/classes/ServiceError'
 import { IS_DEV, getBool } from '@/libs/assets'
+import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 
 /**
@@ -41,6 +42,35 @@ function getUrl(url: string): string
   const _url = new URL(url)
   return `${_url.pathname}${_url.search}`
 }
+function getStatus(code: number): string
+{
+  const _code = code.toString()
+  switch (code)
+  {
+    case 200:
+      return colorText(_code, 'green')
+    case 204:
+    case 404:
+      return colorText(_code, 'light')
+    case 400:
+    case 500:
+      return colorText(_code, 'red')
+    default:
+      return _code
+  }
+}
+function getMessage(code: number, msg: string): string
+{
+  if (!msg) return ''
+  switch (code)
+  {
+    case 422:
+      const obj = parseJSON(msg)
+      return ` || ${obj?.message || msg}`
+    default:
+      return ` || ${msg}`
+  }
+}
 const consoleTransport: Transport = {
   async log(level, message, meta: ZZ = {})
   {
@@ -62,9 +92,9 @@ const consoleTransport: Transport = {
       const _time = colorText(dateFormat(undefined, '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}.{ms}'), 'dark')
       const _method = `[${meta.request.method}]`
       const _url = colorText(getUrl(meta.request.url), 'blue')
-      const _status = meta.status ?? 500
-      const _message = message ? ` || ${message}` : ''
-      const _speed = colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'green')
+      const _status = getStatus(meta.status ?? 500)
+      const _message = getMessage(meta.status, message)
+      const _speed = colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'dark')
       console.group(`${_level} ${_time} ${_method} ${_url} || ${_status + _message} || ${_speed}`)
       const _countContext = Object.keys(meta.context).length
       let tree = Object.entries(meta.context).map(([ key, value ], k) => {
@@ -77,7 +107,18 @@ const consoleTransport: Transport = {
         const _line = k+1 >= _countContext ? '└─' : '├─'
         console.log(`${_line} ${colorText(key, 'cyan')}  ${colorText(value as string, 'light')}`)
       })
-      if (meta.error) console.error(meta.error.stack)
+      if (meta.error)
+      {
+        switch (meta.status)
+        {
+          case 204:
+          case 404:
+            break
+          default:
+            console.error(meta.error.stack)
+            break
+        }
+      }
       console.groupEnd()
     }
   },

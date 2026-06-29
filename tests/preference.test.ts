@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeAll, afterAll } from 'bun:test'
 import { createTestApp, type ElysiaService } from './helpers/create-test-app'
 import { createRequest } from './helpers/request-assets'
-import routePreference from '@/routes/preference'
+import routePreference from '@/routes/preference/__index'
 
 /**
  * # Command guide

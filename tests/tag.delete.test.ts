@@ -2,7 +2,7 @@ import { describe, expect, it, beforeAll } from 'bun:test'
 import DB, { db } from '@/classes/DB'
 import { createTestApp, type ElysiaService } from './helpers/create-test-app'
 import { createRequest } from './helpers/request-assets'
-import routeTag from '@/routes/tag'
+import routeTag from '@/routes/tag/__index'
 
 describe('DELETE /tag/', () => {
   const MODULE = 'json'
