@@ -1,5 +1,6 @@
 import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
+import { classifySrlCode } from '@/libs/service'
 import type { CheckinToken } from '@/libs/verify'
 import type { MixModel } from './__model'
 
@@ -34,11 +35,10 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         // check 'if' condition
         if (helper.checkIf(_req.if, response)) continue
         // set params
-        const _params = helper.parseParams(_req.params ?? null, response)
+        const _params: ZZ = helper.parseParams(_req.params ?? null, response)
         // run function
         let _res = await _req.func({
-          srl: _params.srl ? Number(_params.srl) : undefined,
-          code: _params.code ? String(_params.code) : undefined,
+          ...(_params.srl ? classifySrlCode(_params.srl) : {}),
           query: _params,
           body: _params,
           token,

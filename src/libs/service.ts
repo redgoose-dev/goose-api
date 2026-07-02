@@ -80,8 +80,17 @@ type TypeClassifySrlCode = {
 }
 export function classifySrlCode(value: number | string): TypeClassifySrlCode
 {
+  const isNumeric = (str: string) => /^\d+$/.test(str)
+  if (typeof value === 'number')
+  {
+    return {
+      srl: Number.isFinite(value) ? value : undefined,
+      code: undefined,
+    }
+  }
+  const trimmed = value.trim()
   return {
-    srl: Number.isFinite(value) ? Number(value) : undefined,
-    code: typeof value === 'string' ? value : undefined,
+    srl: isNumeric(trimmed) ? Number(trimmed) : undefined,
+    code: isNumeric(trimmed) ? undefined : value,
   }
 }
