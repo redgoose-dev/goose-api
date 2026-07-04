@@ -101,17 +101,21 @@ export function parseParams(params: Record<string, unknown>, data: Record<string
   return params
 }
 
+/**
+ * 리턴이 true라면 마저 실행하고, false라면 건너뛴다.
+ */
 export function checkIf(condition: string, data: Record<string, unknown> = {}): boolean
 {
-  if (!condition) return false
+  if (!condition) return true
   switch (condition.toLowerCase())
   {
-    case 'true': return false
-    case 'false': return true
+    case 'true': return true
+    case 'false': return false
     default: {
       const pattern = /^\{\{(.*)\}\}$/
       const match = condition.match(pattern)
-      return getValueDict(data, match?.[1] ?? '') === null
+      const dict = getValueDict(data, match?.[1] ?? '')
+      return !!dict
     }
   }
 }

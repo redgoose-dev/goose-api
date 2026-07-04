@@ -33,9 +33,10 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
           continue
         }
         // check 'if' condition
-        if (helper.checkIf(_req.if, response)) continue
+        if (!helper.checkIf(_req.if, response)) continue
         // set params
         const _params: ZZ = helper.parseParams(_req.params ?? null, response)
+        // TODO: run logging.info()
         // run function
         let _res = await _req.func({
           ...(_params.srl ? classifySrlCode(_params.srl) : {}),
