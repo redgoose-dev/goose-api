@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_FIELD, PATTERN_MOD, PATTERN_CODE } from '@/libs/validation'
+import { PATTERN_MOD, PATTERN_CODE } from '@/libs/validation'
 
 export const NestModel = {
 
@@ -8,7 +8,7 @@ export const NestModel = {
     app: t.Optional(t.Numeric()),
     code: t.Optional(t.String({ pattern: PATTERN_CODE })),
     name: t.Optional(t.String()),
-    field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
+    field: t.Optional(t.String()),
     page: t.Optional(t.Numeric({ minimum: 0 })),
     size: t.Optional(t.Numeric({ minimum: 1 })),
     order: t.Optional(t.String()),
@@ -17,7 +17,7 @@ export const NestModel = {
 
   getItemQuery: t.Object({
     app: t.Optional(t.Numeric()),
-    field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
+    field: t.Optional(t.String()),
     mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),
 

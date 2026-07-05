@@ -1,13 +1,13 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_FIELD, PATTERN_MOD, PATTERN_TAG } from '@/libs/validation'
+import { PATTERN_MOD, PATTERN_TAG } from '@/libs/validation'
 
 export const JsonModel = {
 
   getIndexQuery: t.Object({
     category: t.Optional(t.Numeric()),
     name: t.Optional(t.String()),
-    field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
+    field: t.Optional(t.String()),
     page: t.Optional(t.Numeric({ minimum: 0 })),
     size: t.Optional(t.Numeric({ minimum: 1 })),
     order: t.Optional(t.String()),
@@ -16,7 +16,7 @@ export const JsonModel = {
   }),
 
   getItemQuery: t.Object({
-    field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
+    field: t.Optional(t.String()),
     mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),
 

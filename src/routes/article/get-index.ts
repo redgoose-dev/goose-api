@@ -28,7 +28,7 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     let _values: ZZ = {}
     let _join: string[] = []
     let _order: string | undefined
-    const _field = query.field ? query.field.split(',') : ''
+    let _field = query.field ? query.field.split(',') : []
 
     // set base params
     if (query.app !== undefined)
@@ -122,6 +122,7 @@ export default async function getIndex({ query, token, service }: GetIndexParams
       page: query.page ?? 1,
       size: query.size ?? service.preference['article.index.size'],
       values: _values,
+      debug: true,
     })
 
     // set MOD

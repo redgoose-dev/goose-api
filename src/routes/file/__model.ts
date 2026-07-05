@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_FIELD, PATTERN_MIME } from '@/libs/validation'
+import { PATTERN_MIME } from '@/libs/validation'
 import { BaseModel } from '@/libs/models'
 import { RESIZE_TYPE } from '@/libs/assets'
 import { MODULE } from './__helper'
@@ -17,7 +17,7 @@ export const FileModel = {
     module_srl: t.Optional(t.Numeric()),
     name: t.Optional(t.String()),
     mime: t.Optional(t.String()),
-    field: t.Optional(t.String({ pattern: PATTERN_FIELD })),
+    field: t.Optional(t.String()),
     page: t.Optional(t.Numeric({ minimum: 0 })),
     size: t.Optional(t.Numeric({ minimum: 1 })),
     order: t.Optional(t.String()),
