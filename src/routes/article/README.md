@@ -73,8 +73,7 @@ GET /article/
 @query {str} fields / 조회할 필드
 @query {int} page / 페이지 번호
 @query {int} size / 페이지 당 데이터 수
-@query {str} order='srl' / 정렬 기준
-@query {str} sort='desc' / 정렬 방식 (asc,desc)
+@query {str} order='srl desc' / 정렬 기준
 @query {bool} unlimited=False / 무제한 조회 여부 (1=무제한, 0=제한)
 @query {str} tag / 태그 / ex) tag1,tag2,tag3
 @query {str} mod / MOD (app,nest,category,tag,file)

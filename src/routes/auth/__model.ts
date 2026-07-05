@@ -48,7 +48,6 @@ export const AuthModel = {
 
   getTokenQuery: t.Object({
     order: t.Optional(t.String()),
-    sort: t.Optional(t.UnionEnum([ 'desc', 'asc' ])),
     token: t.Optional(t.String()),
     mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
   }),

@@ -93,12 +93,10 @@ class DB {
     return `LIMIT ${_size} OFFSET ${_offset}`
   }
 
-  #getOrder(order?: string, sort?: string): string
+  #getOrder(order?: string): string
   {
-    if (!(order && sort)) return ''
-    const _order = order || 'srl'
-    const _sort = sort || 'desc'
-    return `ORDER BY ${_order} ${_sort}`
+    if (!order) return ''
+    return `ORDER BY ${order}`
   }
 
   #getSet(arr: Array<string | boolean>): string
@@ -174,7 +172,7 @@ class DB {
     const _join = this.#parseJoin(op.join)
     const _where = this.#getWhere(op.where)
     const _limit = this.#getLimit({ page: op.page, size: op.size })
-    const _order = this.#getOrder(op.order, op.sort)
+    const _order = this.#getOrder(op.order)
     const _sql = this.#optimizeSql(`SELECT ${op.prefix || ''} ${_field} FROM ${op.table} ${_join} ${_where} ${_order} ${_limit}`)
     if (op.debug) this.#debug('getIndex()', _sql, op.values)
     let _data: ZZ[] = []

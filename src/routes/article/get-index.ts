@@ -28,7 +28,6 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     let _values: ZZ = {}
     let _join: string[] = []
     let _order: string | undefined
-    let _sort: string | undefined
     const _field = query.field ? query.field.split(',') : ''
 
     // set base params
@@ -105,13 +104,11 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     if (query.random)
     {
       _order = `ABS(((a.srl * $random * 999) + 579) % 1000)`
-      _sort = ''
       _values['$random'] = Number(query.random)
     }
-    else if (query.order || query.sort)
+    else if (query.order)
     {
-      _order = query.order || 'srl'
-      _sort = query.sort || 'desc'
+      _order = query.order ?? ''
     }
 
     // get index
@@ -122,10 +119,10 @@ export default async function getIndex({ query, token, service }: GetIndexParams
       where: _where,
       join: _join,
       order: _order,
-      sort: _sort,
       page: query.page ?? 1,
       size: query.size ?? service.preference['article.index.size'],
       values: _values,
+      debug: true,
     })
 
     // set MOD

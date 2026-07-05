@@ -12,7 +12,6 @@ export interface ParamGetIndex extends ParamBase {
   join?: string | string[]
   after?: string
   order?: string
-  sort?: string
   page?: number
   size?: number
 }

@@ -18,7 +18,6 @@ export const TagModel = {
     page: t.Optional(t.Numeric({ minimum: 0 })),
     size: t.Optional(t.Numeric({ minimum: 1 })),
     order: t.Optional(t.String()),
-    sort: t.Optional(t.UnionEnum([ 'desc', 'asc' ])),
   }),
 
   patchItemBody: t.Object({

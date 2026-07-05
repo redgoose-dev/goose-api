@@ -38,7 +38,6 @@ export default async function getTokenIndex({ query }: GetTokenIndexParams)
       where: _where,
       values: _values,
       order: query.order,
-      sort: query.sort,
     })
 
     // set MOD
