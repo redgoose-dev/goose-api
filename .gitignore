@@ -3,7 +3,6 @@ dist/
 data/
 scripts/
 tests/
-__LEGACY__/
 
 # files
 cmd.sh
