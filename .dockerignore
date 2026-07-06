@@ -6,6 +6,7 @@ node_modules/
 dist/
 data/
 scripts/
+tests/
 
 # files
 .DS_Store
