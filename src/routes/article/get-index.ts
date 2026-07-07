@@ -122,7 +122,6 @@ export default async function getIndex({ query, token, service }: GetIndexParams
       page: query.page ?? 1,
       size: query.size ?? service.preference['article.index.size'],
       values: _values,
-      debug: true,
     })
 
     // set MOD

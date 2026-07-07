@@ -2,6 +2,7 @@ import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import * as messages from '@/libs/messages'
 import { parseJSON, filteringObject } from '@/libs/objects'
+import { dateFormat } from '@/libs/strings'
 import * as categoryHelper from '@/routes/category/__helper'
 import * as tagHelper from '@/routes/tag/__helper'
 import * as fileHelper from '@/routes/file/__helper'
@@ -99,6 +100,10 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     if (body.regdate)
     {
       _ready.regdate = body.regdate
+    }
+    else if (article.data.mode === helper.STATUS.READY)
+    {
+      _ready.regdate = dateFormat(new Date(), '{yyyy}-{MM}-{dd}')
     }
 
     // check update data

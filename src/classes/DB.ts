@@ -27,7 +27,7 @@ class DB {
     MAP_TAG: 'map_tag',
     TOKEN: 'token',
   }
-  static DATE_TIME = 'DATETIME("now", "localtime")'
+  static DATE_TIME = `STRFTIME('%Y-%m-%dT%H:%M:%fZ', 'now')`
   private conn?: Database
 
   #connect(): Database
