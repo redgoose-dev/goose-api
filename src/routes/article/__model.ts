@@ -50,6 +50,7 @@ export const ArticleModel = {
       t.Literal('hit'),
       t.Literal('star'),
     ])),
+    count: t.Optional(t.Numeric()),
   }),
 
 } as const

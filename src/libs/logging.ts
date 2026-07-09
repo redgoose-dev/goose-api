@@ -1,8 +1,8 @@
 import logixlysia from 'logixlysia'
-import type { Transport } from 'logixlysia'
 import { IS_DEV, getBool } from '@/libs/assets'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
+import type { Transport } from 'logixlysia'
 
 /**
  * TODO: 2026-05-23
@@ -43,6 +43,7 @@ function getUrl(url: string): string
 }
 function getStatus(code: number): string
 {
+  if (!code) return ''
   const _code = code.toString()
   switch (code)
   {
@@ -65,9 +66,9 @@ function getMessage(code: number, msg: string): string
   {
     case 422:
       const obj = parseJSON(msg)
-      return ` || ${obj?.message || msg}`
+      return `${obj?.message || msg}`
     default:
-      return ` || ${msg}`
+      return msg || ''
   }
 }
 const consoleTransport: Transport = {
@@ -91,10 +92,12 @@ const consoleTransport: Transport = {
       const _time = colorText(dateFormat(undefined, '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}.{ms}'), 'dark')
       const _method = `[${meta.request.method}]`
       const _url = colorText(getUrl(meta.request.url), 'blue')
-      const _status = getStatus(meta.status ?? 500)
-      const _message = getMessage(meta.status, message)
-      const _speed = colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'dark')
-      console.group(`${_level} ${_time} ${_method} ${_url} || ${_status + _message} || ${_speed}`)
+      const _messages = [
+        getStatus(meta.status),
+        getMessage(meta.status, message),
+        colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'dark'),
+      ].filter(Boolean)
+      console.group(`${_level} ${_time} ${_method} ${_url} || ${_messages.join(' || ')}`)
       const _countContext = Object.keys(meta.context).length
       let tree = Object.entries(meta.context).map(([ key, value ], k) => {
         return {
@@ -181,6 +184,12 @@ const logging = logixlysia({
       consoleTransport,
       recordFileTransport,
     ],
+
+    // pino
+    pino: {
+      level: 'INFO',
+      base: { service: 'PIIIIINNNNNOOOOO', },
+    },
   },
 })
 

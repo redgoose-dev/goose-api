@@ -1,6 +1,7 @@
 import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
 import { classifySrlCode } from '@/libs/service'
+import logging from '@/libs/logging'
 import type { CheckinToken } from '@/libs/verify'
 import type { MixModel } from './__model'
 
@@ -36,7 +37,12 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         if (!helper.checkIf(_req.if, response)) continue
         // set params
         const _params: ZZ = helper.parseParams(_req.params ?? null, response)
-        // TODO: run logging.info()
+        // run loggger
+        printLogger(logging.store.logger.info, ctx.request, `Request: "${_req.path}"`, {
+          if: _req.if,
+          params: _params,
+          func: _req.func?.name,
+        })
         // run function
         let _res = await _req.func({
           ...(_params.srl ? classifySrlCode(_params.srl) : {}),
@@ -49,14 +55,11 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         if (_res)
         {
           if (typeof _res === 'string') _res = { message: _res }
-          response[key] = {
-            ok: true,
-            ..._res,
-          }
+          response[key] = { ..._res }
         }
         else
         {
-          response[key] = { ok: false }
+          response[key] = {}
         }
       }
       catch(__e: any)
@@ -65,9 +68,7 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
           path: requests[key]?.path ?? undefined,
           stack: __e.stack,
         }
-        let _res: ZZ = {
-          ok: false,
-        }
+        let _res: ZZ = {}
         if (__e instanceof ServiceError)
         {
           _error.status = __e.status
@@ -77,7 +78,7 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         }
         else
         {
-          response[key] = { ok: false }
+          response[key] = {}
         }
         // set response
         response[key] = _res
@@ -105,4 +106,21 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
       cause: _e,
     })
   }
+}
+
+function printLogger(func: Function, req: any, message: string, obj: ZZ)
+{
+  if (obj.params)
+  {
+    if (Object.keys(obj.params).length > 0)
+    {
+      obj.params = JSON.stringify(obj.params)
+    }
+    else
+    {
+      delete obj.params
+    }
+  }
+  obj = Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null))
+  func(req, message, obj)
 }

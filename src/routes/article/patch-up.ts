@@ -1,8 +1,8 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
+import { filteringObject } from '@/libs/objects'
+import * as messages from '@/libs/messages'
 import type { ArticleModel } from './__model'
-import {filteringObject} from "@/libs/objects.ts";
-import * as messages from "@/libs/messages.ts";
 
 type PatchUpParams = {
   srl: number
@@ -28,13 +28,14 @@ export default async function patchUp({ srl, body }: PatchUpParams)
     }
 
     // setup ready update
+    let _count = body.count === undefined ? 1 : Number(body.count)
     switch (body.mode)
     {
       case 'hit':
-        _ready.hit = `hit = hit + 1`
+        _ready.hit = `hit = hit + ${_count}`
         break
       case 'star':
-        _ready.star = `star = star + 1`
+        _ready.star = `star = star + ${_count}`
         break
     }
 
@@ -57,7 +58,7 @@ export default async function patchUp({ srl, body }: PatchUpParams)
   }
   catch (_e: any)
   {
-    throw new ServiceError('Failed to up hit or star.', {
+    throw new ServiceError('Failed to up HIT or STAR.', {
       status: _e.status,
       text: _e.message,
       cause: _e,

@@ -167,11 +167,11 @@ PATCH /article/{srl:int}/up/
 
 @param {int} srl / 아티클 srl 번호
 @data {str} mode / 필드이름 / ex) hit,star
+@data {number} count / 필드가 올라가는 수
 ```
 
 ### Response
 
 ```
-@content {str} message / 메시지
-@content {int} count / 증가된 수
+@content {str} / 메시지
 ```
