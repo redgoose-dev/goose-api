@@ -114,6 +114,7 @@ const consoleTransport: Transport = {
         switch (meta.status)
         {
           case 204:
+          case 401:
           case 404:
             break
           default:
