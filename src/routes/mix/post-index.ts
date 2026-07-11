@@ -41,7 +41,6 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         printLogger(logging.store.logger.info, ctx.request, `Request: "${_req.path}"`, {
           if: _req.if,
           params: _params,
-          func: _req.func?.name,
         })
         // run function
         let _res = await _req.func({

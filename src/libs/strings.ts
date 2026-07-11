@@ -7,7 +7,7 @@ type ColorTextColor = 'light' | 'dark' | 'red' | 'green' | 'yellow' | 'blue' | '
 export function colorText(message: string, color?: ColorTextColor): string
 {
   const assets: ZZ = {
-    light: '\x1b[37m',
+    light: '\x1b[38;5;250m',
     dark: '\x1b[90m',
     red: '\x1b[31m',
     green: '\x1b[32m',
