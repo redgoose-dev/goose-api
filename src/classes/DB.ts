@@ -35,8 +35,9 @@ class DB {
     if (!this.conn)
     {
       this.conn = new Database(DB.PATH, { readwrite: true })
-      this.conn.run('PRAGMA journal_mode = WAL')
+      this.conn.run('PRAGMA journal_mode = DELETE')
       this.conn.run('PRAGMA synchronous = NORMAL')
+      this.conn.run('PRAGMA busy_timeout = 5000')
       const { mmap, cache } = getPragmaValues()
       this.conn.run(`PRAGMA mmap_size = ${mmap}`)
       this.conn.run(`PRAGMA cache_size = ${cache}`)
