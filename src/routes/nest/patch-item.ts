@@ -26,7 +26,7 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     if (!item.data) throw new ServiceError('No data.', { status: 204 })
 
     // check app_srl
-    if (body.app)
+    if (body.app !== undefined)
     {
       const _count = appHelper.count({
         where: `srl = ${body.app}`,
@@ -47,11 +47,11 @@ export default async function patchItem({ srl, body }: PatchItemParams)
     }
 
     // setup ready update
-    if (body.app)
+    if (body.app !== undefined)
     {
       _ready.app_srl = body.app
     }
-    if (body.code && item.data.code !== body.code)
+    if (body.code !== undefined && item.data.code !== body.code)
     {
       _ready.code = body.code
       const _count = helper.count({
@@ -62,15 +62,15 @@ export default async function patchItem({ srl, body }: PatchItemParams)
         throw new ServiceError('"code" already exists.', { status: 400 })
       }
     }
-    if (body.name)
+    if (body.name !== undefined)
     {
       _ready.name = body.name
     }
-    if (body.description)
+    if (body.description !== undefined)
     {
       _ready.description = body.description
     }
-    if (body.json)
+    if (body.json !== undefined)
     {
       const _json = parseJSON(body.json)
       if (!_json) throw new ServiceError('Invalid JSON data.', { status: 400 })
