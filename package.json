@@ -18,7 +18,7 @@
     "test:watch": "bun test --watch"
   },
   "dependencies": {
-    "sharp": "^0.35.2"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -29,6 +29,6 @@
     "jsonwebtoken": "^9.0.3",
     "logixlysia": "^6.6.0",
     "minimist": "^1.2.8",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   }
 }
