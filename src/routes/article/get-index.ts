@@ -12,6 +12,62 @@ import * as helper from './__helper'
 import type { CheckinToken } from '@/libs/verify'
 import type { ArticleModel } from './__model'
 
+const DURATION_FIELDS = {
+  regdate: { filter: 'a.regdate', order: 'a.regdate' },
+  created_at: { filter: 'SUBSTR(a.created_at, 1, 10)', order: 'a.created_at' },
+  updated_at: { filter: 'SUBSTR(a.updated_at, 1, 10)', order: 'a.updated_at' },
+} as const
+
+const DURATION_UNITS = {
+  day: 'day',
+  week: 'day',
+  month: 'month',
+  year: 'year',
+} as const
+
+const RANDOM_MODULUS = 2_147_483_647
+const RANDOM_HASH_XOR = 0x9e3779b9
+const RANDOM_HASH_MULTIPLIER = 0x85ebca6b
+const RANDOM_HASH_MIX = 0xc2b2ae35
+const RANDOM_OFFSET_MULTIPLIER = 1_664_525
+
+function mixRandomSeed(seed: number)
+{
+  let value = (seed % 4_294_967_296) >>> 0
+  value = Math.imul(value ^ RANDOM_HASH_XOR, RANDOM_HASH_MULTIPLIER)
+  value = Math.imul(value ^ (value >>> 13), RANDOM_HASH_MIX)
+  value ^= value >>> 16
+  return value >>> 0
+}
+
+function getRandomOrder(seedValue: string)
+{
+  if (!/^[0-9]+$/.test(seedValue))
+  {
+    throw new ServiceError('Invalid random seed.', { status: 400 })
+  }
+
+  const seed = Number(seedValue)
+  if (!Number.isSafeInteger(seed))
+  {
+    throw new ServiceError('Invalid random seed.', { status: 400 })
+  }
+
+  // Build a seed-dependent affine permutation within a large prime range.
+  // The reduced article srl prevents multiplication from overflowing SQLite's integer range.
+  const mixedSeed = mixRandomSeed(seed)
+  const multiplier = (mixedSeed % (RANDOM_MODULUS - 1)) + 1
+  const offset = (Math.imul(mixedSeed, RANDOM_OFFSET_MULTIPLIER) >>> 0) % RANDOM_MODULUS
+
+  return {
+    order: `(((a.srl % ${RANDOM_MODULUS}) * $randomMultiplier + $randomOffset) % ${RANDOM_MODULUS}), a.srl ASC`,
+    values: {
+      '$randomMultiplier': multiplier,
+      '$randomOffset': offset,
+    },
+  }
+}
+
 type GetIndexParams = {
   query: ArticleModel['getIndexQuery']
   token: CheckinToken
@@ -28,6 +84,7 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     let _values: ZZ = {}
     let _join: string[] = []
     let _order: string | undefined
+    let _durationOrder: string | undefined
     let _field = query.field ? query.field.split(',') : []
 
     // set base params
@@ -68,26 +125,20 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     }
     if (query.duration !== undefined)
     {
-      const _duration: string[] = query.duration.split(',')
-      const _rangeMap: ZZ = {
-        day: '1 day',
-        week: '7 day',
-        month: '1 month',
-        year: '1 year',
-      }
-      const _spDate = _duration[3] && /^\d{4}-\d{2}-\d{2}/.test(_duration[3]) ? _duration[3] : 'now'
-      const _durationField = _duration[1]
-      const _durationRange = _rangeMap[_duration[2] as string] ?? '1 day'
-      switch (_duration[0])
+      const _duration = /^(regdate|created_at|updated_at),([1-9][0-9]*)(day|week|month|year)$/.exec(query.duration)
+      if (!_duration) throw new ServiceError('Invalid duration.', { status: 400 })
+      const [, _fieldName, _amountText, _unit] = _duration
+      const _field = DURATION_FIELDS[_fieldName as keyof typeof DURATION_FIELDS]
+      const _sqlUnit = DURATION_UNITS[_unit as keyof typeof DURATION_UNITS]
+      const _amount = Number(_amountText)
+      const _sqlAmount = _unit === 'week' ? _amount * 7 : _amount
+      if (!_field || !_sqlUnit || !Number.isSafeInteger(_amount) || !Number.isSafeInteger(_sqlAmount))
       {
-        case 'old':
-          _where.push(`AND (${_durationField} BETWEEN DATETIME($durationDate, "-${_durationRange}", "localtime") AND DATETIME($durationDate, "-1 day", "localtime"))`)
-          break
-        case 'new':
-          _where.push(`AND (${_durationField} BETWEEN DATETIME($durationDate, "+1 day", "localtime") AND DATETIME($durationDate, "+${_durationRange}", "localtime"))`)
-          break
+        throw new ServiceError('Invalid duration.', { status: 400 })
       }
-      _values['$durationDate'] = _spDate
+      const _modifier = `-${_sqlAmount} ${_sqlUnit}`
+      _where.push(`AND ${_field.filter} IS NOT NULL AND ${_field.filter} <= STRFTIME('%Y-%m-%d', 'now', 'localtime', '${_modifier}')`)
+      _durationOrder = `${_field.order} DESC, a.srl DESC`
     }
 
     // get count
@@ -103,12 +154,20 @@ export default async function getIndex({ query, token, service }: GetIndexParams
     // set random
     if (query.random)
     {
-      _order = `ABS(((a.srl * $random * 999) + 579) % 1000)`
-      _values['$random'] = Number(query.random)
+      const _random = getRandomOrder(query.random)
+      _order = _random.order
+      _values = {
+        ..._values,
+        ..._random.values,
+      }
     }
     else if (query.order)
     {
       _order = query.order ?? ''
+    }
+    else if (_durationOrder)
+    {
+      _order = _durationOrder
     }
 
     // get index

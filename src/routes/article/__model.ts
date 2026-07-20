@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import type { UnwrapSchema } from 'elysia'
-import { PATTERN_MOD, PATTERN_TAG, PATTERN_DATE } from '@/libs/validation'
+import { PATTERN_MOD, PATTERN_TAG, PATTERN_DATE, PATTERN_DURATION, PATTERN_RANDOM } from '@/libs/validation'
 
 export const ArticleModel = {
 
@@ -10,8 +10,8 @@ export const ArticleModel = {
     category: t.Optional(t.Numeric()),
     q: t.Optional(t.String()),
     mode: t.Optional(t.String()),
-    duration: t.Optional(t.String()),
-    random: t.Optional(t.String()),
+    duration: t.Optional(t.String({ pattern: PATTERN_DURATION })),
+    random: t.Optional(t.String({ pattern: PATTERN_RANDOM })),
     field: t.Optional(t.String()),
     page: t.Optional(t.Numeric({ minimum: 0 })),
     size: t.Optional(t.Numeric({ minimum: 1 })),

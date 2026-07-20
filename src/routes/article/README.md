@@ -3,7 +3,7 @@
 가장 기초적인 요소이며 컨텐츠 데이터입니다.
 
 
-## put_item.py
+## put_item.ts
 
 새로운 `ready` 모드의 아티클을 만듭니다.  
 이미 `ready` 모드의 데이터가 존재한다면 그 데이터의 데이터를 반환합니다.
@@ -24,7 +24,7 @@ PUT /article/
 ```
 
 
-## patch_item.py
+## patch_item.ts
 
 아티클 데이터를 수정합니다.
 
@@ -53,7 +53,7 @@ PATCH /article/{srl:int}/
 ```
 
 
-## get_index.py
+## get_index.ts
 
 아티클의 목록을 조회합니다.
 
@@ -68,8 +68,8 @@ GET /article/
 @query {int} category / 카테고리 srl 번호
 @query {str} q / 제목과 내용의 키워드 검색
 @query {str} mode / 모드 (public,private)
-@query {str} duration / 기간 / ex) {new|old},{regdate},{day|week|month|year}
-@query {str} random / 랜덤의 시드값 ex) 20240422
+@query {str} duration / 기간 / ex) {regdate|created_at|updated_at},{1day|1week|1month|1year}
+@query {str} random / 랜덤의 숫자 시드값. 날짜 형식 권장(YYYYMMDD) ex) 20240422
 @query {str} fields / 조회할 필드
 @query {int} page / 페이지 번호
 @query {int} size / 페이지 당 데이터 수
@@ -79,8 +79,8 @@ GET /article/
 @query {str} mod / MOD (app,nest,category,tag,file)
 ```
 
-- `duration`: 데이터 조회범위 `{시기},{필드}`
-- `random`: 데이터 순서를 섞습니다. 순서를 고정시키기 위하여 시드값을 사용합니다. ex) 20240422
+- `duration`: 선택한 날짜 필드가 오늘 기준 지정 기간보다 오래된 데이터 조회. 예: `duration=regdate,1year`
+- `random`: 데이터 순서를 섞습니다. 같은 시드값은 같은 순서를 보장합니다. 날짜 형식의 시드값을 권장합니다. ex) 20240422
 
 ### Response
 
@@ -91,7 +91,7 @@ GET /article/
 ```
 
 
-## get_item.py
+## get_item.ts
 
 아티클의 상세 정보를 조회합니다.
 
@@ -115,7 +115,7 @@ GET /article/{srl:int}/
 ```
 
 
-## delete_item.py
+## delete_item.ts
 
 아티클을 삭제합니다. 삭제할 아티클에 속한 파일, 코멘트, 태그 데이터들도 함께 삭제합니다.
 
@@ -135,7 +135,7 @@ DELETE /article/{srl:int}/
 ```
 
 
-## patch_change_srl.py
+## patch-change-nest.ts
 
 아티클의 앱, 둥지의 srl 번호를 변경합니다.
 
@@ -156,7 +156,7 @@ PATCH /article/{srl:int}/change/
 ```
 
 
-## patch_up.py
+## patch_up.ts
 
 조회수(hit), 좋아요(star) 수를 증가시킵니다.
 
