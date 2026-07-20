@@ -13,150 +13,220 @@ type GetItemParams = {
   ctx: any
 }
 
+type GetResponseDataParams = {
+  code: string
+  path: string
+  mime: string
+  imageOption?: ZZ
+  save: boolean
+}
+
+async function getResponseData({ code, path, mime, imageOption, save }: GetResponseDataParams): Promise<ZZ>
+{
+  if (mime.startsWith('image/') && imageOption)
+  {
+    return await helper.resizeImage({
+      code,
+      path,
+      mime,
+      imageOptions: imageOption,
+      save,
+    })
+  }
+  return { path, mime }
+}
+
 export default async function getItem({ srl, code, query, ctx }: GetItemParams)
 {
   try
   {
-    let useCache = Boolean(code)
-    let _cacheFile: Bun.BunFile
+    // 숫자(srl) 요청은 캐시를 사용하지 않고, 코드 요청만 메타데이터 캐시를 사용한다.
+    const useCache = code !== undefined
+    let cacheFile: Bun.BunFile | undefined
+    let isPrivate = false
+    let isPublic = false
 
     // set image options
-    const _imageOption = helper.getImageOptions(query.w, query.h, query.t, query.q)
+    const imageOption = helper.getImageOptions(query.w, query.h, query.t, query.q)
 
-    // set init data
-    let data: ZZ = {
+    // 응답 데이터. 변환 직후에는 buffer를 사용하고, 그 외에는 파일을 스트리밍한다.
+    const data: ZZ = {
       path: undefined,
       mime: undefined,
       buffer: undefined,
     }
 
-    // 캐시파일 사용
-    if (useCache && code)
+    // 코드 요청은 JSON 캐시에서 파일 경로와 권한 정보를 먼저 확인한다.
+    // 이미지 옵션이 없더라도 `${code}.json`을 읽어 DB 조회를 줄인다.
+    if (useCache && code !== undefined)
     {
-      // 캐시파일에서 데이터 가져오기
-      _cacheFile = await helper.getCache(code, _imageOption)
-      // 캐시 데이터 사용하기
-      if (_imageOption?.query && await _cacheFile.exists())
+      cacheFile = helper.getCache(code)
+      if (await cacheFile.exists())
       {
-        const _cache = await _cacheFile.json()
-        if (_cache)
+        let cache: ZZ | undefined
+        try
         {
-          const _path = _cache.cache_path || _cache.path
-          if (await existFile(_path))
+          cache = await cacheFile.json() as ZZ
+        }
+        catch
+        {
+          // 쓰기 중 중단되었거나 손상된 캐시는 원본 조회로 복구한다.
+          try { await deleteFile(cacheFile.name as string) } catch {}
+        }
+
+        if (cache)
+        {
+          const validCache = typeof cache.path === 'string'
+            && cache.path.length > 0
+            && typeof cache.mime === 'string'
+            && cache.mime.length > 0
+            && typeof cache.private === 'boolean'
+
+          if (!validCache)
           {
-            if (_cache.private) checkingToken(ctx)
-            data.path = _path
-            data.mime = _cache.mime
+            try { await deleteFile(cacheFile.name as string) } catch {}
+          }
+          else if (await existFile(cache.path))
+          {
+            isPrivate = cache.private
+            isPublic = !isPrivate
+            if (isPrivate) checkingToken(ctx)
+
+            const newData = await getResponseData({
+              code,
+              path: cache.path,
+              mime: cache.mime,
+              imageOption,
+              save: true,
+            })
+            data.path = newData.cachePath || newData.path
+            data.mime = newData.mime
+            if (newData.buffer) data.buffer = newData.buffer
           }
           else
           {
-            // 문제가 있는 파일이라고 판단하여 캐시파일을 삭제한다.
-            await deleteFile(_cacheFile.name as string)
+            // 메타데이터는 있지만 실제 파일이 삭제된 경우 캐시를 재생성한다.
+            try { await deleteFile(cacheFile.name as string) } catch {}
           }
         }
       }
     }
 
-    // 캐시파일에서 가져온 데이터가 없다면?
+    // 캐시 적중에 실패한 경우에만 DB와 모듈 권한을 확인한다.
     if (!(data.path && data.mime))
     {
-      // get file data
-      const _file = db.getData({
+      const where: string[] = []
+      const values: ZZ = {}
+      if (srl !== undefined)
+      {
+        where.push('AND srl = $srl')
+        values.$srl = srl
+      }
+      if (code !== undefined)
+      {
+        // code는 unique 값이므로 GLOB 대신 정확한 파라미터 검색을 사용한다.
+        where.push('AND code = $code')
+        values.$code = code
+      }
+      const file = db.getData({
         table: DB.TABLE.FILE,
-        where: [
-          srl && `AND srl = ${srl}`,
-          code && `AND code GLOB \'${code}\'`,
-        ].filter(Boolean) as string[],
+        field: 'code,name,path,mime,module,module_srl',
+        where,
+        values,
       }).data
-      if (!_file)
+      if (!file)
       {
         throw new ServiceError('Not found File data.', { status: 404 })
       }
-      if (!(await existFile(_file.path)))
+      if (!(await existFile(file.path)))
       {
         throw new ServiceError('Not found file.', { status: 404 })
       }
-      // get module data
-      const _module = helper.getModuleData(_file.module, _file.module_srl)
-      if (!_module)
+      // 캐시에는 모듈의 권한 결과도 저장하므로 캐시 적중 시 이 조회를 생략할 수 있다.
+      const module = helper.getModuleData(file.module, file.module_srl)
+      if (!module)
       {
         throw new ServiceError('Not found module data.', { status: 500 })
       }
-      // get permission
-      const _permission = Permission.filter(_module.mode)
-      // switching status
-      switch (_permission)
+      const permission = Permission.filter(module.mode)
+      switch (permission)
       {
         case Permission.PRIVATE:
         case Permission.PUBLIC:
-          // check auth
-          if (_permission === Permission.PRIVATE) checkingToken(ctx)
-          let _newData: ZZ = {}
-          // get new data
-          if (_file.mime?.startsWith('image/') && _imageOption)
+          isPrivate = permission === Permission.PRIVATE
+          isPublic = permission === Permission.PUBLIC
+          if (isPrivate) checkingToken(ctx)
+          // 숫자 요청은 저장된 변환 캐시도 사용하지 않는다.
+          const newData = await getResponseData({
+            code: file.code,
+            path: file.path,
+            mime: file.mime,
+            imageOption,
+            save: useCache,
+          })
+          if (useCache)
           {
-            _newData = await helper.resizeImage({
-              code: _file.code,
-              path: _file.path,
-              mime: _file.mime,
-              imageOptions: _imageOption,
-              save: useCache,
+            cacheFile = helper.getCache(file.code)
+            await helper.createCache(cacheFile, {
+              code: file.code,
+              module: file.module,
+              module_srl: file.module_srl,
+              private: isPrivate,
+              path: file.path,
+              name: file.name,
+              mime: file.mime,
             })
           }
-          else
-          {
-            _newData = {
-              path: _file.path,
-              mime: _file.mime,
-            }
-          }
-          // create cache file
-          if (useCache && _imageOption?.query)
-          {
-            _cacheFile = await helper.getCache(_file.code, _imageOption)
-            await helper.createCache(_cacheFile, {
-              code: _file.code,
-              module: _file.module,
-              module_srl: _file.module_srl,
-              private: _permission === Permission.PRIVATE,
-              path: _file.path,
-              cache_path: _newData.cachePath || null,
-              name: helper.remakeFilename(_file.name, _newData.mime.split('/')[1]),
-              mime: _newData.mime,
-            })
-          }
-          // retry set data
-          data.path = _newData.cachePath || _newData.path
-          data.mime = _newData.mime
-          if (_newData.buffer) data.buffer = _newData.buffer
+
+          data.path = newData.cachePath || newData.path
+          data.mime = newData.mime
+          if (newData.buffer) data.buffer = newData.buffer
           break
+
         case Permission.READY:
-          data.path = _file.path
-          data.mime = _file.mime
+          // 준비 상태 파일은 캐시하지 않고 응답도 공유 캐시하지 않는다.
+          data.path = file.path
+          data.mime = file.mime
           break
+
         default:
           throw new ServiceError('Invalid permission.', { status: 500 })
       }
     }
 
-    // 버퍼 데이터를 만든다.
-    if (!data.buffer && data.path)
+    let body: Buffer | Bun.BunFile | undefined
+    let contentLength: number | undefined
+    if (data.buffer)
     {
-      data.buffer = await helper.convertPathToBuffer(data.path)
+      body = data.buffer
+      contentLength = data.buffer.byteLength
+    }
+    else if (data.path)
+    {
+      // 원본 파일과 기존 변환 파일은 전체를 Buffer로 읽지 않고 스트리밍한다.
+      const bodyFile = Bun.file(data.path)
+      if (!(await bodyFile.exists()))
+      {
+        throw new ServiceError('Not found buffer data.', { status: 404 })
+      }
+      body = bodyFile
+      contentLength = bodyFile.size
     }
 
-    // check buffer data
-    if (!data.buffer)
+    if (!body || !data.mime)
     {
       throw new ServiceError('Not found buffer data.', { status: 404 })
     }
 
-    // return
-    return new Response(data.buffer, {
+    const cacheControl = isPrivate
+      ? 'private, no-store'
+      : (isPublic ? (!ctx.store.service.dev ? 'public, max-age=2592000' : 'no-cache') : 'no-store')
+
+    return new Response(body, {
       headers: {
         'Content-Type': data.mime,
-        'Content-Length': String(data.buffer.byteLength),
-        'Cache-Control': !ctx.store.service.dev ? 'public, max-age=2592000' : 'no-cache',
+        'Content-Length': String(contentLength),
+        'Cache-Control': cacheControl,
       },
     })
   }

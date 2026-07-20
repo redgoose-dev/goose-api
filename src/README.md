@@ -39,3 +39,21 @@ bun run dev:util uninstall -y
 ```shell
 bun run dev:util reset-password
 ```
+
+### 캐시 정리
+
+변환된 이미지 캐시와 이전 형식의 쿼리별 JSON 캐시를 정리합니다. 코드별 기본 메타데이터 JSON은 삭제하지 않습니다.
+
+```shell
+# 삭제 대상만 확인
+bun run dev:util clean-cache --days 30 --dry-run
+
+# 실제 삭제
+bun run dev:util clean-cache --days 30 --execute
+```
+
+Docker Compose에서는 maintenance profile을 사용합니다.
+
+```shell
+docker compose --profile maintenance run --rm --no-deps goose-api-cache-cleanup
+```

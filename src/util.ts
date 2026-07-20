@@ -5,6 +5,7 @@ import { PROVIDER_CODE } from '@/classes/provider'
 import ProviderPassword from '@/classes/provider/Password'
 import { prompt, message } from '@/libs/cli'
 import { verifyEmail, verifyId } from '@/libs/verify'
+import * as fileHelper from '@/routes/file/__helper'
 
 /**
  * Command Guide
@@ -12,6 +13,7 @@ import { verifyEmail, verifyId } from '@/libs/verify'
  * - install: `bun run dev:util install --id goose --name GOOSE --password 1234`
  * - uninstall: `bun run dev:util uninstall`
  * - reset-password: `bun run dev:util reset-password`
+ * - clean-cache: `bun run dev:util clean-cache --days 30 --dry-run`
  */
 
 const { SERVICE_NAME, PATH_DATA }: ZZ = Bun.env
@@ -20,6 +22,7 @@ const METHOD = {
   INSTALL: 'install',
   UNINSTALL: 'uninstall',
   RESET_PASSWORD: 'reset-password',
+  CLEAN_CACHE: 'clean-cache',
 }
 const paths = {
   data: PATH_DATA,
@@ -249,6 +252,35 @@ switch (argv._[0])
     })
     if (db) db.close()
     exit('비밀번호 재설정 완료.', false)
+    break
+  case METHOD.CLEAN_CACHE:
+    message('start', `Starting cache cleanup ${SERVICE_NAME}!`)
+    {
+      const maxAgeDays = Number(argv.days ?? 30)
+      const dryRun = !argv.execute
+      const result = await fileHelper.cleanupCache({
+        maxAgeDays,
+        dryRun,
+      })
+      message('run', `캐시 파일 ${result.scanned}개를 검사했습니다.`)
+      if (dryRun)
+      {
+        console.log(`삭제 예정: ${result.candidates.length}개`)
+        for (const file of result.candidates.slice(0, 20))
+        {
+          console.log(`- ${file}`)
+        }
+        if (result.candidates.length > 20)
+        {
+          console.log(`... 외 ${result.candidates.length - 20}개`)
+        }
+      }
+      else
+      {
+        message('run', `캐시 파일 ${result.deleted}개를 삭제했습니다.`)
+      }
+      exit(dryRun ? '캐시 정리 대상 확인을 완료했습니다.' : '캐시 정리를 완료했습니다.', false)
+    }
     break
   default:
     exit('메서드가 없습니다.', true)

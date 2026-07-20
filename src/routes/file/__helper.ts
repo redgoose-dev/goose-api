@@ -1,3 +1,4 @@
+import { rename, stat } from 'node:fs/promises'
 import DB, { db } from '@/classes/DB'
 import { PATHS } from '@/libs/assets'
 import { createDirectory, deleteFile } from '@/libs/file'
@@ -120,28 +121,50 @@ export function getImageOptions(_w?: number, _h?: number, _t?: string, _q?: numb
 {
   const minSize = 50
   const minQuality = 0
-  if (!((_w && _w > minSize) || (_h && _h > minSize))) return undefined
+  const width = _w && _w > minSize ? _w : undefined
+  const height = _h && _h > minSize ? _h : undefined
+  if (!(width || height)) return undefined
+
+  // 실제 변환에 사용되는 기본값까지 캐시 키에 포함하여
+  // `t=contain`/생략, `q=90`/생략이 서로 다른 캐시를 만들지 않도록 한다.
+  const type = _t || 'contain'
+  const quality = _q && _q > minQuality ? _q : 90
   const arr: string[] = []
-  if (_w && _w > minSize) arr.push(`w=${_w}`)
-  if (_h && _h > minSize) arr.push(`h=${_h}`)
-  if (_t) arr.push(`t=${_t}`)
-  if (_q && _q > minQuality) arr.push(`q=${_q}`)
+  if (width) arr.push(`w=${width}`)
+  if (height) arr.push(`h=${height}`)
+  arr.push(`t=${type}`)
+  arr.push(`q=${quality}`)
   return {
     query: arr.length > 0 ? arr.join('&') : undefined,
-    object: { w: _w, h: _h, t: _t, q: _q },
+    object: { w: width, h: height, t: type, q: quality },
   }
 }
 
-export async function getCache(code: string, options?: ZZ)
+export function getCache(code: string)
 {
-  const _filename = options?.query ? `${code}__${options.query}.json` : `${code}.json`
-  const _path = `${PATHS.CACHE}/json/${_filename}`
+  const _path = `${PATHS.CACHE}/json/${code}.json`
   return Bun.file(_path)
+}
+
+async function writeAtomically(path: string, data: string | Uint8Array)
+{
+  const temporaryPath = `${path}.${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`
+  try
+  {
+    await Bun.write(temporaryPath, data)
+    await rename(temporaryPath, path)
+  }
+  catch (_e)
+  {
+    try { await deleteFile(temporaryPath) } catch {}
+    throw _e
+  }
 }
 
 export async function createCache(file: Bun.BunFile, data: ZZ)
 {
-  await file.write(JSON.stringify(data, null, 2))
+  // 메타데이터는 작으므로 불필요한 공백을 제거한다.
+  await writeAtomically(file.name as string, JSON.stringify(data))
 }
 
 /**
@@ -154,13 +177,14 @@ export async function resizeImage(op: ZZ = {})
   const dirName = path.split(`${PATHS.UPLOAD}/`)[1].split('/')[0]
   // set destination path
   let destPath = `${PATHS.CACHE}/${dirName}/${code}__${imageOptions.query}`
-  let _buffer = await convertPathToBuffer(destPath)
-  if (_buffer)
+  const destFile = Bun.file(destPath)
+  if (save && await destFile.exists())
   {
     return {
       path: destPath,
-      buffer: _buffer,
-      mime: mime,
+      // resizeImage()은 항상 WebP로 저장한다.
+      mime: 'image/webp',
+      cachePath: destPath,
     }
   }
   else
@@ -197,28 +221,14 @@ export async function resizeImage(op: ZZ = {})
     if (save)
     {
       await createDirectory(destPath)
-      await Bun.write(destPath, _buffer)
+      await writeAtomically(destPath, _buffer)
     }
     return {
-      cachePath: save ? destPath : 'buffer',
+      cachePath: save ? destPath : undefined,
       buffer: _buffer,
       mime: _mime,
     }
   }
-}
-
-export async function convertPathToBuffer(path: string): Promise<Buffer | null>
-{
-  const file = Bun.file(path)
-  if (!await file.exists()) return null
-  return Buffer.from(await file.arrayBuffer())
-}
-
-export function remakeFilename(path: string, ext: string): string
-{
-  if (!path) return ''
-  const base = path.substring(0, path.lastIndexOf('.'))
-  return `${base}.${ext}`
 }
 
 export async function remove({ module, module_srl }: ZZ)
@@ -253,5 +263,89 @@ export async function deleteCache(code: string)
   for await (const file of glob.scan('.'))
   {
     await deleteFile(file)
+  }
+}
+
+export type CleanupCacheOptions = {
+  maxAgeDays?: number
+  dryRun?: boolean
+}
+
+export type CleanupCacheResult = {
+  scanned: number
+  candidates: string[]
+  deleted: number
+}
+
+/**
+ * 오래된 변환 캐시와 현재 사용하지 않는 쿼리별 JSON 캐시를 정리한다.
+ * 코드별 기본 JSON은 DB 조회를 줄이는 메타데이터이므로 보존한다.
+ */
+export async function cleanupCache(op: CleanupCacheOptions = {}): Promise<CleanupCacheResult>
+{
+  const maxAgeDays = op.maxAgeDays ?? 30
+  const dryRun = op.dryRun ?? true
+  if (!Number.isFinite(maxAgeDays) || maxAgeDays <= 0)
+  {
+    throw new Error('maxAgeDays must be greater than 0.')
+  }
+
+  const expiredAt = Date.now() - (maxAgeDays * 24 * 60 * 60 * 1000)
+  const temporaryExpiredAt = Date.now() - (24 * 60 * 60 * 1000)
+  const glob = new Bun.Glob(`${PATHS.CACHE}/**/*`)
+  const candidates: string[] = []
+  let scanned = 0
+
+  for await (const file of glob.scan('.'))
+  {
+    let information
+    try
+    {
+      information = await stat(file)
+    }
+    catch
+    {
+      continue
+    }
+    if (!information.isFile()) continue
+    scanned++
+
+    const normalizedPath = file.replaceAll('\\', '/')
+    const filename = normalizedPath.split('/').pop() || ''
+    const isLegacyQueryJson = normalizedPath.includes('/json/')
+      && filename.includes('__')
+      && filename.endsWith('.json')
+    const isVariant = filename.includes('__')
+      && !filename.endsWith('.json')
+      && !filename.endsWith('.tmp')
+    const isTemporary = filename.endsWith('.tmp')
+    const isExpired = isLegacyQueryJson
+      || (isVariant && information.mtimeMs < expiredAt)
+      || (isTemporary && information.mtimeMs < temporaryExpiredAt)
+
+    if (isExpired) candidates.push(file)
+  }
+
+  let deleted = 0
+  if (!dryRun)
+  {
+    for (const file of candidates)
+    {
+      try
+      {
+        await deleteFile(file)
+        deleted++
+      }
+      catch
+      {
+        // 다른 프로세스가 먼저 삭제한 경우에는 계속 진행한다.
+      }
+    }
+  }
+
+  return {
+    scanned,
+    candidates,
+    deleted,
   }
 }
