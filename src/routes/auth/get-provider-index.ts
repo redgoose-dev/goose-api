@@ -31,13 +31,13 @@ export default async function getProviderIndex({ query }: GetProviderIndexParams
       else
       {
         const __provider__ = getProvider(code)
-        return {
+        return __provider__.useProvider() ? {
           code,
           account: null,
           auth_url: __provider__.getAuthorizeLink(code, query.redirect_uri)
-        }
+        } : false
       }
-    })
+    }).filter(Boolean)
 
     return {
       total: index.length,

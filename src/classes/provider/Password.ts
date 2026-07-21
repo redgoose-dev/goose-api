@@ -27,6 +27,11 @@ class ProviderPassword extends Provider {
     return hashSync(pw, salt)
   }
 
+  public useProvider(): boolean
+  {
+    return Boolean(this.accessSecret && this.refreshSecret)
+  }
+
   public verifyPassword(password: string, hashedPassword: string): boolean
   {
     return compareSync(String(password), hashedPassword)

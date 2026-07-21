@@ -48,6 +48,11 @@ export default class ProviderDiscord extends Provider {
     return userId === userData.id
   }
 
+  public useProvider(): boolean
+  {
+    return Boolean(this.clientId && this.clientSecret)
+  }
+
   public createAuthorizeUrl(state: string): string
   {
     const _query = parseQueryString({
