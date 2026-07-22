@@ -184,7 +184,7 @@ const logging = logixlysia({
       translateTime: 'yyyy-mm-dd HH:MM:ss.SSS',
     },
     logFilter: {
-      level: IS_DEV ? [ 'DEBUG', 'INFO', 'ERROR', 'WARNING' ] : [ 'WARNING', 'ERROR' ],
+      level: IS_DEV ? [ 'DEBUG', 'INFO', 'ERROR', 'WARNING' ] : [ 'INFO', 'WARNING', 'ERROR' ],
       // status: IS_DEV ? undefined : [ 500, 501, 502, 503, 504 ],
     },
     useColors: true,
