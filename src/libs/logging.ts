@@ -1,25 +1,44 @@
 import logixlysia from 'logixlysia'
-import { IS_DEV, getBool } from '@/libs/assets'
+import { IS_DEV, PATHS, getBool } from '@/libs/assets'
+import { createRecordFileTransport } from '@/libs/logging-file'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 import type { Transport } from 'logixlysia'
 
 /**
- * TODO: 2026-05-23
- * 일단 기초적인 설정은 해두었고, 어떤 기능이 있는지 기초적인 수준에서는 파악했다.
- * 하지만 개선해야 할 부분은 많이 보이며 나중에 개선해야 할것이다.
- * - 오류가 났을때 좀 더 상세한 내용이 출력되어야 한다.
- * - 일단 파일로 저장하는 기능은 꺼두었지만 나중에 파일로 저장하는 기능을 넣어야 할것이다. 파일로 저장되는 오류 로그는 오류 코드와 함께 좀더 자세하게 기록되어야 할것이다.
- * - 시작부터 로그 기능에 붙집힐 순 없기 때문에 일단 엔드포인트 개발하면서 아이디어들을 축척해야할것이다.
+ * # GUIDES
+ * - LEVEL: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR'
+ *
+ * 콘솔 출력은 consoleTransport가, JSONL 파일 기록은 recordFileTransport가 담당한다.
+ * 파일 생성, 회전, 보관 정책의 구현은 logging-file.ts에서 관리한다.
  */
+
+const { SERVICE_NAME, LOG_RECORD, LOG_PRINT }: ENV = Bun.env
+
+function getPositiveNumber(value: string | undefined, fallback: number): number
+{
+  const parsedValue = Number(value)
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallback
+}
 
 /**
- * # GUIDES
+ * 파일 로그 정책
  *
- * - LEVEL: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR'
+ * 환경변수를 지정하지 않으면 아래 기본값을 사용한다.
+ * - LOG_RECORD_MAX_SIZE_MB: 파일 하나의 최대 크기(MB), 기본 10MB
+ * - LOG_RECORD_RETENTION_DAYS: 로그 보관 기간(일), 기본 7일
+ * - LOG_RECORD_MAX_FILES_PER_LEVEL: 레벨별 최대 파일 수, 기본 30개
  */
-
-const { SERVICE_NAME, PATH_DATA, LOG_RECORD, LOG_PRINT }: ENV = Bun.env
+const recordFilePolicy = {
+  directory: `${PATHS.DATA}/logs`,
+  maxFileSizeBytes: Math.floor(
+    getPositiveNumber(Bun.env.LOG_RECORD_MAX_SIZE_MB, 10) * 1024 * 1024,
+  ),
+  retentionDays: getPositiveNumber(Bun.env.LOG_RECORD_RETENTION_DAYS, 7),
+  maxFilesPerLevel: Math.floor(
+    getPositiveNumber(Bun.env.LOG_RECORD_MAX_FILES_PER_LEVEL, 30),
+  ),
+}
 
 function getLevel(level: string): string
 {
@@ -66,7 +85,8 @@ function getMessage(code: number, msg: string): string
   {
     case 422:
       const obj = parseJSON(msg)
-      return `${obj?.message || msg}`
+      // validation 원문에는 schema, 입력값, 전체 오류 목록이 포함되므로 대표 메시지만 출력한다.
+      return `${obj?.message || obj?.summary || 'Request validation failed.'}`
     default:
       return msg || ''
   }
@@ -116,6 +136,8 @@ const consoleTransport: Transport = {
           case 204:
           case 401:
           case 404:
+          case 422:
+            // validation 오류의 stack에는 전체 schema와 입력값이 중복되어 출력된다.
             break
           default:
             console.error(meta.error.stack)
@@ -128,12 +150,15 @@ const consoleTransport: Transport = {
 }
 
 const recordFileTransport: Transport = {
-  async log(level, message, meta = {})
+  log(level, message, meta = {})
   {
     if (!getBool(LOG_RECORD)) return
-    // TODO: 파일로 기록하기
-    console.warn('logixlysia.recordFile()', )
-  }
+    const fileTransport = createRecordFileTransport({
+      policy: recordFilePolicy,
+      service: SERVICE_NAME,
+    })
+    return fileTransport.log(level, message, meta)
+  },
 }
 
 const logging = logixlysia({
@@ -153,16 +178,6 @@ const logging = logixlysia({
     slowThreshold: 500,
     verySlowThreshold: 1000,
     // requestId: true,
-
-    // File
-    logFilePath: `${PATH_DATA}/logs/access.log`,
-    logRotation: {
-      maxSize: '10m',
-      interval: '1d',
-      maxFiles: '7d',
-      compress: true,
-      compression: 'gzip',
-    },
 
     // Output
     timestamp: {
@@ -185,12 +200,6 @@ const logging = logixlysia({
       consoleTransport,
       recordFileTransport,
     ],
-
-    // pino
-    pino: {
-      level: 'INFO',
-      base: { service: 'PIIIIINNNNNOOOOO', },
-    },
   },
 })
 

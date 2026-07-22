@@ -1,8 +1,8 @@
 {
   "name": "goose-api",
-  "version": "2.1.4",
-  "description": "Goose CMS API service",
-  "author": "redgoose <scripter@me.com>",
+  "version": "2.1.5",
+  "description": "GoOSe API service",
+  "author": "GoOSe <scripter@me.com>",
   "module": "src/main.ts",
   "type": "module",
   "license": "MIT",

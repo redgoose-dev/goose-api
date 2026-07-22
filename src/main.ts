@@ -31,7 +31,7 @@ app.onError(onErrorBefore)
 app.use(logging)
 
 // set hooks
-app.onBeforeHandle({ as: 'global' }, onRequest)
+app.onRequest(onRequest)
 app.onAfterHandle({ as: 'global' }, onResponse)
 app.onError(onErrorAfter)
 

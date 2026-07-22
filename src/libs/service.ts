@@ -3,10 +3,9 @@ import { DEFAULT_HEADERS, HEADERS_KEYS } from './assets'
 import { getElapsedTime, setHeaders } from './server'
 import { filteringObject } from '@/libs/objects'
 
-export function onRequest({ request, set, store }: any)
+export function onRequest({ request }: any)
 {
-  // set error code
-  request.errorCode = createCode(12)
+  request.errorCode ??= createCode(12)
 }
 
 export function onResponse({ set, store }: any)
@@ -26,10 +25,12 @@ export function onErrorBefore({ request, set, store, error }: any)
   // set error code
   if (![ 204, 403, 404 ].includes(error.status))
   {
-    set.headers[HEADERS_KEYS.ERROR_CODE] = request.errorCode
+    // onRequest 자체에서 오류가 발생한 경우에도 오류 코드가 누락되지 않도록 보완한다.
+    const errorCode = request.errorCode ??= createCode(12)
+    set.headers[HEADERS_KEYS.ERROR_CODE] = errorCode
     store.logger.mergeContext(request, filteringObject({
-      code: request.errorCode,
-      errorMessage: error.errorMessage,
+      error_code: errorCode,
+      error_message: error.errorMessage,
     }))
   }
 }
