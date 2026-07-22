@@ -1,0 +1,38 @@
+import { t } from 'elysia'
+import type { UnwrapSchema } from 'elysia'
+import { PATTERN_MOD } from '@/libs/validation'
+
+export const AppModel = {
+
+  getIndexQuery: t.Object({
+    code: t.Optional(t.String()),
+    name: t.Optional(t.String()),
+    field: t.Optional(t.String()),
+    page: t.Optional(t.Numeric({ minimum: 0 })),
+    size: t.Optional(t.Numeric({ minimum: 1 })),
+    order: t.Optional(t.String()),
+    mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
+  }),
+
+  getItemQuery: t.Object({
+    field: t.Optional(t.String()),
+    mod: t.Optional(t.String({ pattern: PATTERN_MOD })),
+  }),
+
+  putItemBody: t.Object({
+    code: t.String(),
+    name: t.String(),
+    description: t.Optional(t.String()),
+  }),
+
+  patchItemBody: t.Object({
+    code: t.Optional(t.String()),
+    name: t.Optional(t.String()),
+    description: t.Optional(t.String()),
+  }),
+
+} as const
+
+export type AppModel = {
+  [k in keyof typeof AppModel]: UnwrapSchema<typeof AppModel[k]>
+}

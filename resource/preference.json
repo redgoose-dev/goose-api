@@ -1,6 +1,13 @@
 {
-  "article.pageSize": 24,
-  "article.pageRange": 10,
-  "file.limitSize": 20971520,
-  "file.limitCount": 100
+  "app.index.size": 36,
+  "article.index.size": 36,
+  "category.index.size": 36,
+  "checklist.index.size": 36,
+  "comment.index.size": 36,
+  "file.index.size": 36,
+  "file.limit.size": 20971520,
+  "file.limit.count": 256,
+  "json.index.size": 36,
+  "nest.index.size": 36,
+  "tag.index.size": 36
 }

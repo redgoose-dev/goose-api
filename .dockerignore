@@ -1,13 +1,18 @@
-pycache*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.git
-.gitignore
-.DS_Store
+# directories
+.idea/
+.git/
+.vscode/
+node_modules/
+dist/
+data/
+scripts/
+tests/
 
-cmd.sh
+# files
+.DS_Store
+.gitignore
+*.md
+.env.*
+Dockerfile
 docker-compose.yml
-podman-compose.yml
+cmd.sh

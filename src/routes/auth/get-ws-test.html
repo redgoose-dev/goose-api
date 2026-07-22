@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAuth Test</title>
+<style>
+h1 { font-weight: 900; }
+.nav { display: flex; justify-content: center; gap: 4px 12px;padding: 16px; }
+#confirm-link { display: grid; place-content: center; gap: 4px 12px; padding: 16px; }
+#confirm-link a { display: block; }
+#status { padding: 16px; white-space: normal; border: 1px solid silver; }
+</style>
+</head>
+<body>
+<main>
+  <h1>OAUTH TEST TOOL</h1>
+  <hr>
+  <nav class="nav">
+    <button onclick="startAuthDiscord()">인증/디스코드</button>
+    <button onclick="startAuthGithub()">인증/깃허브</button>
+    <button onclick="startAuthGoogle()">인증/구글</button>
+  </nav>
+  <hr>
+  <nav id="confirm-link"></nav>
+  <hr>
+  <pre id="status"></pre>
+</main>
+<script defer>
+const URL_WEBSOCKET = '/auth/ws/authorize/'
+const REDIRECT_HOST = 'http://localhost:3000/'
+const ACCESS_CODE = 'g1uV-iPIWmdU-Q563MJO6Wpgd-EJt9ks'
+
+const $status = document.getElementById('status')
+const $confirmLink = document.getElementById('confirm-link')
+
+function makeAuthLink(path, name)
+{
+  const link = document.createElement('a')
+  link.href = path
+  link.textContent = `${name} 인증하기`
+  link.target = '_blank'
+  $confirmLink.innerHTML = ''
+  $confirmLink.appendChild(link)
+}
+
+function startAuthDiscord()
+{
+  const ws = new WebSocket(URL_WEBSOCKET)
+  let session = ''
+  ws.addEventListener('open', () => {
+    printMessage('🌻 디스코드 웹소켓 연결시작')
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    console.log('🌻 서버로부터 메시지 받기', data)
+    switch (data.mode)
+    {
+      case 'AUTH_OPEN':
+        session = data.session
+        ws.send(JSON.stringify({
+          mode: 'AUTH_START',
+          session,
+          provider: 'discord',
+          redirect_uri: REDIRECT_HOST,
+          access_token: ACCESS_CODE, // 엑세스 토큰
+        }))
+        break
+      case 'AUTH_LINK':
+        makeAuthLink(data.url, '디스코드')
+        break
+      case 'AUTH_ERROR':
+        printMessage('🐙 [디스코드] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
+        break
+      case 'AUTH_COMPLETE':
+        printMessage('🐙 [디스코드] 인증 성공했어요~')
+        printMessage(`- 프로바이더 아이디: ${data['provider']}`)
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (_e) => {
+    printMessage('🌻 디스코드 웹소켓 연결종료')
+  })
+}
+
+function startAuthGithub()
+{
+  const ws = new WebSocket(URL_WEBSOCKET)
+  let session = ''
+  ws.addEventListener('open', () => {
+    printMessage('🌻 깃허브 웹소켓 연결시작')
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    console.log('🌻 서버로부터 메시지 받기', data)
+    switch (data.mode)
+    {
+      case 'AUTH_OPEN':
+        session = data.session
+        ws.send(JSON.stringify({
+          mode: 'AUTH_START',
+          session,
+          provider: 'github',
+          redirect_uri: REDIRECT_HOST,
+          access_token: ACCESS_CODE, // 엑세스 토큰
+        }))
+        break
+      case 'AUTH_LINK':
+        makeAuthLink(data.url, '깃허브')
+        break
+      case 'AUTH_ERROR':
+        printMessage('🐙 [깃허브] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
+        break
+      case 'AUTH_COMPLETE':
+        printMessage('🐙 [깃허브] 인증 성공했어요~')
+        printMessage(`- 프로바이더 아이디: ${data['provider']}`)
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (_e) => {
+    printMessage('🌻 깃허브 웹소켓 연결종료')
+  })
+}
+
+function startAuthGoogle()
+{
+  const ws = new WebSocket(URL_WEBSOCKET)
+  let session = ''
+  ws.addEventListener('open', () => {
+    printMessage('🌻 구글 웹소켓 연결시작')
+  })
+  ws.addEventListener('message', (e) => {
+    const data = JSON.parse(e.data)
+    console.log('🌻 서버로부터 메시지 받기', data)
+    switch (data.mode)
+    {
+      case 'AUTH_OPEN':
+        session = data.session
+        ws.send(JSON.stringify({
+          mode: 'AUTH_START',
+          session,
+          provider: 'google',
+          redirect_uri: REDIRECT_HOST,
+          access_token: ACCESS_CODE, // 엑세스 토큰
+        }))
+        break
+      case 'AUTH_LINK':
+        makeAuthLink(data.url, '구글')
+        break
+      case 'AUTH_ERROR':
+        printMessage('🐙 [구글] 인증 실패했어요~')
+        printMessage(`- 서버상태: ${data['status_code']}`)
+        printMessage(`- 에러코드: ${data['error_code']}`)
+        printMessage(`- 에러메시지: ${data['message']}`)
+        break
+      case 'AUTH_COMPLETE':
+        printMessage('🐙 [구글] 인증 성공했어요~')
+        printMessage(`- 프로바이더 아이디: ${data['provider']}`)
+        printMessage(`- 엑세스 토큰: ${data['access']}`)
+        printMessage(`- 리프레시 토큰: ${data['refresh']}`)
+        printMessage(`- 만료시간: ${data['expires']}`)
+        break
+    }
+  })
+  ws.addEventListener('close', (e) => {
+    printMessage('🌻 구글 웹소켓 연결종료')
+  })
+}
+
+function printMessage(msg)
+{
+  $status.innerText = $status.innerText + msg + '\n'
+}
+</script>
+</body>
+</html>

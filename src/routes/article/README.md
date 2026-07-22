@@ -1,0 +1,177 @@
+# Article
+
+가장 기초적인 요소이며 컨텐츠 데이터입니다.
+
+
+## put_item.ts
+
+새로운 `ready` 모드의 아티클을 만듭니다.  
+이미 `ready` 모드의 데이터가 존재한다면 그 데이터의 데이터를 반환합니다.
+
+### Request
+
+```
+PUT /article/
+
+@headers {str} Authorization / [required] 액세스 토큰
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+@content {dict} data / 아티클 데이터
+```
+
+
+## patch_item.ts
+
+아티클 데이터를 수정합니다.
+
+### Request
+
+```
+PATCH /article/{srl:int}/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@param {int} srl / [required] 아티클 srl 번호
+@data {int} app / 앱 srl 번호
+@data {int} nest / 둥지 srl 번호
+@data {int} category / 카테고리 srl 번호
+@data {str} title / 제목
+@data {str} content / 내용. 마크다운 형식으로 작성
+@data {str} json / JSON 데이터
+@data {str} tag / 태그 / ex) tag1,tag2,tag3
+@data {str} mode / 모드 (public,private)
+@data {str} regdate / 커스텀 등록일자 ex) 2023-10-01
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+```
+
+
+## get_index.ts
+
+아티클의 목록을 조회합니다.
+
+### Request
+
+```
+GET /article/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@query {int} app / 앱 srl 번호
+@query {int} nest / 둥지 srl 번호
+@query {int} category / 카테고리 srl 번호
+@query {str} q / 제목과 내용의 키워드 검색
+@query {str} mode / 모드 (public,private)
+@query {str} duration / 기간 / ex) {regdate|created_at|updated_at},{1day|1week|1month|1year}
+@query {str} random / 랜덤의 숫자 시드값. 날짜 형식 권장(YYYYMMDD) ex) 20240422
+@query {str} fields / 조회할 필드
+@query {int} page / 페이지 번호
+@query {int} size / 페이지 당 데이터 수
+@query {str} order='srl desc' / 정렬 기준
+@query {bool} unlimited=False / 무제한 조회 여부 (1=무제한, 0=제한)
+@query {str} tag / 태그 / ex) tag1,tag2,tag3
+@query {str} mod / MOD (app,nest,category,tag,file)
+```
+
+- `duration`: 선택한 날짜 필드가 오늘 기준 지정 기간보다 오래된 데이터 조회. 예: `duration=regdate,1year`
+- `random`: 데이터 순서를 섞습니다. 같은 시드값은 같은 순서를 보장합니다. 날짜 형식의 시드값을 권장합니다. ex) 20240422
+
+### Response
+
+```
+@content {str} message / 메시지
+@content {int} data.total / 전체 데이터 수
+@content {list} data.index / 데이터 목록
+```
+
+
+## get_item.ts
+
+아티클의 상세 정보를 조회합니다.
+
+### Request
+
+```
+GET /article/{srl:int}/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@param {int} srl / [required] 아티클 srl 번호
+@query {str} fields / 조회할 필드
+@query {int} app / 앱 srl 번호
+@query {str} mod / MOD (up-hit,up-star,count-file,app)
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+@content {int} data / 데이터
+```
+
+
+## delete_item.ts
+
+아티클을 삭제합니다. 삭제할 아티클에 속한 파일, 코멘트, 태그 데이터들도 함께 삭제합니다.
+
+### Request
+
+```
+DELETE /article/{srl:int}/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@param {int} srl / [required] 아티클 srl 번호
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+```
+
+
+## patch-change-nest.ts
+
+아티클의 앱, 둥지의 srl 번호를 변경합니다.
+
+### Request
+
+```
+PATCH /article/{srl:int}/change/
+
+@headers {str} Authorization / [required] 액세스 토큰
+@param {int} srl / 아티클 srl 번호
+@data {int} nest / 둥지 srl 번호
+```
+
+### Response
+
+```
+@content {str} message / 메시지
+```
+
+
+## patch_up.ts
+
+조회수(hit), 좋아요(star) 수를 증가시킵니다.
+
+### Request
+
+```
+PATCH /article/{srl:int}/up/
+
+@param {int} srl / 아티클 srl 번호
+@data {str} mode / 필드이름 / ex) hit,star
+@data {number} count / 필드가 올라가는 수
+```
+
+### Response
+
+```
+@content {str} / 메시지
+```

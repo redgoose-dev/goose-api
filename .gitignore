@@ -1,16 +1,9 @@
-# directories
-.idea/
-.run/
-.venv/
+# Directories
+dist/
 data/
-.AppleDouble/
-__pycache__/
 scripts/
+tests/
 
 # files
-.DS_Store
-._.DS_Store
-.env.*
 cmd.sh
 docker-compose.yml
-podman-compose.yml
