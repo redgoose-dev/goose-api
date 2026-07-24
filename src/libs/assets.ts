@@ -11,6 +11,12 @@ export const PATHS = {
 }
 export type Paths = typeof PATHS[keyof typeof PATHS]
 
+export const LOG_RECORD_DB_POLICY = {
+  BATCH_SIZE: 50,
+  FLUSH_INTERVAL_MS: 1000,
+  MAX_QUEUE_SIZE: 5000,
+} as const
+
 export const PATH_UPLOAD = {
   COVER: 'cover',
   ORIGIN: 'origin',

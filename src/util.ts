@@ -41,7 +41,6 @@ async function checkInstall(): Promise<boolean>
     exists(`${paths.data}/upload/origin`),
     exists(`${paths.data}/upload/cover`),
     exists(`${paths.data}/cache`),
-    exists(`${paths.data}/logs`),
     exists(`${paths.data}/db.sqlite`),
     exists(`${paths.data}/preference.json`),
   ])
@@ -55,7 +54,6 @@ async function createAssets()
     `${paths.data}/upload/origin`,
     `${paths.data}/upload/cover`,
     `${paths.data}/cache`,
-    `${paths.data}/logs`,
   ].map(path => {
     return mkdir(path, { recursive: true })
   }))

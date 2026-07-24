@@ -1,6 +1,6 @@
 import logixlysia from 'logixlysia'
-import { IS_DEV, PATHS, getBool } from '@/libs/assets'
-import { createRecordFileTransport } from '@/libs/logging-file'
+import { IS_DEV, LOG_RECORD_DB_POLICY, PATHS, getBool } from '@/libs/assets'
+import { createRecordDatabaseTransport } from '@/libs/logging/database'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 import type { Transport } from 'logixlysia'
@@ -9,8 +9,8 @@ import type { Transport } from 'logixlysia'
  * # GUIDES
  * - LEVEL: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR'
  *
- * 콘솔 출력은 consoleTransport가, JSONL 파일 기록은 recordFileTransport가 담당한다.
- * 파일 생성, 회전, 보관 정책의 구현은 logging-file.ts에서 관리한다.
+ * 콘솔 출력은 consoleTransport가, SQLite 기록은 recordDBTransport가 담당한다.
+ * 기록 대기열은 logging/database.ts가, 연결과 스키마는 DB_Log.ts가 관리한다.
  */
 
 const { SERVICE_NAME, LOG_RECORD, LOG_PRINT }: ENV = Bun.env
@@ -22,22 +22,17 @@ function getPositiveNumber(value: string | undefined, fallback: number): number
 }
 
 /**
- * 파일 로그 정책
+ * SQLite 로그 정책
  *
- * 환경변수를 지정하지 않으면 아래 기본값을 사용한다.
- * - LOG_RECORD_MAX_SIZE_MB: 파일 하나의 최대 크기(MB), 기본 10MB
- * - LOG_RECORD_RETENTION_DAYS: 로그 보관 기간(일), 기본 7일
- * - LOG_RECORD_MAX_FILES_PER_LEVEL: 레벨별 최대 파일 수, 기본 30개
+ * 데이터베이스는 첫 기록이 발생할 때 `${PATHS.DATA}/log.sqlite`에 생성한다.
+ * 정책 값은 assets.ts의 LOG_RECORD_DB_POLICY에서 관리한다.
  */
-const recordFilePolicy = {
-  directory: `${PATHS.DATA}/logs`,
-  maxFileSizeBytes: Math.floor(
-    getPositiveNumber(Bun.env.LOG_RECORD_MAX_SIZE_MB, 10) * 1024 * 1024,
-  ),
+const recordDatabasePolicy = {
+  path: `${PATHS.DATA}/log.sqlite`,
   retentionDays: getPositiveNumber(Bun.env.LOG_RECORD_RETENTION_DAYS, 7),
-  maxFilesPerLevel: Math.floor(
-    getPositiveNumber(Bun.env.LOG_RECORD_MAX_FILES_PER_LEVEL, 30),
-  ),
+  batchSize: LOG_RECORD_DB_POLICY.BATCH_SIZE,
+  flushIntervalMs: LOG_RECORD_DB_POLICY.FLUSH_INTERVAL_MS,
+  maxQueueSize: LOG_RECORD_DB_POLICY.MAX_QUEUE_SIZE,
 }
 
 function getLevel(level: string): string
@@ -149,16 +144,25 @@ const consoleTransport: Transport = {
   },
 }
 
-const recordFileTransport: Transport = {
+const databaseTransport = createRecordDatabaseTransport({
+  policy: recordDatabasePolicy,
+})
+const recordDBTransport: Transport = {
   log(level, message, meta = {})
   {
     if (!getBool(LOG_RECORD)) return
-    const fileTransport = createRecordFileTransport({
-      policy: recordFilePolicy,
-      service: SERVICE_NAME,
-    })
-    return fileTransport.log(level, message, meta)
-  },
+    return databaseTransport.log(level, message, meta)
+  }
+}
+
+export async function flushLogging(): Promise<void>
+{
+  await databaseTransport.flush()
+}
+
+export async function closeLogging(): Promise<void>
+{
+  await databaseTransport.close()
 }
 
 const logging = logixlysia({
@@ -191,14 +195,14 @@ const logging = logixlysia({
     customLogFormat: `{now} {level} {service} {icon} {method} {pathname} {status} {statusText} || {duration}`,
     // 콘솔에서 로그 출력 안되게 하기
     disableInternalLogger: !getBool(LOG_PRINT),
-    // 파일로 로그 저장 안하게 하기
-    disableFileLogging: !getBool(LOG_RECORD),
+    // Logixlysia 내장 파일 기록은 사용하지 않는다.
+    disableFileLogging: true,
 
     // Transport
     useTransportsOnly: true,
     transports: [
       consoleTransport,
-      recordFileTransport,
+      recordDBTransport,
     ],
   },
 })

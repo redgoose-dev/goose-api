@@ -43,7 +43,6 @@ class Service<T extends ZZ = ZZ> {
       `${PATH_DATA}/upload/origin`,
       `${PATH_DATA}/upload/cover`,
       `${PATH_DATA}/cache`,
-      `${PATH_DATA}/logs`,
     ]
     for (const path of paths)
     {

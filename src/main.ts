@@ -2,7 +2,7 @@ import { Elysia } from 'elysia'
 import Service from '@/classes/Service'
 import { openServer } from '@/libs/server'
 import { onRequest, onResponse, onErrorBefore, onErrorAfter } from '@/libs/service'
-import logging from '@/libs/logging'
+import logging, { closeLogging } from '@/libs/logging'
 import * as routes from '@/routes'
 
 const { HOST, PORT } = Bun.env
@@ -50,6 +50,7 @@ app.use(routes.tag)
 app.use(routes.preference)
 app.use(routes.mix)
 app.use(routes.options)
+app.onStop(closeLogging)
 
 // set listen server
 app.listen({
