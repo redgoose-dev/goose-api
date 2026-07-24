@@ -3,7 +3,7 @@
 클라이언트 서비스를 구분하는 데이터를 관리합니다.
 
 
-## put_item.py
+## put_item.ts
 
 새로운 앱을 추가합니다.
 
@@ -26,7 +26,7 @@ PUT /app/
 ```
 
 
-## patch_item.py
+## patch_item.ts
 
 앱 데이터를 수정합니다.
 
@@ -49,7 +49,7 @@ PATCH /app/{srl:int}/
 ```
 
 
-## get_index.py
+## get_index.ts
 
 앱 데이터를 목록으로 조회합니다.
 
@@ -78,7 +78,7 @@ GET /app/
 ```
 
 
-## get_item.py
+## get_item.ts
 
 앱 데이터 상세 조회하기
 
@@ -101,7 +101,7 @@ GET /app/{srl:int}/
 ```
 
 
-## delete_item.py
+## delete_item.ts
 
 앱 데이터 삭제하기.  
 앱을 삭제하면 해당 앱에 속한 모든 데이터가 삭제됩니다. (둥지, 아티클)

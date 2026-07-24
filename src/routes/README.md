@@ -8,6 +8,7 @@
 - `/app`
 - `/article`
 - `/file`
+- `/log`
 
 ## Service 클래스 타입 적용
 
