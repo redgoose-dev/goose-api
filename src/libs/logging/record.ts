@@ -1,4 +1,5 @@
 import type { LogLevel } from 'logixlysia'
+import { normalizeLogLevel } from '@/libs/logging/level'
 
 const VALIDATION_TEXT_MAX_LENGTH = 500
 
@@ -176,7 +177,7 @@ export function createRecordLogEntry({
     : undefined
   return {
     timestamp: now.toISOString(),
-    level,
+    level: normalizeLogLevel(level, meta.status),
     message: validationCause?.message || validationCause?.summary || message || undefined,
     status: meta.status,
     duration_ms: getDuration(meta.beforeTime),

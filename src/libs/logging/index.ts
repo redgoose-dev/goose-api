@@ -2,6 +2,7 @@ import logixlysia from 'logixlysia'
 import { HEADERS_KEYS, IS_DEV, LOG_RECORD_DB_POLICY, PATHS, getBool } from '@/libs/assets'
 import { createRecordDatabaseTransport } from '@/libs/logging/database'
 import { isIgnoredLogRequest } from '@/libs/logging/ignore'
+import { normalizeLogLevel } from '@/libs/logging/level'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 import type { Transport } from 'logixlysia'
@@ -92,11 +93,12 @@ const consoleTransport: Transport = {
   {
     if (isIgnoredLogRequest(meta.request)) return
     if (!getBool(LOG_PRINT)) return
+    const normalizedLevel = normalizeLogLevel(level, meta.status)
     meta.context = meta.context ?? {}
     if (meta.context.raw)
     {
       let _color: any
-      switch (level)
+      switch (normalizedLevel)
       {
         case 'ERROR': _color = 'red'; break
         case 'WARNING': _color = 'yellow'; break
@@ -105,7 +107,7 @@ const consoleTransport: Transport = {
     }
     else
     {
-      const _level = getLevel(level)
+      const _level = getLevel(normalizedLevel)
       const _time = colorText(dateFormat(undefined, '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}.{ms}'), 'dark')
       const _method = `[${meta.request.method}]`
       const _url = colorText(getUrl(meta.request.url), 'blue')

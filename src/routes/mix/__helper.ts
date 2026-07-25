@@ -72,18 +72,11 @@ export function parseRequests(body: MixModel['postIndexBody'])
     const _method = item.method ? item.method.toLowerCase() : 'get'
     const _path = `${_method} ${item.url}`
     const _func = routeMap.get(_path)
-    if (_func)
-    {
-      result[item.key] = {
-        path: _path,
-        func: _func,
-        if: item.if ?? null,
-        params: { ...(item.params ?? {}) },
-      }
-    }
-    else
-    {
-      result[item.key] = null
+    result[item.key] = {
+      path: _path,
+      func: _func,
+      if: item.if ?? null,
+      params: { ...(item.params ?? {}) },
     }
   }
   return result

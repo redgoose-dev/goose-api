@@ -141,6 +141,13 @@ export default class DB_Log {
       db.exec('ALTER TABLE log DROP COLUMN error_code')
     }
 
+    // 정상적인 클라이언트 오류(4xx)는 서버 오류 집계에서 제외한다.
+    db.exec(`
+      UPDATE log
+      SET level = 'WARNING'
+      WHERE level = 'ERROR' AND status BETWEEN 400 AND 499
+    `)
+
     const insert = db.prepare(`
       INSERT INTO log (
         timestamp,
