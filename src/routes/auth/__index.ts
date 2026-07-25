@@ -51,7 +51,10 @@ route.post('/checkin/', async (ctx) => {
 // 🌵 리프레시 토큰으로 엑세스 토큰 재발급받기
 import { default as postRenew } from './post-renew'
 route.post('/renew/', async (ctx) => {
-  const token = checkingToken(ctx, { checkExpires: false })
+  const token = checkingToken(undefined, {
+    checkExpires: false,
+    refreshToken: ctx.body.refresh,
+  })
   const data = await postRenew({
     token,
     refreshToken: ctx.body.refresh,

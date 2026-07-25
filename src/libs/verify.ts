@@ -24,6 +24,7 @@ export function verifyId(str: string): boolean
  */
 type CheckingTokenOptions = {
   accessToken?: string // 우선으로 사용되는 엑세스 토큰
+  refreshToken?: string // 액세스 토큰 없이 사용하는 리프레시 토큰
   checkExpires: boolean // 만료시간 검사여부
   usePublic?: boolean // 공개용 토큰 사용 여부
   useThrow?: boolean // 오류 비활성 여부
@@ -49,15 +50,12 @@ export function checkingToken(ctx: any, op: Partial<CheckingTokenOptions> = {}):
   const _op = { ...defaultCheckingToken, ...op }
   try
   {
-    // get access token
-    const _accessToken = _op.accessToken || getAccessToken(ctx)
-    if (!_accessToken) throw new ServiceError('Token is invalid.', { status: 401 })
     // get token data
-    const _token = db.getData({
+    const _token = (_op.refreshToken !== undefined) ? db.getData({
       table: DB.TABLE.TOKEN,
-      where: `access LIKE $accessToken`,
-      values: { '$accessToken': `%${_accessToken}` },
-    })
+      where: `refresh = $refreshToken AND (expires IS NULL OR expires > 0)`,
+      values: { '$refreshToken': _op.refreshToken },
+    }) : getTokenDataByAccess(ctx, _op.accessToken)
     if (!_token.data)
     {
       throw new ServiceError('Token data not found.', { status: 401 })
@@ -106,6 +104,18 @@ export function checkingToken(ctx: any, op: Partial<CheckingTokenOptions> = {}):
       return null as any
     }
   }
+}
+
+function getTokenDataByAccess(ctx: any, accessToken?: string)
+{
+  // get access token
+  const _accessToken = accessToken || getAccessToken(ctx)
+  if (!_accessToken) throw new ServiceError('Token is invalid.', { status: 401 })
+  return db.getData({
+    table: DB.TABLE.TOKEN,
+    where: `access LIKE $accessToken`,
+    values: { '$accessToken': `%${_accessToken}` },
+  })
 }
 
 function getAccessToken(ctx: any): string

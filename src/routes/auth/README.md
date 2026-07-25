@@ -158,7 +158,6 @@ POST /auth/logout/
 ```
 POST /auth/renew/
 
-@headers {str} Authorization / [required] 액세스 토큰
 @data {str} provider / [required] 프로바이더 코드
 @data {str} refresh / [required] 리프레시 토큰
 ```
