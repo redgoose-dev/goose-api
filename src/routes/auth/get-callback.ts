@@ -156,8 +156,8 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
   }
   catch (_e: any)
   {
+    const requestId = ctx.store.logger.getContext(ctx.request).requestId
     ctx.store.logger.error(ctx.request, _e.message, {
-      code: ctx.request.errorCode,
       errorMessage: _e.message,
     })
     if (state.socket_id)
@@ -170,7 +170,7 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
         data.ws.send({
           mode: 'AUTH_ERROR',
           status_code: _e.status,
-          error_code: ctx.request.errorCode,
+          request_id: requestId,
           message: _e.message,
         })
         data.ws.close()
@@ -179,9 +179,9 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
     }
     else if (state.redirect_uri)
     {
-      const _qs = { 'error-code': ctx.request.errorCode }
-      // return `${state.redirect_uri}?${parseQueryString(_qs)}` // DEV
-      return ctx.redirect(`${state.redirect_uri}?${parseQueryString(_qs)}`)
+      const _qs = requestId ? { request_id: requestId } : {}
+      const _query = parseQueryString(_qs)
+      return ctx.redirect(_query ? `${state.redirect_uri}?${_query}` : state.redirect_uri)
     }
     else
     {

@@ -1,5 +1,6 @@
 import DB_Log from '@/classes/DB_Log'
 import { createRecordLogEntry } from '@/libs/logging/record'
+import { isIgnoredLogRequest } from '@/libs/logging/ignore'
 import type { RecordLogEntry } from '@/libs/logging/record'
 import type { Transport } from 'logixlysia'
 
@@ -140,6 +141,7 @@ export function createRecordDatabaseTransport(
     log(level, message, meta = {})
     {
       if (closed) return
+      if (isIgnoredLogRequest(meta.request)) return
       enqueue(createRecordLogEntry({
         level,
         message,

@@ -16,15 +16,15 @@ GET /log/
 @headers {str} Authorization / [required] 액세스 토큰
 @query {str} cursor / 이전 응답의 data.assets.cursor
 @query {int} size=50 / 조회할 로그 수 (1~100)
+@query {int} total / `1`이면 검색 조건에 해당하는 전체 로그 수를 포함
 @query {str} level / 로그 레벨 / ex) ERROR,WARNING
 @query {str} from / 조회 시작일 (YYYY-MM-DD)
 @query {str} to / 조회 종료일 (YYYY-MM-DD)
 @query {int} status / HTTP 상태 코드 (100~599)
 @query {str} method / HTTP 요청 메서드
 @query {str} path / 요청 경로에 포함되는 문자열
-@query {str} error_code / 오류 코드
 @query {str} request_id / 요청 ID
-@query {str} q / 메시지, 오류 메시지, 요청 경로, 오류 코드, 요청 ID 검색
+@query {str} q / 메시지, 오류 메시지, 요청 경로, 요청 ID 검색
 ```
 
 날짜는 UTC 기준으로 처리합니다. `from`은 해당 날짜의 `00:00:00.000Z`,
@@ -32,6 +32,7 @@ GET /log/
 
 목록은 `timestamp DESC, id DESC` 순서로 조회합니다. 다음 목록이 있으면
 `data.assets.cursor`를 다음 요청의 `cursor`로 사용합니다.
+`total=1`일 때의 전체 개수는 `cursor`와 `size`를 제외한 검색 조건을 기준으로 합니다.
 
 목록에는 오류 stack, cause, context를 포함하지 않습니다. 해당 필드는
 상세조회에서 확인할 수 있습니다.
@@ -41,6 +42,7 @@ GET /log/
 ```
 @content {str} message / 메시지
 @content {list} data.index / 로그 목록
+@content {int} data.total / total=1일 때 검색 조건에 해당하는 전체 로그 수
 @content {bool} data.assets.has_next / 다음 목록 존재 여부
 @content {str|null} data.assets.cursor / 다음 목록 조회 커서
 ```

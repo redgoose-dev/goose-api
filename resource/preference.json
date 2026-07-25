@@ -9,5 +9,8 @@
   "file.limit.count": 256,
   "json.index.size": 36,
   "nest.index.size": 36,
-  "tag.index.size": 36
+  "tag.index.size": 36,
+  "logging.ignore.paths": [
+    "/favicon.ico"
+  ]
 }

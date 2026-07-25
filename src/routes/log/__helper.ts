@@ -10,7 +10,6 @@ export type LogRow = {
   id: number
   timestamp: string
   level: LogLevel
-  error_code: string | null
   message: string | null
   status: number | null
   duration_ms: number | null
@@ -28,7 +27,6 @@ export type LogIndexItem = {
   id: number
   timestamp: string
   level: LogLevel
-  error_code: string | null
   message: string | null
   status: number | null
   duration_ms: number | null
@@ -106,7 +104,6 @@ export function toIndexItem(row: LogRow): LogIndexItem
     id: row.id,
     timestamp: row.timestamp,
     level: row.level,
-    error_code: row.error_code,
     message: row.message,
     status: row.status,
     duration_ms: row.duration_ms,

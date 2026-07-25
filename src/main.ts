@@ -1,8 +1,9 @@
 import { Elysia } from 'elysia'
 import Service from '@/classes/Service'
 import { openServer } from '@/libs/server'
-import { onRequest, onResponse, onErrorBefore, onErrorAfter } from '@/libs/service'
+import { onResponse, onErrorAfter } from '@/libs/service'
 import logging, { closeLogging } from '@/libs/logging'
+import { LOG_IGNORE_PATHS_KEY, setLogIgnoredPaths } from '@/libs/logging/ignore'
 import * as routes from '@/routes'
 
 const { HOST, PORT } = Bun.env
@@ -10,6 +11,7 @@ const { HOST, PORT } = Bun.env
 // setup service
 const service = new Service()
 await service.setup()
+setLogIgnoredPaths(service.preference[LOG_IGNORE_PATHS_KEY])
 
 // set server
 const server = {
@@ -24,14 +26,10 @@ const app = new Elysia()
 // set state
 app.state('service', service)
 
-// set hooks
-app.onError(onErrorBefore)
-
 // setup logging
 app.use(logging)
 
 // set hooks
-app.onRequest(onRequest)
 app.onAfterHandle({ as: 'global' }, onResponse)
 app.onError(onErrorAfter)
 

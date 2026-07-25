@@ -50,21 +50,13 @@ function decodeCursor(cursor: string): Pick<LogRow, 'timestamp' | 'id'>
 {
   try
   {
-    const value = JSON.parse(
-      Buffer.from(cursor, 'base64url').toString('utf8'),
-    )
+    const value = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8'))
     if (!Array.isArray(value) || value.length !== 2 || typeof value[0] !== 'string' || !Number.isSafeInteger(value[1]) || value[1] < 1)
     {
       throw new Error()
     }
     const timestamp = new Date(value[0])
-    if (
-      Number.isNaN(timestamp.getTime())
-      || timestamp.toISOString() !== value[0]
-    )
-    {
-      throw new Error()
-    }
+    if (Number.isNaN(timestamp.getTime()) || timestamp.toISOString() !== value[0]) throw new Error()
     return {
       timestamp: value[0],
       id: value[1],
@@ -83,6 +75,10 @@ export default async function getIndex({ query, database }: GetIndexParams)
     const size = getIndexSize(query.size)
     const where: string[] = []
     const values: QueryValues = {}
+    if (query.total !== undefined && ![ 0, 1 ].includes(query.total))
+    {
+      throw new LogRouteInputError('Invalid log total option.')
+    }
 
     const levels = getLevels(query.level)
     if (levels.length > 0)
@@ -123,11 +119,6 @@ export default async function getIndex({ query, database }: GetIndexParams)
       values.path = `%${escapeLike(query.path)}%`
       where.push(`AND request_path LIKE $path ESCAPE '\\'`)
     }
-    if (query.error_code)
-    {
-      values.error_code = query.error_code
-      where.push('AND error_code = $error_code')
-    }
     if (query.request_id)
     {
       values.request_id = query.request_id
@@ -141,17 +132,18 @@ export default async function getIndex({ query, database }: GetIndexParams)
           message LIKE $q ESCAPE '\\'
           OR error_message LIKE $q ESCAPE '\\'
           OR request_path LIKE $q ESCAPE '\\'
-          OR error_code LIKE $q ESCAPE '\\'
           OR request_id LIKE $q ESCAPE '\\'
         )
       `)
     }
+    const indexWhere = [ ...where ]
+    const indexValues: QueryValues = { ...values }
     if (query.cursor)
     {
       const cursor = decodeCursor(query.cursor)
-      values.cursor_timestamp = cursor.timestamp
-      values.cursor_id = cursor.id
-      where.push(`
+      indexValues.cursor_timestamp = cursor.timestamp
+      indexValues.cursor_id = cursor.id
+      indexWhere.push(`
         AND (
           timestamp < $cursor_timestamp
           OR (timestamp = $cursor_timestamp AND id < $cursor_id)
@@ -159,13 +151,12 @@ export default async function getIndex({ query, database }: GetIndexParams)
       `)
     }
 
-    values.limit = size + 1
-    const rows = database.getIndex<LogRow>(`
+    indexValues.limit = size + 1
+    const indexSQL = `
       SELECT
         id,
         timestamp,
         level,
-        error_code,
         message,
         status,
         duration_ms,
@@ -176,22 +167,39 @@ export default async function getIndex({ query, database }: GetIndexParams)
         error_message
       FROM log
       WHERE 1 = 1
-        ${where.join('\n')}
+        ${indexWhere.join('\n')}
       ORDER BY timestamp DESC, id DESC
       LIMIT $limit
-    `, values)
+    `
+    const countSQL = `SELECT COUNT(*) AS count FROM log WHERE 1 = 1 ${where.join('\n')}`
+    const result = query.total === 1 ? database.transaction(() => ({
+      total: database.getData<{ count: number }>(countSQL, values)?.count ?? 0,
+      rows: database.getIndex<LogRow>(indexSQL, indexValues),
+    })) : undefined
+    const rows = result?.rows ?? database.getIndex<LogRow>(indexSQL, indexValues)
 
     const hasNext = rows.length > size
     const pageRows = hasNext ? rows.slice(0, size) : rows
     const lastRow = pageRows.at(-1)
 
-    return {
-      index: pageRows.map(toIndexItem),
-      assets: {
-        has_next: hasNext,
-        cursor: hasNext && lastRow ? encodeCursor(lastRow) : null,
-      },
+    const assets: {
+      has_next: boolean
+      cursor: string | null
+    } = {
+      has_next: hasNext,
+      cursor: hasNext && lastRow ? encodeCursor(lastRow) : null,
     }
+    const data: {
+      index: ReturnType<typeof toIndexItem>[]
+      total?: number
+      assets: typeof assets
+    } = {
+      index: pageRows.map(toIndexItem),
+      assets,
+    }
+    if (query.total === 1) data.total = result?.total ?? 0
+
+    return data
   }
   catch (_e: any)
   {

@@ -29,16 +29,18 @@ export const HEADERS_KEYS = {
   ALLOW_METHODS: 'Access-Control-Allow-Methods',
   ALLOW_HEADERS: 'Access-Control-Allow-Headers',
   ALLOW_CREDENTIALS: 'Access-Control-Allow-Credentials',
+  EXPOSE_HEADERS: 'Access-Control-Expose-Headers',
   CONTENT_TYPE: 'Content-Type',
-  ERROR_CODE: 'Error-Code',
+  REQUEST_ID: 'X-Request-ID',
 }
 
 export const DEFAULT_HEADERS = {
   'Server': 'bun',
   [HEADERS_KEYS.ALLOW_ORIGIN]: '*',
   [HEADERS_KEYS.ALLOW_METHODS]: 'GET, POST, PUT, PATCH, DELETE',
-  [HEADERS_KEYS.ALLOW_HEADERS]: 'Origin, Content-Type, Authorization, Accept',
+  [HEADERS_KEYS.ALLOW_HEADERS]: `Origin, Content-Type, Authorization, Accept, ${HEADERS_KEYS.REQUEST_ID}`,
   [HEADERS_KEYS.ALLOW_CREDENTIALS]: 'true',
+  [HEADERS_KEYS.EXPOSE_HEADERS]: HEADERS_KEYS.REQUEST_ID,
 }
 
 export const WS_TIMEOUT = 120 // 웹소켓 타임아웃 (초)

@@ -5,7 +5,6 @@ const VALIDATION_TEXT_MAX_LENGTH = 500
 export type RecordLogEntry = {
   timestamp: string
   level: LogLevel
-  error_code?: unknown
   message?: string
   status?: unknown
   duration_ms?: number
@@ -175,21 +174,9 @@ export function createRecordLogEntry({
   const validationCause = isValidationError
     ? getValidationCause(message)
     : undefined
-  const errorCode = level === 'ERROR'
-    ? meta.error_code ?? meta.errorCode ?? context?.error_code ?? context?.code
-    : undefined
-
-  // 에러 코드는 검색하기 쉽도록 context가 아닌 최상위 error_code에 한 번만 기록한다.
-  if (level === 'ERROR' && context)
-  {
-    delete context.code
-    delete context.error_code
-  }
-
   return {
     timestamp: now.toISOString(),
     level,
-    error_code: errorCode,
     message: validationCause?.message || validationCause?.summary || message || undefined,
     status: meta.status,
     duration_ms: getDuration(meta.beforeTime),

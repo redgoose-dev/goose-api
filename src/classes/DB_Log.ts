@@ -49,6 +49,12 @@ function getRequestId(context?: Record<string, unknown>): string | null
   return toText(context?.request_id)
 }
 
+function hasColumn(database: Database, table: string, column: string): boolean
+{
+  const columns = database.query(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>
+  return columns.some(item => item.name === column)
+}
+
 /**
  * 로그 전용 SQLite 저장소.
  *
@@ -104,7 +110,6 @@ export default class DB_Log {
         id INTEGER PRIMARY KEY,
         timestamp TEXT NOT NULL,
         level TEXT NOT NULL CHECK (level IN ('DEBUG', 'INFO', 'WARNING', 'ERROR')),
-        error_code TEXT,
         message TEXT,
         status INTEGER,
         duration_ms REAL,
@@ -124,20 +129,22 @@ export default class DB_Log {
       CREATE INDEX IF NOT EXISTS log_level_timestamp_idx
         ON log (level, timestamp DESC, id DESC);
 
-      CREATE INDEX IF NOT EXISTS log_error_code_idx
-        ON log (error_code)
-        WHERE error_code IS NOT NULL;
-
       CREATE INDEX IF NOT EXISTS log_request_id_idx
         ON log (request_id)
         WHERE request_id IS NOT NULL;
     `)
 
+    // error_code는 request_id와 용도가 겹치므로 기존 로그에서도 컬럼을 제거한다.
+    if (hasColumn(db, 'log', 'error_code'))
+    {
+      db.exec('DROP INDEX IF EXISTS log_error_code_idx')
+      db.exec('ALTER TABLE log DROP COLUMN error_code')
+    }
+
     const insert = db.prepare(`
       INSERT INTO log (
         timestamp,
         level,
-        error_code,
         message,
         status,
         duration_ms,
@@ -152,7 +159,6 @@ export default class DB_Log {
       ) VALUES (
         $timestamp,
         $level,
-        $error_code,
         $message,
         $status,
         $duration_ms,
@@ -173,7 +179,6 @@ export default class DB_Log {
         insert.run({
           timestamp: entry.timestamp,
           level: entry.level,
-          error_code: toText(entry.error_code),
           message: entry.message ?? null,
           status: toNumber(entry.status),
           duration_ms: entry.duration_ms ?? null,

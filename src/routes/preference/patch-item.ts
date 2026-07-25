@@ -1,5 +1,6 @@
 import ServiceError from '@/classes/ServiceError'
 import Service from '@/classes/Service'
+import { LOG_IGNORE_PATHS_KEY, setLogIgnoredPaths } from '@/libs/logging/ignore'
 import { parseJSON } from '@/libs/objects'
 import type { PreferenceModel } from './__model'
 
@@ -14,6 +15,7 @@ export default async function patchItem({ body, service }: PatchItemParams)
   {
     const _json = parseJSON(body.json)
     await service.updatePreference(_json, body.change as boolean)
+    setLogIgnoredPaths(service.preference[LOG_IGNORE_PATHS_KEY])
   }
   catch (_e: any)
   {

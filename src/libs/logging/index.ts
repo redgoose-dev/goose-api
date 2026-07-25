@@ -1,6 +1,7 @@
 import logixlysia from 'logixlysia'
-import { IS_DEV, LOG_RECORD_DB_POLICY, PATHS, getBool } from '@/libs/assets'
+import { HEADERS_KEYS, IS_DEV, LOG_RECORD_DB_POLICY, PATHS, getBool } from '@/libs/assets'
 import { createRecordDatabaseTransport } from '@/libs/logging/database'
+import { isIgnoredLogRequest } from '@/libs/logging/ignore'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 import type { Transport } from 'logixlysia'
@@ -89,6 +90,7 @@ function getMessage(code: number, msg: string): string
 const consoleTransport: Transport = {
   async log(level, message, meta: ZZ = {})
   {
+    if (isIgnoredLogRequest(meta.request)) return
     if (!getBool(LOG_PRINT)) return
     meta.context = meta.context ?? {}
     if (meta.context.raw)
@@ -181,7 +183,10 @@ const logging = logixlysia({
     contextDepth: 2,
     slowThreshold: 500,
     verySlowThreshold: 1000,
-    // requestId: true,
+    requestId: {
+      enabled: true,
+      header: HEADERS_KEYS.REQUEST_ID,
+    },
 
     // Output
     timestamp: {
@@ -192,7 +197,7 @@ const logging = logixlysia({
       // status: IS_DEV ? undefined : [ 500, 501, 502, 503, 504 ],
     },
     useColors: true,
-    customLogFormat: `{now} {level} {service} {icon} {method} {pathname} {status} {statusText} || {duration}`,
+    customLogFormat: `{now} {level} {service} {icon} {method} {pathname} {status} {statusText} [{requestId}] || {duration}`,
     // 콘솔에서 로그 출력 안되게 하기
     disableInternalLogger: !getBool(LOG_PRINT),
     // Logixlysia 내장 파일 기록은 사용하지 않는다.
