@@ -46,9 +46,14 @@ POST /mix/
 | GET    | /file/            | 파일 목록 조회        |
 | GET    | /json/            | JSON 목록 조회      |
 | GET    | /json/{srl}/      | JSON 상세 데이터 조회  |
+| GET    | /log/             | 로그 목록 조회         |
+| GET    | /log/summary/     | 로그 요약 조회         |
 | GET    | /nest/            | 둥지 목록 조회        |
 | GET    | /nest/{srl}/      | 둥지 상세 데이터 조회    |
 | GET    | /tag/             | 태그 목록 조회        |
+
+`/log/`와 `/log/summary/`는 관리자용 로그 조회이므로 공개용 토큰으로는
+실행할 수 없습니다.
 
 
 ## 요청 JSON 예제

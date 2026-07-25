@@ -2,6 +2,8 @@ import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
 import { classifySrlCode } from '@/libs/service'
 import logging from '@/libs/logging'
+import { checkingToken } from '@/libs/verify'
+import { getLogDatabase } from '@/routes/log/__helper'
 import type { CheckinToken } from '@/libs/verify'
 import type { MixModel } from './__model'
 
@@ -35,6 +37,7 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
         }
         // check 'if' condition
         if (!helper.checkIf(_req.if, response)) continue
+        if (helper.PRIVATE_ROUTE_PATHS.has(_req.path)) checkingToken(ctx)
         // set params
         const _params: ZZ = helper.parseParams(_req.params ?? null, response)
         // run loggger
@@ -49,6 +52,7 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
           body: _params,
           token,
           service,
+          database: getLogDatabase(),
         })
         // set response
         if (_res)

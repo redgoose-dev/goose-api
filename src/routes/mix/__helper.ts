@@ -17,9 +17,16 @@ import commentGetItem from '@/routes/comment/get-item'
 import fileGetIndex from '@/routes/file/get-index'
 import jsonGetIndex from '@/routes/json/get-index'
 import jsonGetItem from '@/routes/json/get-item'
+import logGetIndex from '@/routes/log/get-index'
+import logGetSummary from '@/routes/log/get-summary'
 import nestGetIndex from '@/routes/nest/get-index'
 import nestGetItem from '@/routes/nest/get-item'
 import tagGetIndex from '@/routes/tag/get-index'
+
+export const PRIVATE_ROUTE_PATHS = new Set([
+  'get /log/',
+  'get /log/summary/',
+])
 
 // route maps
 const routeMap = new Map<string, Function | null>([
@@ -46,6 +53,9 @@ const routeMap = new Map<string, Function | null>([
   // json
   [ 'get /json/', jsonGetIndex ],
   [ 'get /json/{srl}/', jsonGetItem ],
+  // log
+  [ 'get /log/', logGetIndex ],
+  [ 'get /log/summary/', logGetSummary ],
   // nest
   [ 'get /nest/', nestGetIndex ],
   [ 'get /nest/{srl}/', nestGetItem ],
