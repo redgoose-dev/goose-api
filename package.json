@@ -1,6 +1,6 @@
 {
   "name": "goose-api",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "description": "GoOSe API service",
   "author": "GoOSe <scripter@me.com>",
   "module": "src/main.ts",
