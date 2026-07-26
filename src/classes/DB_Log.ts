@@ -49,12 +49,6 @@ function getRequestId(context?: Record<string, unknown>): string | null
   return toText(context?.request_id)
 }
 
-function hasColumn(database: Database, table: string, column: string): boolean
-{
-  const columns = database.query(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>
-  return columns.some(item => item.name === column)
-}
-
 /**
  * 로그 전용 SQLite 저장소.
  *
@@ -115,6 +109,10 @@ export default class DB_Log {
         duration_ms REAL,
         request_method TEXT,
         request_path TEXT,
+        request_referer TEXT,
+        request_origin TEXT,
+        request_client_ip TEXT,
+        request_user_agent TEXT,
         request_id TEXT,
         context_json TEXT,
         error_name TEXT,
@@ -134,20 +132,6 @@ export default class DB_Log {
         WHERE request_id IS NOT NULL;
     `)
 
-    // error_code는 request_id와 용도가 겹치므로 기존 로그에서도 컬럼을 제거한다.
-    if (hasColumn(db, 'log', 'error_code'))
-    {
-      db.exec('DROP INDEX IF EXISTS log_error_code_idx')
-      db.exec('ALTER TABLE log DROP COLUMN error_code')
-    }
-
-    // 정상적인 클라이언트 오류(4xx)는 서버 오류 집계에서 제외한다.
-    db.exec(`
-      UPDATE log
-      SET level = 'WARNING'
-      WHERE level = 'ERROR' AND status BETWEEN 400 AND 499
-    `)
-
     const insert = db.prepare(`
       INSERT INTO log (
         timestamp,
@@ -157,6 +141,10 @@ export default class DB_Log {
         duration_ms,
         request_method,
         request_path,
+        request_referer,
+        request_origin,
+        request_client_ip,
+        request_user_agent,
         request_id,
         context_json,
         error_name,
@@ -171,6 +159,10 @@ export default class DB_Log {
         $duration_ms,
         $request_method,
         $request_path,
+        $request_referer,
+        $request_origin,
+        $request_client_ip,
+        $request_user_agent,
         $request_id,
         $context_json,
         $error_name,
@@ -191,6 +183,10 @@ export default class DB_Log {
           duration_ms: entry.duration_ms ?? null,
           request_method: entry.request?.method ?? null,
           request_path: entry.request?.path ?? null,
+          request_referer: entry.request?.referer ?? null,
+          request_origin: entry.request?.origin ?? null,
+          request_client_ip: entry.request?.client_ip ?? null,
+          request_user_agent: entry.request?.user_agent ?? null,
           request_id: getRequestId(entry.context),
           context_json: toJSON(entry.context),
           error_name: entry.error?.name ?? null,

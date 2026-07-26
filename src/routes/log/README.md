@@ -24,7 +24,7 @@ GET /log/
 @query {str} method / HTTP 요청 메서드
 @query {str} path / 요청 경로에 포함되는 문자열
 @query {str} request_id / 요청 ID
-@query {str} q / 메시지, 오류 메시지, 요청 경로, 요청 ID 검색
+@query {str} q / 메시지, 오류 메시지, 요청 경로, 출처, IP, User-Agent, 요청 ID 검색
 ```
 
 날짜는 UTC 기준으로 처리합니다. `from`은 해당 날짜의 `00:00:00.000Z`,
@@ -36,6 +36,9 @@ GET /log/
 
 목록에는 오류 stack, cause, context를 포함하지 않습니다. 해당 필드는
 상세조회에서 확인할 수 있습니다.
+
+요청 정보에는 `method`, `path`, `referer`, `origin`, `client_ip`,
+`user_agent`, `id`가 포함됩니다. 전달된 정보가 없으면 해당 값은 `null`입니다.
 
 ### Response
 

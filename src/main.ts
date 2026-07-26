@@ -4,6 +4,7 @@ import { openServer } from '@/libs/server'
 import { onResponse, onErrorAfter } from '@/libs/service'
 import logging, { closeLogging } from '@/libs/logging'
 import { LOG_IGNORE_PATHS_KEY, setLogIgnoredPaths } from '@/libs/logging/ignore'
+import { clearRequestTracking, registerRequestTracking } from '@/libs/logging/request'
 import * as routes from '@/routes'
 
 const { HOST, PORT } = Bun.env
@@ -28,6 +29,15 @@ app.state('service', service)
 
 // setup logging
 app.use(logging)
+app.onRequest(({ request, store, server }: any) => {
+  registerRequestTracking(request, store.logger.getContext(request), server)
+})
+app.onAfterResponse({ as: 'global' }, ({ request }) => {
+  clearRequestTracking(request)
+})
+app.onError(({ request }) => {
+  clearRequestTracking(request)
+})
 
 // set hooks
 app.onAfterHandle({ as: 'global' }, onResponse)

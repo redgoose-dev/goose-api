@@ -12,6 +12,10 @@ export type RecordLogEntry = {
   request?: {
     method?: string
     path?: string
+    referer?: string
+    origin?: string
+    client_ip?: string
+    user_agent?: string
   }
   context?: Record<string, unknown>
   error?: {
@@ -136,12 +140,13 @@ function getRequest(meta: Record<string, unknown>): RecordLogEntry['request']
 {
   if (!isRecord(meta.request)) return undefined
 
-  const method = typeof meta.request.method === 'string'
-    ? meta.request.method
-    : undefined
-  const url = typeof meta.request.url === 'string'
-    ? meta.request.url
-    : undefined
+  const request = meta.request
+  const method = (typeof request.method === 'string') ? request.method : undefined
+  const url = (typeof request.url === 'string') ? request.url : undefined
+  const referer = getRequestValue(request, 'referer')
+  const origin = getRequestValue(request, 'origin')
+  const clientIP = getRequestValue(request, 'client_ip')
+  const userAgent = getRequestValue(request, 'user_agent')
   let path = url
   if (url)
   {
@@ -152,7 +157,44 @@ function getRequest(meta: Record<string, unknown>): RecordLogEntry['request']
     }
     catch {}
   }
-  return method || path ? { method, path } : undefined
+  if (!(method || path || referer || origin || clientIP || userAgent)) return undefined
+  return {
+    method,
+    path,
+    referer,
+    origin,
+    client_ip: clientIP,
+    user_agent: userAgent,
+  }
+}
+
+function getRequestValue(request: Record<string, unknown>, key: string): string | undefined
+{
+  const value = request[key]
+  if (typeof value === 'string' && value) return value
+
+  if (key === 'client_ip')
+  {
+    const forwarded = getRequestHeader(request, 'x-forwarded-for')
+    const clientIP = forwarded?.split(',')[0]?.trim()
+    if (clientIP) return clientIP
+    return getRequestHeader(request, 'x-real-ip')
+  }
+  return getRequestHeader(request, key.replaceAll('_', '-'))
+}
+
+function getRequestHeader(request: Record<string, unknown>, name: string): string | undefined
+{
+  const headers = request.headers
+  if (!headers || typeof headers !== 'object') return undefined
+  const get = (headers as { get?: unknown }).get
+  if (typeof get === 'function')
+  {
+    const header = get.call(headers, name)
+    return typeof header === 'string' && header ? header : undefined
+  }
+  const header = Object.entries(headers).find(([ headerKey ]) => headerKey.toLowerCase() === name)
+  return typeof header?.[1] === 'string' && header[1] ? header[1] : undefined
 }
 
 function getDuration(beforeTime: unknown): number | undefined
@@ -163,18 +205,11 @@ function getDuration(beforeTime: unknown): number | undefined
   return Number(duration.toFixed(3))
 }
 
-export function createRecordLogEntry({
-  level,
-  message,
-  meta,
-  now,
-}: CreateRecordLogEntryOptions): RecordLogEntry
+export function createRecordLogEntry({ level, message, meta, now }: CreateRecordLogEntryOptions): RecordLogEntry
 {
   const context = getContext(meta)
   const isValidationError = Number(meta.status) === 422
-  const validationCause = isValidationError
-    ? getValidationCause(message)
-    : undefined
+  const validationCause = isValidationError ? getValidationCause(message) : undefined
   return {
     timestamp: now.toISOString(),
     level: normalizeLogLevel(level, meta.status),
@@ -184,8 +219,6 @@ export function createRecordLogEntry({
     request: getRequest(meta),
     context: context && Object.keys(context).length > 0 ? context : undefined,
     // 422는 schema와 입력값이 포함된 Error/stack 대신 정리된 cause만 기록한다.
-    error: isValidationError
-      ? { cause: validationCause }
-      : getError(meta.error),
+    error: isValidationError ? { cause: validationCause } : getError(meta.error),
   }
 }

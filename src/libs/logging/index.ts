@@ -3,6 +3,7 @@ import { HEADERS_KEYS, IS_DEV, LOG_RECORD_DB_POLICY, PATHS, getBool } from '@/li
 import { createRecordDatabaseTransport } from '@/libs/logging/database'
 import { isIgnoredLogRequest } from '@/libs/logging/ignore'
 import { normalizeLogLevel } from '@/libs/logging/level'
+import { getRequestTracking } from '@/libs/logging/request'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
 import type { Transport } from 'logixlysia'
@@ -94,8 +95,11 @@ const consoleTransport: Transport = {
     if (isIgnoredLogRequest(meta.request)) return
     if (!getBool(LOG_PRINT)) return
     const normalizedLevel = normalizeLogLevel(level, meta.status)
-    meta.context = meta.context ?? {}
-    if (meta.context.raw)
+    const context = {
+      ...(meta.context ?? {}),
+      ...(getRequestTracking(meta.context) ?? {}),
+    }
+    if (context.raw)
     {
       let _color: any
       switch (normalizedLevel)
@@ -117,8 +121,8 @@ const consoleTransport: Transport = {
         colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'dark'),
       ].filter(Boolean)
       console.group(`${_level} ${_time} ${_method} ${_url} || ${_messages.join(' || ')}`)
-      const _countContext = Object.keys(meta.context).length
-      let tree = Object.entries(meta.context).map(([ key, value ], k) => {
+      const _countContext = Object.keys(context).length
+      let tree = Object.entries(context).map(([ key, value ], k) => {
         return {
           key: colorText(key, 'cyan'),
           value: value,
@@ -155,7 +159,14 @@ const recordDBTransport: Transport = {
   log(level, message, meta = {})
   {
     if (!getBool(LOG_RECORD)) return
-    return databaseTransport.log(level, message, meta)
+    const request = meta.request && typeof meta.request === 'object' ? meta.request : {}
+    return databaseTransport.log(level, message, {
+      ...meta,
+      request: {
+        ...request,
+        ...(getRequestTracking(meta.context) ?? {}),
+      },
+    })
   }
 }
 

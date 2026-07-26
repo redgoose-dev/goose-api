@@ -15,6 +15,10 @@ export type LogRow = {
   duration_ms: number | null
   request_method: string | null
   request_path: string | null
+  request_referer: string | null
+  request_origin: string | null
+  request_client_ip: string | null
+  request_user_agent: string | null
   request_id: string | null
   context_json?: string | null
   error_name: string | null
@@ -33,6 +37,10 @@ export type LogIndexItem = {
   request: {
     method: string | null
     path: string | null
+    referer: string | null
+    origin: string | null
+    client_ip: string | null
+    user_agent: string | null
     id: string | null
   } | null
   error: {
@@ -91,9 +99,15 @@ export function toNumber(value: unknown, fallback = 0): number
 
 export function toIndexItem(row: LogRow): LogIndexItem
 {
-  const request = (row.request_method || row.request_path || row.request_id) ? {
+  const hasRequest = row.request_method || row.request_path || row.request_referer
+    || row.request_origin || row.request_client_ip || row.request_user_agent || row.request_id
+  const request = hasRequest ? {
     method: row.request_method,
     path: row.request_path,
+    referer: row.request_referer,
+    origin: row.request_origin,
+    client_ip: row.request_client_ip,
+    user_agent: row.request_user_agent,
     id: row.request_id,
   } : null
   const error = (row.error_name || row.error_message) ? {

@@ -132,6 +132,10 @@ export default async function getIndex({ query, database }: GetIndexParams)
           message LIKE $q ESCAPE '\\'
           OR error_message LIKE $q ESCAPE '\\'
           OR request_path LIKE $q ESCAPE '\\'
+          OR request_referer LIKE $q ESCAPE '\\'
+          OR request_origin LIKE $q ESCAPE '\\'
+          OR request_client_ip LIKE $q ESCAPE '\\'
+          OR request_user_agent LIKE $q ESCAPE '\\'
           OR request_id LIKE $q ESCAPE '\\'
         )
       `)
@@ -162,6 +166,10 @@ export default async function getIndex({ query, database }: GetIndexParams)
         duration_ms,
         request_method,
         request_path,
+        request_referer,
+        request_origin,
+        request_client_ip,
+        request_user_agent,
         request_id,
         error_name,
         error_message
