@@ -1,5 +1,6 @@
 import ServiceError from '@/classes/ServiceError'
 import * as helper from './__helper'
+import { suppressAutomaticRequestLog } from '@/libs/logging'
 import { classifySrlCode } from '@/libs/service'
 import { checkingToken } from '@/libs/verify'
 import { getLogDatabase } from '@/routes/log/__helper'
@@ -33,6 +34,8 @@ export default async function postIndex({ body, token, ctx }: PostIndexParams)
     let skippedCount = 0
     let hasServerFailure = false
     const mixResults: MixResult[] = []
+
+    suppressAutomaticRequestLog(logger, ctx.request)
 
     // parse requests
     const requests = helper.parseRequests(body)

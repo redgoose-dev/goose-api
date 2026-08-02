@@ -6,7 +6,7 @@ import { normalizeLogLevel } from '@/libs/logging/level'
 import { getRequestTracking } from '@/libs/logging/request'
 import { parseJSON } from '@/libs/objects'
 import { colorText, dateFormat } from '@/libs/strings'
-import type { Transport } from 'logixlysia'
+import type { Logger, Transport } from 'logixlysia'
 
 /**
  * # GUIDES
@@ -17,6 +17,7 @@ import type { Transport } from 'logixlysia'
  */
 
 const { SERVICE_NAME, LOG_RECORD, LOG_PRINT }: ENV = Bun.env
+const SUPPRESS_AUTOMATIC_LOG_KEY = '__suppress_automatic_log'
 
 function getPositiveNumber(value: string | undefined, fallback: number): number
 {
@@ -89,16 +90,51 @@ function getMessage(code: number, msg: string): string
       return msg || ''
   }
 }
+
+function getConsoleContext(meta: ZZ): Record<string, unknown>
+{
+  const context = {
+    ...(meta.context && typeof meta.context === 'object' ? meta.context : {}),
+    ...(getRequestTracking(meta.context) ?? {}),
+  }
+  return Object.fromEntries(
+    Object.entries(context).filter(([, value ]) => value !== undefined && value !== null),
+  )
+}
+
+function isSuppressedAutomaticLog(meta: ZZ): boolean
+{
+  const context = meta.context
+  return Boolean(
+    context
+    && typeof context === 'object'
+    && !Array.isArray(context)
+    && (context as ZZ)[SUPPRESS_AUTOMATIC_LOG_KEY],
+  )
+}
+
+/**
+ * Logixlysia의 명시적 로그 호출로 요청 종료 시 자동 로그를 생략한다.
+ * 표시/저장용 transport에서는 이 내부 marker 로그를 무시한다.
+ */
+export function suppressAutomaticRequestLog(
+  logger: Pick<Logger, 'info'>,
+  request: Request,
+): void
+{
+  logger.info(request, '', {
+    [SUPPRESS_AUTOMATIC_LOG_KEY]: true,
+  })
+}
+
 const consoleTransport: Transport = {
   async log(level, message, meta: ZZ = {})
   {
+    if (isSuppressedAutomaticLog(meta)) return
     if (isIgnoredLogRequest(meta.request)) return
     if (!getBool(LOG_PRINT)) return
     const normalizedLevel = normalizeLogLevel(level, meta.status)
-    const context = {
-      ...(meta.context ?? {}),
-      ...(getRequestTracking(meta.context) ?? {}),
-    }
+    const context = getConsoleContext(meta)
     if (context.raw)
     {
       let _color: any
@@ -158,6 +194,7 @@ const databaseTransport = createRecordDatabaseTransport({
 const recordDBTransport: Transport = {
   log(level, message, meta = {})
   {
+    if (isSuppressedAutomaticLog(meta)) return
     if (!getBool(LOG_RECORD)) return
     const request = meta.request && typeof meta.request === 'object' ? meta.request : {}
     return databaseTransport.log(level, message, {
