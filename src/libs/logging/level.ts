@@ -7,6 +7,7 @@ import type { LogLevel } from 'logixlysia'
 export function normalizeLogLevel(level: LogLevel, status: unknown): LogLevel
 {
   const statusCode = Number(status)
+  if (level === 'ERROR' && statusCode === 204) return 'INFO'
   if (
     level === 'ERROR'
     && Number.isInteger(statusCode)
