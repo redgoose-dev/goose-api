@@ -47,6 +47,20 @@ export function getElapsedTime(beforeTime: bigint): string
 }
 
 /**
+ * 브라우저가 텍스트 응답을 UTF-8로 해석하도록 charset을 보완한다.
+ */
+export function getContentType(mime: string): string
+{
+  const type = mime.split(';', 1)[0]?.trim().toLowerCase()
+  const isText = type?.startsWith('text/') || type === 'application/json' || type?.endsWith('+json')
+  if (isText && !/;\s*charset\s*=/i.test(mime))
+  {
+    return `${mime}; charset=utf-8`
+  }
+  return mime
+}
+
+/**
  * 객체로 헤더 설정하기
  */
 export function setHeaders(headers: any, src: ZZ)

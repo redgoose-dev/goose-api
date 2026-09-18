@@ -1,6 +1,7 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import { Permission } from '@/libs/assets'
+import { getContentType } from '@/libs/server'
 import { checkingToken } from '@/libs/verify'
 import { deleteFile, existFile } from '@/libs/file'
 import * as helper from './__helper'
@@ -224,7 +225,7 @@ export default async function getItem({ srl, code, query, ctx }: GetItemParams)
 
     return new Response(body, {
       headers: {
-        'Content-Type': data.mime,
+        'Content-Type': getContentType(data.mime),
         'Content-Length': String(contentLength),
         'Cache-Control': cacheControl,
       },
