@@ -7,3 +7,4 @@ tests/
 # files
 cmd.sh
 docker-compose.yml
+.env.*

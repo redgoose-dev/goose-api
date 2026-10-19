@@ -154,7 +154,9 @@ const consoleTransport: Transport = {
       const _messages = [
         getStatus(meta.status),
         getMessage(meta.status, message),
-        colorText(`${(Number(process.hrtime.bigint() - meta.beforeTime) / 1_000_000).toFixed(3)}ms`, 'dark'),
+        typeof meta.durationMs === 'number' && Number.isFinite(meta.durationMs)
+          ? colorText(`${meta.durationMs.toFixed(3)}ms`, 'dark')
+          : undefined,
       ].filter(Boolean)
       console.group(`${_level} ${_time} ${_method} ${_url} || ${_messages.join(' || ')}`)
       const _countContext = Object.keys(context).length

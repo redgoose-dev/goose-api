@@ -7,7 +7,6 @@ import * as messages from '@/libs/messages'
 import * as helper from './__helper'
 import type Service from '@/classes/Service'
 import type { FileModel } from './__model'
-import type { FileToResource } from './__helper'
 
 type PatchItemParams = {
   srl: number
@@ -61,29 +60,16 @@ export default async function patchItem({ srl, body, service }: PatchItemParams)
         throw new ServiceError('File size limit exceeded.', { status: 400 })
       }
       // convert file to resource
-      let _resource: FileToResource = await helper.fileToResource(body.file)
-      // convert format or quality
-      if (_resource.image)
-      {
-        _resource.image = helper.convertImageFormat(_resource.image, _resource.mime, body.quality)
-      }
-      // set save path
+      const _resource = await helper.fileToResource(body.file, body.format, body.quality)
       _path = await getUploadPath(body.dir_name, `${createCode(12)}.${_resource.ext}`)
-      // copy file
-      if (_resource.image)
+      await Bun.write(_path, _resource.bytes)
+      // 파일 교체 시 이전 이미지의 크기가 남지 않도록 한다.
+      delete _ready.json.width
+      delete _ready.json.height
+      if (_resource.width !== undefined)
       {
-        await _resource.image.write(_path)
-      }
-      else if (_resource.bytes)
-      {
-        await Bun.write(_path, _resource.bytes)
-      }
-      // set image size
-      if (_resource.image)
-      {
-        const _metadata = await _resource.image.metadata()
-        _ready.json.width = _metadata.width
-        _ready.json.height = _metadata.height
+        _ready.json.width = _resource.width
+        _ready.json.height = _resource.height
       }
       _ready.file = _resource
     }
@@ -126,7 +112,7 @@ export default async function patchItem({ srl, body, service }: PatchItemParams)
     })
 
     // delete legacy file
-    if (item.data.path) await deleteFile(item.data.path)
+    if (_ready.file && item.data.path) await deleteFile(item.data.path)
 
     // delete cache
     if (_ready.file) await helper.deleteCache(item.data.code)

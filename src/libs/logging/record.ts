@@ -197,12 +197,10 @@ function getRequestHeader(request: Record<string, unknown>, name: string): strin
   return typeof header?.[1] === 'string' && header[1] ? header[1] : undefined
 }
 
-function getDuration(beforeTime: unknown): number | undefined
+function getDuration(durationMs: unknown): number | undefined
 {
-  if (typeof beforeTime !== 'bigint') return undefined
-  if (beforeTime === BigInt(0)) return 0
-  const duration = Number(process.hrtime.bigint() - beforeTime) / 1_000_000
-  return Number(duration.toFixed(3))
+  if (typeof durationMs !== 'number' || !Number.isFinite(durationMs)) return undefined
+  return Number(durationMs.toFixed(3))
 }
 
 export function createRecordLogEntry({ level, message, meta, now }: CreateRecordLogEntryOptions): RecordLogEntry
@@ -215,7 +213,7 @@ export function createRecordLogEntry({ level, message, meta, now }: CreateRecord
     level: normalizeLogLevel(level, meta.status),
     message: validationCause?.message || validationCause?.summary || message || undefined,
     status: meta.status,
-    duration_ms: getDuration(meta.beforeTime),
+    duration_ms: getDuration(meta.durationMs),
     request: getRequest(meta),
     context: context && Object.keys(context).length > 0 ? context : undefined,
     // 422는 schema와 입력값이 포함된 Error/stack 대신 정리된 cause만 기록한다.

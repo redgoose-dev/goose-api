@@ -6,7 +6,6 @@ import { parseJSON } from '@/libs/objects'
 import * as helper from './__helper'
 import type Service from '@/classes/Service'
 import type { FileModel } from './__model'
-import type { FileToResource } from './__helper'
 
 type PutItemParams = {
   body: FileModel['putItemBody']
@@ -48,34 +47,19 @@ export default async function putItem({ body, service }: PutItemParams)
     }
 
     // convert file to resource
-    let _resource: FileToResource = await helper.fileToResource(body.file)
-
-    // convert format or quality
-    if (_resource.image && (body.format || body.quality))
-    {
-      _resource.image = helper.convertImageFormat(_resource.image, body.format, body.quality)
-    }
+    const _resource = await helper.fileToResource(body.file, body.format, body.quality)
 
     // set save path
     _path = await getUploadPath(body.dir_name, `${createCode(12)}.${_resource.ext}`)
 
-    // copy file
-    if (_resource.image)
-    {
-      await _resource.image.write(_path)
-    }
-    else if (_resource.bytes)
-    {
-      await Bun.write(_path, _resource.bytes)
-    }
+    await Bun.write(_path, _resource.bytes)
 
     // set image size
-    let _json: ZZ = body.json ?? {}
-    if (_resource.image)
+    const _json: ZZ = typeof body.json === 'string' ? parseJSON(body.json) || {} : body.json ?? {}
+    if (_resource.width !== undefined)
     {
-      const _metadata = await _resource.image.metadata()
-      _json.width = _metadata.width
-      _json.height = _metadata.height
+      _json.width = _resource.width
+      _json.height = _resource.height
     }
 
     // add data

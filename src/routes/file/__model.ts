@@ -77,11 +77,10 @@ export const FileModel = {
     format: t.Optional(t.String({
       pattern: PATTERN_MIME,
     })),
-    quality: t.Numeric({
-      default: 95,
+    quality: t.Optional(t.Numeric({
       minimum: 1,
       maximum: 100,
-    }),
+    })),
   }),
 
 } as const

@@ -37,23 +37,56 @@ export type FileToResource = {
   mime: string
   ext: string
   size: number
-  bytes?: Uint8Array
-  image?: Bun.Image
+  bytes: Uint8Array
+  width?: number
+  height?: number
 }
-export async function fileToResource(file: File): Promise<FileToResource>
+
+export async function fileToResource(file: File, format?: string, quality?: number): Promise<FileToResource>
 {
   const bytes = await file.bytes()
-  return {
+  const resource: FileToResource = {
     name: file.name,
     mime: file.type,
-    ext: (file.name.split('.').pop() ?? file.type.split('/')[1]) as string,
-    size: file.size,
-    ...(/^image/.test(file.type) ? {
-      image: new Bun.Image(bytes),
-    } : {
-      bytes,
-    })
+    ext: file.name.split('.').pop() || file.type.split('/')[1] || 'bin',
+    size: bytes.byteLength,
+    bytes,
   }
+  if (!/^image\//.test(file.type)) return resource
+
+  const sharp = await getSharp()
+  const metadata = await sharp(bytes).metadata()
+  resource.width = metadata.width
+  resource.height = metadata.pageHeight ?? metadata.height
+  if (format === undefined && quality === undefined) return resource
+
+  const target = format ?? file.type
+  const formats = {
+    'image/jpeg': 'jpeg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/avif': 'avif',
+    'image/gif': 'gif',
+  } as const
+  const outputFormat = formats[target as keyof typeof formats]
+  if (!outputFormat)
+  {
+    throw new Error(`Unsupported image conversion format: ${target}`)
+  }
+  // WebP/GIF는 전체 프레임을 유지하고, 정적 포맷은 첫 프레임을 저장한다.
+  const image = sharp(bytes, { animated: outputFormat === 'webp' || outputFormat === 'gif' })
+  const output = await image.toFormat(outputFormat, outputFormat === 'png'
+    ? { compressionLevel: Math.round((1 - (quality ?? 95) / 100) * 9) }
+    : { quality: quality ?? 95 }).toBuffer()
+  const convertedMetadata = await sharp(output).metadata()
+  resource.bytes = output
+  resource.size = output.byteLength
+  resource.mime = target
+  resource.ext = outputFormat
+  resource.name = `${file.name.replace(/\.[^.]*$/, '')}.${outputFormat}`
+  resource.width = convertedMetadata.width
+  resource.height = convertedMetadata.pageHeight ?? convertedMetadata.height
+  return resource
 }
 
 export function count({ table, where, values }: BaseModel['paramsTableSelect']): number
@@ -92,29 +125,6 @@ export function getModuleData(module: string, moduleSrl: number): ZZ | null
     table: _module,
     where: `srl = ${moduleSrl}`,
   }).data
-}
-
-/**
- * 이미지를 다른 이미지 포맷과 퀄리티로 변환한다.
- */
-export function convertImageFormat(image: Bun.Image, format?: string, quality?: number)
-{
-  if (format === undefined && quality === undefined) return image
-  const _quality = quality === undefined ? 95 : quality
-  switch (format)
-  {
-    case 'image/png':
-      const compressionLevel = Math.round((1 - _quality / 100) * 9)
-      return image.png({ compressionLevel })
-    case 'image/jpeg':
-      return image.jpeg({ quality: _quality })
-    case 'image/webp':
-      return image.webp({ quality: _quality })
-    case 'image/avif':
-      return image.avif({ quality: _quality })
-    default:
-      return image
-  }
 }
 
 export function getImageOptions(_w?: number, _h?: number, _t?: string, _q?: number): ZZ | undefined

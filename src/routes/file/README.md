@@ -2,6 +2,10 @@
 
 첨부파일 데이터 관리
 
+PUT/PATCH에서 `format`, `quality`를 모두 생략하면 원본을 그대로 저장합니다.
+변환 시 WebP/GIF는 애니메이션을 유지하며, JPEG/PNG/AVIF는 첫 프레임만 저장합니다.
+`quality`만 지정하면 원본 MIME 포맷으로 변환합니다.
+
 ## put_item.py
 
 파일을 업로드하고 데이터를 추가합니다.
@@ -17,8 +21,8 @@ PUT /file/
 @data {str} dir_name='origin' / 업로드 디렉토리 이름
 @data {File} file / [required] 파일
 @data {str} json / JSON 데이터
-@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp)
-@data {int} quality=90 / 이미지 품질 (0~100)
+@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp,image/avif,image/gif)
+@data {int} quality / 이미지 품질 (1~100, 변환 시 기본값 95)
 ```
 
 ### Response
@@ -44,8 +48,8 @@ PATCH /file/{srl:int}/
 @data {str} dir_name='origin' / 업로드 디렉토리 이름
 @data {File} file / 파일
 @data {str} json / JSON 데이터
-@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp)
-@data {int} quality=90 / 이미지 품질 (0~100)
+@data {str} format / 이미지 포맷 (image/jpeg,image/png,image/webp,image/avif,image/gif)
+@data {int} quality / 이미지 품질 (1~100, 변환 시 기본값 95)
 ```
 
 ### Response
