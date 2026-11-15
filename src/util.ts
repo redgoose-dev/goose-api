@@ -156,14 +156,14 @@ function addAccount(db: Database, account: ZZ)
   const { id, name, password } = account
   try
   {
-    const sql = `INSERT INTO provider (code, user_id, user_name, user_avatar, user_email, user_password, created_at) VALUES (?, ?, ?, ?, ?, ?, DATETIME("now", "localtime"))`
+    const sql = `INSERT INTO provider (code, uid, data, created_at) VALUES (?, ?, ?, DATETIME("now", "localtime"))`
     db.run(sql, [
       PROVIDER_CODE.PASSWORD,
-      id, // user_id
-      name, // user_name
-      '', // user_email
-      '', // user_avatar
-      ProviderPassword.hashPassword(String(password)), // user_password
+      id,
+      JSON.stringify({
+        name,
+        password: ProviderPassword.hashPassword(String(password)),
+      }),
     ])
     message('run', '계정을 추가했습니다.')
   }
@@ -243,7 +243,7 @@ switch (argv._[0])
       error: 'Invalid password.',
     })
     const db = connectDatabase()
-    const query = db.query(`UPDATE provider SET user_password = $password WHERE code LIKE $code`)
+    const query = db.query(`UPDATE provider SET data = json_set(data, '$.password', $password) WHERE code LIKE $code`)
     query.run({
       '$code': PROVIDER_CODE.PASSWORD,
       '$password': ProviderPassword.hashPassword(newPassword),

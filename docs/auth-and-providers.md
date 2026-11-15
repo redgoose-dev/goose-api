@@ -22,15 +22,19 @@
 
 ## 로그인과 갱신
 
+프로바이더 응답과 새 password access JWT의 식별자는 `uid`다. HTTP 입력의 `id`는 `uid`로 매핑한다. 기존 `user_id` 응답/claim을 읽는 클라이언트는 `uid`로 변경해야 한다.
+
+name/avatar/email은 선택값이다. password 등록은 이름 없이도 가능하지만 비밀번호는 필수다. OAuth 등록은 제공된 프로필만 저장하고 password 키를 추가하지 않는다. 응답은 문자열인 프로필 값만 포함하며 누락/null 필드를 강제로 채우지 않는다. password 로그인은 해시가 없는 계정을 401로 거부하며 OAuth 계정의 비밀번호 수정은 400으로 거부한다.
+
 ### 비밀번호
 
-`POST /auth/login/` → `post-login.ts`에서 `(code, user_id)` 조회 → bcrypt 검증 → `ProviderPassword.renewToken()` → 원본 access/refresh와 유효기간을 token 테이블에 저장 → `{ access, expires, refresh }` 반환.
+`POST /auth/login/` → `post-login.ts`에서 `(code, uid)` 조회 → bcrypt 검증 → `ProviderPassword.renewToken()` → 원본 access/refresh와 유효기간을 token 테이블에 저장 → `{ access, expires, refresh }` 반환.
 
 클라이언트에 반환하는 access는 `Provider.getPublicToken()`으로 원본의 마지막 32자를 잘라낸 값이다. 이 메서드명의 public은 **읽기 전용 공개용 토큰이라는 권한 의미와 다르다**. 일반 로그인도 이 형태를 사용한다.
 
 ### OAuth
 
-`GET /auth/redirect/:provider/`에서 외부 인증 URL을 구성한다. 콜백은 code를 토큰으로 교환하고 외부 계정 정보를 조회한다. `(code, user_id)`에 해당하는 provider가 있으면 로그인하고, 없으면 state의 access token을 검사한 뒤 등록할 수 있다. 미등록 계정의 익명 콜백이 자동으로 계정을 생성하는 구조는 아니다.
+`GET /auth/redirect/:provider/`에서 외부 인증 URL을 구성한다. 콜백은 code를 토큰으로 교환하고 외부 계정 정보를 조회한다. `(code, uid)`에 해당하는 provider가 있으면 로그인하고, 없으면 state의 access token을 검사한 뒤 등록할 수 있다. 미등록 계정의 익명 콜백이 자동으로 계정을 생성하는 구조는 아니다.
 
 콜백 결과는 state에 따라 redirect query 또는 WebSocket 메시지로 전달된다. `Service.data.oAuth`의 Map은 WebSocket과 타이머를 관리한다. `ws-authorize.ts`는 `AUTH_OPEN` → `AUTH_START` → `AUTH_LINK` 흐름을 처리하며, 콜백에서 `AUTH_COMPLETE`/`AUTH_ERROR`, 타임아웃에서 `AUTH_TIMEOUT`을 보낸다.
 

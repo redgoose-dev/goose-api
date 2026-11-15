@@ -1,6 +1,7 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import type { CheckinToken } from '@/libs/verify'
+import { getPublicProvider } from './__helper'
 
 type GetProviderItem = {
   srl: number
@@ -38,9 +39,7 @@ export default async function getProviderItem({ srl, token }: GetProviderItem)
     {
       throw new ServiceError('Not found provider data.', { status: 204 })
     }
-    if (provider.data?.user_password) delete provider.data.user_password
-
-    return provider.data
+    return getPublicProvider(provider.data)
   }
   catch (_e: any)
   {

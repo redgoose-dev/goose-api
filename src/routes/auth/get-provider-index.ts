@@ -3,6 +3,7 @@ import ServiceError from '@/classes/ServiceError'
 import { PROVIDER_CODE, getProvider } from '@/classes/provider'
 import { arrayToObject } from '@/libs/objects'
 import type { AuthModel } from './__model'
+import { getPublicProvider } from './__helper'
 
 type GetProviderIndexParams = {
   query: AuthModel['getProviderIndexQuery']
@@ -21,10 +22,10 @@ export default async function getProviderIndex({ query }: GetProviderIndexParams
     const index = Object.values(PROVIDER_CODE).map((code) => {
       if (_providers[code])
       {
-        const { user_password, ...rest } = _providers[code]
+        const account = getPublicProvider(_providers[code])
         return {
           code,
-          account: rest,
+          account,
           auth_url: null,
         }
       }

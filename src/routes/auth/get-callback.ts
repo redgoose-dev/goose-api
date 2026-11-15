@@ -52,11 +52,11 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
       table: DB.TABLE.PROVIDER,
       where: [
         `AND code LIKE $code`,
-        `AND user_id LIKE $userId`,
+        `AND uid LIKE $uid`,
       ],
       values: {
         '$code': __provider__.code,
-        '$userId': user.id,
+        '$uid': user.id,
       },
     })
     if (provider.data) providerSrl = provider.data.srl
@@ -67,11 +67,12 @@ export default async function getCallback({ ctx, code, query }: GetCallbackParam
         table: DB.TABLE.PROVIDER,
         values: [
           { key: 'code', value: __provider__.code },
-          { key: 'user_id', value: user.id },
-          { key: 'user_name', value: user.name },
-          { key: 'user_avatar', value: user.avatar },
-          { key: 'user_email', value: user.email },
-          { key: 'user_password', valueName: 'NULL' },
+          { key: 'uid', value: user.id },
+          { key: 'data', value: JSON.stringify({
+            name: user.name ?? undefined,
+            avatar: user.avatar ?? undefined,
+            email: user.email ?? undefined,
+          }) },
           { key: 'created_at', valueName: DB.DATE_TIME },
         ],
       })

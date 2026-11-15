@@ -3,6 +3,7 @@ import ServiceError from '@/classes/ServiceError'
 import MOD from '@/classes/MOD'
 import Provider from '@/classes/provider/Provider'
 import type { AuthModel } from './__model'
+import { getPublicProvider } from './__helper'
 
 type GetTokenIndexParams = {
   query: AuthModel['getTokenQuery']
@@ -59,7 +60,7 @@ export default async function getTokenIndex({ query }: GetTokenIndexParams)
             table: DB.TABLE.PROVIDER,
             where: `srl = ${item.provider_srl}`,
           }).data
-          if (item.provider) delete item.provider.user_password
+          if (item.provider) item.provider = getPublicProvider(item.provider)
         }
         return item
       })

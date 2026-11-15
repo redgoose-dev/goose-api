@@ -124,15 +124,12 @@ CREATE INDEX idx_map_tag_module_srl ON map_tag(module, module_srl);
 CREATE TABLE `provider` (
   `srl` INTEGER PRIMARY KEY AUTOINCREMENT, -- srl
   `code` TEXT NOT NULL, -- provider name
-  `user_id` TEXT NOT NULL, -- user id
-  `user_name` TEXT NULL, -- username
-  `user_avatar` TEXT NULL, -- user avatar
-  `user_email` TEXT NULL, -- user email
-  `user_password` TEXT NULL, -- user password (for code=password)
+  `uid` TEXT NOT NULL, -- provider account id
+  `data` TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(data) AND json_type(data) = 'object'), -- JSON account data
   `created_at` TEXT NOT NULL, -- created date
-  UNIQUE (`code`, `user_id`)
+  UNIQUE (`code`, `uid`)
 );
-CREATE INDEX idx_provider_user_id ON provider(user_id);
+CREATE INDEX idx_provider_uid ON provider(uid);
 
 -- table `token`
 CREATE TABLE `token` (

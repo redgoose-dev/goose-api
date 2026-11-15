@@ -71,9 +71,9 @@ PUT /auth/provider/
 
 @headers {str} Authorization / 액세스 토큰
 @data {str} id / [required] 사용자 아이디
-@data {str} name / 사용자 이름
+@data {str} name / 사용자 이름 (선택)
 @data {str} avatar / 사용자 아바타 URL
-@data {str} email / [required] 사용자 이메일
+@data {str} email / 사용자 이메일 (선택)
 @data {str} password / [required] 사용자 비밀번호
 ```
 
@@ -210,3 +210,7 @@ DELETE /auth/token/{srl:int}/
 - 디스코드: https://discord.com/developers/applications
 - 구글: https://console.cloud.google.com/apis/credentials
 - 깃허브: https://github.com/settings/apps
+
+## 계정 저장 구조
+
+provider 테이블은 `uid`와 JSON 객체 `data`를 사용합니다. 이름·아바타·이메일·비밀번호 해시는 각각 `data.name`, `data.avatar`, `data.email`, `data.password`에 저장합니다. HTTP 입력 `id`는 유지하며 응답과 새 access JWT의 식별자는 `uid`입니다. 이름·아바타·이메일은 선택값이며 미제공 값은 저장하지 않습니다. 응답의 `name`, `avatar`, `email`도 문자열 값이 있을 때만 포함합니다. 비밀번호는 password 프로바이더에서만 필수이고 OAuth에는 저장하지 않습니다. OAuth 계정의 비밀번호 수정은 400으로 거부합니다. 비밀번호 해시와 임의의 확장 데이터는 응답하지 않습니다. PATCH는 지정하지 않은 JSON 값을 보존합니다. 기존 설치의 전환 방법은 [데이터와 저장소](../../../docs/data-and-storage.md#provider-json-전환)를 참고하세요.

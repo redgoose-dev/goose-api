@@ -52,6 +52,12 @@ const values = [ 'first', 'second' ].map((value) => {
 
 `_where`, `_values`, `_ready`, `_e`, `__provider__`는 기존 지역 변수 관례다. 수정하는 함수에서 이를 존중하되 모든 새 변수에 밑줄을 강제하지 않는다.
 
+## 테스트 파일 위치
+
+테스트 코드는 프로젝트 루트의 `./tests/` 아래에만 저장하고 사용한다. 단위·통합·회귀 테스트와 임시 검증용 테스트 모두 이 규칙을 따른다. 테스트 전용 헬퍼와 fixture도 `tests/` 아래에 둔다.
+
+기능별 하위 디렉터리는 허용한다. 예를 들어 `tests/auth/login.test.ts`, `tests/helpers/`, `tests/fixtures/`로 구성할 수 있다. `src/`의 구현 파일 옆이나 루트, `resource/`, `scripts/`, 외부 임시 디렉터리에 테스트 코드를 작성하지 않는다. 테스트 코드에도 이 문서의 서식·명명 규칙을 적용한다.
+
 ## 스키마와 타입
 
 런타임 스키마는 `__model.ts`에서 정의하고 타입을 파생시킨다. 동일 body를 별도 interface로 다시 선언하지 않는다.

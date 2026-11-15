@@ -1,6 +1,7 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import ProviderPassword from '@/classes/provider/Password'
+import { parseProviderData } from './__helper'
 import type { AuthModel } from './__model'
 
 type PostLoginParams = {
@@ -19,11 +20,11 @@ export default async function postLogin({ body }: PostLoginParams)
       table: DB.TABLE.PROVIDER,
       where: [
         `AND code LIKE $code`,
-        `AND user_id LIKE $userId`,
+        `AND uid LIKE $uid`,
       ],
       values: {
         '$code': __provider__.code,
-        '$userId': body.id,
+        '$uid': body.id,
       },
     })
     if (!provider.data)
@@ -32,7 +33,8 @@ export default async function postLogin({ body }: PostLoginParams)
     }
 
     // verify password
-    const _verifyPassword = __provider__.verifyPassword(body.password, provider.data.user_password)
+    const data = parseProviderData(provider.data.data)
+    const _verifyPassword = typeof data.password === 'string' && __provider__.verifyPassword(body.password, data.password)
     if (!_verifyPassword)
     {
       throw new ServiceError('Failed to verify password.', { status: 401 })

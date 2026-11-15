@@ -30,7 +30,7 @@
 | `comment` | module=`article`과 module_srl로 댓글 대상을 표현 |
 | `file` | module(`article`/`checklist`/`comment`/`json`)과 module_srl, 경로·MIME |
 | `tag`, `map_tag` | 태그와 module(`article`/`json`/`checklist`) 연결 |
-| `provider` | `(code, user_id)` 고유 계정, 개별 user_* 컬럼 |
+| `provider` | `(code, uid)` 고유 계정, JSON 객체를 담는 data 컬럼 |
 | `token` | provider_srl, 원본 access, expires, refresh |
 
 `module`/`module_srl`은 여러 종류의 대상을 가리키므로 일반 FK가 모든 관계를 보장하지 않는다. `app.__helper.remove()` → nest → article → comment/tag/file처럼 애플리케이션 헬퍼가 삭제를 전파한다. 직접 행만 지우면 파일·연관 데이터가 남을 수 있다.
@@ -44,10 +44,10 @@ seed의 `PRAGMA foreign_keys = ON`은 설치 시 사용한 연결에 적용된�
 ```typescript
 const item = db.getData({
   table: DB.TABLE.PROVIDER,
-  where: 'code = $code AND user_id = $userId',
+  where: 'code = $code AND uid = $uid',
   values: {
     '$code': code,
-    '$userId': userId,
+    '$uid': uid,
   },
 })
 ```
@@ -85,3 +85,19 @@ file 상세 조회는 숫자 srl 요청과 code 요청의 캐시 사용이 다�
 기본 preference를 수정해도 기존 설치의 저장 파일에 자동 병합되는 것은 아니다. `Service.setup()`은 저장된 설정을 읽고, `updatePreference()`는 change 인자에 따라 교체하거나 얕게 병합한다. 새 설정 키의 기존 설치 fallback을 검토한다.
 
 콘텐츠 DB는 현재 DELETE journal, 로그 DB는 WAL과 batch queue를 사용한다. 로그 조회는 별도 reader 연결이다. 콘텐츠 DB 변경을 로그 DB에 기계적으로 적용하지 않는다. 로그 구조·보관 정책·요청 ID는 [로깅 문서](../src/libs/logging/README.md)를 참고한다.
+
+## provider JSON 전환
+
+신규 설치는 `uid`와 `data`를 사용한다. SQLite의 `data`는 JSON 객체만 허용하는 CHECK가 있는 TEXT이며 기본값은 `{}`다. 기존 `user_name`, `user_avatar`, `user_email`, `user_password` 값은 각각 `data.name`, `data.avatar`, `data.email`, `data.password`로 옮긴다. 비밀번호는 기존 bcrypt 해시를 그대로 보존한다. `(code, uid)` 고유 제약과 uid 인덱스를 유지한다.
+
+기존 설치는 서버와 DB 쓰기 작업을 중지하고 DB를 백업한 뒤 아래 명령을 한 번 실행하고 새 서버를 시작한다. seed 재설치로 대체하지 않는다. 자동 실행되지 않는다.
+
+```sh
+bun run resource/migrate-provider.ts /absolute/path/to/db.sqlite
+```
+
+전환은 단일 IMMEDIATE 트랜잭션에서 컬럼을 변경하므로 srl, created_at, token 연결과 시퀀스를 보존한다. 실패하면 전체 rollback하며, 완료한 스키마에 재실행하면 변경 없이 종료한다. 예상하지 못한 중간 스키마는 거부한다. 이전 코드로 되돌리려면 서버를 중지하고 백업 DB도 함께 복원해야 한다.
+
+HTTP 입력 `id`는 DB의 `uid`로 매핑한다. 프로바이더 응답과 새 access JWT도 `user_id` 대신 `uid`를 사용하므로 클라이언트의 필드 참조를 변경해야 한다. 이미 발급된 토큰은 DB 기반 검사에서 계속 사용할 수 있다.
+
+name/avatar/email은 선택값이며 새 계정의 미제공 값은 생략한다. 응답의 `name`, `avatar`, `email`은 문자열 값이 있을 때만 포함한다. JSON 원문·password·확장 필드는 노출하지 않는다. 비밀번호는 password 프로바이더에서만 사용하며 OAuth 비밀번호 수정 요청은 400으로 거부한다. PATCH와 CLI 비밀번호 초기화는 다른 JSON 필드를 보존한다. 기존 DB 전환은 데이터 보존을 위해 null 값도 유지하고 조회 시 해당 필드를 생략한다.

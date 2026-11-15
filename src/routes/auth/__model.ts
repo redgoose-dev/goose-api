@@ -33,7 +33,7 @@ export const AuthModel = {
   }),
   putProviderBody: t.Object({
     id: t.String({ pattern: PATTERN_CODE }),
-    name: t.String(),
+    name: t.Optional(t.String()),
     avatar: t.Optional(t.String({ pattern: PATTERN_URL })),
     email: t.Optional(t.String({ pattern: PATTERN_EMAIL })),
     password: t.String(),

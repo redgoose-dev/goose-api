@@ -65,7 +65,7 @@ class ProviderPassword extends Provider {
     if (!op.provider) throw new Error('Not found provider data.')
     const _access = this.newToken('access', {
       srl: op.provider.srl,
-      user_id: op.provider.user_id,
+      uid: op.provider.uid,
     })
     const _refresh = this.newToken('refresh', {
       srl: op.provider.srl,

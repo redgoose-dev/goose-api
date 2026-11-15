@@ -1,8 +1,9 @@
 import DB, { db } from '@/classes/DB'
 import ServiceError from '@/classes/ServiceError'
 import ProviderPassword from '@/classes/provider/Password'
+import { PROVIDER_CODE } from '@/classes/provider'
 import * as messages from '@/libs/messages'
-import { filteringObject } from '@/libs/objects'
+import { parseProviderData } from './__helper'
 import type { AuthModel } from './__model'
 
 type PatchProviderItemParams = {
@@ -14,66 +15,52 @@ export default async function patchProviderItem({ srl, body }: PatchProviderItem
 {
   try
   {
-    // check exist data
-    const countProvider = db.getCount({
+    const provider = db.getData({
       table: DB.TABLE.PROVIDER,
-      where: `srl = ${srl}`,
-    })
-    if (!(countProvider.data > 0))
+      where: 'srl = $srl',
+      values: { '$srl': srl },
+    }).data
+    if (!provider)
     {
       throw new ServiceError('Provider not found.', { status: 204 })
     }
 
-    // if `body.id` then check exist id
-    if (body.id)
+    if (body.password !== undefined && provider.code !== PROVIDER_CODE.PASSWORD)
     {
-      const countProvider = db.getCount({
+      throw new ServiceError('Password is only supported by the password provider.', { status: 400 })
+    }
+
+    if (body.id !== undefined)
+    {
+      const count = db.getCount({
         table: DB.TABLE.PROVIDER,
-        where: `user_id LIKE $userId`,
-        values: { '$userId': body.id },
+        where: 'code = $code AND uid = $uid AND srl != $srl',
+        values: { '$code': provider.code, '$uid': body.id, '$srl': srl },
       })
-      if (countProvider.data > 0)
+      if (count.data > 0)
       {
         throw new ServiceError('ID already exists.', { status: 400 })
       }
     }
 
-    // set ready update
-    let _ready: ZZ = {
-      id: undefined,
-      name: undefined,
-      avatar: undefined,
-      email: undefined,
-      password: undefined,
-    }
-    if (body.id !== undefined) _ready['id'] = body.id
-    if (body.name !== undefined) _ready['name'] = body.name
-    if (body.avatar !== undefined) _ready['avatar'] = body.avatar
-    if (body.email !== undefined) _ready['email'] = body.email
-    if (body.password !== undefined) _ready['password'] = ProviderPassword.hashPassword(body.password)
-
-    // update data
-    _ready = filteringObject(_ready)
-    if (Object.keys(_ready).length <= 0)
+    if (Object.values(body).every(value => value === undefined))
     {
       throw new ServiceError(messages.ERR_CANT_UPDATE, { status: 400 })
     }
+    const data = parseProviderData(provider.data)
+    if (body.name !== undefined) data.name = body.name
+    if (body.avatar !== undefined) data.avatar = body.avatar
+    if (body.email !== undefined) data.email = body.email
+    if (body.password !== undefined) data.password = ProviderPassword.hashPassword(body.password)
+
     db.editData({
       table: DB.TABLE.PROVIDER,
-      where: `srl = ${srl}`,
-      set: [
-        _ready.id !== undefined && 'user_id = $id',
-        _ready.name !== undefined && 'user_name = $name',
-        _ready.avatar !== undefined && 'user_avatar = $avatar',
-        _ready.email !== undefined && 'user_email = $email',
-        _ready.password !== undefined && 'user_password = $password',
-      ],
+      where: 'srl = $srl',
+      set: [ 'uid = $uid', 'data = $data' ],
       values: {
-        '$id': _ready.id,
-        '$name': _ready.name,
-        '$avatar': _ready.avatar,
-        '$email': _ready.email,
-        '$password': _ready.password,
+        '$srl': srl,
+        '$uid': body.id ?? provider.uid,
+        '$data': JSON.stringify(data),
       },
     })
   }

@@ -32,11 +32,13 @@ export default async function putProviderItem({ body }: PutProviderItemParams)
       table: DB.TABLE.PROVIDER,
       values: [
         { key: 'code', value: __provider__.code },
-        { key: 'user_id', value: body.id },
-        { key: 'user_name', value: body.name },
-        { key: 'user_avatar', value: body.avatar },
-        { key: 'user_email', value: body.email },
-        { key: 'user_password', value: hashedPassword },
+        { key: 'uid', value: body.id },
+        { key: 'data', value: JSON.stringify({
+          name: body.name ?? undefined,
+          avatar: body.avatar ?? undefined,
+          email: body.email ?? undefined,
+          password: hashedPassword,
+        }) },
         { key: 'created_at', valueName: DB.DATE_TIME },
       ],
     })
