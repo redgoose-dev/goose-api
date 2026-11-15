@@ -2,7 +2,6 @@
 dist/
 data/
 scripts/
-tests/
 
 # files
 cmd.sh

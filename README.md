@@ -162,6 +162,8 @@ docker exec goose-api bun run prod:util clean-cache --days 30 --execute
 
 ## 문서
 
+- [개발 문서 안내](docs/README.md): 구조, 코딩 컨벤션, 인증·저장소, 작업 절차와 검증 기준
+- [에이전트 작업 규칙](AGENTS.md): 코드 수정 전 읽을 문서와 핵심 규칙
 - [소스 구조](src/README.md): 진입점, 디렉터리 구성, 요청 처리 흐름
 - [라우트 문서](src/routes/README.md): 라우트 구성 및 핸들러 작성 안내
 - [라이브러리 문서](src/libs/README.md)
